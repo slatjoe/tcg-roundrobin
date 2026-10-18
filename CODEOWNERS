@@ -1,0 +1,4 @@
+# Reply files are committed by Joe personally (PROTOCOL.md, "Reply authenticity").
+rounds/*/claude-reply-* @slatjoe
+rounds/*/grok-reply-* @slatjoe
+rounds/*/gemini-reply-* @slatjoe
