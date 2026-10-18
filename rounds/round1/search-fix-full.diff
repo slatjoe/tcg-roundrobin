@@ -1,0 +1,278 @@
+--- search.php (pre-fix, as gated)
++++ search.php (current, hardened)
+@@ -267,38 +267,140 @@
+   for ($i = 0; $i + $pieces - 1 < $n; $i += $pieces) {
+     if (($ars[$i] ?? "") !== "") ++$oppArsCount;
+   }
++  // Arsenal slots: a face-up card is PUBLIC information - it stays
++  // fixed (excluded from the unseen pool, kept in its slot). Hidden
++  // (face-down) slots are sampled from the pool like the hand.
++  $arsSlots = [];   // per slot: ["id" =>, "fixed" => bool]
++  for ($i = 0, $k = 0; $i + $pieces - 1 < $n; $i += $pieces, ++$k) {
++    $cid = strval($ars[$i] ?? "");
++    if ($cid === "") continue;
++    $facing = strval($ars[$i + 1] ?? "DOWN");
++    $arsSlots[] = ["id" => $cid, "fixed" => $facing !== "DOWN"];
++  }
+   $pool = SimSearch_PoolIDs($opp);
++  foreach ($arsSlots as $s) {
++    if (!$s["fixed"]) continue;
++    $ix = array_search($s["id"], $pool, true);
++    if ($ix !== false) array_splice($pool, $ix, 1);
++  }
+   SimSearch_SeedShuffle($seed);
+   $pool = SimSearch_Shuffle($pool);
+   $hand = array_slice($pool, 0, $oppHandSize);
+   $rest = array_slice($pool, $oppHandSize);
+-  $arsenalID = null;
+-  if ($oppArsCount > 0) {
+-    $arsenalID = $rest[0] ?? null;
++  $arsenalIDs = [];
++  foreach ($arsSlots as $s) {
++    if ($s["fixed"]) { $arsenalIDs[] = $s["id"]; continue; }
++    $arsenalIDs[] = $rest[0] ?? null;
+     $rest = array_slice($rest, 1);
+   }
+   $ownDeck = SimSearch_Shuffle(SimSearch_FlatIDs(SimSearch_ReadZone($root, "deck")));
+   return [
+     "root" => intval($root), "opp" => $opp,
+-    "hand" => $hand, "arsenal" => $arsenalID,
++    "hand" => $hand, "arsenal" => $arsenalIDs,
+     "oppDeck" => array_values($rest), "ownDeck" => $ownDeck,
+   ];
+ }
+ 
+ function SimSearch_ApplyAssignment($a) {
++  // RETIRED (2026-10-18): memory-only application is the bug that
++  // voided every rollout - the engine re-derives state from the
++  // serialization at the first step. Use ApplyAssignmentToFile.
++  throw new Exception("SimSearch_ApplyAssignment is retired; use SimSearch_ApplyAssignmentToFile");
++}
++
++// Persist a determinization into a copied game dir's serialized state
++// BEFORE parsing. ApplyAssignment alone edits memory only, and the
++// engine's first step re-derives state from the serialization (file +
++// SHMOP cache), discarding memory-only edits. Editing the file makes
++// every representation derive from the determinized state. Content
++// line indices per vendor ParseGamestate.php (p1: hand 1, deck 2,
++// arsenal 5; p2: hand 19, deck 20, arsenal 23).
++function SimSearch_ApplyAssignmentToFile($dir, $a) {
++  // FAIL CLOSED: returns false on any inconsistency; callers abort
++  // the world. A silent partial edit recreates the true-state bug.
++  $file = rtrim($dir, "/") . "/gamestate.txt";
++  $raw = @file_get_contents($file);
++  if ($raw === false) return false;
++  $lines = explode("\r\n", $raw);
++  if (count($lines) < 24) return false;
+   $opp = intval($a["opp"]); $root = intval($a["root"]);
+-  SimSearch_WriteZone($opp, "hand", array_values($a["hand"]));
+-  SimSearch_WriteZone($opp, "deck", array_values($a["oppDeck"]));
+-  SimSearch_WriteZone($root, "deck", array_values($a["ownDeck"]));
+-  if ($a["arsenal"] !== null) {
+-    $ars = SimSearch_ReadZone($opp, "arsenal");
+-    $pieces = ArsenalPieces();
+-    if (is_array($ars) && count($ars) >= $pieces) {
+-      $ars[0] = $a["arsenal"];
+-      $ars[4] = ""; // subcards belonged to the true card; clear them
+-      SimSearch_WriteZone($opp, "arsenal", $ars);
+-    }
++  $handIdx = $opp === 1 ? 1 : 19;
++  $deckIdx = $opp === 1 ? 2 : 20;
++  $arsIdx  = $opp === 1 ? 5 : 23;
++  $rootDeckIdx = $root === 1 ? 2 : 20;
++  if (!isset($lines[$handIdx]) || !isset($lines[$deckIdx])
++      || !isset($lines[$rootDeckIdx]) || !isset($lines[$arsIdx])) return false;
++  $lines[$handIdx] = implode(" ", array_values($a["hand"]));
++  $lines[$deckIdx] = implode(" ", array_values($a["oppDeck"]));
++  $lines[$rootDeckIdx] = implode(" ", array_values($a["ownDeck"]));
++  // Arsenal: REBUILD each sampled slot from a whitelist - the
++  // assigned card id plus the slot's public facing field, with the
++  // structural fields at their canonical constants (field2=1, rest
++  // 0; measured constant across 1,524 snap slots). Fields must stay
++  // NON-EMPTY: the parser drops empty tokens and the stride parse
++  // collapses, vanishing the card. Field 5 (a descriptor naming the
++  // true card) becomes "0" (none) unless SIM_ARS_DESC=1 (experiment:
++  // descriptor for the sampled card). A slot whose assigned id is
++  // the true card (face-up fixed, or sampled by coincidence) keeps
++  // its original fields - that card's true state is correct for it.
++  $arsIDs = array_values((array)($a["arsenal"] ?? []));
++  $fields = $lines[$arsIdx] === "" ? [] : explode(" ", $lines[$arsIdx]);
++  $pieces = ArsenalPieces();
++  $slots = 0;
++  for ($i = 0; $i + $pieces - 1 < count($fields); $i += $pieces) {
++    if (($fields[$i] ?? "") !== "") ++$slots;
++  }
++  if (count($arsIDs) !== $slots) return false;
++  for ($k = 0; $k < $slots; ++$k) {
++    $base = $k * $pieces;
++    if (strval($fields[$base] ?? "") === strval($arsIDs[$k])) continue;
++    $facing = strval($fields[$base + 1] ?? "DOWN");
++    $desc = "0";
++    if (getenv("SIM_ARS_DESC") === "1") {
++      $dp = explode(";", strval($fields[$base + 5] ?? ""));
++      $desc = "2;" . strval($arsIDs[$k]) . ";" . ($dp[2] ?? "0");
++    }
++    $fields[$base] = strval($arsIDs[$k]);
++    $fields[$base + 1] = $facing;
++    $fields[$base + 2] = "1";
++    $fields[$base + 3] = "0";
++    $fields[$base + 4] = "0";
++    $fields[$base + 5] = $desc;
++    $fields[$base + 6] = "0";
++  }
++  if ($slots > 0) $lines[$arsIdx] = implode(" ", $fields);
++  return file_put_contents($file, implode("\r\n", $lines)) !== false;
++}
++
++// Strip true-state residue from a child's private game dir: engine
++// backup snapshots and the game log carry the TRUE state/cards and
++// must not ride along with the determinized copy. (R3: after this +
++// ApplyAssignmentToFile, two children built from parents that differ
++// only in the true split are byte-identical over the whole directory.)
++function SimSearch_SanitizeChildDir($dir) {
++  $dir = rtrim($dir, "/") . "/";
++  foreach (glob($dir . "gamestateBackup*.txt") ?: [] as $f) @unlink($f);
++  foreach (["startChainLinkGamestate.txt", "gamestateBackup.txt",
++            "gamelog.txt"] as $f) @unlink($dir . $f);
++}
++
++// Runtime canary (R2): after ParseGamestate, the child's zones must
++// equal the assignment exactly - hand, both decks (ordered), arsenal
++// ids by slot. Any mismatch means the determinization did not take.
++function SimSearch_VerifyAssignment($a) {
++  $opp = intval($a["opp"]); $root = intval($a["root"]);
++  $ids = function ($xs) { return array_map("strval", array_values((array)$xs)); };
++  if ($ids(SimSearch_FlatIDs(SimSearch_ReadZone($opp, "hand"))) !== $ids($a["hand"])) return false;
++  if ($ids(SimSearch_FlatIDs(SimSearch_ReadZone($opp, "deck"))) !== $ids($a["oppDeck"])) return false;
++  if ($ids(SimSearch_FlatIDs(SimSearch_ReadZone($root, "deck"))) !== $ids($a["ownDeck"])) return false;
++  $ars = SimSearch_ReadZone($opp, "arsenal");
++  $pieces = ArsenalPieces();
++  $got = [];
++  $n = is_array($ars) ? count($ars) : 0;
++  for ($i = 0; $i + $pieces - 1 < $n; $i += $pieces) {
++    if (($ars[$i] ?? "") !== "") $got[] = strval($ars[$i]);
+   }
++  return $got === $ids((array)($a["arsenal"] ?? []));
+ }
+ 
+ // ============================================================== eval client
+@@ -553,10 +655,23 @@
+     for ($s = 0; $s < intval($cfg["S"]); ++$s) {
+       SimSearch_WipeDir($workDir);
+       SimSearch_CopyDir($snapDir, $workDir);
++      SimSearch_SanitizeChildDir($workDir);
+       $GLOBALS["filename"] = $workDir . "gamestate.txt";
+       $GLOBALS["filepath"] = $workDir;
++      if (function_exists("DeleteCache")) DeleteCache($childGame);
++      if (!SimSearch_ApplyAssignmentToFile($workDir, $assignment)) {
++        @file_put_contents($resFile, json_encode(["error" => "det_persist_failed"]));
++        SimSearch_WipeDir($workDir);
++        SimSearch_WipeDir($snapDir);
++        exit(0);
++      }
+       ParseGamestate();
+-      SimSearch_ApplyAssignment($assignment);
++      if (!SimSearch_VerifyAssignment($assignment)) {
++        @file_put_contents($resFile, json_encode(["error" => "det_verify_failed"]));
++        SimSearch_WipeDir($workDir);
++        SimSearch_WipeDir($snapDir);
++        exit(0);
++      }
+       mt_srand(intval($cfg["seedBase"]) + $s * 7919 + $dIdx * 104729);
+       $GLOBALS["ssStack"] = [0];
+       $GLOBALS["ssDepth"] = 0;
+@@ -598,7 +713,7 @@
+       }
+     }
+     @file_put_contents($resFile, json_encode([
+-      "visits" => $visits, "wroot" => $wroot, "sims" => $simsDone]));
++      "det_persisted" => 1, "visits" => $visits, "wroot" => $wroot, "sims" => $simsDone]));
+     SimSearch_WipeDir($workDir);
+     SimSearch_WipeDir($snapDir);
+     if (function_exists("DeleteCache")) DeleteCache($childGame);
+@@ -683,7 +798,7 @@
+     $kids = [];
+     foreach ($assignments as $w => $a) {
+       if ($a === null) continue;
+-      $resFile = sys_get_temp_dir() . "/tch_res_" . getmypid() . "_" . $ci
++      $resFile = sys_get_temp_dir() . "/tch_res_" . getmypid() . "_" . bin2hex(random_bytes(4)) . "_" . $ci
+         . "_" . $w . ".json";
+       @unlink($resFile);
+       $pid = pcntl_fork();
+@@ -692,7 +807,7 @@
+         SimLabel_RunRollout(rtrim($gameDir, "/") . "/", $resFile, $a,
+           ["rootPlayer" => $player, "rootKey" => $rootKey, "forceIdx" => $ci,
+            "snapGame" => strval($GLOBALS["gameName"] ?? ""),
+-           "pair" => "va", "seed" => $seedBase + $w * 31337 + $ci * 7919]);
++           "pair" => "va", "seed" => $seedBase + $w * 31337]);
+         exit(0);
+       }
+       $kids[$pid] = [$resFile, $w];
+@@ -722,7 +837,7 @@
+     $nWorlds[$ci] = count($vals);
+     $means[$ci] = count($vals) ? array_sum($vals) / count($vals) : null;
+   }
+-  $base = ["teacher" => 1, "contested" => 1, "branch" => $branch,
++  $base = ["teacher" => 1, "contested" => 1, "det" => "file-v3", "branch" => $branch,
+     "player" => $player, "turn" => intval($GLOBALS["currentTurn"] ?? 0),
+     "ncand" => $ncand, "selected" => $sel, "prior_pick" => $priorPick,
+     "means" => $means, "n_worlds" => $nWorlds,
+@@ -1018,8 +1133,19 @@
+     $GLOBALS["ssLabelChildState"] = null;
+     $GLOBALS["ssLabelFallbacks"] = 0;
+     $GLOBALS["ssHooks"] = 0;
++    SimSearch_SanitizeChildDir($workDir);
++    if (!SimSearch_ApplyAssignmentToFile($workDir, $assignment)) {
++      @file_put_contents($resFile, json_encode(["error" => "det_persist_failed"]));
++      SimSearch_WipeDir($workDir);
++      exit(0);
++    }
+     ParseGamestate();
+-    SimSearch_ApplyAssignment($assignment);
++    if (!SimSearch_VerifyAssignment($assignment)) {
++      @file_put_contents($resFile, json_encode(["error" => "det_verify_failed"]));
++      SimSearch_WipeDir($workDir);
++      if (function_exists("DeleteCache")) DeleteCache($childGame);
++      exit(0);
++    }
+     mt_srand(intval($cfg["seed"]));
+     SimSearch_SeedShuffle(intval($cfg["seed"]) ^ 0x51ab);
+     try {
+@@ -1041,6 +1167,7 @@
+     $winner = IsGameOver() ? intval($GLOBALS["winner"] ?? 0) : 0;
+     $outcome = $winner === 0 ? 0.0 : ($winner === $root ? 1.0 : -1.0);
+     @file_put_contents($resFile, json_encode([
++      "det_persisted" => 1,
+       "winner" => $winner, "outcome" => $outcome,
+       "finished" => IsGameOver() ? 1 : 0,
+       "turns" => intval($GLOBALS["currentTurn"] ?? 0),
+@@ -1078,6 +1205,11 @@
+   $GLOBALS["filepath"] = $snapGameDir;
+   $GLOBALS["filename"] = $snapGameDir . "gamestate.txt";
+   $GLOBALS["logWriteBuffer"] = [];
++  // ParseGamestate reads the SHMOP cache BEFORE the file: a segment
++  // left by the snapshot's original game (e.g. one killed mid-run,
++  // whose CloseGame never deleted it) would silently replace the
++  // snapshot state. Clear it so the driver parses the FILE.
++  if (function_exists("DeleteCache")) DeleteCache(strval($meta["game"]));
+   if (!function_exists("ParseGamestate")) {
+     SimSearch_IncludeWithGlobals("ParseGamestate.php");
+     $GLOBALS["gameName"] = strval($meta["game"]);
+@@ -1099,7 +1231,7 @@
+       $seed = intval($cfg["seedBase"]) + $w * 31337;
+       $assignment = SimSearch_Determinize($root, $seed);
+       $dbg("det ci=" . $ci . " w=" . $w . " ok=" . (is_array($assignment) ? "y" : "n"));
+-      $resFile = sys_get_temp_dir() . "/lab_res_" . getmypid() . "_" . $ci . "_" . $w . ".json";
++      $resFile = sys_get_temp_dir() . "/lab_res_" . getmypid() . "_" . bin2hex(random_bytes(4)) . "_" . $ci . "_" . $w . ".json";
+       @unlink($resFile);
+       $pid = pcntl_fork();
+       if ($pid === -1) continue;
+@@ -1107,7 +1239,7 @@
+         SimLabel_RunRollout(rtrim($snapDir, "/") . "/", $resFile, $assignment,
+           ["rootPlayer" => $root, "rootKey" => $rootKey, "forceIdx" => $ci,
+            "snapGame" => strval($meta["game"]),
+-           "pair" => strval($cfg["pair"]), "seed" => $seed + $ci * 7919]);
++           "pair" => strval($cfg["pair"]), "seed" => $seed]);
+         exit(0);
+       }
+       $kids[$pid] = [$resFile, $w];
