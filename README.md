@@ -1,7 +1,10 @@
 # tcg-roundrobin
 
-Private venue for the expert round-robin on the Flesh and Blood bot-v-bot
-experiment (hero-independent player; local Talishar only, never public queues).
+Venue for the expert round-robin on the Flesh and Blood bot-v-bot
+experiment (hero-independent player; local Talishar only, never public
+queues). **This repository is public** (Joe's direction, 2026-10-18, so the
+reviewers can clone it without credentials). Assume anything committed is
+world-readable: no tokens, keys, credentials, or personal data, ever.
 
 ## How this venue works
 
