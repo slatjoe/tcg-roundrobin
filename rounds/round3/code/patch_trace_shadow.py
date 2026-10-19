@@ -56,6 +56,12 @@ function SimTrace_Log($row) {
   if (!SimTrace_On()) return;
   $dir = getenv("TCG_TRACE_LOG");
   if (!is_dir($dir)) @mkdir($dir, 0700, true);
+  if (empty($GLOBALS["ssTraceZoneChecked"])) {
+    // Once per game (R5): name any zone-hash key the engine does not
+    // actually carry, so a blind sensor is visible in the data.
+    $GLOBALS["ssTraceZoneChecked"] = 1;
+    $row["zone_null_keys"] = SimTrace_ZoneNullKeys();
+  }
   $row["game"] = strval($GLOBALS["gameName"] ?? "");
   @file_put_contents(rtrim($dir, "/") . "/trace_" . $row["game"] . ".jsonl",
     json_encode($row) . "\n", FILE_APPEND);
@@ -71,22 +77,60 @@ function SimTrace_RngFingerprint() {
   @unlink($f);
   $pid = pcntl_fork();
   if ($pid === -1) return null;
-  if ($pid === 0) { @file_put_contents($f, strval(mt_rand())); exit(0); }
+  if ($pid === 0) {
+    @file_put_contents($f, strval(mt_rand()));
+    // Round-3 S1: die by signal, not exit(0) - exit runs inherited
+    // shutdown handlers and output buffers in the child.
+    if (function_exists("posix_kill")) posix_kill(posix_getpid(), 9);
+    exit(0);
+  }
   pcntl_waitpid($pid, $st);
   $v = @file_get_contents($f);
   @unlink($f);
   return $v === false ? null : intval($v);
 }
+function SimTrace_ZoneKeys() {
+  // The engine's actual global names, verified against
+  // ParseGamestate.php's assignments (round-3 R5): character
+  // equipment is p1CharEquip, the graveyard is p1Discard, life is
+  // the playerHealths array, resources are p1Resources/p2Resources,
+  // action points a single actionPoints global.
+  return ["p1Hand","p2Hand","p1Deck","p2Deck","p1Arsenal","p2Arsenal",
+          "p1CharEquip","p2CharEquip","p1Items","p2Items","p1Allies",
+          "p2Allies","p1Banish","p2Banish","p1Discard","p2Discard",
+          "p1Pitch","p2Pitch","p1Resources","p2Resources",
+          "playerHealths","currentTurn","currentPlayer","mainPlayer",
+          "defPlayer","actionPoints","chainLinks","combatChain",
+          "layers","decisionQueue"];
+  // numChainLinks was in the first list; it is assigned in
+  // ParseGamestate.php but absent as a global at decision time
+  // (zone_null_keys on the seed-3 game: exactly ["numChainLinks"]).
+  // chainLinks itself carries the content; dropped (round-3 R5).
+}
+function SimTrace_ZoneNullKeys() {
+  $nulls = [];
+  foreach (SimTrace_ZoneKeys() as $k) {
+    if (!array_key_exists($k, $GLOBALS)) $nulls[] = $k;
+  }
+  return $nulls;
+}
+function SimTrace_ZoneNorm($v) {
+  // The checkpoint block re-types some equipment fields ("0" -> 0)
+  // without changing content (probe evidence, round-3 response).
+  // Canonicalize numeric strings so the zone sensor measures
+  // content, not representation.
+  if (is_string($v) && is_numeric($v)) return $v + 0;
+  if (is_array($v)) {
+    $o = [];
+    foreach ($v as $kk => $vv) $o[$kk] = SimTrace_ZoneNorm($vv);
+    return $o;
+  }
+  return $v;
+}
 function SimTrace_ZoneHash() {
   $z = [];
-  foreach (["p1Hand","p2Hand","p1Deck","p2Deck","p1Arsenal","p2Arsenal",
-            "p1Character","p2Character","p1Items","p2Items","p1Allies",
-            "p2Allies","p1Banish","p2Banish","p1Graveyard","p2Graveyard",
-            "p1Pitch","p2Pitch","p1Life","p2Life","currentTurn",
-            "currentPlayer","mainPlayerActionPoints",
-            "defPlayerActionPoints","mainPlayerRemainingResources",
-            "defPlayerRemainingResources"] as $k) {
-    $z[$k] = $GLOBALS[$k] ?? null;
+  foreach (SimTrace_ZoneKeys() as $k) {
+    $z[$k] = SimTrace_ZoneNorm($GLOBALS[$k] ?? null);
   }
   return SimTrace_Hash($z);
 }

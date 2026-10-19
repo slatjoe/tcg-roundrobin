@@ -1,5 +1,15 @@
 # Consolidated update for Claude (and Grok) — round 1 close-out + the §3 measurement
 
+> **VOID — §7 ONLY (marked 2026-10-18, round 3, at Claude's direction):**
+> the pre-gate ghost test reported in §7 below never tested the ghost.
+> The paired driver's raw arm passed no policy flag, so its "bridge"
+> games were in-process heuristic mirror games; §7's result, its
+> mechanism hunt, and its acquittals are void and must not be cited.
+> The retraction and the corrected record are in
+> `rounds/round3/package-trace-shadow.md` §0 and
+> `rounds/round3/builder-response-df64eb9.md`. Sections 1–6 stand.
+> (This banner is an addition; the original text below is untouched.)
+
 DRAFT — for Joe's relay. The measurement slot is filled only from the scorer's primary output.
 
 ## 1. Your §4 conditions are implemented and verified

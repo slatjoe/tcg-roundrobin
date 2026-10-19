@@ -21,10 +21,14 @@ def row(seq, **kw):
 
 
 def trow(seq, **kw):
-    """Teacher-shaped row: feat_pre_hash stands in for state_hash."""
+    """Teacher-shaped row: feat_pre_hash stands in for state_hash.
+    Within-row pairs are EQUAL by default: no engine play happens
+    between PRE and POST (round-3 R2 fixture fix - the first draft
+    set zone_post = z(seq+1), encoding a change as normal)."""
     r = row(seq, state_hash=None, feat_pre_hash="s%d" % seq,
             feat_post_hash="s%d" % seq, zone_pre="z%d" % seq,
-            zone_post="z%d" % (seq + 1), rng_pre=1000 + seq,
+            zone_post="z%d" % seq, rng_pre=1000 + seq,
+            rng_post=1000 + seq,
             priors_pre=[0.9, 0.1], priors_post=[0.9, 0.1],
             rule="ghost_prior")
     r.update(kw)
@@ -54,7 +58,9 @@ def main():
     assert v["class"] == "IDENTICAL", v
 
     b = [trow(i) for i in range(5)]
-    b[2] = trow(2, feat_pre_hash="DIFFERENT")
+    # Internally consistent (pre == post) but different from arm A:
+    # WITHIN_ROW must NOT fire; this is a cross-arm STATE divergence.
+    b[2] = trow(2, feat_pre_hash="DIFFERENT", feat_post_hash="DIFFERENT")
     v = run(base, b)
     assert v["class"] == "STATE" and v["first_diff_seq"] == 2, v
 
@@ -69,15 +75,31 @@ def main():
     assert v["class"] == "DECISION" and v["first_diff_seq"] == 1, v
 
     b = [trow(i) for i in range(5)]
-    b[4] = trow(4, rng_pre=99999)
+    # Internally consistent (pre == post), different stream position
+    # than arm A: a cross-arm RNG divergence, not a within-row one.
+    b[4] = trow(4, rng_pre=99999, rng_post=99999)
     v = run(base, b)
     assert v["class"] == "RNG" and v["first_diff_seq"] == 4, v
 
     v = run(base, tbase[:3])
     assert v["class"] == "MISSING_ROW", v
 
-    print("test_classify: 6/6 fixtures pass "
-          "(IDENTICAL, STATE, CANDIDATES, DECISION, RNG, MISSING_ROW)")
+    for pair, kw in (("feat", {"feat_post_hash": "MUTATED"}),
+                     ("zone", {"zone_post": "MUTATED"}),
+                     ("rng", {"rng_post": 424242})):
+        b = [trow(i) for i in range(5)]
+        b[2] = trow(2, **kw)
+        v = run(base, b)
+        assert v["class"] == "WITHIN_ROW" and v["first_diff_seq"] == 2 \
+            and v["detail"]["pair"] == pair, v
+
+    b = [trow(i) for i in range(5)] + [trow(2)]
+    v = run(base, b)
+    assert v["class"] == "DUP_SEQ" and v["first_diff_seq"] == 2, v
+
+    print("test_classify: 10/10 fixtures pass "
+          "(IDENTICAL, STATE, CANDIDATES, DECISION, RNG, MISSING_ROW, "
+          "WITHIN_ROW x3, DUP_SEQ)")
 
 
 if __name__ == "__main__":

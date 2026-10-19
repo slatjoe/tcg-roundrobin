@@ -34,13 +34,35 @@ import sys
 
 def load(path):
     rows = []
+    seen = set()
+    dup = None
     with open(path) as f:
         for ln in f:
             ln = ln.strip()
             if ln:
-                rows.append(json.loads(ln))
+                r = json.loads(ln)
+                if r.get("seq") in seen and dup is None:
+                    dup = r.get("seq")
+                seen.add(r.get("seq"))
+                rows.append(r)
     rows.sort(key=lambda r: r.get("seq", 0))
-    return rows
+    return rows, dup
+
+
+WITHIN_PAIRS = [("feat", "feat_pre_hash", "feat_post_hash"),
+                ("zone", "zone_pre", "zone_post"),
+                ("rng", "rng_pre", "rng_post")]
+
+
+def within_row_diff(row):
+    """No engine play happens between a teacher row's PRE and POST
+    captures, so each pair must be equal. A difference convicts the
+    checkpoint block or SimTeacher_Decide directly (round-3 R2)."""
+    for name, pre, post in WITHIN_PAIRS:
+        if row.get(pre) is not None and row.get(post) is not None \
+                and row.get(pre) != row.get(post):
+            return name
+    return None
 
 
 def state_of(row):
@@ -52,17 +74,35 @@ def rng_of(row):
 
 
 def main():
-    a_rows = load(sys.argv[1])
-    b_rows = load(sys.argv[2])
+    a_rows, dup_a = load(sys.argv[1])
+    b_rows, dup_b = load(sys.argv[2])
     a = {r["seq"]: r for r in a_rows}
     b = {r["seq"]: r for r in b_rows}
     verdict = {"class": "IDENTICAL", "rows_a": len(a_rows),
                "rows_b": len(b_rows), "first_diff_seq": None}
+    if dup_a is not None or dup_b is not None:
+        # A seq written twice (e.g. RootDecide logs a teacher row for
+        # an eval-fallback null, then Choose falls through and logs a
+        # bridge_pick row with the same seq) must fail loudly, not be
+        # silently collapsed by the dict (round-3 R4).
+        verdict.update({"class": "DUP_SEQ",
+                        "first_diff_seq": dup_a if dup_a is not None else dup_b,
+                        "detail": "duplicate seq in arm A" if dup_a is not None
+                                  else "duplicate seq in arm B"})
+        print(json.dumps(verdict))
+        return
     for seq in sorted(set(a) | set(b)):
         ra, rb = a.get(seq), b.get(seq)
         if ra is None or rb is None:
             verdict.update({"class": "MISSING_ROW", "first_diff_seq": seq,
                             "detail": "row present in one arm only"})
+            break
+        wr = within_row_diff(rb) or within_row_diff(ra)
+        if wr is not None:
+            verdict.update({"class": "WITHIN_ROW", "first_diff_seq": seq,
+                            "branch": rb.get("branch"),
+                            "detail": {"pair": wr,
+                                       "rule": rb.get("rule")}})
             break
         if state_of(ra) != state_of(rb):
             verdict.update({"class": "STATE", "first_diff_seq": seq,

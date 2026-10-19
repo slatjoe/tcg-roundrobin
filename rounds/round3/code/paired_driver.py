@@ -139,7 +139,8 @@ def main():
         else:
             row.update({k: result.get(k) for k in
                         ("winner", "draw", "capped", "cap_reason",
-                         "turns", "gamename", "firstPlayer", "stuck")})
+                         "turns", "gamename", "firstPlayer", "stuck",
+                         "steps", "p1life", "p2life")})
             gdir = os.path.join(a.tree, "vendor", "talishar", "Games",
                                 str(result.get("gamename", "")))
             glog = os.path.join(gdir, "gamelog.txt")
@@ -149,6 +150,10 @@ def main():
                 row["gamelog_bytes"] = len(data)
             else:
                 row["gamelog_sha"] = None
+            gs = os.path.join(gdir, "gamestate.txt")
+            row["gamestate_sha"] = (
+                hashlib.sha256(open(gs, "rb").read()).hexdigest()[:16]
+                if os.path.exists(gs) else None)
         fout.write(json.dumps(row) + "\n")
         fout.flush()
         print("seed %d %s winner=%s cf=%d %.0fs" % (
