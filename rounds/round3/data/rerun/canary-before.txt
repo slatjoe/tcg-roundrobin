@@ -1,0 +1,7 @@
+BEFORE (launch build, ghost seat 1, 19 games): stat_rows=1448 teacher_rows=1437 canary=11 root_calls=1448 refusal_rate=0.760% contested_rows=587
+  branch A: canary 1 / root calls 122 = 0.82%
+  branch ARS: canary 4 / root calls 24 = 16.67%
+  branch B: canary 2 / root calls 405 = 0.49%
+  branch D: canary 0 / root calls 41 = 0.00%
+  branch M: canary 4 / root calls 677 = 0.59%
+  branch P: canary 0 / root calls 179 = 0.00%

@@ -1,0 +1,130 @@
+ROUND-3 RERUN BUILD TESTS (all outputs read from primary files on the
+box after the runs; assertion values recomputed with the final
+paired_driver.arm_assertions over each arm's own logdir, so every
+number below comes from the code version in this package)
+
+================================================================
+R12 NEGATIVE CONTROL - raw arm, seat 2, seed 3, pointed at the
+seat-1 server only (patched server + patched bridge + new driver)
+================================================================
+Driver ping before the arm:
+  server identity: {'learner_seat': 1, 'model':
+  '/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt'}
+  (arm seat 2)
+Driver row (complete):
+  {"seed": 3, "arm": "raw", "seat": 2, "server_seat": 1,
+   "seat_mismatch_errors": 336, "mode_line": "policy: server
+   (v1-equivalent via /tmp/test_s1.sock)", "connect_failed": 0,
+   "secs": 1.1, "invalid": "seat_mismatch", "gamename": "390511884"}
+  -> invalid, NO winner/outcome fields recorded.
+Server log (/tmp/test_server_s1.log): 336 SEAT_MISMATCH lines, e.g.
+  search_server: SEAT_MISMATCH request_seat=2 server_seat=1 count=1
+  search_server: SEAT_MISMATCH request_seat=2 server_seat=1 count=2
+PASS: the first bridge request was rejected; the failure is loud in
+the server log, the game log (counted by the driver), and the row.
+
+================================================================
+R12/R13 POSITIVE SMOKES - seed 3, new tree (/tmp/reruntree),
+per-seat servers started from the tree's patched rl/search_server.py
+================================================================
+raw seat 1 (seed 19 game, same driver/tree): assert_ok=True
+  {"stat_rows_zero": true, "teacher_trace_rows_zero": true}
+  (that game's row completed normally: winner=2, 2.8s; see the
+  timeout section for why seed 19 raw was run at all.)
+ghost seat 2 (seat-2 server): assert_ok=True
+  row: server_seat=2, seat_mismatch_errors=0, winner=2, 137.9s
+  {"pick_eq_prior_all_teacher": true,
+   "ghost_flag_on_all_rollouts": true, "rollouts_present": true,
+   "trace_rules_all_ghost_prior": true,
+   "trace_teacher_pick_is_prior_argmax": true}
+shadow seat 1: assert_ok=True (94 teacher trace rows)
+  {"shadow_teacher_rows_present": true,
+   "shadow_rules_all_shadow_bridge": true,
+   "shadow_fallback_decide_zero": true}
+capture seat 1: assert_ok=True
+  {"capture_rows_present": true, "capture_pick_eq_prior": true,
+   "capture_no_rollout_fields": true, "no_rollouts_anywhere": true,
+   "pick_eq_prior_all_teacher": true,
+   "trace_teacher_pick_is_prior_argmax": true}
+  (34 capture rows, 0 rollout rows; game time 8s - snapshots only.
+  The launch's accidental full-teacher capture took ~190s/game.)
+ghost seat 1: covered at 19-game scale by the R14 set below (its
+  logdir assertions are recomputed with the same final code).
+
+================================================================
+R13 NEGATIVE CONTROL - capture arm on a tree built WITHOUT
+patch_teacher_capture.py (grep -c TEACHER_CAPTURE on its
+search.php = 0), seed 3
+================================================================
+Manifest (/tmp/negcap2_capture_s1.jsonl.manifest.json), assert_ok:
+FALSE
+  {"capture_rows_present": false, "capture_pick_eq_prior": true,
+   "capture_no_rollout_fields": true, "no_rollouts_anywhere": false,
+   "pick_eq_prior_all_teacher": false,
+   "trace_teacher_pick_is_prior_argmax": false}
+  (the two "true" checks are vacuous over the empty capture set;
+  the other four convict independently.)
+Anatomy: 84 stat rows, 80 teacher rows, 0 capture rows, 32 rollout
+rows. The game played as a full teacher game: winner=1, 17 turns,
+287.5s (the correct capture build: 8s, snapshots only).
+PASS: a capture arm built without the hook fails the assertion end
+to end, in the manifest the pairing step reads.
+
+================================================================
+R16 FORCED-TIMEOUT TEST - ghost arm, seed 19, --timeout 60,
+new tree
+================================================================
+Driver row (complete, from /tmp/timeout_g19.jsonl):
+  {"seed": 19, "arm": "ghost", "seat": 1, "server_seat": 1,
+   "seat_mismatch_errors": 0, "invalid": "timeout",
+   "timeout_new_games": [66 game ids], "timeout_cache_cleaned":
+   [the same 66 ids]}
+66 new Games dirs appeared during the 60s window (the game's own
+dir plus the rollout-child dirs Decide spawned - the segment
+leakers); cleanup_cache.php ran DeleteCache on 66/66, exit 0.
+Driver stdout line:
+  seed 19 ghost TIMEOUT new_games=[...66 ids...] cleaned=[...66...]
+
+================================================================
+GHOST SEAT 1 AT SCALE - the R14 after-set (19 games, rerun tree)
+================================================================
+Fleet manifest assertions recomputed with the final code over
+/tmp/r14_ghost_s1_log: assert_ok=True
+  {"pick_eq_prior_all_teacher": true,
+   "ghost_flag_on_all_rollouts": true, "rollouts_present": true,
+   "trace_rules_all_ghost_prior": true,
+   "trace_teacher_pick_is_prior_argmax": true}
+  teacher rows 1441, rollout rows 590, trace pick==prior argmax
+  1441/1441.
+Games identical to the launch's ghost seat-1 games (winner, turns,
+decisions): 19/19 - the moved canary and the seat stamping changed
+no played game.
+
+================================================================
+R14 CANARY BEFORE/AFTER - ghost seat 1, seeds 1-18,20
+(count_canary.py; denominator = root calls = teacher rows +
+canary rows; full outputs in canary-before.txt / canary-after.txt)
+================================================================
+BEFORE (launch build): 11 / 1448 = 0.760%
+  ARS 4/24 = 16.67% | A 1/122 = 0.82% | M 4/677 = 0.59%
+  B 2/405 = 0.49% | D 0/41 | P 0/179
+AFTER (rerun build):    7 / 1448 = 0.483%
+  ARS 0/24 = 0.00% | A 1/122 = 0.82% | M 4/677 = 0.59%
+  B 2/405 = 0.49% | D 0/41 | P 0/179
+The ONLY delta is the ARS class: 4 -> 0. Every non-ARS branch is
+count-identical, so those refusals are a pre-existing background
+of the canary's strict accounting, not the sync artifact, and the
+fix does not claim them. Teacher rows 1437 -> 1441: exactly the 4
+formerly-refused ARS decisions now run the machinery. Under the
+amended rule the after-set is within caps (arm 0.483% <= 2%;
+max branch 0.82% <= 5%).
+
+================================================================
+STANDING RAW CONTROL on the launch's own rows (control on the
+control) - r3_pair.py --raw-control r3_raw_s1.jsonl r3_raw_s2.jsonl
+================================================================
+raw-control: 0/19 seeds differ (fields: winner, turns, decisions,
+p1life, p2life, gamestate_norm_sha, gamelog_sha)
+differing seeds: []
+RAW-CONTROL: FAIL - raw arms at different seats produced identical
+games (seat-blind server)
