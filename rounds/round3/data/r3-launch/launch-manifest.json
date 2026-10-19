@@ -1,0 +1,23 @@
+{
+  "launch": "run_r3.sh (round-3 pre-gate: raw/ghost seats 1+2, shadow/capture seat 1, seeds 1-18,20)",
+  "approved_sha": "107ea5d35b86e80f384e5ef41a098681dc64ef30",
+  "authorized_by": "Joe Slattery, in-chat, 2026-10-18 22:05 EDT ('Launch run_r3.sh now')",
+  "tree": "/tmp/tracetree (fresh gate-tree copy + patch_trace_shadow.py + patch_child_sigkill.py + deployed scripts, php -l clean)",
+  "build_file_sha256": {
+    "patch_trace_shadow.py": "bb4b9416b35a58fda0d3a1fc3c94559e53ccc23da91b36661b3bcf938c88c2d9",
+    "patch_child_sigkill.py": "c101ab32b41d6bb8a48abf2863ba9362e1f53bb7a501c55154b669f93853d050",
+    "paired_driver.py": "1541ca0da5ecadb2e56563196506e6a208c42558fcbacc523a493ef36db75015",
+    "classify_divergence.py": "1518427bd4904a581fd2158b702b0e58e902b2cf1c64371f40da51c6fc7b0533",
+    "r3_pair.py": "6b92007f99dae1307e0cd668f1e3e6d6ffda7bf260f73fe2d27ee3ddd88a2951",
+    "run_r3.sh": "c39670b3bdb56dfc731e23158e4802999f7e9e0c49c26168bbea625c12409cc6"
+  },
+  "patched_file_sha256": {
+    "search.php": "6486e0d2e297836ef282e29bce9e0cb4f6655d23d8c9d1abb76c920c6d542ff5",
+    "policy_server.php": "9f3236f0d9f8e891e7a07c86e4ea93bc904a3d2e28ac23d6cfe0083ba5c5a353"
+  },
+  "weights_sha256": "0400539dda891c34e3573b83de3aa299af42c072f949db49ce4d67d5d0e9c82c (ckpt_v15.pt)",
+  "server": "pid 2435384, rl/search_server.py, ckpts=v15, --temperature 0, listening on /tmp/tcg_policy.sock (the socket run_r3.sh uses); served all of today's verified pairs",
+  "server_census_before": "1 search server (the launch's); ~24 stale rollout_server.py orphans from earlier fleets, untouched, not used by this run",
+  "ipcs_segments_before": 2360,
+  "started": "2026-10-18 ~22:08 EDT"
+}

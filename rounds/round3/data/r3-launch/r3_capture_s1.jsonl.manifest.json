@@ -1,0 +1,9 @@
+{
+ "arm": "capture",
+ "tree": "/tmp/tracetree",
+ "seat": 1,
+ "seeds": "1-18,20",
+ "search_stats_rows": 1311,
+ "trace_files": 19,
+ "assert_no_search_rows": null
+}
