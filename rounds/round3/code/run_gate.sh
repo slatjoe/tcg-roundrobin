@@ -21,7 +21,11 @@
 #
 # Fleet timeout 700s per game (timeout ruling 4: 3x the p99 of the
 # rerun's 38 ghost game times - p99 233.1s nearest-rank -> 699.3s,
-# registered as 700s; see the gate package). Raw-arm wall timeouts
+# registered as 700s; see the gate package). The pre-launch
+# concurrency probe (4 teacher games at once, seeds 3003-3006)
+# measured a slowest game of 295.3s under fleet-like contention, so
+# the launch runs with GATE_TIMEOUT=886 (3x 295.3, probe-set; see
+# builder-response-8d13b0f.md). Raw-arm wall timeouts
 # get ONE re-run via gate_raw_retry.py (ruling 3); teacher
 # timeouts stand and are scored by the analysis (ruling 2).
 #
@@ -108,11 +112,21 @@ chunk_worker() {
     >> $OUT/gate_ipcs_${chunk}.txt
 }
 
-chunk_worker c1 1001-1050 &
-chunk_worker c2 1051-1100 &
-chunk_worker c3 1101-1150 &
-chunk_worker c4 1151-1200 &
-wait
+CHUNK_PIDS=""
+chunk_worker c1 1001-1050 & CHUNK_PIDS="$CHUNK_PIDS $!"
+chunk_worker c2 1051-1100 & CHUNK_PIDS="$CHUNK_PIDS $!"
+chunk_worker c3 1101-1150 & CHUNK_PIDS="$CHUNK_PIDS $!"
+chunk_worker c4 1151-1200 & CHUNK_PIDS="$CHUNK_PIDS $!"
+# Wait on the chunk workers ONLY. A bare `wait` here would also wait
+# on the two server processes (background children of this shell that
+# never exit on their own), hanging the script forever after the
+# chunks finish - found by the pre-launch concurrency probe.
+wait $CHUNK_PIDS
+
+# Reap the per-seat servers explicitly now that the chunks are done,
+# before the closing bookkeeping (the EXIT trap stays as a backstop).
+for pid in $SRV_PIDS; do kill $pid 2>/dev/null; done
+wait $SRV_PIDS 2>/dev/null
 
 cat $OUT/gate_ipcs_c1.txt $OUT/gate_ipcs_c2.txt \
     $OUT/gate_ipcs_c3.txt $OUT/gate_ipcs_c4.txt > $OUT/gate_ipcs.txt
