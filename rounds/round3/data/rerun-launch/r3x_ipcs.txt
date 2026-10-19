@@ -1,0 +1,14 @@
+ipcs before run: 2911
+before raw_s1: 2911
+after raw_s1: 2930
+before ghost_s1: 2930
+after ghost_s1: 3024
+before raw_s2: 3024
+after raw_s2: 3043
+before ghost_s2: 3043
+after ghost_s2: 3112
+before shadow_s1: 3112
+after shadow_s1: 3206
+before capture_s1: 3206
+after capture_s1: 3225
+ipcs after run: 3225

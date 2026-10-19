@@ -1,0 +1,32 @@
+ROUND-3 RERUN - LAUNCH MANIFEST (draft at launch; AFTER readings appended at completion)
+Launch: 2026-10-19 ~09:45 EDT (box clock 09:45:30 at pre-launch check)
+Command: cd /tmp/reruntree && bash run_r3_rerun.sh (detached, setsid; pid 3542711 at start)
+Approved package sha (repo git HEAD the patches came from): a6e9a6352f05f89e208d7eef9df2c198cf2a1ecb
+Launch conditions per Claude's reply to a6e9a63.
+
+CONDITION 1 - built files on /tmp/reruntree (verified at staging AND launch):
+  search.php            sha256 6cd6f9802bde5f40631131d2f98af110978a761f9dacf423622f92d7ca55067a
+  policy_server.php     sha256 64c215392ddcac0dc92ce1e4a3c455969d87423e23d71be57991247ce53827b3
+  rl/search_server.py   sha256 ab85fa1bcf19b41c7d48db642a2fd93d211e826b9f684594cefa5a1100f3c52c
+
+CONDITION 2 - production server /home/joe/tcg/tcg-sim/rl/search_server.py:
+  BEFORE sha256: 81ef2cdbefe687cabc97cd7b5f738b2027fc8a1e47c2b0dc72ff787ad85a82d4
+  AFTER  sha256: 81ef2cdbefe687cabc97cd7b5f738b2027fc8a1e47c2b0dc72ff787ad85a82d4
+  (read at completion 2026-10-19 ~13:10 EDT and re-read independently; EQUALS the BEFORE value - condition 2 satisfied, run not void.)
+
+Weights: ckpt_v15.pt sha256 0400539dda891c34e3573b83de3aa299af42c072f949db49ce4d67d5d0e9c82c
+
+Server startup lines (verbatim):
+  seat 1: search_server: search model loaded (/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt) on cuda
+  seat 1: search_server: listening on /tmp/r3_s1.sock (learner seat 1, opp heuristic)
+  seat 2: search_server: search model loaded (/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt) on cuda
+  seat 2: search_server: listening on /tmp/r3_s2.sock (learner seat 2, opp heuristic)
+
+ipcs -m | wc -l before run: 2911 (per-arm readings in /tmp/r3x_ipcs.txt)
+First row check: r3x_raw_s1.jsonl seed 1 - server_seat 1 == arm seat 1, seat_mismatch_errors 0, connect_failed 0, winner recorded.
+
+COMPLETION (2026-10-19 ~12:55 EDT): all six arm files at 19 rows; run process exited.
+Server final counter lines (verbatim):
+  seat 1: search_server: evals=6603777 batches=590000 normal=20466 fallbacks=0 seat_mismatch=0 up=7784s
+  seat 2: search_server: evals=3148595 batches=273000 normal=12401 fallbacks=0 seat_mismatch=0 up=5155s
+ipcs -m | wc -l after run: 3225 (per-arm ledger in r3x_ipcs.txt: 2911 before -> +19 per raw arm, +94/+69 ghost arms, +94 shadow, +19 capture -> 3225 after; growth reported per R16, not cleaned by this run except the timeout path's own kills).

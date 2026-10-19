@@ -1,0 +1,36 @@
+{
+ "arm": "ghost",
+ "tree": "/tmp/reruntree",
+ "seat": 2,
+ "seeds": "1-18,20",
+ "search_stats_rows": 1322,
+ "trace_files": 19,
+ "server": {
+  "learner_seat": 2,
+  "model": "/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt"
+ },
+ "assertions": {
+  "stat_rows": 1322,
+  "teacher_rows": 1297,
+  "contested_rows": 528,
+  "rollout_rows": 528,
+  "trace_rules": {
+   "dq_pick": 4252,
+   "bridge_pick": 1481,
+   "ghost_prior": 1297,
+   "pass_gate": 4752
+  },
+  "teacher_trace_rows": 1297,
+  "teacher_trace_rows_with_priors": 1297,
+  "teacher_trace_pick_argmax_agree": 1297
+ },
+ "checks": {
+  "pick_eq_prior_all_teacher": true,
+  "ghost_flag_on_all_rollouts": true,
+  "rollouts_present": true,
+  "trace_rules_all_ghost_prior": true,
+  "trace_teacher_pick_is_prior_argmax": true
+ },
+ "assert_ok": true,
+ "assert_no_search_rows": null
+}
