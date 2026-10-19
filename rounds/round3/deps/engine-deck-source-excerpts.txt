@@ -1,0 +1,69 @@
+Engine deck-source excerpts (R17 evidence, requested in Claude's
+reply to fc8faef: "policy_v1.php (SimV1_DeckCards) is cited by line
+but not in the repo. Commit the excerpt with R17.")
+
+Pulled verbatim 2026-10-19 from the R17 test tree on the sim box
+(/tmp/reruntree2, built from the gate tree; these are unpatched
+engine files - no round-3 patch touches policy_v1.php or
+featurize.php).
+
+Source files on the box:
+  /tmp/reruntree2/policy_v1.php
+    sha256 8b71f7eedb2084826fe169ffaa6fd8f855a6324959f53d5577bc0519449c3803
+  /tmp/reruntree2/featurize.php
+    sha256 f81193e0b8a284c4b13a63fd36956ab29614776dd9bdd1c6462537b87a5f0b92
+
+----------------------------------------------------------------
+policy_v1.php, lines 43-49 - SimV1_DeckCards reads the STORE
+globals $p1Deck / $p2Deck directly:
+
+// ---------------- deck tracking (OWN deck only — fair play) ----------------
+function SimV1_DeckCards($player) {
+  global $p1Deck, $p2Deck;
+  $d = ($player == 1) ? $p1Deck : $p2Deck;
+  return is_array($d) ? $d : [];
+}
+
+----------------------------------------------------------------
+featurize.php, line 97 - the decision state's deck_counts come
+from SimV1_DeckCards (the store), inside SimFeat_BuildState:
+
+    "deck_counts" => SimFeat_Counts(SimV1_DeckCards($player)),
+
+(context, lines 90-98:)
+    "action_points" => intval($GLOBALS["actionPoints"] ?? 0),
+    "life" => [intval(GetHealth(1)), intval(GetHealth(2))],
+    "resources" => max(0, intval($res[0] ?? 0)),
+    "hand" => array_slice($padded, 0, $intellect),
+    "hand_size" => count($handIDs),
+    "intellect" => $intellect,
+    "arsenal" => $arsenalIDs,
+    "deck_counts" => SimFeat_Counts(SimV1_DeckCards($player)),
+    "board" => [1 => SimFeat_BoardSide(1), 2 => SimFeat_BoardSide(2)],
+
+----------------------------------------------------------------
+featurize.php, line 148 - the legal-counts merge also reads the
+deck through SimV1_DeckCards, inside SimFeat_LegalCounts:
+
+  SimFeat_MergeCounts($legal, SimFeat_Counts(SimV1_DeckCards($player)));
+
+(context, lines 143-149:)
+function SimFeat_LegalCounts($player) {
+  $player = intval($player);
+  $legal = [];
+  $hand = &GetHand($player);
+  SimFeat_MergeCounts($legal, SimFeat_Counts(SimFeat_ZoneIDs($hand, HandPieces())));
+  SimFeat_MergeCounts($legal, SimFeat_Counts(SimV1_DeckCards($player)));
+  SimFeat_MergeCounts($legal, SimFeat_Counts(SimFeat_ZoneIDs(GetArsenal($player), ArsenalPieces())));
+
+----------------------------------------------------------------
+Why this matters (the R17 mechanism): every other zone in the
+featurization is read through the getter VIEWS (GetHand, GetDeck,
+...), which the engine settles as it plays; the deck slice alone
+comes from the lagging STORE. Between Choose's featurization and
+the checkpoint sync (DoGamestateUpdate: store := view), a settling
+pitch therefore changes the deck slice - and only that slice -
+which is exactly the feat_pre != feat_post shape localized in the
+fc8faef package (ARS, seed 7). R17 makes the teacher's root
+evaluation use the bridge's own (pre-sync) featurization, which
+is the input the deployed bridge player actually decides on.

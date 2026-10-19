@@ -1,0 +1,91 @@
+R17 pass test 1 - ghost seat 2, seed 7, reproduced on the R17
+tree (/tmp/reruntree2; build order and hashes in
+builder-response-fc8faef.md section 5), with the rerun build's
+per-seat server setup: a dedicated patched server whose own
+learner seat is 2 (driver row records server_seat 2,
+seat_mismatch_errors 0). Run 2026-10-19.
+
+Games:
+  raw   seed 7 seat 2: game 196311413, winner 1, 9 turns, 2.2 s,
+        483 decisions, gamelog_sha 6ad1edc104fd6192 (75,918
+        bytes), gamestate_norm_sha f1ac8f3296125656.
+  ghost seed 7 seat 2: game 881656265, winner 1, 9 turns, 89.1 s,
+        483 decisions, gamelog_sha 6ad1edc104fd6192 (75,918
+        bytes), gamestate_norm_sha f1ac8f3296125656,
+        assert_ok TRUE (49 teacher trace rows; pick == PRE-prior
+        argmax on 49/49).
+  The two games are outcome- and gamelog-identical.
+
+WHICH SEQ: in the VOID launch's ghost seat-2 game the
+sync-straddling ARS decision was seq 167. That game's seat-2
+decision stream was v1's (the seat defect), so its seq numbering
+does not carry over. In this corrected per-seat game the same
+settled-pitch ARS decision - the game's only sync-straddling
+teacher row - is seq 186. Seq 167 in THIS run is a DQ row,
+identical in both arms (shown first); the R17 checks are on the
+seq-186 row (shown second).
+
+----------------------------------------------------------------
+seq 167, this run (DQ, both arms identical):
+
+ghost trace row:
+{"seq": 167, "turn": 2, "branch": "DQ", "player": 1,
+ "state_hash": "aaad68905f55e68b", "cand_hash": "58f53492529ffbb6",
+ "ncand": 1, "chosen": 0, "rule": "dq_pick", "rng": 752911095,
+ "game": "881656265"}
+raw bridge row:
+{"seq": 167, "turn": 2, "branch": "DQ", "player": 1,
+ "state_hash": "aaad68905f55e68b", "cand_hash": "58f53492529ffbb6",
+ "ncand": 1, "chosen": 0, "rule": "dq_pick", "rng": 752911095,
+ "game": "196311413"}
+
+----------------------------------------------------------------
+seq 186 - THE SYNC-STRADDLING ARS ROW. The three hashes:
+
+  feat_pre_hash  = 5c691d959081aec5   (the passed bridge state)
+  feat_post_hash = 5c691d959081aec5   (Decide's root eval state)
+  feat_sync_hash = 6ae81b29a6115b70   (post-sync featurization)
+
+  (a) feat_pre_hash == the bridge's state_hash for the decision:
+      the raw game's bridge_pick row at seq 186 records
+      state_hash 5c691d959081aec5 - identical.
+  (b) feat_sync_hash DIFFERS (6ae81b29a6115b70): the settled
+      pitch - the diagnostic sees the sync move exactly where
+      the launch's within-row hit was.
+  (c) feat_pre_hash == feat_post_hash: the within-row feat pair
+      is equal, by construction under R17.
+
+ghost trace row, seq 186 (verbatim):
+{"seq": 186, "turn": 3, "branch": "ARS", "player": 2,
+ "feat_pre_hash": "5c691d959081aec5",
+ "priors_pre": [0.9998065829277039, 0.00019341998267918825],
+ "zone_pre": "2fa0dfd4e41099b8",
+ "zone_store_pre": "95ed906c0b210336",
+ "rng_pre": 752911095,
+ "cand_hash": "b68be3a8417ebcff", "ncand": 2,
+ "feat_sync_hash": "6ae81b29a6115b70",
+ "feat_post_hash": "5c691d959081aec5",
+ "priors_post": [0.9998065829277039, 0.00019341998267918825],
+ "zone_post": "2fa0dfd4e41099b8",
+ "zone_store_post": "d6355826d1ab2341",
+ "rng_post": 752911095,
+ "decide_pick": 0, "chosen": 0, "rule": "ghost_prior",
+ "game": "881656265"}
+
+raw bridge row, seq 186 (verbatim):
+{"seq": 186, "turn": 3, "branch": "ARS", "player": 2,
+ "state_hash": "5c691d959081aec5",
+ "cand_hash": "b68be3a8417ebcff", "ncand": 2, "chosen": 0,
+ "rule": "bridge_pick", "rng": 752911095, "game": "196311413"}
+
+Notes on the row: priors_pre == priors_post to full printed
+precision, and their argmax (0) is decide_pick and chosen.
+zone_pre == zone_post (the played view never moved); only the
+diagnostic store hash moved (95ed906c0b210336 ->
+d6355826d1ab2341) as the checkpoint settled the pitch into the
+store - the R15 mechanism, now on the diagnostic channel only.
+
+Whole-game census of this ghost trace (49 teacher rows):
+  feat_pre != feat_post:            0 rows
+  feat_sync != feat_pre:            1 row  (seq 186, ARS)
+  teacher rows missing feat_sync_hash: 0

@@ -1,0 +1,61 @@
+R18 - seed-19 diagnostic (Claude's ruling in the fc8faef reply),
+run 2026-10-19 on the R17 tree (/tmp/reruntree2: gate tree +
+patch_trace_shadow + patch_child_sigkill + patch_teacher_capture
++ patch_canary_sync + patch_seat_routing +
+patch_teacher_bridge_state; built search.php sha256
+6cd6f9802bde..., policy_server.php 64c215392ddc...).
+
+Setup: paired_driver.py, seat 1, NORMAL driver timeout (1200 s),
+per-seat server from the tree's rl/ (patched server, sha256
+ab85fa1b...), server identity pinged before the arm:
+{'learner_seat': 1, 'model': '.../ckpt_v15.pt'} (arm seat 1).
+Reported APART from the 19-seed pairings, as registered.
+
+----------------------------------------------------------------
+RAW, seed 19, seat 1 - COMPLETED in 2.2 s.
+
+Driver line: seed 19 raw winner=2 cf=0 2s
+Row: {"seed": 19, "arm": "raw", "seat": 1, "server_seat": 1,
+"seat_mismatch_errors": 0, "mode_line": "policy: server
+(v1-equivalent via /tmp/r17_s1.sock)", "connect_failed": 0,
+"secs": 2.2, "winner": 2, "draw": false, "capped": false,
+"cap_reason": null, "turns": 9, "gamename": "731440667",
+"firstPlayer": 1, "stuck": false, "p1life": -1, "p2life": 8,
+"decisions": 454, "gamelog_sha": "8dc1ce5e9be0acc2",
+"gamelog_bytes": 73731, "gamestate_sha": "d030b97bb938522e",
+"gamestate_norm_sha": "27fc42ad12094468"}
+Manifest: assert_ok TRUE (stat_rows 0, teacher_trace_rows 0;
+checks stat_rows_zero TRUE, teacher_trace_rows_zero TRUE).
+
+----------------------------------------------------------------
+GHOST, seed 19, seat 1 - COMPLETED in 93.6 s. NO TIMEOUT.
+
+Driver line: seed 19 ghost winner=2 cf=0 94s
+Row: {"seed": 19, "arm": "ghost", "seat": 1, "server_seat": 1,
+"seat_mismatch_errors": 0, "mode_line": "policy: search (seat 1
+via /tmp/r17_s1.sock)", "connect_failed": 0, "secs": 93.6,
+"winner": 2, "draw": false, "capped": false, "cap_reason": null,
+"turns": 9, "gamename": "591691491", "firstPlayer": 1,
+"stuck": false, "p1life": -1, "p2life": 8, "decisions": 454,
+"gamelog_sha": "8dc1ce5e9be0acc2", "gamelog_bytes": 73731,
+"gamestate_sha": "674b72d3b06ec5b0",
+"gamestate_norm_sha": "27fc42ad12094468"}
+Manifest: assert_ok TRUE - 44 stat rows, all 44 teacher;
+44 teacher trace rows, 44 with priors, pick == PRE-prior argmax
+on 44/44 (checks: pick_eq_prior_all_teacher TRUE,
+ghost_flag_on_all_rollouts TRUE, rollouts_present TRUE,
+trace_rules_all_ghost_prior TRUE,
+trace_teacher_pick_is_prior_argmax TRUE).
+
+The ghost game is action-identical to the raw game: same winner
+(2), turns (9), lives (-1 / 8), decisions (454), byte-identical
+gamelog (sha 8dc1ce5e9be0acc2, 73,731 bytes in both), identical
+gamestate_norm_sha (27fc42ad12094468).
+
+----------------------------------------------------------------
+RULING CHECK: Claude's R18 condition for FAIL-localized was
+"raw completes and ghost does not [complete at 1200 s]". That
+condition does NOT occur: the ghost completes in 93.6 s, well
+inside the timeout, with all assertions true. The seed-19 hang
+of the old arms does not reproduce under the correct raw/ghost
+arms on the R17 tree.

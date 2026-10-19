@@ -1,0 +1,173 @@
+R19.1 - seat-audit evidence (companion to builder-response-fc8faef.md)
+
+For EACH eval in the fc8faef response's section-1 table: the ACTUAL
+server-log line or games_meta line that records the server's own
+learner seat, quoted verbatim, with its file path on the sim box.
+Read directly from the box 2026-10-19. Every eval in the table has
+a surviving record; none is missing, and no line from a different
+eval is substituted anywhere below.
+
+================================================================
+THE MECHANISM (rl/eval.py) - what ties the seat
+
+File: /home/joe/tcg/tcg-sim/rl/eval.py
+
+eval.py does not ping the server for its seat (the ping endpoint is
+new in fc8faef). The tie is made at spawn time, and the attribution
+is read back from the server's own per-game records:
+
+  rl/eval.py:153
+    learner_seat = {"a": "1", "b": "2"}.get(args.learner_deck)
+
+  rl/eval.py:165-166 (env is the environment the server process is
+  spawned with at rl/eval.py:169-170)
+    if learner_seat is not None:
+        env["TCG_LEARNER_SEAT"] = learner_seat
+
+  rl/eval.py:187-188 (the PHP child's environment, --policy search)
+    if learner_seat is not None:
+        php_env["TCG_LEARNER_SEAT"] = learner_seat
+
+So for the search_server lineage, the server's LEARNER_SEAT
+constant and the PHP TCG_LEARNER_SEAT both come from the same
+--learner-deck flag value, set by the same code, on the two
+processes eval.py itself spawns.
+
+For seat attribution after the run, eval.py reads the seat back
+from the server's own records - it does not trust its flag:
+
+  rl/eval.py:232-235
+    # Seat attribution: prefer games_meta.jsonl (one line per game
+    # at game start: {"game", "learner_seat", "opp", "ts"}), fall
+    # back to scanning traj lines (each learner decision carries
+    # game + learner_seat).
+
+  rl/eval.py:239-242
+    if ("game" in r and "learner_seat" in r
+            and str(r["game"]) not in seats):
+        seats[str(r["game"])] = int(r["learner_seat"])
+
+  rl/eval.py:246-253 reads traj/games_meta.jsonl line by line into
+  that map; rl/eval.py:273-278 then counts a win only where the
+  game's winner equals the RECORDED seat:
+    for g, s in seats.items():
+        if winners.get(g) == s:
+            wins += 1
+
+For the rollout_server lineage (--policy net), the server assigns
+each game's learner seat itself, stores it in that game's record,
+routes the game's decisions by the stored record, and writes the
+same record to games_meta.jsonl - a seat swap cannot be produced
+by a launcher flag, because there is no second seat variable.
+
+================================================================
+1. v15 vs heuristic, 400 games (the 0.505)
+
+Server line (both chunks), /tmp/dg_v15_b/server.log line 2 (same
+line in /tmp/dg_v15_a/server.log):
+  rollout_server: learner -> RL v15 (/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt)
+
+Per-game seat records:
+  /tmp/dg_v15_a/traj/games_meta.jsonl, first line:
+  {"game": "333375347", "learner_seat": 1, "opp": "heuristic", "ts": 1792212004.456224}
+  /tmp/dg_v15_b/traj/games_meta.jsonl, first line:
+  {"game": "668415062", "learner_seat": 2, "opp": "heuristic", "ts": 1792212684.4059646}
+
+(The seat-1 chunk ran entirely at seat 1 and the seat-2 chunk
+entirely at seat 2 - seat counts {1: 200} and {2: 200} over the
+two files, counted in the fc8faef audit.)
+
+================================================================
+2. BC3 regate evals (0.450 vs heuristic; 0.530 vs BC2)
+
+Server line (all four workdirs), e.g.
+regate_bc3_heu_a/server.log:
+  rollout_server: learner -> RL vNone (/home/joe/tcg/tcg-sim/bc3_out/bc3_policy.pt)
+
+Per-game seat records (first line of each traj/games_meta.jsonl;
+paths under /home/joe/tcg/tcg-sim/rl_out/):
+  regate_bc3_heu_a: {"game": "150162666", "learner_seat": 1, "opp": "heuristic", "ts": 1792196753.7735608}
+  regate_bc3_heu_b: {"game": "348873521", "learner_seat": 2, "opp": "heuristic", "ts": 1792197534.3976707}
+  regate_bc3_bc2_a: {"game": "111643916", "learner_seat": 1, "opp": "bc", "ts": 1792198315.0571973}
+  regate_bc3_bc2_b: {"game": "198342198", "learner_seat": 2, "opp": "bc", "ts": 1792198620.8188496}
+
+================================================================
+3. Model round-robin (league; v15 vs BC3 0.585, vs BC2 0.490,
+   pool 0.518)
+
+Per-game seat records (first line of each traj/games_meta.jsonl;
+paths under
+/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3_20261016/league/evals/):
+  bc3_vs_ppo3b_v15_a: {"game": "192677147", "learner_seat": 1, "opp": "ckptpath:/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt", "ts": 1792228675.9603765}
+  bc3_vs_ppo3b_v15_b: {"game": "316378391", "learner_seat": 2, "opp": "ckptpath:/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt", "ts": 1792228843.4173503}
+
+================================================================
+4. October teacher gate (tgate chunks; impeached on the
+   determinization defect only)
+
+Server startup lines (the server states its own seat):
+  /tmp/tgate_c0b/server.log:
+  search_server: listening on /tmp/tgate_c0b.sock (learner seat 2, opp heuristic)
+  /tmp/tgate_c1a/server.log:
+  search_server: listening on /tmp/tgate_c1a.sock (learner seat 1, opp heuristic)
+
+================================================================
+5. Section-3 harvest (meas chunks; 40 plain v15 games, 1,087
+   contested decisions)
+
+Server startup lines:
+  /tmp/meas_c0b/server.log:
+  search_server: listening on /tmp/meas_c0b.sock (learner seat 2, opp heuristic)
+  /tmp/meas_c1a/server.log:
+  search_server: listening on /tmp/meas_c1a.sock (learner seat 1, opp heuristic)
+  /tmp/meas_c0a/server.log:
+  search_server: listening on /tmp/meas_c0a.sock (learner seat 1, opp heuristic)
+
+================================================================
+6. Critic study (474 games; hv_* workdirs under /tmp/harvest/out/)
+
+Per-game seat records (first line of each games_meta.jsonl):
+  /tmp/harvest/out/hv_a1/games_meta.jsonl:
+  {"game": "699137086", "learner_seat": 1, "opp": "heuristic", "ts": 1792237893.0484135}
+  /tmp/harvest/out/hv_a2/games_meta.jsonl:
+  {"game": "399609411", "learner_seat": 2, "opp": "heuristic", "ts": 1792237893.0853982}
+
+Server startup line (search chunk):
+  /tmp/harvest/out/hv_c1/server.log:
+  search_server: listening on /tmp/hv_c1.sock (learner seat 1, opp heuristic)
+
+Server identity line (rollout chunk), /tmp/harvest/out/hv_a1/server.log:
+  rollout_server: learner -> RL v15 (/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt)
+
+================================================================
+7. Phase 3b spot gates and Phase 3 run-1 gate evals
+
+Phase 3b spot gate v35 (seat-b half):
+  /home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/spot/v35_b/server.log:
+  rollout_server: learner -> RL v35 (/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v35.pt)
+  /home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/spot/v35_b/traj/games_meta.jsonl, first line:
+  {"game": "245010373", "learner_seat": 2, "opp": "heuristic", "ts": 1792205929.5518324}
+
+Phase 3 run-1 gate v65 (seat-b chunk):
+  /tmp/dg_v65_b/traj/games_meta.jsonl, first line:
+  {"game": "943866448", "learner_seat": 2, "opp": "heuristic", "ts": 1792215467.6578195}
+
+================================================================
+8. ISMCTS probe (0.530) and mirror (0.525) - impeached on the
+   determinization defect only
+
+Server startup lines:
+  /home/joe/tcg/tcg-sim/ismcts_runs/probe_b1/server.log:
+  search_server: listening on /home/joe/tcg/tcg-sim/ismcts_runs/probe_b1.sock (learner seat 2, opp heuristic)
+  /home/joe/tcg/tcg-sim/ismcts_runs/probe_a1/server.log:
+  search_server: listening on /home/joe/tcg/tcg-sim/ismcts_runs/probe_a1.sock (learner seat 1, opp heuristic)
+  /home/joe/tcg/tcg-sim/ismcts_runs/mm_b1/server.log:
+  search_server: listening on /home/joe/tcg/tcg-sim/ismcts_runs/mm_b1.sock (learner seat 2, opp net)
+  /home/joe/tcg/tcg-sim/ismcts_runs/mm_a1/server.log:
+  search_server: listening on /home/joe/tcg/tcg-sim/ismcts_runs/mm_a1.sock (learner seat 1, opp net)
+
+================================================================
+Completeness note: every eval named in the fc8faef section-1
+table appears above with at least one surviving primary record
+(the server's own startup line and/or its own per-game seat
+records). No eval's record was found missing.

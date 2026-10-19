@@ -1,0 +1,70 @@
+R17 build tests - run 2026-10-19 on the R17 tree
+(/tmp/reruntree2: gate tree -> patch_trace_shadow ->
+patch_child_sigkill -> patch_teacher_capture ->
+patch_canary_sync -> patch_seat_routing ->
+patch_teacher_bridge_state; built search.php sha256
+6cd6f9802bde..., policy_server.php 64c215392ddc...;
+php -l clean on both).
+
+test_classify.py on the built tree:
+  test_classify: 11/11 fixtures pass (IDENTICAL, STATE,
+  CANDIDATES, DECISION, RNG, MISSING_ROW, WITHIN_ROW x3,
+  DUP_SEQ, R8-both-reported)
+
+================================================================
+R17 PASS TEST 2 - seat-1 seed-3 smokes (paired_driver.py, one
+game per arm, dedicated seat-1 patched server; server identity
+pinged per arm: {'learner_seat': 1, 'model': '.../ckpt_v15.pt'}).
+
+All four games: winner 1, 16 turns, 653 decisions, p1life 2,
+p2life 0, gamelog sha256 prefix 88231b961d202c19 (104,690
+bytes) and gamestate_norm_sha 2564ffc4f8575d6e - all four
+IDENTICAL to the raw game (and to the fc8faef package's seed-3
+raw game).
+
+raw (2.2 s): server_seat 1, seat_mismatch_errors 0,
+connect_failed 0, mode "policy: server (v1-equivalent via sock)".
+  assert_ok TRUE - checks: stat_rows_zero TRUE,
+  teacher_trace_rows_zero TRUE. (0 stat rows, 0 teacher rows.)
+
+ghost (176.7 s): server_seat 1, mismatches 0, connect_failed 0.
+  assert_ok TRUE - checks: pick_eq_prior_all_teacher TRUE,
+  ghost_flag_on_all_rollouts TRUE, rollouts_present TRUE,
+  trace_rules_all_ghost_prior TRUE,
+  trace_teacher_pick_is_prior_argmax TRUE.
+  (80 teacher stat rows, 34 contested with rollouts; 80 teacher
+  trace rows, pick == PRE-prior argmax on 80/80. Under R17 the
+  PRE priors are the bridge-state priors Decide used.)
+
+shadow (284.8 s): server_seat 1, mismatches 0, connect_failed 0.
+  assert_ok TRUE - checks: shadow_teacher_rows_present TRUE,
+  shadow_rules_all_shadow_bridge TRUE,
+  shadow_fallback_decide_zero TRUE.
+  (80 teacher trace rows, all rule shadow_bridge, 0
+  shadow_fallback_decide.)
+
+capture (3.2 s): server_seat 1, mismatches 0, connect_failed 0.
+  assert_ok TRUE - checks: capture_rows_present TRUE,
+  capture_pick_eq_prior TRUE, capture_no_rollout_fields TRUE,
+  no_rollouts_anywhere TRUE, pick_eq_prior_all_teacher TRUE,
+  trace_teacher_pick_is_prior_argmax TRUE.
+  (34 capture rows, 0 rollout rows; the game took 3.2 s against
+  ~177 s for the full ghost machinery - the capture hook is in
+  the tree and doing its job.)
+
+================================================================
+R17 PASS TEST 1 (summary; full record in r17-seq167.txt) -
+ghost seat 2, seed 7: assert_ok TRUE, 49/49 teacher rows
+pick == PRE-prior argmax; gamelog-identical to the raw seat-2
+seed-7 game; at the sync-straddling ARS row (seq 186 in the
+corrected per-seat game):
+  feat_pre_hash  5c691d959081aec5  == raw bridge state_hash
+  feat_post_hash 5c691d959081aec5  == feat_pre (by construction)
+  feat_sync_hash 6ae81b29a6115b70  != feat_pre (settled pitch)
+Whole ghost trace: 0 rows with feat_pre != feat_post; exactly
+1 row with feat_sync != feat_pre.
+
+R18 (summary; full record in r18-seed19.txt) - seed 19 seat 1,
+1200 s timeout: raw COMPLETED 2.2 s (winner 2); ghost COMPLETED
+93.6 s (winner 2, assert_ok TRUE, gamelog-identical to raw).
+No timeout; the FAIL-localized condition does not occur.
