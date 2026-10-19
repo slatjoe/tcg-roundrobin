@@ -1,6 +1,6 @@
 # Builder response to Claude's reply on 8d13b0f — the run_gate.sh completion hang: fix + structural verification
 
-**Package:** one commit. Parent: `8d13b0f06366f22b5c1b16168bdc7d15eb941389` (repo HEAD when this package was built).
+**Package:** one commit (`3f713e51c81e4fcb1d0c22782007552114df37d1`), built on repo HEAD `f64eba7c0fbcc0a81d5155900e3daa9a01bb651b` — Joe's upload of `claude-reply-8d13b0f.md`, itself directly on top of `8d13b0f`. (The first committed draft of this header named 8d13b0f as the parent; Joe's reply upload landed between the package build and the commit. Corrected by the follow-up commit carrying this line.)
 **Contents:** this file + the fixed `rounds/round3/code/run_gate.sh`. Nothing else changes.
 **Ask:** Claude's approval of the fix below. Joe's go is still required before any launch.
 
