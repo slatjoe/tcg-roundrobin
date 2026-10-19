@@ -27,6 +27,19 @@ Round-3 rerun additions (Claude R12/R13/R16):
   - On timeout, the Games/ dir is diffed against its pre-game
     listing and cleanup_cache.php runs DeleteCache for each new
     game id, so a killed child does not leak SHMOP segments.
+Gate additions (Claude G8/G9):
+  - If env TCG_CLEAN_CHILDREN=1, after each COMPLETED teacher-family
+    game the Games/ dir is diffed against its pre-game listing and
+    cleanup_cache.php runs DeleteCache for each new CHILD game id
+    (the finished game's own id is excluded - its segment is the
+    known +1/game KEEP_GAME leak, reported via ipcs per chunk).
+    The row records children_found / children_cleaned. (The timeout
+    path already cleaned all new ids; this is the always-on version
+    for the teacher path's rollout children.)
+  - If env GATE_GAME_IDS_FILE is set, every game id the driver sees
+    (completed games, seat-mismatch rows, timeout children) is
+    appended to that file - the gate fleet's registry source (G9).
+
   - The arm manifest carries per-arm stat/trace ASSERTIONS
     (assert_ok): raw must have zero stat rows and zero teacher
     trace rows; ghost's rollout rows must all carry ghost=1 with
@@ -149,6 +162,17 @@ def arm_assertions(arm, logdir):
         checks["no_rollouts_anywhere"] = len(rollout_rows) == 0
         checks["pick_eq_prior_all_teacher"] = all(
             r.get("pick") == r.get("prior_pick") for r in teacher_rows)
+    if arm == "teacher":
+        # Gate arm (G7): the plain teacher may overturn, so there is
+        # no pick==prior constraint; the machinery checks are that
+        # the arm produced teacher rows at all, that every contested
+        # row carries the determinization-persistence proof (G7:
+        # det_persisted on every row), and that teacher trace rows
+        # were written (G3 needs them).
+        checks["stat_teacher_rows_present"] = len(teacher_rows) > 0
+        checks["det_persisted_all_contested"] = all(
+            r.get("det_persisted") == 1 for r in contested)
+        checks["trace_teacher_rows_present"] = teacher_trace_rows > 0
     if arm == "shadow":
         checks["shadow_teacher_rows_present"] = teacher_trace_rows > 0
         checks["shadow_rules_all_shadow_bridge"] = (
@@ -168,6 +192,15 @@ def arm_assertions(arm, logdir):
             and trace_priors_rows == teacher_trace_rows
             and trace_argmax_agree == teacher_trace_rows)
     return details, checks, all(checks.values()) if checks else False
+
+def note_game_id(path, gid):
+    """G9: append a game id to the fleet's registry-source file."""
+    if path and gid is not None:
+        try:
+            with open(path, "a") as gf:
+                gf.write(str(gid) + "\n")
+        except Exception:
+            pass
 
 def parse_seeds(spec):
     out = []
@@ -204,6 +237,8 @@ def main():
     env["KEEP_GAME"] = "1"  # play_game skips its end-of-game cleanup:
     # the game dir (with the full gamelog) survives for cross-arm
     # action-sequence comparison.
+    clean_children = os.environ.get("TCG_CLEAN_CHILDREN") == "1"
+    game_ids_file = os.environ.get("GATE_GAME_IDS_FILE") or None
     if a.arm in ("teacher", "ghost", "shadow", "capture"):
         env["TEACHER_MODE"] = "1"
     if a.arm == "ghost":
@@ -271,6 +306,8 @@ def main():
                         cleaned = new_ids
                 except Exception:
                     pass
+            for gid in new_ids:
+                note_game_id(game_ids_file, gid)
             fout.write(json.dumps(
                 {"seed": seed, "arm": a.arm, "seat": a.seat,
                  "server_seat": server_seat, "seat_mismatch_errors": 0,
@@ -312,6 +349,7 @@ def main():
             row["invalid"] = "seat_mismatch"
             if result is not None:
                 row["gamename"] = result.get("gamename")
+                note_game_id(game_ids_file, result.get("gamename"))
             fout.write(json.dumps(row) + "\n")
             fout.flush()
             print("seed %d %s SEAT_MISMATCH errors=%d" % (
@@ -364,6 +402,35 @@ def main():
                     "\n".join(norm).encode()).hexdigest()[:16]
             else:
                 row["gamestate_norm_sha"] = None
+            note_game_id(game_ids_file, result.get("gamename"))
+            if clean_children and a.arm in ("teacher", "ghost",
+                                            "shadow", "capture"):
+                # G8: the teacher path's rollout children leave SHMOP
+                # segments behind (their game dirs appear in Games/
+                # during the game and the children never run the
+                # engine's end-of-game DeleteCache). Diff and clean
+                # them now, per game, so a 400-teacher-game fleet
+                # does not accumulate ~5 segments per game. The
+                # finished game's OWN id is excluded: its segment is
+                # the known +1/game KEEP_GAME leak, reported per
+                # chunk via ipcs and cleaned post-run.
+                after_games = (set(os.listdir(games_dir))
+                               if os.path.isdir(games_dir) else set())
+                children = sorted(after_games - before_games
+                                  - {str(result.get("gamename", ""))})
+                cleaned_children = []
+                if children:
+                    try:
+                        cp = subprocess.run(
+                            ["php", "cleanup_cache.php"] + children,
+                            cwd=a.tree, capture_output=True, text=True,
+                            timeout=120)
+                        if cp.returncode == 0:
+                            cleaned_children = children
+                    except Exception:
+                        pass
+                row["children_found"] = len(children)
+                row["children_cleaned"] = len(cleaned_children)
         fout.write(json.dumps(row) + "\n")
         fout.flush()
         print("seed %d %s winner=%s cf=%d %.0fs" % (

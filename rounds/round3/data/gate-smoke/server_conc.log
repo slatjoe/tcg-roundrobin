@@ -1,0 +1,9 @@
+search_server: search model loaded (/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt) on cuda
+search_server: listening on /tmp/gate_s1.sock (learner seat 1, opp heuristic)
+search_server: evals=94299 batches=5000 normal=217 fallbacks=0 seat_mismatch=0 up=96s
+search_server: evals=94299 batches=5000 normal=217 fallbacks=0 seat_mismatch=0 up=96s
+search_server: evals=94299 batches=5000 normal=217 fallbacks=0 seat_mismatch=0 up=96s
+search_server: evals=94299 batches=5000 normal=217 fallbacks=0 seat_mismatch=0 up=96s
+search_server: evals=94299 batches=5000 normal=217 fallbacks=0 seat_mismatch=0 up=96s
+search_server: evals=94299 batches=5000 normal=217 fallbacks=0 seat_mismatch=0 up=96s
+search_server: evals=94299 batches=5000 normal=217 fallbacks=0 seat_mismatch=0 up=96s

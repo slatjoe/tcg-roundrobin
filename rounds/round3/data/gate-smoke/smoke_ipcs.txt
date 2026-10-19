@@ -1,0 +1,5 @@
+ipcs before smoke: 4
+ipcs after teacher s1: 5
+ipcs after raw s1: 6
+ipcs after teacher s2: 7
+ipcs after raw s2: 8

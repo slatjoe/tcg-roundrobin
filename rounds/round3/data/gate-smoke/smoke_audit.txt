@@ -1,0 +1,4 @@
+stat overturns: 6 of 47 contested rows
+snapshot index entries: 6
+jobs emitted: 6 (sample seed 20261019, cap 100)
+relabel (post-gate): MEAS_JOBS=/tmp/gate_smoke/smoke_audit_jobs.jsonl LABEL_W=50 php meas_label_main.php <deck> <deck> --policy-search --games 1

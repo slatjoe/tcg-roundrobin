@@ -1,0 +1,42 @@
+========================================================================
+GATE ANALYSIS - unit (seed, seat); paired teacher vs raw
+========================================================================
+units total: 2 | scored: 2 | unscored: 0
+capped games among scored units: 0 (scored 0.5 per ruling)
+
+PRIMARY - paired delta (teacher score - raw score)
+pooled      : n=2 units, 1 seeds | teacher 1.0000 - raw 1.0000 = delta +0.0000 | bootstrap CI (clustered by seed, B=2000) [+0.0000, +0.0000]
+seat 1      : n=1 units, 1 seeds | teacher 1.0000 - raw 1.0000 = delta +0.0000 | bootstrap CI (clustered by seed, B=2000) [+0.0000, +0.0000]
+seat 2      : n=1 units, 1 seeds | teacher 1.0000 - raw 1.0000 = delta +0.0000 | bootstrap CI (clustered by seed, B=2000) [+0.0000, +0.0000]
+
+DISCORDANT: teacher>raw 0 | teacher<raw 0 | tied 2 | exact sign test (two-sided) p = 1.0000
+
+REGISTERED BANDS:
+  delta >= +0.05 with CI lower bound > 0 -> converts
+  lower bound > 0 but delta < +0.05      -> real but small
+  CI includes 0 with upper bound < +0.10 -> the projection overstated conversion
+  delta > +0.20                          -> impeach before reading
+READ (pooled): PROJECTION OVERSTATED (CI includes 0, upper < +0.10)
+
+TEACHER TIMEOUTS: 0 of 2 teacher games (0.00%)
+
+
+TEACHER STAT MONITORS
+  [gate_c1_teacher_s1_log] root_calls=70 canary=4 refusal_rate=5.714% (cap 2%) | contested=25 overturns=4 overturn_rate=16.00%
+    branches > 5% refusals: M 7.32% (3/41); P 10.00% (1/10)
+    abort_reasons={} abort_by_cand={} child_fallbacks=0 det_persisted_missing=0
+  [gate_c1_teacher_s2_log] root_calls=57 canary=0 refusal_rate=0.000% (cap 2%) | contested=22 overturns=2 overturn_rate=9.09%
+    abort_reasons={} abort_by_cand={} child_fallbacks=0 det_persisted_missing=0
+  POOLED: contested=47 overturns=6 overturn_rate=12.77% (expect ~5%)
+
+G5 CALIBRATION - prior-pick rollout mean by decision ordinal
+  predicted = (prior-pick rollout mean + 1) / 2 (rollout outcomes are +1/-1/0); realized = the game's outcome for the learner (win 1 / draw 0.5 / loss 0)
+  bin          pred   realized        n
+  1          0.4400     1.0000        2
+  2          0.4800     1.0000        2
+  3          0.5600     1.0000        2
+  4          0.5400     1.0000        2
+  5          0.6400     1.0000        2
+  6-10       0.6280     1.0000       10
+  11-20      0.8000     1.0000       20
+  21-40      0.9943     1.0000        7

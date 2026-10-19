@@ -1,0 +1,15 @@
+search_server: listening on /tmp/gate_s1.sock (learner seat 1, opp heuristic)
+search_server: listening on /tmp/gate_s2.sock (learner seat 2, opp heuristic)
+server identity: {'learner_seat': 1, 'model': '/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt'} (arm seat 1)
+seed 1001 teacher winner=1 cf=0 132s
+PAIRED-DRIVER-DONE arm=teacher
+server identity: {'learner_seat': 1, 'model': '/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt'} (arm seat 1)
+seed 1001 raw winner=1 cf=0 2s
+PAIRED-DRIVER-DONE arm=raw
+server identity: {'learner_seat': 2, 'model': '/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt'} (arm seat 2)
+seed 1001 teacher winner=2 cf=0 128s
+PAIRED-DRIVER-DONE arm=teacher
+server identity: {'learner_seat': 2, 'model': '/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt'} (arm seat 2)
+seed 1001 raw winner=2 cf=0 2s
+PAIRED-DRIVER-DONE arm=raw
+SMOKE-RUN-DONE

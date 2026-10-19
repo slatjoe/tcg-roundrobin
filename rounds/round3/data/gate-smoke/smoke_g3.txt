@@ -1,0 +1,3 @@
+LEGAL seed=1001 seat=1 seq=322 class=DECISION overturn (decide_pick=0, prior argmax=1)
+LEGAL seed=1001 seat=2 seq=372 class=DECISION overturn (decide_pick=1, prior argmax=0)
+units identical=0 legal_diverged=2 skipped_invalid=0 defects=0
