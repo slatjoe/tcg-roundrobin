@@ -127,7 +127,35 @@ function SimTrace_ZoneNorm($v) {
   }
   return $v;
 }
+function SimTrace_ViewState($player) {
+  $v = [];
+  foreach (["GetHand","GetDeck","GetPitch","GetArsenal","GetBanish",
+            "GetDiscard","GetItems","GetAllies","GetPlayerCharacter",
+            "GetResources","GetHealth"] as $g) {
+    $v[$g] = function_exists($g) ? $g($player) : null;
+  }
+  return $v;
+}
 function SimTrace_ZoneHash() {
+  // LOCALIZATION FIX (round-3, Claude's remedy table row 3): the
+  // engine and the featurizer play from the VIEW arrays the
+  // CardGetters return (GetHand(1) & friends), never from the p1*
+  // canonical store. At a pitch decision the view already has the
+  // pitch applied while the store lags; DoGamestateUpdate then
+  // syncs store := view, which is the checkpoint's job, not a
+  // mutation of played state. Hash what is actually consumed:
+  // both players' getter views + view-independent engine globals.
+  $z = ["v1" => SimTrace_ViewState(1), "v2" => SimTrace_ViewState(2)];
+  foreach (["currentTurn","currentPlayer","mainPlayer","defPlayer",
+            "actionPoints","chainLinks","combatChain","layers",
+            "decisionQueue","playerHealths"] as $k) {
+    $z[$k] = $GLOBALS[$k] ?? null;
+  }
+  return SimTrace_Hash(SimTrace_ZoneNorm($z));
+}
+function SimTrace_StoreHash() {
+  // Diagnostic only (not an equality input): the canonical p1*
+  // store. It legitimately changes across the checkpoint sync.
   $z = [];
   foreach (SimTrace_ZoneKeys() as $k) {
     $z[$k] = SimTrace_ZoneNorm($GLOBALS[$k] ?? null);
@@ -234,6 +262,7 @@ patch("search.php", [
       "feat_pre_hash" => ($stPre !== null) ? SimTrace_Hash($stPre) : null,
       "priors_pre" => ($evPre !== null && isset($evPre[0])) ? $evPre[0] : null,
       "zone_pre" => SimTrace_ZoneHash(),
+      "zone_store_pre" => SimTrace_StoreHash(),
       "rng_pre" => SimTrace_RngFingerprint(),
       "cand_hash" => SimTrace_CandHash($candRecs),
       "ncand" => count($candRecs), "state_pre" => $stPre];
@@ -251,6 +280,7 @@ patch("search.php", [
       $trc["feat_post_hash"] = $post["state_hash"] ?? null;
       $trc["priors_post"] = $post["priors"] ?? null;
       $trc["zone_post"] = SimTrace_ZoneHash();
+      $trc["zone_store_post"] = SimTrace_StoreHash();
       $trc["rng_post"] = SimTrace_RngFingerprint();
       $trc["decide_pick"] = $pick;
       $shadow = getenv("TEACHER_SHADOW");

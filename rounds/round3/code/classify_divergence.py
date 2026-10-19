@@ -78,8 +78,20 @@ def main():
     b_rows, dup_b = load(sys.argv[2])
     a = {r["seq"]: r for r in a_rows}
     b = {r["seq"]: r for r in b_rows}
+    # Two-part report (round-3 R8): EVERY within-row hit is listed,
+    # and the cross-arm scan continues past them - one within-row
+    # alarm must never hide a later cross-arm divergence.
+    hits = []
+    for seq in sorted(set(a) & set(b)):
+        for side, r in (("A", a[seq]), ("B", b[seq])):
+            wr = within_row_diff(r)
+            if wr is not None:
+                hits.append({"seq": seq, "side": side,
+                             "branch": r.get("branch"), "pair": wr,
+                             "rule": r.get("rule")})
     verdict = {"class": "IDENTICAL", "rows_a": len(a_rows),
-               "rows_b": len(b_rows), "first_diff_seq": None}
+               "rows_b": len(b_rows), "first_diff_seq": None,
+               "within_row_hits": hits}
     if dup_a is not None or dup_b is not None:
         # A seq written twice (e.g. RootDecide logs a teacher row for
         # an eval-fallback null, then Choose falls through and logs a
@@ -96,13 +108,6 @@ def main():
         if ra is None or rb is None:
             verdict.update({"class": "MISSING_ROW", "first_diff_seq": seq,
                             "detail": "row present in one arm only"})
-            break
-        wr = within_row_diff(rb) or within_row_diff(ra)
-        if wr is not None:
-            verdict.update({"class": "WITHIN_ROW", "first_diff_seq": seq,
-                            "branch": rb.get("branch"),
-                            "detail": {"pair": wr,
-                                       "rule": rb.get("rule")}})
             break
         if state_of(ra) != state_of(rb):
             verdict.update({"class": "STATE", "first_diff_seq": seq,

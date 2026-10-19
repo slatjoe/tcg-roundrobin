@@ -90,16 +90,31 @@ def main():
         b = [trow(i) for i in range(5)]
         b[2] = trow(2, **kw)
         v = run(base, b)
-        assert v["class"] == "WITHIN_ROW" and v["first_diff_seq"] == 2 \
-            and v["detail"]["pair"] == pair, v
+        # Two-part report (R8): the hit is LISTED, and the cross-arm
+        # verdict still scans past it (IDENTICAL here).
+        assert v["class"] == "IDENTICAL", v
+        assert len(v["within_row_hits"]) == 1, v
+        h = v["within_row_hits"][0]
+        assert h["seq"] == 2 and h["pair"] == pair, v
 
     b = [trow(i) for i in range(5)] + [trow(2)]
     v = run(base, b)
     assert v["class"] == "DUP_SEQ" and v["first_diff_seq"] == 2, v
 
-    print("test_classify: 10/10 fixtures pass "
+    # R8 pass fixture: a within-row hit at seq 1 AND a cross-arm
+    # DECISION at seq 3 - BOTH must be reported.
+    a = [trow(i) for i in range(5)]
+    b = [trow(i) for i in range(5)]
+    b[1] = trow(1, zone_post="MUTATED")
+    b[3] = trow(3, chosen=1)
+    v = run(a, b)
+    assert len(v["within_row_hits"]) == 1 \
+        and v["within_row_hits"][0]["seq"] == 1, v
+    assert v["class"] == "DECISION" and v["first_diff_seq"] == 3, v
+
+    print("test_classify: 11/11 fixtures pass "
           "(IDENTICAL, STATE, CANDIDATES, DECISION, RNG, MISSING_ROW, "
-          "WITHIN_ROW x3, DUP_SEQ)")
+          "WITHIN_ROW x3, DUP_SEQ, R8-both-reported)")
 
 
 if __name__ == "__main__":

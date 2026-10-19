@@ -137,10 +137,18 @@ def main():
         if result is None:
             row["invalid"] = row.get("invalid", "no_result")
         else:
+            # R9: the result JSON's "steps" reads 1 for a full game -
+            # it is not an engine step counter, so it is NOT recorded.
+            # "decisions" (below) is the honest count: trace rows,
+            # one per policy decision (the simPolicyDecision counter).
             row.update({k: result.get(k) for k in
                         ("winner", "draw", "capped", "cap_reason",
                          "turns", "gamename", "firstPlayer", "stuck",
-                         "steps", "p1life", "p2life")})
+                         "p1life", "p2life")})
+            tpath = os.path.join(a.logdir, "trace",
+                                 "trace_%s.jsonl" % result.get("gamename"))
+            row["decisions"] = (sum(1 for _ in open(tpath))
+                                if os.path.exists(tpath) else None)
             gdir = os.path.join(a.tree, "vendor", "talishar", "Games",
                                 str(result.get("gamename", "")))
             glog = os.path.join(gdir, "gamelog.txt")
@@ -154,6 +162,23 @@ def main():
             row["gamestate_sha"] = (
                 hashlib.sha256(open(gs, "rb").read()).hexdigest()[:16]
                 if os.path.exists(gs) else None)
+            # R10: normalized final-state hash. On the seed-3 pair the
+            # raw files differed ONLY in two per-game hex-id lines and
+            # one epoch line; masking those classes makes the hash an
+            # equality field for the PASS reads.
+            if os.path.exists(gs):
+                import re as _re
+                norm = []
+                for ln in open(gs, errors="replace").read().splitlines():
+                    if _re.fullmatch(r"[0-9a-f]{16}", ln.strip()):
+                        ln = "HEXID"
+                    elif _re.fullmatch(r"\d{10}", ln.strip()):
+                        ln = "EPOCH"
+                    norm.append(ln)
+                row["gamestate_norm_sha"] = hashlib.sha256(
+                    "\n".join(norm).encode()).hexdigest()[:16]
+            else:
+                row["gamestate_norm_sha"] = None
         fout.write(json.dumps(row) + "\n")
         fout.flush()
         print("seed %d %s winner=%s cf=%d %.0fs" % (

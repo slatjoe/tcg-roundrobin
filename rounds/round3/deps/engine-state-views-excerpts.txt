@@ -1,0 +1,78 @@
+== vendor/talishar/CardGetters.php:174-187 GetHand ==
+function &GetHand($player)
+{
+  global $mainPlayerGamestateStillBuilt;
+  if ($mainPlayerGamestateStillBuilt) {
+    global $mainPlayer;
+    if ($player == $mainPlayer) { global $mainHand; return $mainHand; }
+    global $defHand;
+    return $defHand;
+  }
+  global $myStateBuiltFor;
+  if ($player == $myStateBuiltFor) { global $myHand; return $myHand; }
+  global $theirHand;
+  return $theirHand;
+}
+
+== CardGetters.php:204-217 GetPitch ==
+function &GetPitch($player)
+{
+  global $mainPlayerGamestateStillBuilt;
+  if ($mainPlayerGamestateStillBuilt) {
+    global $mainPlayer;
+    if ($player == $mainPlayer) { global $mainPitch; return $mainPitch; }
+    global $defPitch;
+    return $defPitch;
+  }
+  global $myStateBuiltFor;
+  if ($player == $myStateBuiltFor) { global $myPitch; return $myPitch; }
+  global $theirPitch;
+  return $theirPitch;
+}
+
+== CardGetters.php:234-248 GetResources ==
+function &GetResources($player)
+{
+  global $mainPlayerGamestateStillBuilt;
+  if ($mainPlayerGamestateStillBuilt) {
+    global $mainPlayer;
+    if ($player == $mainPlayer) { global $mainResources; return $mainResources; }
+    global $defResources;
+    return $defResources;
+  }
+  global $myStateBuiltFor;
+  if ($player == $myStateBuiltFor) { global $myResources; return $myResources; }
+  global $theirResources;
+  return $theirResources;
+}
+
+
+== vendor/talishar/ParseGamestate.php:202-208 DoGamestateUpdate ==
+function DoGamestateUpdate()
+{
+  global $mainPlayerGamestateStillBuilt, $myStateBuiltFor;
+  if ($mainPlayerGamestateStillBuilt == 1) UpdateMainPlayerGameStateInner();
+  else if ($myStateBuiltFor != -1) UpdateGameStateInner();
+}
+
+
+== ParseGamestate.php:264-282 UpdateGameStateInner / UpdateMainPlayerGameStateInner ==
+function UpdateGameStateInner()
+{
+  global $myStateBuiltFor;
+  CopyViewStateToPlayer("my", $myStateBuiltFor == 1 ? 1 : 2);
+  CopyViewStateToPlayer("their", $myStateBuiltFor == 1 ? 2 : 1);
+}
+
+function UpdateMainPlayerGameStateInner()
+{
+  global $mpgBuiltFor;
+  CopyViewStateToPlayer("main", $mpgBuiltFor == 1 ? 1 : 2);
+  CopyViewStateToPlayer("def", $mpgBuiltFor == 1 ? 2 : 1);
+}
+
+function SaveGamestateSnapshot($destination)
+{
+  global $filepath, $lastWrittenGamestate;
+  if (isset($lastWrittenGamestate)) {
+    return file_put_contents($destination, $lastWrittenGamestate) !== false;
