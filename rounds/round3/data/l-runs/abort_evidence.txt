@@ -1,0 +1,43 @@
+seed 1035 s2 game 397753742: 59 stat rows, 0 with abort fields
+seed 1057 s1 game 294123342: 82 stat rows, 0 with abort fields
+seed 1075 s2 game 120889223: 72 stat rows, 0 with abort fields
+seed 1111 s2 game 860481480: 87 stat rows, 0 with abort fields
+seed 1112 s2 game 597029063: 59 stat rows, 0 with abort fields
+seed 1183 s1 game 587070307: 84 stat rows, 1 with abort fields
+   aborts=25 turn=14 branch=M det=file-v3 n_worlds={'0': 25, '1': 25, '3': 0} contested=1 overturn=1 reasons={'abort': 25} by_cand={'3': 25}
+seed 1185 s2 game 728870887: 61 stat rows, 1 with abort fields
+   aborts=1 turn=5 branch=M det=file-v3 n_worlds=[25, 25, 24] contested=1 overturn=0 reasons={'det_verify_failed': 1} by_cand={'2': 1}
+seed 1190 s1 game 878945561: 69 stat rows, 0 with abort fields
+
+== c1 s2 game 397753742 flagged seq 33 (trace rows 523)
+   {'seq': 32, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 2, 'state_hash': 'bb4df9d6153ddd0d', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+   {'seq': 33, 'rule': 'bridge_pick', 'branch': 'M', 'player': 2, 'state_hash': 'cb920ebe6f8d826b', 'chosen': 1, 'cand_hash': '10ffc9e526b7971c'}
+   {'seq': 34, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 2, 'state_hash': 'f3eaa5b69d245059', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+== c2 s1 game 294123342 flagged seq 643 (trace rows 691)
+   {'seq': 642, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 1, 'state_hash': 'b412224faafbb706', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+   {'seq': 643, 'rule': 'bridge_pick', 'branch': 'M', 'player': 1, 'state_hash': '52a49d9c68f1d4b8', 'chosen': 0, 'cand_hash': '89fbf3722d9575d5'}
+   {'seq': 644, 'rule': 'bridge_pick', 'branch': 'B', 'player': 2, 'state_hash': 'a2474e73a86cb431', 'chosen': 0, 'cand_hash': '54b2466efb65b6e1'}
+== c2 s2 game 120889223 flagged seq 549 (trace rows 677)
+   {'seq': 548, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 2, 'state_hash': '7c72161cec176801', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+   {'seq': 549, 'rule': 'bridge_pick', 'branch': 'M', 'player': 2, 'state_hash': '28a8dcde5730e4ef', 'chosen': 0, 'cand_hash': '0745ab98a072a476'}
+   {'seq': 550, 'rule': 'teacher', 'branch': 'P', 'player': 2, 'decide_pick': 0, 'chosen': 0, 'cand_hash': 'd033b8a7ffb7a9a6'}
+== c3 s2 game 860481480 flagged seq 416 (trace rows 807)
+   {'seq': 415, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 2, 'state_hash': '186fe1dcf9a5d5b9', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+   {'seq': 416, 'rule': 'bridge_pick', 'branch': 'M', 'player': 2, 'state_hash': '02d86dc4707684d6', 'chosen': 1, 'cand_hash': 'a3a344727ab5882a'}
+   {'seq': 417, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 2, 'state_hash': 'bd38111e8b8463c6', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+== c3 s2 game 597029063 flagged seq 145 (trace rows 517)
+   {'seq': 144, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 2, 'state_hash': '07da2f883e2f824a', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+   {'seq': 145, 'rule': 'bridge_pick', 'branch': 'M', 'player': 2, 'state_hash': '6d1eb8b4f1057f40', 'chosen': 0, 'cand_hash': '492c7e20f1186c47'}
+   {'seq': 146, 'rule': 'teacher', 'branch': 'M', 'player': 2, 'decide_pick': 0, 'chosen': 0, 'cand_hash': '5b1fd9d6e2837681'}
+== c4 s1 game 587070307 flagged seq 570 (trace rows 663)
+   {'seq': 569, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 1, 'state_hash': '6d0595976a181a6f', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+   {'seq': 570, 'rule': 'bridge_pick', 'branch': 'M', 'player': 1, 'state_hash': 'fc90dd95a781008e', 'chosen': 1, 'cand_hash': 'f9d0cfc077f20946'}
+   {'seq': 571, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 1, 'state_hash': '9d3002a653779910', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+== c4 s2 game 728870887 flagged seq 96 (trace rows 481)
+   {'seq': 95, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 2, 'state_hash': 'a42ee869fb6455eb', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+   {'seq': 96, 'rule': 'bridge_pick', 'branch': 'M', 'player': 2, 'state_hash': '1df799a8799a4d32', 'chosen': 0, 'cand_hash': 'de0961b63346ff56'}
+   {'seq': 97, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 2, 'state_hash': '2ed2c219ba80c384', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+== c4 s1 game 878945561 flagged seq 464 (trace rows 589)
+   {'seq': 463, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 1, 'state_hash': 'd1e1d0f69a924eca', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}
+   {'seq': 464, 'rule': 'bridge_pick', 'branch': 'M', 'player': 1, 'state_hash': '74ff391e6d5847ef', 'chosen': 0, 'cand_hash': '087117d7dd5728ed'}
+   {'seq': 465, 'rule': 'dq_pick', 'branch': 'DQ', 'player': 1, 'state_hash': '541e88a90247a419', 'chosen': 0, 'cand_hash': '58f53492529ffbb6'}

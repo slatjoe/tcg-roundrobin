@@ -1,0 +1,20 @@
+=== l1_check.py output ===
+contested rows: 10869
+U1 all-candidates-unanimous: 2180 (20.06%)
+any-candidate-unanimous: 3931 (36.17%)
+U2 prior-pick-unanimous: 3086 (28.39%)
+overturn rows: 915; se_diff present: 915
+L1 paired-comparison unanimity (se_diff == 0): 1 (0.11%)
+se_diff min=0.0000 p25=0.1497 median=0.1890 p75=0.2309 max=0.3166
+
+=== l1_cuts.py output (overturn rows, Claude spec) ===
+overturn rows: 915
+prior pick unanimous (+-1): 58 (6.34%)
+overturn pick unanimous (+-1): 88 (9.62%)
+either pick unanimous: 145 (15.85%)
+se_diff == 0 rows: [('gate_c1_teacher_s1_log', '711281845', 19, 'M', 2)]
+
+=== l1 phase split (prior-pick unanimity by turn) ===
+turn 0-4: prior-pick unanimous 126/2421 = 5.2%
+turn 5-9: prior-pick unanimous 1428/4970 = 28.7%
+turn 10+: prior-pick unanimous 1532/3478 = 44.0%

@@ -1,0 +1,34 @@
+6993ece4f84bf2aea3540635c5b1cd8b2f0c9a787c0ed42cf426d4a3f8160243  probe_swap20.php
+3109176bb7137bc89b0645b8185f83c5722268c03028ca692642699cf7730b33  meas_label_main.php
+6cd6f9802bde5f40631131d2f98af110978a761f9dacf423622f92d7ca55067a  search.php
+L2/L3 LAUNCH MANIFEST (builder, 2026-10-20)
+Design: claude-reply-94b9449.md (committed 31ebec7e, authentic file).
+Authorized: Joe, in chat, 2026-10-20 05:45 EDT (Run L2 and L3).
+Job emission: audit_overturns.py, 8 snap dirs + 8 stat files from
+/tmp/gate_r4; --sample 100000 -> all 915 jobs (jobs_all.jsonl);
+L2 sample --sample 20 --seed 20261019 (jobs_l2.jsonl).
+L3 shards: jobs split BY GAME into 4 files (231/213/229/242 jobs,
+327 games). Invocation per shard s:
+  MEAS_JOBS=jobs_shard<s>.jsonl MEAS_OUT=l3_out_<s>.jsonl
+  MEAS_SEED=777001 + s*100000000 (fresh seed base, independent of the
+  gate's in-game worlds) LABEL_W=50 TCG_POLICY_SOCK=/tmp/l_s1.sock
+  php meas_label_main.php decks/nats2026_ashlyn_fai_60.txt (x2)
+  --policy-search --games 1   [cwd /tmp/gatetree_r4]
+Eval server: PRODUCTION /home/joe/tcg/tcg-sim/rl/search_server.py
+  sha256 81ef2cdb... (the section-3 measurement's server). The tree's
+  R12-patched server rejects the label path's seat-0 eval requests
+  (SEAT_MISMATCH observed in smoke); the label path is not the bridge,
+  so the production eval server is the correct service. Disclosed for
+  review.
+L2 runner: probe_swap20.php (sha256 above) - probe_swap.php
+  parameterized (env params, per-job temp dirs, both picks);
+  core test unchanged: opp hand[0]<->deck[0] swap in gamestate.txt,
+  assignment seed 31337, rollout seed 4242, compare
+  turns/hooks/outcome/winner. Parent parse guarded with DeleteCache
+  (the RunForSnapshot hazard) after the first smoke's canary aborts.
+Smokes before launch: L2 job 0 PASS both picks on the production
+  server (real trajectories); L3 2-job smoke 200/200 rows, 50 worlds
+  per (snap,cand), 0 errors, 0 fallbacks, 0 unfinished.
+Registry: all 915 jobs' games + snapshots are already registered
+  eval-only (gate merge, registry sha 3882c758...). Labels are
+  eval-only by construction (no training consumer).
