@@ -1,0 +1,54 @@
+========================================================================
+GATE ANALYSIS - unit (seed, seat); paired teacher vs raw
+========================================================================
+units total: 400 | scored: 400 | unscored: 0
+capped games among scored units: 0 (scored 0.5 per ruling)
+
+PRIMARY - paired delta (teacher score - raw score)
+pooled      : n=400 units, 200 seeds | teacher 0.7025 - raw 0.4500 = delta +0.2525 | bootstrap CI (clustered by seed, B=10000) [+0.2075, +0.2975]
+seat 1      : n=200 units, 200 seeds | teacher 0.6500 - raw 0.4000 = delta +0.2500 | bootstrap CI (clustered by seed, B=10000) [+0.1800, +0.3200]
+seat 2      : n=200 units, 200 seeds | teacher 0.7550 - raw 0.5000 = delta +0.2550 | bootstrap CI (clustered by seed, B=10000) [+0.1900, +0.3200]
+
+DISCORDANT: teacher>raw 111 | teacher<raw 10 | tied 279 | exact sign test (two-sided) p = 0.0000
+
+REGISTERED BANDS:
+  delta >= +0.05 with CI lower bound > 0 -> converts
+  lower bound > 0 but delta < +0.05      -> real but small
+  CI includes 0 with upper bound < +0.10 -> the projection overstated conversion
+  delta > +0.20                          -> impeach before reading
+READ (pooled): IMPEACH BEFORE READING (delta > +0.20)
+
+TEACHER TIMEOUTS: 0 of 400 teacher games (0.00%)
+
+
+TEACHER STAT MONITORS
+  [gate_c1_teacher_s1_log] root_calls=3520 canary=44 refusal_rate=1.250% (cap 2%) | contested=1386 overturns=102 overturn_rate=7.36%
+    abort_reasons={'abort': 175} abort_by_cand={'2': 125, '3': 25, '1': 25} child_fallbacks=0 det_persisted_missing=0
+  [gate_c1_teacher_s2_log] root_calls=3619 canary=38 refusal_rate=1.050% (cap 2%) | contested=1377 overturns=123 overturn_rate=8.93%
+    abort_reasons={'abort': 275} abort_by_cand={'2': 200, '3': 50, '1': 25} child_fallbacks=0 det_persisted_missing=0
+  [gate_c2_teacher_s1_log] root_calls=3728 canary=46 refusal_rate=1.234% (cap 2%) | contested=1414 overturns=127 overturn_rate=8.98%
+    abort_reasons={'abort': 125} abort_by_cand={'2': 125} child_fallbacks=0 det_persisted_missing=0
+  [gate_c2_teacher_s2_log] root_calls=3375 canary=45 refusal_rate=1.333% (cap 2%) | contested=1301 overturns=116 overturn_rate=8.92%
+    abort_reasons={'abort': 100} abort_by_cand={'2': 75, '3': 25} child_fallbacks=0 det_persisted_missing=0
+  [gate_c3_teacher_s1_log] root_calls=3503 canary=35 refusal_rate=0.999% (cap 2%) | contested=1410 overturns=114 overturn_rate=8.09%
+    abort_reasons={'abort': 200} abort_by_cand={'2': 200} child_fallbacks=0 det_persisted_missing=0
+  [gate_c3_teacher_s2_log] root_calls=3574 canary=25 refusal_rate=0.699% (cap 2%) | contested=1361 overturns=108 overturn_rate=7.94%
+    abort_reasons={'abort': 100} abort_by_cand={'2': 100} child_fallbacks=0 det_persisted_missing=0
+  [gate_c4_teacher_s1_log] root_calls=3443 canary=47 refusal_rate=1.365% (cap 2%) | contested=1329 overturns=120 overturn_rate=9.03%
+    abort_reasons={'abort': 75} abort_by_cand={'2': 50, '3': 25} child_fallbacks=0 det_persisted_missing=0
+  [gate_c4_teacher_s2_log] root_calls=3358 canary=28 refusal_rate=0.834% (cap 2%) | contested=1291 overturns=105 overturn_rate=8.13%
+    abort_reasons={'abort': 250, 'det_verify_failed': 1} abort_by_cand={'3': 25, '2': 201, '1': 25} child_fallbacks=0 det_persisted_missing=0
+  POOLED: contested=10869 overturns=915 overturn_rate=8.42% (expect ~5%)
+
+G5 CALIBRATION - prior-pick rollout mean by decision ordinal
+  predicted = (prior-pick rollout mean + 1) / 2 (rollout outcomes are +1/-1/0); realized = the game's outcome for the learner (win 1 / draw 0.5 / loss 0)
+  bin          pred   realized        n
+  1          0.4842     0.7025      400
+  2          0.4709     0.7025      400
+  3          0.4583     0.7025      400
+  4          0.4700     0.7025      400
+  5          0.4799     0.7025      400
+  6-10       0.5195     0.7004     1986
+  11-20      0.5368     0.6819     3640
+  21-40      0.5483     0.6527     3101
+  41+        0.6442     0.6479      142

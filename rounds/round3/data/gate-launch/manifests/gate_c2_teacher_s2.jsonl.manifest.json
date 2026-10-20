@@ -1,0 +1,34 @@
+{
+ "arm": "teacher",
+ "tree": "/tmp/gatetree_r4",
+ "seat": 2,
+ "seeds": "1051-1100",
+ "search_stats_rows": 3375,
+ "trace_files": 50,
+ "server": {
+  "learner_seat": 2,
+  "model": "/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt"
+ },
+ "assertions": {
+  "stat_rows": 3375,
+  "teacher_rows": 3330,
+  "contested_rows": 1301,
+  "rollout_rows": 1301,
+  "trace_rules": {
+   "dq_pick": 10638,
+   "bridge_pick": 3657,
+   "teacher": 3330,
+   "pass_gate": 11984
+  },
+  "teacher_trace_rows": 3330,
+  "teacher_trace_rows_with_priors": 3330,
+  "teacher_trace_pick_argmax_agree": 3213
+ },
+ "checks": {
+  "stat_teacher_rows_present": true,
+  "det_persisted_all_contested": true,
+  "trace_teacher_rows_present": true
+ },
+ "assert_ok": true,
+ "assert_no_search_rows": null
+}

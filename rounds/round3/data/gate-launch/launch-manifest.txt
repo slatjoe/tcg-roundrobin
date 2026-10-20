@@ -1,0 +1,31 @@
+GATE LAUNCH MANIFEST (staging; completed at results time)
+Approved sha: a148a6d523ddae0697ec6f81cc6de22bf8cdf0ee (gate package 8d13b0f + run_gate.sh fix 3f713e51c81e4fcb1d0c22782007552114df37d1)
+Approval chain: Claude approved the build on 8d13b0f (reply filed by Joe as f64eba7), approved the fix and the launch on a148a6d (his reply to 3f713e5), with GATE_TIMEOUT=1600 and the ipcs operator stop. Joe's go given in chat (see results summary).
+GATE_TIMEOUT=1600 - Claude's ruling (reply to the fix, section 2): the structural test ran the actual fleet script under full 4-chunk contention and its slowest teacher game took 518.6s, superseding the 4-game probe's 295.3s. max(700, 3 x 518.6) = 1555.8, rounded up to the next 100 = 1600. The run_gate.sh header comment still says 886 (stale by design - the file is the approved sha and was not edited).
+Launch command: cd /tmp/gatetree_r4 && GATE_TIMEOUT=1600 bash run_gate.sh (detached, setsid; stdout -> /tmp/gate_r4_launch_stdout.log; outputs under /tmp/gate_r4/)
+Script identity: /tmp/gatetree_r4/run_gate.sh sha256 b29f8e71d17b0478055d1a53b4e96b3fda2e0974249e8112dbe11eb59d5cc4b4 == committed fixed script (staging check caught the box still holding the pre-fix copy; replaced and re-hashed before launch).
+Tree build hashes verified at staging: search.php 6cd6f9802bde..., policy_server.php 64c215392ddc..., rl/search_server.py (in-tree, patched) ab85fa1bcf19... - all equal to the approved package.
+Production server BEFORE: 81ef2cdbefe687cabc97cd7b5f738b2027fc8a1e47c2b0dc72ff787ad85a82d4 (must equal AFTER; the fleet script also records both in /tmp/gate_r4/gate_prod_hash.txt)
+Weights: ckpt_v15.pt sha256 0400539dda891c34e3573b83de3aa299af42c072f949db49ce4d67d5d0e9c82c
+ipcs at staging: 97 segments (structural-test residual). Projection ~2,400-2,500 by fleet end (Claude's section-3 estimate ~+5/teacher game, +1/raw).
+OPERATOR STOP (Claude, launch condition): ipcs -m | wc -l checked at least hourly during the fleet; if it exceeds 3,600 the fleet is STOPPED (kill the run script; its trap reaps the servers) and reported; a stopped fleet is INCONCLUSIVE, not partially readable.
+Registered stops during the read: G3 first-divergence defects; any overturn row failing its own logged margin (paired margin > 1.5 x paired SE); teacher timeouts > 2% of teacher games (gate inconclusive); canary refusals > 2% per arm-seat; calibration impeachment pattern.
+Monitors: overturn rate vs the 12-16% null band (reported only, not a stop); deadline-killed children per chunk; raw-hang positions; residual shm segments per game by arm after the run.
+Registry: before any analysis, register_gate_ids.py merges all gate game ids (chunk id files) plus the seed-1002 probe game and the 3003-3014 probe/test games as eval-only into /tmp/harvest/do_not_train_registry.json.
+LAUNCHED: Mon 2026-10-19 ~17:01 EDT on Joe's go ("Launch the gate now", chat, 17:00 EDT). Detached (setsid) on the box; stdout /tmp/gate_r4_launch_stdout.log; outputs /tmp/gate_r4/.
+Startup verified 17:06 EDT: both servers listening with correct seats (gate_s1 = learner seat 1, gate_s2 = learner seat 2), ckpt_v15.pt loaded on cuda in both; 4 chunk drivers running (teacher seat 1 first per chunk); gate_prod_hash.txt BEFORE = 81ef2cdb...; ipcs at startup 157.
+
+COMPLETED: Tue 2026-10-20 ~03:40 EDT - GATE-FLEET-DONE in the launch stdout; no
+fleet processes remained (0 search servers, 0 paired drivers, 0 run scripts).
+Rows: 800/800 (16 files x 50). Manifests: 16/16 assert_ok TRUE.
+Production server AFTER: 81ef2cdbefe687cabc97cd7b5f738b2027fc8a1e47c2b0dc72ff787ad85a82d4
+== BEFORE (launch condition 2 satisfied; run not void).
+Server final counters: s1 evals=35038269 batches=1190000 normal=112899
+fallbacks=0 seat_mismatch=0; s2 evals=35475921 batches=1221600 normal=115391
+fallbacks=0 seat_mismatch=0.
+Raw timeouts: 0 (gate_raw_retry never invoked). Teacher timeouts: 0/400.
+Max game secs: teacher 747.0 (GATE_TIMEOUT=1600), raw 6.4.
+ipcs: 97 at staging, 1,694 final (operator stop 3,600 never tripped).
+Registry merge ran BEFORE analysis: 811 game ids + 915 snapshot ids added,
+550 -> 2,276 games, new sha256
+3882c7582048a7ff59af60e83622a611dc30608bf6e90ac8da52356624e8a270.

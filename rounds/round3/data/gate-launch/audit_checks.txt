@@ -1,0 +1,54 @@
+GATE RESULTS - AUDIT CHECK OUTPUTS (builder, 2026-10-20)
+All checks run on the box against the fleet's own files in /tmp/gate_r4
+after GATE-FLEET-DONE. The analysis (analyze_gate.py, approved at 8d13b0f)
+took the POST-MERGE registry (G9 satisfied before analysis).
+
+== REGISTRY MERGE (register_gate_ids.py) ==
+added game ids: 811 | added snapshot ids: 915
+registry total: 550 -> 2276 games
+written sha256: 3882c7582048a7ff59af60e83622a611dc30608bf6e90ac8da52356624e8a270
+COLLISION (kept existing, eval-only either way): 100107748, 496755003,
+661261337, 864590375 - ids the pre-launch seed-1001 smoke games drew that
+the fleet's seed-1001 games drew again; both generations are registered.
+
+== PER-OVERTURN MARGIN CHECK (registered stop: every overturn row's logged
+   paired margin must exceed 1.5 x its paired SE) ==
+overturn rows checked: 915 (all 8 teacher search_stats.jsonl)
+missing margin fields: 0
+violations (mean_diff <= 1.5*se_diff): 0
+min margin ratio (mean_diff / (1.5*se)): 1.0271051820261907
+closest call: gate_c2_teacher_s1_log, game 528177756, mean_diff 0.48,
+se_diff 0.3115552385479447 (bar 0.467)
+
+== G3 REPAIR CHECK (gate_first_divergence.py re-run on the 8 DUP_SEQ units
+   with ONLY the state-less fallback marker row removed from each teacher
+   trace; raw traces untouched) ==
+LEGAL seed=1035 seat=2 seq=30 class=DECISION overturn (decide_pick=2, prior argmax=0)
+LEGAL seed=1057 seat=1 seq=411 class=DECISION overturn (decide_pick=1, prior argmax=0)
+LEGAL seed=1075 seat=2 seq=546 class=DECISION overturn (decide_pick=2, prior argmax=1)
+LEGAL seed=1111 seat=2 seq=374 class=DECISION overturn (decide_pick=1, prior argmax=0)
+LEGAL seed=1112 seat=2 seq=142 class=DECISION overturn (decide_pick=2, prior argmax=0)
+LEGAL seed=1183 seat=1 seq=550 class=DECISION overturn (decide_pick=3, prior argmax=0)
+LEGAL seed=1185 seat=2 seq=33 class=DECISION overturn (decide_pick=0, prior argmax=1)
+LEGAL seed=1190 seat=1 seq=287 class=DECISION overturn (decide_pick=1, prior argmax=0)
+units identical=0 legal_diverged=8 skipped_invalid=0 defects=0
+Marker-row evidence (both probed units identical in form; all 8 verified
+by the same pattern test in the repair prep): at the duplicated seq the
+teacher trace holds a rule=teacher row with state_hash null and a
+rule=bridge_pick twin with the SAME cand_hash - the Decide-abort fallback
+path logs a marker, then the bridge pick that actually played.
+
+== MANIFESTS + CHILDREN (from the 16 row files / manifests) ==
+manifests assert_ok TRUE: 16/16
+raw:     games 400, children_found 0, children_cleaned 0, caps 0, draws 0, connect_failed 0
+teacher: games 400, children_found 19345, children_cleaned 19345, caps 0, draws 0, connect_failed 0
+
+== TEACHER STAT FILE HASHES (box originals, /tmp/gate_r4) ==
+cf54f9ef1befd9158bfdac93319365972d2c27f33cbee26336f8e1a876fa0dea  gate_c1_teacher_s1_log/search_stats.jsonl
+09df81a32ff543ed18ed776ba4655a9c0e970a5d32bfb4f7d054d0e6f6f66567  gate_c1_teacher_s2_log/search_stats.jsonl
+7249c1c279f28adee40e3ac6fb214b45d9e2914f251e716d9ad05a6fc94dd3d9  gate_c2_teacher_s1_log/search_stats.jsonl
+d789c47cb4ef8252db181fd96f4608eb255cd3fff21085f992a930d3c97721d5  gate_c2_teacher_s2_log/search_stats.jsonl
+773a2ee5d643bc5a9f484c8a5376c40e26b746cf4c0bdc8dedbfb3d5cf370bc4  gate_c3_teacher_s1_log/search_stats.jsonl
+f5aef0c0b001629e5846c76eff30a602c06c606b293f8ba3dbd81fe55c4df3e7  gate_c3_teacher_s2_log/search_stats.jsonl
+41cae6650cbcc1f69ce3c75097f428677f58c5bd3e8e1dfb66322ed746b3c6b6  gate_c4_teacher_s1_log/search_stats.jsonl
+0a1293945a7a4be5dc19df477445585d4cdd09a709b22e9df575178318d71b85  gate_c4_teacher_s2_log/search_stats.jsonl
