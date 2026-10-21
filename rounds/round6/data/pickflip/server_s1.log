@@ -1,0 +1,2 @@
+search_server: search model loaded (/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt) on cuda
+search_server: listening on /tmp/pickflip/flip_s1.sock (learner seat 1, opp heuristic)

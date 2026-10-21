@@ -1,0 +1,21 @@
+tally_pickflip - round 6 pick-flip tally
+rows: 267
+pick_rows: 267 (no_pick: 0, eval_error: 0)
+agreeing: 104 (pick-bearing: 104)
+  control_flips: 0
+  control_prior_mismatch: 0
+disagreeing: 163 (pick-bearing: 163)
+  flips: 0
+  flip_rate: 0/163 = 0.000% Wilson95 [0.000%, 2.303%]
+prior_shift_chosen (disagreeing pick-bearing rows): n=163 median=0.000000 p90=0.000008 max=0.002363
+by player (claude-reply-1a3267f sec.3 addition 1):
+player 1: rows: 150 (pick-bearing: 150, eval_error: 0)
+  agreeing pick-bearing: 77 control_flips: 0 control_prior_mismatch: 0
+  disagreeing pick-bearing: 73 flips: 0
+  flip_rate: 0/73 = 0.000% Wilson95 [0.000%, 4.999%]
+  prior_shift_chosen: n=73 median=0.000000 p90=0.000020 max=0.001205
+player 2: rows: 117 (pick-bearing: 117, eval_error: 0)
+  agreeing pick-bearing: 27 control_flips: 0 control_prior_mismatch: 0
+  disagreeing pick-bearing: 90 flips: 0
+  flip_rate: 0/90 = 0.000% Wilson95 [0.000%, 4.094%]
+  prior_shift_chosen: n=90 median=0.000000 p90=0.000001 max=0.002363

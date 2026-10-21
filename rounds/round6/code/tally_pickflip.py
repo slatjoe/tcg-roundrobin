@@ -36,6 +36,14 @@ Choose call; see patch_pickflip_probe.py). Computes:
 
 Usage: tally_pickflip.py [flip_log.jsonl ...]
 (default: /tmp/pickflip/flip_s1.jsonl /tmp/pickflip/flip_s2.jsonl)
+
+Addition (results-stage, claude-reply-1a3267f sec.3 item 1,
+disclosed in builder-response-70735fc): after the pooled block
+above (unchanged - the fixture's expected_tally.txt still pins
+it), the same quantities are reported BY PLAYER: control flips
+and prior mismatches, disagreeing pick-bearing rows, flips and
+flip rate with Wilson interval, and the prior-shift summary.
+The registered read stays pooled.
 """
 import json
 import math
@@ -114,3 +122,31 @@ print(f"disagreeing: {len(disagreeing)} (pick-bearing: {len(disagreeing_pick)})"
 print(f"  flips: {flips}")
 print(f"  flip_rate: {flips}/{len(disagreeing_pick)} = {pct(flips / len(disagreeing_pick) if disagreeing_pick else 0)} Wilson95 [{pct(lo)}, {pct(hi)}]")
 print(f"prior_shift_chosen (disagreeing pick-bearing rows): n={len(shifts)} median={median:.6f} p90={p90:.6f} max={mx:.6f}")
+
+# --- by player (claude-reply-1a3267f sec.3 addition 1) ---
+print("by player (claude-reply-1a3267f sec.3 addition 1):")
+for p in sorted({r.get("player") for r in rows}):
+    prows = [r for r in rows if r.get("player") == p]
+    ppick = [r for r in prows if r.get("pick")]
+    perr = [r for r in ppick if r.get("eval_error")]
+    pagr = [r for r in prows if r.get("agree") and r.get("pick")]
+    pdis = [r for r in prows
+            if not r.get("agree") and r.get("pick") and r.get("flip") is not None]
+    pcf = sum(1 for r in pagr if r.get("flip") is True)
+    pcm = sum(1 for r in pagr
+              if r.get("cur_priors") is not None
+              and r.get("cur_priors") != r.get("var_priors"))
+    pflips = sum(1 for r in pdis if r.get("flip") is True)
+    pshifts = []
+    for r in pdis:
+        cp, vp = r.get("cur_priors"), r.get("var_priors")
+        ca = r.get("cur_argmax")
+        if cp is not None and vp is not None and ca is not None and 0 <= ca < len(cp):
+            pshifts.append(abs(cp[ca] - vp[ca]))
+    pshifts.sort()
+    plo, phi = wilson(pflips, len(pdis))
+    print(f"player {p}: rows: {len(prows)} (pick-bearing: {len(ppick)}, eval_error: {len(perr)})")
+    print(f"  agreeing pick-bearing: {len(pagr)} control_flips: {pcf} control_prior_mismatch: {pcm}")
+    print(f"  disagreeing pick-bearing: {len(pdis)} flips: {pflips}")
+    print(f"  flip_rate: {pflips}/{len(pdis)} = {pct(pflips / len(pdis) if pdis else 0)} Wilson95 [{pct(plo)}, {pct(phi)}]")
+    print(f"  prior_shift_chosen: n={len(pshifts)} median={nearest_rank(pshifts, 0.5):.6f} p90={nearest_rank(pshifts, 0.9):.6f} max={pshifts[-1] if pshifts else 0.0:.6f}")
