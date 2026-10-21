@@ -1,0 +1,69 @@
+ROUND-5 (b) CENSUS TALLY
+========================
+rounds/round5/data/census/census_s1.jsonl: 13835 featurizations, 82 disagreements, 20 games
+rounds/round5/data/census/census_s2.jsonl: 13134 featurizations, 81 disagreements, 20 games
+TOTAL: 26969 featurizations, 163 disagreements, 40 distinct games
+
+OVERALL
+  disagreement rate: 163/26969 = 0.604%  Wilson95 [0.519%, 0.704%]
+  direction store>view: 0/26969 = 0.000%  Wilson95 [0.000%, 0.014%]
+  direction view>store: 163/26969 = 0.604%  Wilson95 [0.519%, 0.704%]
+  direction mixed: 0/26969 = 0.000%  Wilson95 [0.000%, 0.014%]
+
+BY BRANCH (each direction split)
+  A all: 0/3509 = 0.000%  Wilson95 [0.000%, 0.109%]
+  ARS all: 163/267 = 61.049%  Wilson95 [55.082%, 66.702%]
+    ARS view>store: 163/267 = 61.049%  Wilson95 [55.082%, 66.702%]
+  B all: 0/4700 = 0.000%  Wilson95 [0.000%, 0.082%]
+  D all: 0/3008 = 0.000%  Wilson95 [0.000%, 0.128%]
+  DQ all: 0/9322 = 0.000%  Wilson95 [0.000%, 0.041%]
+  M all: 0/4523 = 0.000%  Wilson95 [0.000%, 0.085%]
+  M_END all: 0/812 = 0.000%  Wilson95 [0.000%, 0.471%]
+  P all: 0/828 = 0.000%  Wilson95 [0.000%, 0.462%]
+
+ARS RATE (explicit, reporting addition 2)
+  ARS all directions: 163/267 = 61.049%  Wilson95 [55.082%, 66.702%]
+  ARS store>view: 0/267 = 0.000%  Wilson95 [0.000%, 1.418%]
+  ARS view>store: 163/267 = 61.049%  Wilson95 [55.082%, 66.702%]
+  ARS mixed: 0/267 = 0.000%  Wilson95 [0.000%, 1.418%]
+
+BY PLAYER (each direction split)
+  player 1 all: 73/13320 = 0.548%  Wilson95 [0.436%, 0.688%]
+    player 1 view>store: 73/13320 = 0.548%  Wilson95 [0.436%, 0.688%]
+  player 2 all: 90/13649 = 0.659%  Wilson95 [0.537%, 0.810%]
+    player 2 view>store: 90/13649 = 0.659%  Wilson95 [0.537%, 0.810%]
+
+BY PLAYER x BRANCH=ARS
+  player 1 ARS: 73/150 = 48.667%  Wilson95 [40.802%, 56.598%]
+  player 2 ARS: 90/117 = 76.923%  Wilson95 [68.507%, 83.628%]
+
+DIFFERING-CARD TABLE (card: differing featurizations; delta (store-view) distribution)
+  distinct cards differing: 22; total card-diff entries: 209
+  lava_vein_loyalty_blue: 42 featurizations; deltas: -1 x42
+  art_of_the_phoenix_war_red: 39 featurizations; deltas: -2 x8, -1 x31
+  dragon_power_blue: 26 featurizations; deltas: -1 x26
+  enflame_the_firebrand_red: 14 featurizations; deltas: -1 x14
+  rowdy_locals_blue: 13 featurizations; deltas: -1 x13
+  blaze_headlong_red: 11 featurizations; deltas: -1 x11
+  lava_burst_red: 10 featurizations; deltas: -1 x10
+  phoenix_flame_red: 10 featurizations; deltas: -2 x1, -1 x9
+  display_loyalty_red: 8 featurizations; deltas: -1 x8
+  cinderskin_devotion_blue: 7 featurizations; deltas: -1 x7
+  fire_that_burns_within_red: 4 featurizations; deltas: -1 x4
+  loyalty_beyond_the_grave_red: 4 featurizations; deltas: -1 x4
+  oath_of_loyalty_red: 4 featurizations; deltas: -1 x4
+  phoenix_bannerman_head_red: 3 featurizations; deltas: -1 x3
+  ignite_red: 3 featurizations; deltas: -1 x3
+  compounding_anger_red: 2 featurizations; deltas: -1 x2
+  rise_from_the_ashes_blue: 2 featurizations; deltas: -1 x2
+  ronin_renegade_red: 2 featurizations; deltas: -1 x2
+  hunt_to_the_ends_of_rathe_red: 2 featurizations; deltas: -1 x2
+  shelter_from_the_storm_red: 1 featurizations; deltas: -1 x1
+  rise_from_the_ashes_red: 1 featurizations; deltas: -1 x1
+  spreading_flames_red: 1 featurizations; deltas: -1 x1
+
+DOUBLE-COUNT SIGNATURE SUBSET (store>view diffs whose excess is fully accounted by view_elsewhere)
+  store>view featurizations: 0; in signature subset: 0; by branch: {}
+
+VIEW>STORE ZONE MEMBERSHIP (Claude reporting addition 1)
+  view>store featurizations: 163. Whether a differing card appears in any other serialized zone is UNAVAILABLE from the census log for this direction: the probe computes view_elsewhere only for store>view diffs and writes its initialized 0 for view>store diffs, so the logged third element carries no zone information here.
