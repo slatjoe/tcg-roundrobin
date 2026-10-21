@@ -1,0 +1,27 @@
+{
+ "jobs_scored": 910,
+ "mean_diff": 0.09081318681318681,
+ "ci": [
+  0.08319910514541393,
+  0.09853658536585358
+ ],
+ "frac_pos": 0.7241758241758242,
+ "frac_zero": 0.06813186813186813,
+ "frac_neg": 0.2076923076923077,
+ "per_game_gain": 0.2066,
+ "integrity": {
+  "rows": 91000,
+  "error_rows": 0,
+  "unfinished": 0,
+  "fallbacks": 0,
+  "null_results": 0,
+  "unknown_snap": 0,
+  "dup_world": 0,
+  "jobs_total": 910,
+  "jobs_missing": 0,
+  "worlds_min": 50
+ }
+}
+registered reads (claude-reply-94b9449 sec.4):
+ Delta = +0.2525 ; half-Delta = 0.12625
+ READ: converts; per-game gain from overturn quality alone covers at least half of Delta

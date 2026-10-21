@@ -1,0 +1,10 @@
+== learner model (both servers) ==
+search_server: search model loaded (/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt) on cuda
+search_server: search model loaded (/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt) on cuda
+== opponent model (both servers) ==
+search_server: opp net loaded (/home/joe/tcg/tcg-sim/bc3_out/bc3_policy.pt)
+search_server: opp net loaded (/home/joe/tcg/tcg-sim/bc3_out/bc3_policy.pt)
+== opponent weights ==
+78e2950c1628e8546d4a1faf7e335caebbdce3f1f1a9284a4377846018eb7bb9  /home/joe/tcg/tcg-sim/bc3_out/bc3_policy.pt
+== learner weights ==
+0400539dda891c34e3573b83de3aa299af42c072f949db49ce4d67d5d0e9c82c  /home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt

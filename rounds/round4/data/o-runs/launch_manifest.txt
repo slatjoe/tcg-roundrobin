@@ -1,0 +1,79 @@
+ROUND 4 O-MEASUREMENT - LAUNCH MANIFEST
+launched: 2026-10-20 ~09:59 EDT (fleet script pid 2339628)
+approved sha: 1f092f39f58602dcd72ace28861e2353ac5970bf (Claude APPROVED, claude-reply-1f092f3.md)
+launched repo HEAD: 6d25014b809675c31b6fad84c40d181e624a2259 (differs from the approved sha only under rounds/ - the approval reply commit; the launch gate allows)
+authorization: Claude approval at 1f092f39 + Joe's go in chat 2026-10-20 09:07 EDT ("Launch the O measurement")
+
+TREE (/tmp/otree = fresh copy of /tmp/gatetree_r4 + patch_decide_abort_log.py)
+  search.php sha256: 8f6b35da23f4e5fc7f5fda2ede2d65ba330f9f3eb463e3377978ded1f5d7fa61 (php -l clean; launch condition met exactly)
+  rl/search_server.py sha256: ab85fa1bcf19b41c7d48db642a2fd93d211e826b9f684594cefa5a1100f3c52c (patched lineage, NO counter patch - fleet servers)
+  rl/probe_server.py sha256: b1fbfa2ff646139a2b3e02ffb4ecd06291fc5b2a81562b6d209cf1e1687203ef (patched lineage + disagreement counter - step-0 probe ONLY; never served pre-gate or fleet games)
+  run_o_fleet.sh launched copy sha256: dce4ee5d7fbf074b635e99d977136ae76d64cf7a03a26f52a47da8b3fe75fd5e
+    staging source: rounds/round4/code/run_o_fleet.sh sha256 3108feed7735ae6484b4b86abd16e31d02d758f03413bbdf8b723c8f805af49f
+    substitution (registered, builder-response-1f09c4d sec.2): OPP_CKPT line 80
+      /home/joe/tcg/tcg-sim/bc2_out/bc_policy.pt -> /home/joe/tcg/tcg-sim/bc3_out/bc3_policy.pt
+      (zero bc2_out path references remain in the launched copy)
+  deck: decks/nats2026_ashlyn_fai_60.txt both seats, sha256 7397684b9d07debe0f0661f35bbc09c607c2e09953b822b5daa0fbbfa46f332a
+
+STEP 0 - OPPONENT SELECTION (launch-phase step 0, before sweep and pre-gate)
+  Rate label (claude-reply-1f092f3 note 1): disagreement per server-queried opponent
+  decision - forced/single-candidate decisions included; NOT a contested-decision rate.
+  candidate  opp_picks (s1+s2)   opp_disagree   rate
+  BC3        3531 (1815+1716)    187 (86+101)   0.05296
+  v15        3281 (1788+1493)    147 (72+75)    0.04480
+  v25        3311 (1818+1493)    151 (76+75)    0.04561
+  v30        3286 (1781+1505)    155 (75+80)    0.04717
+  WINNER: BC3 at 0.05296 (5.30%) - highest rate, no tie; selected mechanically.
+  All four candidates measure under ~10%: the registered ceiling statement applies -
+  the measurement's ceiling is set by the opponents the project has.
+  Probe integrity: 20/20 games per candidate (seeds 5001-5010, both seats, raw v15
+  learner), cf=0 everywhere, fallbacks=0 and seat_mismatch=0 on all probe servers.
+  Candidate weights verified: BC3 78e2950c..., v15 0400539d..., v25 f2da8f42..., v30 fff32bdb....
+  Evidence: /tmp/o_probe/ (server logs with final counter lines, row files, manifests).
+
+G8 SWEEP (before pre-gate)
+  ipcs -m | wc -l before: 1896; removed 1891 stale engine segments (32768 bytes,
+  nattch=0, no live engine processes); after: 5 (header lines + one 128-byte
+  non-engine segment, untouched). 3,600 operator stop not approached.
+
+PRE-GATE (fleet servers, TCG_OPP_MIX=ckptpath:BC3:1.0): PASS - 20/20 trace-identical
+  seat 1: 10/10 IDENTICAL (outcome equal, modes ok, seat ok, assert ok on every unit)
+  seat 2: 10/10 IDENTICAL (same)
+  raw-control (raw seat 1 vs raw seat 2): 10/10 seeds differ - RAW-CONTROL PASS
+  No DUP_SEQ exceptions needed; no seat_mismatch; no connect failures.
+  Evidence: /tmp/o_pregate/pair_s1.txt, pair_s2.txt, raw_control.txt, pg_* rows/logs.
+
+OPPONENT-IS-LIVE CONTROL: PASS
+  (a) fleet servers' stats lines: fallbacks=0 on every line (92 lines s1, 133 lines s2);
+      last lines at pre-gate end: s1 evals=1479001 fallbacks=0 seat_mismatch=0;
+      s2 evals=1515772 fallbacks=0 seat_mismatch=0.
+  (b) heuristic-opponent control set (seeds 4001-4010, raw arm, both seats):
+      20/20 units differ in traces/hashes vs the BC3 pre-gate raw set;
+      winners differ on 4/20 units (seat 1: seeds 4005, 4006; seat 2: seeds 4002, 4005).
+      Pass bar was >= 1 differing unit.
+  Evidence: /tmp/o_pregate/live_control_s1.txt, live_control_s2.txt, ctl_raw_s*.jsonl.
+
+CONTENTION PROBE (4 concurrent teacher games vs BC3, seeds 4011-4014, fleet invocation pattern)
+  seed 4011 seat 1: 301s; seed 4012 seat 1: 332s; seed 4013 seat 2: 358s; seed 4014 seat 2: 323s
+  slowest 358s, mean 328.5s; all rc=0, cf=0.
+  O_TIMEOUT = max(700, 3 x 358) = 1074s.
+  Evidence: /tmp/o_contention/.
+
+FLEET (running)
+  script: /tmp/otree/run_o_fleet.sh, pid 2339628, setsid nohup (survives runtime restarts)
+  env: O_TREE=/tmp/otree O_TIMEOUT=1074 O_OUT=/tmp/o_fleet
+  servers: 2 per-seat tree servers (pids 2339632, 2339660 at launch), SEARCH_MODEL=v15,
+    TCG_OPP_MIX=ckptpath:/home/joe/tcg/tcg-sim/bc3_out/bc3_policy.pt:1.0
+  startup lines: /tmp/o_fleet/o_server_lines.txt - BOTH servers show
+    "search model loaded" (v15) AND "opp net loaded" (BC3); weights shas recorded there.
+  design: seeds 2001-2200, 4 chunks concurrent, 800 games (400 teacher + 400 raw),
+    teacher snapshots on (TEACHER_SNAP_DIR), traces on both arms.
+  ETA: completion approx 7:30 PM EDT 2026-10-20 (probe-mean pace 328.5s x 100 serial
+    teacher games per chunk; slowest-game bound approx 8:00 PM EDT). Gate precedent:
+    fleet means have run above probe means before - treat 7:30 PM as the estimate,
+    not a promise.
+  production server sha256 before: 81ef2cdbefe687cabc97cd7b5f738b2027fc8a1e47c2b0dc72ff787ad85a82d4
+  production server sha256 after: <OPEN SLOT - filled at fleet end; the runner also
+    records it in /tmp/o_fleet/o_prod_hash.txt>
+  operator watch items during the run: ipcs 3,600 stop (hourly reads); chunk
+    manifests assert_ok / seat_ok before any read; registry merge before analysis (O7).

@@ -1,0 +1,28 @@
+O-runs evidence file hashes (sha256)
+====================================
+Repo copies in this directory (each verified byte-identical to its box
+source at pull time, 2026-10-21, by matching sha256):
+
+ccaa54c8bc4a66ada7a0966b237c057c91e2204a6de63ff91b0f32303713da17  launch_manifest.txt        (box: /tmp/o_fleet/launch_manifest.txt)
+b9447c225c5cc9950204305bc55218b3c9042699b38cb2c5de207f15d8a514d6  primary_report.txt         (box: /tmp/oruns/primary_report.txt)
+30af0fcbee95fa26819b54b0b68e2b84d1bd65d2c45f667bcbee4289f280f34c  l3_scoring.txt             (box: /tmp/oruns/l3_scoring.txt)
+b66674d72b47b2209a4fa14cd71d3b6c2a69bd7a6c69c1ebdcc44b8f9495a035  l1_census.txt              (re-run output, 2026-10-21; see builder-response-6d25014.md sec.7)
+5c19e1363e9f318613624eaf931f0ab52ffde85084f6099a4a9ee48314970fef  l2_out.jsonl               (box: /tmp/oruns/l2_out.jsonl)
+549a3e2ee633cc434afa959172103e24daac340d91efba9cbdb28e30ee544f12  jobs_all.jsonl             (box: /tmp/oruns/jobs_all.jsonl)
+2913d62628771c1268511d88edd5ddc2606eba20e73e539f41afbed0ead9faaf  o_server_lines.txt         (box: /tmp/o_fleet/o_server_lines.txt)
+bb62994ee97eba928b9c369d22e41a6dfa9a2cfd943a9384c91ef7580ddc208b  first_divergence.txt       (this package's audit run, box: /tmp/oaudit/first_divergence_full.txt)
+4cb85d1d1e23347e04f984f693aa89bae47935a6f37a57186d526ef22f242043  dupseq_recheck.txt         (this package's audit run, box: /tmp/oaudit/dupseq_recheck.txt)
+
+Label outputs - remain on the box (/tmp/oruns/), hashes recorded here:
+
+b59ee3699f632bf0cd7d050156a577b5d5529c0ec243afa619c3062313c32861  l3o_out_0.jsonl
+9619b1f1629b1f0e6b1600c3ae16c4b53772a7dc131967e86a7535951de3ed9b  l3o_out_1.jsonl
+9e717dd2a2b31c10964a4aaeaf2d92c050323937a99f0701562b0fe695667fba  l3o_out_2.jsonl
+209dcab677051bfc3fec542f6233c3858c633d8c62c9b9f2505bd8410798885a  l3o_out_3.jsonl
+
+Audit tooling provenance (box scratch copies in /tmp/oaudit/, deployed
+byte-identical from the workspace originals):
+
+9aaca15536332c856b8d69e377d7662170e783ef8708f61a47ec69155b0c541d  gate_first_divergence.py   (workspace: ~/workspace/tcg-sim/ismcts/)
+1518427bd4904a581fd2158b702b0e58e902b2cf1c64371f40da51c6fc7b0533  classify_divergence.py     (workspace: ~/workspace/tcg-sim/ismcts/)
+ec1de752684a3aea9c94dcded75889986e8e64380eb241e4e248ac7771983a8b  code/o_dupseq_recheck.py   (this package; run on the box from /tmp/oaudit/)

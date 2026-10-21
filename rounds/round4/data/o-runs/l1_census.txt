@@ -1,0 +1,18 @@
+== l1_check.py ==
+contested rows: 10648
+U1 all-candidates-unanimous: 2298 (21.58%)
+any-candidate-unanimous: 4062 (38.15%)
+U2 prior-pick-unanimous: 3207 (30.12%)
+overturn rows: 910; se_diff present: 910
+L1 paired-comparison unanimity (se_diff == 0): 1 (0.11%)
+se_diff min=0.0000 p25=0.1497 median=0.1904 p75=0.2309 max=0.3029
+== l1_cuts.py ==
+overturn rows: 910
+prior pick unanimous (+-1): 35 (3.85%)
+overturn pick unanimous (+-1): 88 (9.67%)
+either pick unanimous: 122 (13.41%)
+se_diff == 0 rows: [('o_c1_teacher_s1_log', '918988159', 23, 'P', 2)]
+== l1_phase.py ==
+turn 0-4: prior-pick unanimous 130/2467 = 5.3%
+turn 5-9: prior-pick unanimous 1466/4797 = 30.6%
+turn 10+: prior-pick unanimous 1611/3384 = 47.6%
