@@ -1,0 +1,10 @@
+tally_pickflip - round 6 pick-flip tally
+rows: 5
+pick_rows: 5 (no_pick: 0, eval_error: 0)
+agreeing: 2 (pick-bearing: 2)
+  control_flips: 0
+  control_prior_mismatch: 0
+disagreeing: 3 (pick-bearing: 3)
+  flips: 1
+  flip_rate: 1/3 = 33.333% Wilson95 [6.149%, 79.235%]
+prior_shift_chosen (disagreeing pick-bearing rows): n=3 median=0.100000 p90=0.200000 max=0.200000
