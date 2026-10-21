@@ -1,0 +1,76 @@
+ROUND-7 STAGE 3 — PPO LAUNCH CONFIGURATION DIFF
+Produced 2026-10-21 (build verification) from the primary artifacts:
+  rl/trainer_v4.py            sha256 8fd52d829acee231b5f066adba879178593de3ffc1a689ca224948186b6a837f
+  rl/run_workers.sh           (box copy; deck/matchup interface read from source)
+  rl_out/fai_ppo_bc3b_20261016/status.json + trainer_v4.log + workers.log
+No 3b launcher script survives; the 3b column is reconstructed from
+the run's own artifacts: every trainer value recorded in status.json
+equals the argparse default (budget 0.125; final lr 1.875e-06 =
+3e-5 halved 4x over 4 rejections), the log shows the default probe
+(4096 states) and an ACTIVE suite gate (baseline 46/50), and
+workers.log line 1 records "matchups: fai:fai (total weight 1000)".
+
+=== A. trainer invocation ===
+3b (fai_ppo_bc3b_20261016):
+  trainer_v4.py --out-dir rl_out/fai_ppo_bc3b_20261016
+                --bc3 bc3_out/bc3_policy.pt
+                [all other args at argparse defaults]
+Gravy (round 7):
+  trainer_v4_gravy.py            (launch copy, see section C)
+                --out-dir rl_out/gravy_ppo_gravybc3
+                --bc3 gravy_bc/bc3_out/bc3_policy.pt
+                --suite none
+                [all other args at argparse defaults]
+
+arg-by-arg (defaults from trainer_v4.py:308-325):
+  --lr 3e-5 | --epochs 2 | --batch-decisions 65536 | --budget 0.125
+  --heartbeat-window 150 | --heartbeat-floor 0.30 | --heartbeat-min 100
+  --spot-every 5 | --spot-games 50 | --spot-floor 0.30
+  --probe probe/probe_v1.jsonl (sha256 974fef83...)  IDENTICAL both runs
+      [surfaced in build-package.md sec.4: the fixed KL probe set is
+       Fai-game states, retained verbatim as a fixed instrument]
+
+=== B. rollout workers ===
+3b:  rl/run_workers.sh 4 <Fai60> <Fai60> rl_out/fai_ppo_bc3b_20261016
+     env: SIM=/home/joe/tcg/tcg-sim
+          BC_MODEL=bc3_out/bc3_policy.pt
+          TCG_MATCHUPS=fai:fai:1.0
+          TCG_OPP_MIX=self:0.5,bc:0.25,heuristic:0.25   (script default)
+          TCG_SAMPLE_TEMP=1.0                            (script default)
+          RL_MODEL=$OUTDIR/ckpt_current.pt               (script default)
+Gravy: rl/run_workers.sh 4 <Gravy60> <Gravy60> rl_out/gravy_ppo_gravybc3
+     env: SIM=/home/joe/tcg/tcg-sim
+          BC_MODEL=gravy_bc/bc3_out/bc3_policy.pt
+          TCG_MATCHUPS=gravy:gravy:1.0
+          [opp mix / sample temp / RL_MODEL identical defaults]
+
+=== C. code diff (the ONLY code difference) ===
+patch_trainer_launch.py applied to the pristine trainer asserts its
+sha256, applies 5 anchor-asserted replacements in 3 changes, and
+produced the launch copy sha256
+dc95d81a7f59139a9e290bc661e1b17f0cf85a93cdd2a829f63436a3829bf70a:
+
+ 1. Gate.__init__: suite_path None -> empty suite (suite_score on
+    zero positions returns (0,0,{}); suite_ok vs a (0,0,{}) baseline
+    is True, so acceptance reduces to the KL budget alone — both
+    facts exercised in the build test).
+ 2. main(): --suite none maps to suite_path None (Flag 2 switch,
+    with an in-code comment naming the ratification).
+ 3. Spot-gate deck: DECK_FAI -> DECK_SPOT, repointed from
+    decks/nats2026_ashlyn_fai_60.txt to
+    decks/nats2026_eriksen_gravy_60.txt, both use sites (eval.py
+    --deck-a / --deck-b in run_spot_gate) updated. Necessary because
+    the deck is a module constant (trainer_v4.py:259), NOT a CLI
+    argument — the design draft's ":276 --learner-deck" is the
+    eval.py subprocess's seat argument, not a trainer deck option.
+
+=== D. the complete configuration delta ===
+  1. --out-dir          (run directory)
+  2. --bc3 / BC_MODEL   (anchor: stage-2 Gravy BC)
+  3. worker deck args + TCG_MATCHUPS + spot-gate deck constant
+                        (the Gravy mirror deck)
+  4. --suite none       (Flag 2: suite gate removed; KL/spot/heartbeat
+                        retained at their 3b values)
+NOTHING ELSE differs. In particular there are no learning-rate,
+budget, batch, epoch, floor, or window changes, and the retained
+--probe instrument is byte-identical.
