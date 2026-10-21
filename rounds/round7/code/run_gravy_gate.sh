@@ -1,7 +1,10 @@
 #!/bin/bash
 # Round-7 GRAVY GATE fleet — run_gate.sh (round-3 Fai gate) with the
 # registered substitutions only:
-#   * tree     /tmp/gravytree (gate lineage; build-package.md sec.6)
+#   * tree     /tmp/gravytree — built from /tmp/otree per follow-up
+#              K2 (claude-reply-dd4cb2f sec.3): the ABORT-PATCHED
+#              build, search.php 8f6b35da...; the runner pins the
+#              tree's hashes itself (see the guard block below)
 #   * model    $GRAVY_MODEL — the C4-selected stage-3 checkpoint;
 #              REQUIRED from the launch manifest, no default, so the
 #              runner can never silently use a stale path
@@ -16,10 +19,11 @@
 #   * out      /tmp/ggate (file names inside keep the gate_ form the
 #              registry script parses)
 #
-# REVIEW-GATED: do not run until the round-7 build package is approved
-# at its committed sha AND Joe gives the go in chat. The launch wrapper
-# verifies the tree's built hashes against the build package before
-# invoking this script (launch conditions, build-package.md sec.7).
+# REVIEW-GATED: do not run until the round-7 build package AND the
+# K1-K5 follow-up are approved at their committed shas AND Joe gives
+# the go in chat. This script verifies the tree's built hashes
+# against the follow-up's sec.K2 list before anything starts
+# (follow-up K2 tree guard, below).
 #
 # Everything else is the Fai gate's structure verbatim: one patched
 # server per seat for the whole fleet (seat env, distinct sockets,
@@ -39,6 +43,29 @@ DECK=/home/joe/tcg/tcg-sim/decks/nats2026_eriksen_gravy_60.txt
 OUT=${GATE_OUT:-/tmp/ggate}
 TIMEOUT=${GATE_TIMEOUT:?GATE_TIMEOUT must be set from the Gravy contention probe}
 PROD_SERVER=/home/joe/tcg/tcg-sim/rl/search_server.py
+
+# Follow-up K2 tree guard: the Gravy tree is the abort-patched
+# build (copied from /tmp/otree). Pin its three hashes here so a
+# stale or wrong tree aborts the launch before any server starts
+# or any output is created.
+expect_hash() {
+  # $1 = path, $2 = expected sha256, $3 = label
+  local got
+  got=$(sha256sum "$1" 2>/dev/null | cut -d' ' -f1)
+  [ "$got" = "$2" ] || {
+    echo "ABORT: $3 hash mismatch: $1 = ${got:-missing}, want $2" >&2
+    exit 1; }
+}
+expect_hash "$TREE/search.php" \
+  8f6b35da23f4e5fc7f5fda2ede2d65ba330f9f3eb463e3377978ded1f5d7fa61 \
+  "search.php (abort-patched build, follow-up K2)"
+expect_hash "$TREE/featurize.php" \
+  f81193e0b8a284c4b13a63fd36956ab29614776dd9bdd1c6462537b87a5f0b92 \
+  "featurize.php"
+expect_hash "$TREE/rl/search_server.py" \
+  ab85fa1bcf19b41c7d48db642a2fd93d211e826b9f684594cefa5a1100f3c52c \
+  "patched search server"
+
 mkdir -p $OUT
 cd $TREE
 

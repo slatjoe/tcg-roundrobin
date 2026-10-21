@@ -14,16 +14,26 @@
 # the launch copy produced by patch_trainer_launch.py (sha256
 # dc95d81a...), installed at $SIM/rl/trainer_v4_gravy.py so SIM_ROOT
 # resolves to the sim root.
+#
+# FOLLOW-UP K1 (claude-reply-dd4cb2f sec.3): the KL probe set is the
+# GRAVY probe (probe/probe_gravy_v1.jsonl, built by
+# code/build_gravy_probe.py from the stage-1 mirror corpus under the
+# Fai recipe), passed explicitly via --probe. The trainer's default
+# (the Fai probe) is never used by this launch.
 set -u
 SIM=/home/joe/tcg/tcg-sim
 PY=/home/joe/tcg/rl-env/bin/python
 G60=$SIM/decks/nats2026_eriksen_gravy_60.txt
 OUT=$SIM/rl_out/gravy_ppo_gravybc3
 ANCHOR=$SIM/gravy_bc/bc3_out/bc3_policy.pt
+PROBE=$SIM/probe/probe_gravy_v1.jsonl
 TRAINER=$SIM/rl/trainer_v4_gravy.py
 
 [ "${GRAVY_STAGE2_CLEARED:-0}" = "1" ] || {
   echo "ABORT: stage-2 anchor stop not cleared (GRAVY_STAGE2_CLEARED!=1)" >&2
+  exit 1; }
+[ -f "$PROBE" ] || {
+  echo "ABORT: Gravy KL probe missing: $PROBE (build it with code/build_gravy_probe.py — follow-up K1)" >&2
   exit 1; }
 [ -f "$ANCHOR" ] || { echo "ABORT: anchor missing: $ANCHOR" >&2; exit 1; }
 grep -q '^dc95d81a' <(sha256sum "$TRAINER") || {
@@ -48,7 +58,8 @@ grep -q 'rollout running' "$OUT/workers_launch.log" || {
   echo "ABORT: rollout workers did not start (see $OUT/workers_launch.log)" >&2
   touch /tmp/stop_rl; exit 1; }
 
-"$PY" "$TRAINER" --out-dir "$OUT" --bc3 "$ANCHOR" --suite none
+"$PY" "$TRAINER" --out-dir "$OUT" --bc3 "$ANCHOR" --suite none \
+  --probe "$PROBE"
 TRAINER_RC=$?
 
 touch /tmp/stop_rl
