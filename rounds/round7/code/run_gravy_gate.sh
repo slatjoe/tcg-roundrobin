@@ -15,7 +15,10 @@
 #              (200 paired seeds x both seats x both arms = 800 games)
 #   * timeout  $GATE_TIMEOUT — REQUIRED, set from the Gravy contention
 #              probe (registered formula: max(700, 3 x slowest of the
-#              4 concurrent probe games)); no Fai number is inherited
+#              4 concurrent probe games)); no Fai number is inherited.
+#              The extended probe's restated value, over all 8 probe
+#              games, is 3,870 s (extended-probe.md sec.6); the launch
+#              manifest supplies it.
 #   * caps     the tree's paired_driver.py is the Gravy LAUNCH COPY
 #              (fleet-alignment registration): TCG_MAX_TURNS=87
 #              (parameter 87, trigger 62), TCG_MAX_DECISIONS=3000,
@@ -24,6 +27,23 @@
 #              (the caps live entirely in the driver it re-invokes)
 #   * out      /tmp/ggate (file names inside keep the gate_ form the
 #              registry script parses)
+#   * containment  the (C) kernel-attribution sweeper
+#              (code/shm_sweep.py, the production form of the extended
+#              probe's selector; claude-reply-ad1d7c6 sec.2(C)) runs
+#              alongside the chunks: the run-start ipcs listing is
+#              saved first (rule 4's exclusion set), the sweeper
+#              starts before the servers, passes every 60 s deleting
+#              only segments that pass all four selection rules, and
+#              is stopped after the last chunk so the closing ipcs
+#              counts are post-containment. Its log is a run output
+#              ($OUT/gate_shm_sweep.log). It is deployed at the tree
+#              root and hash-pinned in the guard block below.
+#
+# In-place revision history of this runner (each revision's hash is
+# recorded in its package; the committed file is the current one):
+# 2895c4a0... (fleet-alignment draft) -> 0c458627... (fleet-
+# alignment registration: the driver + retry guard pins) -> this
+# revision (containment package: the (C) sweeper pin + integration).
 #
 # REVIEW-GATED: do not run until the round-7 build package AND the
 # K1-K5 follow-up are approved at their committed shas AND Joe gives
@@ -77,13 +97,33 @@ expect_hash "$TREE/paired_driver.py" \
 expect_hash "$TREE/gate_raw_retry.py" \
   c3fb227e76084a7a9e509ca9cde38295c9f3e286ed48f79295749fd895e20a93 \
   "gate_raw_retry.py (unchanged stock copy; caps live in the driver)"
+expect_hash "$TREE/shm_sweep.py" \
+  728a0149e1241079ba09898481c9cacfe6606b53c5aa3bab09b3a1009269b290 \
+  "shm_sweep.py ((C) production sweeper, containment package)"
 
 mkdir -p $OUT
 cd $TREE
 
+# (C) containment (claude-reply-ad1d7c6 sec.2(C)): save the
+# run-start listing - its shmids are the sweeper's rule-(4)
+# exclusion set - then start the sweeper alongside the run. The
+# tree's servers hold no segments (verified in the extended
+# probe), so the sweeper may start before them. It is stopped
+# after the last chunk (below), before the closing listings.
+ipcs -m > $OUT/gate_ipcs_run_start.txt
+awk '$1 ~ /^0x/ {print $2}' $OUT/gate_ipcs_run_start.txt \
+  > $OUT/gate_shm_start.txt
+rm -f $OUT/gate_shm_sweep.stop
+$PY shm_sweep.py --log $OUT/gate_shm_sweep.log \
+  --start-file $OUT/gate_shm_start.txt \
+  --games-dir $TREE/vendor/talishar/Games \
+  --interval 60 --stop-file $OUT/gate_shm_sweep.stop &
+SWEEP_PID=$!
+
 SRV_PIDS=""
 cleanup() {
   for pid in $SRV_PIDS; do kill $pid 2>/dev/null; done
+  kill $SWEEP_PID 2>/dev/null
 }
 trap cleanup EXIT
 
@@ -144,6 +184,12 @@ chunk_worker c4 8151-8200 & CHUNK_PIDS="$CHUNK_PIDS $!"
 # Wait on the chunk workers ONLY (a bare wait would also wait on the
 # two server processes and hang forever — the Fai gate's lesson).
 wait $CHUNK_PIDS
+
+# Stop the (C) sweeper now that the last game has ended: it exits
+# after its current pass (worst case one interval), and its log is
+# complete before the closing listings are taken.
+touch $OUT/gate_shm_sweep.stop
+wait $SWEEP_PID 2>/dev/null
 
 for pid in $SRV_PIDS; do kill $pid 2>/dev/null; done
 wait $SRV_PIDS 2>/dev/null
