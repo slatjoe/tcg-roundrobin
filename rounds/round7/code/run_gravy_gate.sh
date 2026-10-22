@@ -98,7 +98,7 @@ expect_hash "$TREE/gate_raw_retry.py" \
   c3fb227e76084a7a9e509ca9cde38295c9f3e286ed48f79295749fd895e20a93 \
   "gate_raw_retry.py (unchanged stock copy; caps live in the driver)"
 expect_hash "$TREE/shm_sweep.py" \
-  728a0149e1241079ba09898481c9cacfe6606b53c5aa3bab09b3a1009269b290 \
+  98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33 \
   "shm_sweep.py ((C) production sweeper, containment package)"
 
 mkdir -p $OUT

@@ -145,13 +145,23 @@ def select(segs, start_shmids, games_dir):
     live = live_pids()
     gkeys = game_keys(games_dir)
     chosen = []
+    unattributed = 0
     for shmid, s in sorted(segs.items()):
+        cpid = s.get("cpid")
+        lpid = s.get("lpid")
+        if cpid is None or lpid is None or cpid <= 0 or lpid <= 0:
+            # Fail-safe (claude-reply-ef34219 sec.2): a segment with
+            # no usable pid attribution - its -p row withheld or
+            # malformed - is never selected. If the -p parse ever
+            # regresses, the sweep keeps everything and the leak
+            # grows; it never deletes unattributed memory. Counted
+            # per pass so the regression is visible in the log.
+            unattributed += 1
+            continue
         if s.get("owner") != "joe":
             continue
         if s.get("nattch") != 0:
             continue
-        cpid = s.get("cpid", 0)
-        lpid = s.get("lpid", 0)
         if cpid in live or lpid in live:
             continue
         if s.get("key") in gkeys:
@@ -159,7 +169,7 @@ def select(segs, start_shmids, games_dir):
         if shmid in start_shmids:
             continue
         chosen.append((shmid, s))
-    return chosen
+    return chosen, unattributed
 
 
 def fmt_time(raw):
@@ -208,17 +218,19 @@ def main():
     pass_no = 0
     while True:
         pass_no += 1
+        unattributed = 0
         try:
             segs = parse_segments()
-            chosen = select(segs, start_shmids, a.games_dir)
+            chosen, unattributed = select(segs, start_shmids,
+                                            a.games_dir)
         except Exception as e:  # keep logging; a pass error is evidence too
             log.write("PASS %d %s ERROR %r\n"
                       % (pass_no, datetime.datetime.now().isoformat(), e))
             chosen = []
             segs = {}
-        log.write("PASS %d %s total=%d selected=%d\n"
+        log.write("PASS %d %s total=%d selected=%d unattributed=%d\n"
                   % (pass_no, datetime.datetime.now().isoformat(),
-                     len(segs), len(chosen)))
+                     len(segs), len(chosen), unattributed))
         deleted = 0
         failed = 0
         for shmid, s in chosen:

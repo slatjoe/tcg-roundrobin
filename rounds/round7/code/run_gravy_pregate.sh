@@ -138,7 +138,7 @@ expect_hash "$TREE/gate_ipcs_cleanup.sh" \
   338183e255acfa1b8ec23fd73511e55e291b8af64686ddaf84e7ba1779e3162e \
   "gate_ipcs_cleanup.sh (standing G8 sweep, round-3 committed copy)"
 expect_hash "$TREE/shm_sweep.py" \
-  728a0149e1241079ba09898481c9cacfe6606b53c5aa3bab09b3a1009269b290 \
+  98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33 \
   "shm_sweep.py ((C) production sweeper, containment package)"
 expect_hash "$TREE/parse_r3_pair.py" \
   ed47c9cd2ac90947e0552f1c9c2959b4834ac9ac6f65bff120085c4b45701fa1 \
