@@ -16,6 +16,12 @@
 #   * timeout  $GATE_TIMEOUT — REQUIRED, set from the Gravy contention
 #              probe (registered formula: max(700, 3 x slowest of the
 #              4 concurrent probe games)); no Fai number is inherited
+#   * caps     the tree's paired_driver.py is the Gravy LAUNCH COPY
+#              (fleet-alignment registration): TCG_MAX_TURNS=87
+#              (parameter 87, trigger 62), TCG_MAX_DECISIONS=3000,
+#              TCG_STUCK_LIMIT=200 — pinned by hash in the guard block
+#              below, alongside the unchanged stock gate_raw_retry.py
+#              (the caps live entirely in the driver it re-invokes)
 #   * out      /tmp/ggate (file names inside keep the gate_ form the
 #              registry script parses)
 #
@@ -65,6 +71,12 @@ expect_hash "$TREE/featurize.php" \
 expect_hash "$TREE/rl/search_server.py" \
   ab85fa1bcf19b41c7d48db642a2fd93d211e826b9f684594cefa5a1100f3c52c \
   "patched search server"
+expect_hash "$TREE/paired_driver.py" \
+  0a6b7a85c0123133c5ffcefbccd0c03bc53a8f3885ff04c30677799003fc63ae \
+  "paired_driver.py (Gravy launch copy, fleet-alignment registration: TCG_MAX_TURNS=87, trigger 62)"
+expect_hash "$TREE/gate_raw_retry.py" \
+  c3fb227e76084a7a9e509ca9cde38295c9f3e286ed48f79295749fd895e20a93 \
+  "gate_raw_retry.py (unchanged stock copy; caps live in the driver)"
 
 mkdir -p $OUT
 cd $TREE
