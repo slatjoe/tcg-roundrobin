@@ -12,7 +12,7 @@
 # short: the 3b launch with the out-dir, the anchor, the mirror deck
 # and the Flag-2 suite line changed, and NOTHING else. The trainer is
 # the launch copy produced by patch_trainer_launch.py (sha256
-# dc95d81a...), installed at $SIM/rl/trainer_v4_gravy.py so SIM_ROOT
+# a48c4abc...), installed at $SIM/rl/trainer_v4_gravy.py so SIM_ROOT
 # resolves to the sim root.
 #
 # FOLLOW-UP K1 (claude-reply-dd4cb2f sec.3): the KL probe set is the
@@ -36,8 +36,8 @@ TRAINER=$SIM/rl/trainer_v4_gravy.py
   echo "ABORT: Gravy KL probe missing: $PROBE (build it with code/build_gravy_probe.py — follow-up K1)" >&2
   exit 1; }
 [ -f "$ANCHOR" ] || { echo "ABORT: anchor missing: $ANCHOR" >&2; exit 1; }
-grep -q '^dc95d81a' <(sha256sum "$TRAINER") || {
-  echo "ABORT: $TRAINER is not the reviewed launch copy (dc95d81a...)" >&2
+grep -q '^a48c4abc' <(sha256sum "$TRAINER") || {
+  echo "ABORT: $TRAINER is not the reviewed launch copy (a48c4abc...)" >&2
   exit 1; }
 
 mkdir -p "$OUT"

@@ -25,6 +25,18 @@ Changes:
   2. main(): --suite none maps to suite_path None (with a comment).
   3. DECK_FAI -> DECK_SPOT, repointed at the Gravy deck, uses updated.
 
+STAGE-3 INSTRUMENT ALIGNMENT (claude-reply-2e5e4c5 sec.3; added by
+the alignment registration, rounds/round7/stage3-alignment.md):
+  4. run_spot_gate: --max-turns 60 -> 87 (parameter; trigger 62),
+     TCG_MAX_DECISIONS=3000 set explicitly in the eval subprocess
+     environment, capped_games accumulated from the eval summaries,
+     and the read draw-scored: (wins + 0.5*capped) / played against
+     the unchanged 0.30 floor.
+  5. finalize_games heartbeat tally: a capped game contributes 0.5
+     (a draw) to the heartbeat window and the recent-results tally
+     instead of 0.0. Episode rewards are NOT changed (they receive
+     `capped` separately in assign_episode_rewards).
+
 Usage:
   patch_trainer_launch.py <trainer_v4.py> <out.py>
 """
@@ -59,6 +71,45 @@ REPLACEMENTS = [
     ),
     ('"--deck-a", DECK_FAI,', '"--deck-a", DECK_SPOT,'),
     ('"--deck-b", DECK_FAI,', '"--deck-b", DECK_SPOT,'),
+    # --- stage-3 instrument alignment (changes 4-5 in the docstring)
+    (
+        '"--learner-deck", deck, "--max-turns", "60",',
+        '"--learner-deck", deck, "--max-turns", "87",',
+    ),
+    (
+        "            r = subprocess.run(cmd, capture_output=True, text=True,\n"
+        "                               cwd=SIM_ROOT, timeout=1500)",
+        "            r = subprocess.run(cmd, capture_output=True, text=True,\n"
+        "                               cwd=SIM_ROOT, timeout=1500,\n"
+        "                               env={**os.environ,\n"
+        "                                    \"TCG_MAX_DECISIONS\": \"3000\"})",
+    ),
+    (
+        "    wins = played = 0",
+        "    wins = played = capped_total = 0",
+    ),
+    (
+        "        wins += int(summ[\"wins\"])\n"
+        "        played += int(summ[\"games\"])",
+        "        wins += int(summ[\"wins\"])\n"
+        "        played += int(summ[\"games\"])\n"
+        "        capped_total += int(summ.get(\"capped_games\", 0))",
+    ),
+    (
+        "    wr = wins / played",
+        "    # ROUND-7 ALIGNMENT: draw-scored read -- capped games score\n"
+        "    # 0.5 (re-specified instrument; see stage3-alignment.md).\n"
+        "    wr = (wins + 0.5 * capped_total) / played",
+    ),
+    (
+        "                won = 1.0 if (winner == seat and not capped) else 0.0",
+        "                # ROUND-7 ALIGNMENT: capped games are draws (0.5)\n"
+        "                # in the heartbeat / recent tallies (re-specified\n"
+        "                # instrument). Episode rewards are NOT changed:\n"
+        "                # they receive `capped` separately, above.\n"
+        "                won = (0.5 if capped else\n"
+        "                       1.0 if winner == seat else 0.0)",
+    ),
 ]
 
 
