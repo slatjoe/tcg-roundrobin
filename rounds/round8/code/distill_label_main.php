@@ -12,11 +12,18 @@
 //     cap 4), recorded by the capture arm at capture time. The
 //     relabeler's all-candidates-up-to-cap shape is NOT the
 //     teacher's procedure and is not used.
-//   * W is pinned at 25 - the registered teacher's k. A LABEL_W
-//     env that says anything else aborts the run: the L-era
-//     LABEL_W=50 label sets are a different instrument (L3 value
-//     labels), and silently relabeling at W=50 would distill a
-//     different teacher (claude-reply-926f6c3 sec.1).
+//   * W is a RUN-PINNED parameter (round-8 amendment,
+//     claude-reply-597d181 sec.3, Option 1 - Joe's choice
+//     2026-10-25): the run's W is pinned by the LABEL_W env
+//     (the registered teacher's k = 25 when LABEL_W is unset).
+//     EVERY job must carry a "W" equal to the pin; a job whose
+//     W differs, or that carries no W, ABORTS the run before
+//     any labeling. The L-era LABEL_W=50 label sets are a
+//     different instrument (L3 value labels); the pin, the
+//     per-job W, and W recorded on every raw row make which
+//     instrument produced a label set auditable from the rows
+//     themselves - W can never drift silently (the hazard in
+//     claude-reply-926f6c3 sec.1).
 //   * pair "va" - the deployed teacher's continuation.
 //
 // Usage: php distill_label_main.php <deck> <deck> --policy-search --games 1
@@ -55,18 +62,34 @@
 $jobsFile = getenv("DISTILL_JOBS"); $outFile = getenv("DISTILL_OUT");
 $seedBase = intval(getenv("DISTILL_SEED") ?: 424242);
 $wEnv = getenv("LABEL_W");
-if ($wEnv !== false && intval($wEnv) !== 25) {
-  fwrite(STDERR, "ABORT: LABEL_W=$wEnv - the registered teacher is k=25; "
-    . "the round-8 labeler refuses any other W\n");
-  exit(2);
+$W = 25; // the registered teacher's k - the pin when LABEL_W is unset
+if ($wEnv !== false) {
+  if (intval($wEnv) <= 0
+      || strval(intval($wEnv)) !== trim(strval($wEnv))) {
+    fwrite(STDERR, "ABORT: LABEL_W=$wEnv is not a positive integer\n");
+    exit(2);
+  }
+  $W = intval($wEnv);
 }
 putenv("LABEL_DRIVER=1");
 include "play_game.php"; // loads vendor + search.php, returns under LABEL_DRIVER
-$W = 25;
 $jobs = [];
 foreach (file($jobsFile) as $ln) {
   $ln = trim($ln); if ($ln === "") continue;
   $j = json_decode($ln, true); if (is_array($j)) $jobs[] = $j;
+}
+// Per-job W pin: every job must carry the run's pinned W. A
+// mismatch (or a missing W) aborts before any labeling - a
+// label set is produced by exactly one instrument, named by
+// the pin and restated on every job and every raw row.
+foreach ($jobs as $ji => $j) {
+  if (!isset($j["W"]) || intval($j["W"]) !== $W) {
+    fwrite(STDERR, "ABORT: job $ji (snap " . ($j["snap"] ?? "?")
+      . ") carries W="
+      . (isset($j["W"]) ? json_encode($j["W"]) : "<missing>")
+      . " - the run's pinned W is $W (LABEL_W)\n");
+    exit(2);
+  }
 }
 fwrite(STDERR, "distill label jobs=" . count($jobs) . " W=$W\n");
 $splitCands = getenv("DISTILL_SPLIT_CANDS") === "1";
@@ -123,6 +146,7 @@ foreach ($jobs as $ji => $j) {
     $r["player"] = intval($j["player"]);
     $r["turn"] = intval($j["turn"] ?? 0);
     $r["seed_base"] = $seedBase + $ji * 100003;
+    $r["W"] = $W;
     fwrite($fh, json_encode($r) . "\n");
   }
   fclose($fh);

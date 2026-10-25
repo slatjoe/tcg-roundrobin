@@ -1,0 +1,67 @@
+--- a/code/run_label_corpus.sh
++++ b/code/run_label_corpus.sh
+@@ -26,6 +26,13 @@
+ #   * World seeds: DISTILL_SEED 999001 + shard * 1000003; the
+ #     seed base of every job is recorded on its raw rows (labels
+ #     join back to them by snap for provenance).
++#   * Label width W (round-8 amendment, claude-reply-597d181
++#     sec.3, Option 1): LABEL_W env, default 100 - the run's
++#     pin. Every job built below is stamped with it, the labeler
++#     asserts job W == pin (distill_label_main.php), every raw
++#     row records it, and label_reduce.py reads it back and
++#     carries it onto the labels. Set LABEL_W=25 only to
++#     reproduce the pilot-era instrument, explicitly.
+ # Outputs in $OUT: jobs.jsonl, raw_shard*.jsonl, labels.jsonl,
+ # thin.jsonl, label_manifest.json (counts + hashes).
+ set -u
+@@ -37,6 +44,7 @@
+ CODE_DIR=${CODE_DIR:-/home/joe/tcg/round8_code}
+ CORPUS=${CORPUS_OUT:-/home/joe/tcg/distill_corpus}
+ OUT=${LABEL_OUT:-/home/joe/tcg/distill_corpus/labels}
++LABEL_W=${LABEL_W:-100}
+ NSHARD=4
+ mkdir -p "$OUT"
+ 
+@@ -55,9 +63,10 @@
+   0400539dda891c34e3573b83de3aa299af42c072f949db49ce4d67d5d0e9c82c "v15"
+ 
+ # --- jobs ---------------------------------------------------------
+-$PY - "$CORPUS" "$OUT" <<'PYEOF' || exit 1
++$PY - "$CORPUS" "$OUT" "$LABEL_W" <<'PYEOF' || exit 1
+ import glob, json, sys
+ corpus, out = sys.argv[1], sys.argv[2]
++W = int(sys.argv[3])
+ jobs = []
+ for idx in sorted(glob.glob(corpus + "/*_log/snaps/teacher_snap_index.jsonl")):
+     snaps_dir = idx.rsplit("/", 1)[0]
+@@ -72,7 +81,7 @@
+                      "player": r["player"], "branch": r["branch"],
+                      "turn": r["turn"], "cands": r["cands"],
+                      "selected": r["selected"],
+-                     "prior_pick": r["prior_pick"]})
++                     "prior_pick": r["prior_pick"], "W": W})
+ with open(out + "/jobs.jsonl", "w") as f:
+     for j in jobs:
+         f.write(json.dumps(j) + "\n")
+@@ -153,6 +162,7 @@
+     (cd "$tree" && DISTILL_JOBS="$OUT/jobs_shard${s}_p$p.jsonl" \
+        DISTILL_OUT="$OUT/raw_shard${s}_p$p.jsonl" \
+        DISTILL_SEED=$((999001 + s * 1000003)) \
++       LABEL_W="$LABEL_W" \
+        TCG_POLICY_SOCK="$OUT/prod_s$p.sock" \
+        php distill_label_main.php \
+          "$tree/decks/nats2026_ashlyn_fai_60.txt" \
+@@ -172,11 +182,11 @@
+ $PY "$CODE_DIR/label_reduce.py" --jobs "$OUT/jobs.jsonl" \
+   --raw "$OUT/raw_all.jsonl" --out "$OUT/labels.jsonl" \
+   --thin-out "$OUT/thin.jsonl" > "$OUT/reduce_counts.json" || exit 1
+-$PY - "$OUT" <<'PYEOF'
++$PY - "$OUT" "$LABEL_W" <<'PYEOF'
+ import hashlib, json, sys
+ out = sys.argv[1]
+ h = hashlib.sha256(open(out + "/labels.jsonl", "rb").read()).hexdigest()
+-man = {"labels_sha256": h,
++man = {"W": int(sys.argv[2]), "labels_sha256": h,
+        "labels": sum(1 for _ in open(out + "/labels.jsonl")),
+        "thin": sum(1 for _ in open(out + "/thin.jsonl")),
+        "reduce_counts": json.load(open(out + "/reduce_counts.json"))}

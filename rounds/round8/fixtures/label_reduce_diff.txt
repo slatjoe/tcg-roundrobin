@@ -1,0 +1,73 @@
+--- a/code/label_reduce.py
++++ b/code/label_reduce.py
+@@ -28,6 +28,16 @@
+     index, aligned with "candidates") - the pilot's mechanism
+     check (claude-reply-a076148 sec.3) reads them against the
+     live stat rows' means.
++  * W (the label width) is READ from the raw rows - every raw
++    row must carry the same integer "W" (the labeler's run pin,
++    distill_label_main.php; round-8 amendment,
++    claude-reply-597d181 sec.3). A raw row with no integer W, or
++    a mix of widths in one reduce, ABORTS: one reduce covers one
++    instrument. The value is carried onto every label row,
++    every thin row, and the counts, so a label set states its
++    own width. (The "20" constants in the arithmetic are the
++    registered finished-worlds floor, not W, and never change
++    with W.)
+ 
+ Inputs: --jobs (the labeler's job file), --raw (one or more raw
+ row files from distill_label_main.php), --out labels file,
+@@ -57,12 +67,25 @@
+     # outcomes[(snap, cand)][world] = outcome, finished only
+     outcomes = defaultdict(dict)
+     seen_snaps = set()
++    W = None
+     for path in a.raw:
+         for ln in open(path):
+             ln = ln.strip()
+             if not ln:
+                 continue
+             r = json.loads(ln)
++            w = r.get("W")
++            if not isinstance(w, int) or isinstance(w, bool):
++                raise SystemExit(
++                    "ABORT: raw row for snap "
++                    f"{r.get('snap')} carries no integer W - "
++                    "not a pinned labeler run's output")
++            if W is None:
++                W = w
++            elif w != W:
++                raise SystemExit(
++                    f"ABORT: mixed W in raw rows ({W} and {w}) "
++                    "- one reduce covers one label width")
+             seen_snaps.add(r["snap"])
+             res = r.get("result")
+             if not isinstance(res, dict):
+@@ -73,7 +96,8 @@
+                 float(res["outcome"])
+ 
+     labels, thin = [], []
+-    counts = {"jobs": len(jobs), "no_rows": 0, "prior_not_selected": 0,
++    counts = {"W": W, "jobs": len(jobs), "no_rows": 0,
++              "prior_not_selected": 0,
+               "thin": 0, "confirm": 0, "confirm_paired_thin": 0,
+               "overturn": 0, "no_overturn_tested": 0}
+     for snap, j in jobs.items():
+@@ -88,7 +112,7 @@
+         n_worlds = {ci: len(outcomes.get((snap, ci), {})) for ci in sel}
+         if n_worlds.get(prior, 0) < 20:
+             counts["thin"] += 1
+-            thin.append({"snap": snap, "game": j["game"],
++            thin.append({"snap": snap, "game": j["game"], "W": W,
+                          "n_worlds": n_worlds,
+                          "reason": "prior candidate finished "
+                                    f"{n_worlds.get(prior, 0)} < 20 worlds"})
+@@ -112,7 +136,7 @@
+             if means[ci] is not None and means[ci] > best_mean:
+                 best_mean = means[ci]
+                 best = ci
+-        row = {"state_id": snap, "snap_dir": j["snap_dir"],
++        row = {"state_id": snap, "snap_dir": j["snap_dir"], "W": W,
+                "game": j["game"], "player": int(j["player"]),
+                "branch": j["branch"], "turn": int(j.get("turn", 0)),
+                "prior_pick": prior, "candidates": sel,

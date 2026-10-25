@@ -1,0 +1,282 @@
+#!/bin/bash
+# Round-8 W=100 V1 CHECK - the pre-corpus label-width check of
+# claude-reply-597d181 sec.3 (Option 1; Joe's choice 2026-10-25).
+#
+# *** REVIEW-GATED - DO NOT RUN ***
+# Launches only on Claude's confirmation of the W=100 amendment
+# code commit at its committed sha AND Joe's go for the check
+# (Joe's Option-1 choice is on record; the check is that
+# option's first step).
+#
+# What it does, and nothing else:
+#   * Takes the pilot's 547 V1 capture states - the very job
+#     file the pilot used ($V1_JOBS, default the resumed pilot's
+#     v1_jobs.jsonl) - and stamps every job W=100.
+#   * Labels them TWICE at W=100: run A world-seed base 555001,
+#     run B 777001 - the pilot V1's registered bases - sharded
+#     across 4 native-tree copies with run_label_corpus.sh's
+#     exact sharding (round-robin i % 4 shard split, per-player
+#     groups against that seat's production server, ONE label
+#     process per tree, a (C) sweeper per tree, and the corpus
+#     runner's per-shard seed-offset pattern: shard s runs at
+#     base + s * 1000003, exactly as the corpus offsets its
+#     999001 base; within a file, job ji takes
+#     seedBase + ji * 100003, the labeler's own convention).
+#   * Reduces each run with label_reduce.py (which reads W back
+#     from the raw rows and asserts uniformity) and computes
+#     V1-ov / V1-conf with Wilson intervals. The arithmetic is
+#     pilot_report.py's: wilson() and rate_line() are IMPORTED
+#     from it, and the V1 counting mirrors its V1 block line
+#     for line; per-job timing stats use its COST formula
+#     (mean / p95 = secs[ceil(.95n)-1] / max over sorted secs).
+#   * REGISTERED THRESHOLD (claude-reply-597d181 sec.3):
+#     V1-ov >= 0.50 - PASS: the corpus may run at W=100.
+#     Below 0.50 - STOP: reported for decision; nothing follows
+#     automatically. The read is a report outcome, not a runner
+#     failure: a completed check exits 0 either way, with the
+#     verdict as the report's and the log's last line.
+# Plays NO games. Grouped label mode (no DISTILL_SPLIT_CANDS -
+# the corpus labeler's shape; the pilot's deadline accounting
+# is not part of this check). Per-job timings come from the
+# labelers' err-log "done ... secs=" lines. Its own OUT only:
+# /tmp/distill_wcheck.
+set -u
+PY=/home/joe/tcg/rl-env/bin/python
+SIM=/home/joe/tcg/tcg-sim
+NATIVE=${NATIVE_TREE:-/tmp/distilltree_native}
+PROD=$SIM/rl/search_server.py
+V15=$SIM/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt
+CODE_DIR=${CODE_DIR:-/home/joe/tcg/round8_code}
+V1_JOBS=${V1_JOBS:-/tmp/distill_pilot_resume/v1_jobs.jsonl}
+OUT=${WCHECK_OUT:-/tmp/distill_wcheck}
+LABEL_W=100
+NSHARD=4
+mkdir -p "$OUT"
+sha256sum "$CODE_DIR"/* > "$OUT/deployed_code_hashes.txt" 2>/dev/null
+
+expect_hash() {
+  local got
+  got=$(sha256sum "$1" | awk '{print $1}')
+  [ "$got" = "$2" ] || { echo "ABORT: $3 hash $got != $2" >&2; exit 1; }
+}
+expect_hash "$NATIVE/featurize.php" \
+  f81193e0b8a284c4b13a63fd36956ab29614776dd9bdd1c6462537b87a5f0b92 \
+  "native featurize.php"
+expect_hash "$PROD" \
+  81ef2cdbefe687cabc97cd7b5f738b2027fc8a1e47c2b0dc72ff787ad85a82d4 \
+  "production server"
+expect_hash "$V15" \
+  0400539dda891c34e3573b83de3aa299af42c072f949db49ce4d67d5e9c82c "v15"
+[ -f "$V1_JOBS" ] || { echo "ABORT: V1 job source $V1_JOBS missing" >&2; exit 1; }
+
+# --- jobs: the pilot's V1 states, stamped W=100 -----------------
+$PY - "$V1_JOBS" "$OUT" "$LABEL_W" <<'PYEOF' || exit 1
+import json, sys
+src, out, W = sys.argv[1], sys.argv[2], int(sys.argv[3])
+jobs = [json.loads(l) for l in open(src) if l.strip()]
+assert len(jobs) == 547, \
+    f"V1 job source has {len(jobs)} jobs, != the pilot's 547"
+for j in jobs:
+    assert "W" not in j, "source job already carries a W"
+    j["W"] = W
+with open(out + "/jobs_w100.jsonl", "w") as f:
+    for j in jobs:
+        f.write(json.dumps(j) + "\n")
+print(f"wcheck jobs (pilot V1 states at W={W}): {len(jobs)}")
+PYEOF
+
+# --- containment --------------------------------------------------
+bash "$CODE_DIR/g8_sweep.sh" "$OUT/g8" || exit 1
+
+# --- production servers (one per seat) ----------------------------
+SRV_PIDS=""
+SWEEP_PIDS=""
+cleanup() {
+  for pid in $SRV_PIDS; do kill "$pid" 2>/dev/null; done
+  for pid in $SWEEP_PIDS; do kill "$pid" 2>/dev/null; done
+}
+trap cleanup EXIT
+for seat in 1 2; do
+  TCG_POLICY_SOCK="$OUT/prod_s${seat}.sock" TCG_LEARNER_SEAT=$seat \
+    SEARCH_MODEL="$V15" \
+    setsid nohup $PY "$PROD" > "$OUT/prod_s${seat}.log" 2>&1 < /dev/null &
+  SRV_PIDS="$SRV_PIDS $!"
+done
+for seat in 1 2; do
+  for i in $(seq 1 30); do
+    grep -q 'search model loaded' "$OUT/prod_s${seat}.log" 2>/dev/null && break
+    sleep 1
+  done
+  grep -q 'search model loaded' "$OUT/prod_s${seat}.log" || {
+    echo "ABORT: production server seat $seat did not load" >&2; exit 1; }
+done
+
+# --- shards: round-robin split + per-player files (built once) ----
+for s in 0 1 2 3; do
+  $PY - "$OUT" "$s" "$NSHARD" <<'PYEOF'
+import json, sys
+out, s, n = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+jobs = [json.loads(l) for l in open(out + "/jobs_w100.jsonl") if l.strip()]
+mine = [j for i, j in enumerate(jobs) if i % n == s]
+with open(f"{out}/jobs_w100_shard{s}.jsonl", "w") as f:
+    for j in mine:
+        f.write(json.dumps(j) + "\n")
+for p in (1, 2):
+    sel = [j for j in mine if int(j["player"]) == p]
+    with open(f"{out}/jobs_w100_shard{s}_p{p}.jsonl", "w") as f:
+        for j in sel:
+            f.write(json.dumps(j) + "\n")
+print(f"shard {s}: {len(mine)} jobs")
+PYEOF
+done
+
+# --- label trees (built once; both runs label in them) ------------
+build_tree() { # shard
+  local s=$1
+  local tree="/tmp/distilltree_wcheck$s"
+  rm -rf "$tree"
+  cp -r "$NATIVE" "$tree"
+  find "$tree" -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null
+  cp "$CODE_DIR/distill_label_main.php" "$tree/"
+  expect_hash "$tree/featurize.php" \
+    f81193e0b8a284c4b13a63fd36956ab29614776dd9bdd1c6462537b87a5f0b92 \
+    "wcheck tree $s featurize.php"
+}
+for s in 0 1 2 3; do build_tree "$s" || exit 1; done
+
+# --- one labeling pass (a full A or B run) --------------------------
+run_pass() { # tag base
+  local tag=$1 base=$2 s p
+  label_shard() { # shard
+    local s=$1
+    local tree="/tmp/distilltree_wcheck$s"
+    ipcs -m > "$OUT/ipcs_${tag}$s.txt"
+    awk '$1 ~ /^0x/ {print $2}' "$OUT/ipcs_${tag}$s.txt" \
+      > "$OUT/shm_start_${tag}$s.txt"
+    rm -f "$OUT/shm_sweep_${tag}$s.stop"
+    $PY "$CODE_DIR/shm_sweep.py" --log "$OUT/shm_sweep_${tag}$s.log" \
+      --start-file "$OUT/shm_start_${tag}$s.txt" \
+      --games-dir "$tree/vendor/talishar/Games" \
+      --interval 60 --stop-file "$OUT/shm_sweep_${tag}$s.stop" &
+    SWEEP_PIDS="$SWEEP_PIDS $!"
+    local p
+    for p in 1 2; do
+      : > "$OUT/raw_${tag}_shard${s}_p$p.jsonl"
+      (cd "$tree" && DISTILL_JOBS="$OUT/jobs_w100_shard${s}_p$p.jsonl" \
+         DISTILL_OUT="$OUT/raw_${tag}_shard${s}_p$p.jsonl" \
+         DISTILL_SEED=$((base + s * 1000003)) \
+         LABEL_W="$LABEL_W" \
+         TCG_POLICY_SOCK="$OUT/prod_s$p.sock" \
+         php distill_label_main.php \
+           "$tree/decks/nats2026_ashlyn_fai_60.txt" \
+           "$tree/decks/nats2026_ashlyn_fai_60.txt" \
+           --policy-search --games 1 \
+           > "$OUT/label_${tag}_shard${s}_p$p.err" 2>&1) || return 1
+    done
+    touch "$OUT/shm_sweep_${tag}$s.stop"
+  }
+  local PIDS="" FAIL=0 pid
+  for s in 0 1 2 3; do label_shard "$s" & PIDS="$PIDS $!"; done
+  for pid in $PIDS; do wait "$pid" || FAIL=1; done
+  [ "$FAIL" = 0 ] || { echo "ABORT: a wcheck label shard failed ($tag)" >&2; return 1; }
+  cat "$OUT"/raw_${tag}_shard*_p*.jsonl > "$OUT/raw_${tag}_all.jsonl"
+  $PY "$CODE_DIR/label_reduce.py" --jobs "$OUT/jobs_w100.jsonl" \
+    --raw "$OUT/raw_${tag}_all.jsonl" \
+    --out "$OUT/labels_w100_${tag}.jsonl" \
+    --thin-out "$OUT/thin_w100_${tag}.jsonl" \
+    > "$OUT/reduce_w100_${tag}.json" || return 1
+  echo "wcheck pass $tag complete: $(cat "$OUT/reduce_w100_${tag}.json")"
+}
+run_pass a 555001 || exit 1
+run_pass b 777001 || exit 1
+
+# --- the read -------------------------------------------------------
+$PY - "$OUT" "$CODE_DIR" <<'PYEOF' || exit 1
+import glob, json, math, re, sys
+out, code_dir = sys.argv[1], sys.argv[2]
+sys.path.insert(0, code_dir)
+from pilot_report import wilson, rate_line  # the pilot's arithmetic
+
+def load(path):
+    return [json.loads(ln) for ln in open(path) if ln.strip()]
+
+A = {r["state_id"]: r for r in load(out + "/labels_w100_a.jsonl")}
+B = {r["state_id"]: r for r in load(out + "/labels_w100_b.jsonl")}
+thin = {t: load(out + f"/thin_w100_{t}.jsonl") for t in ("a", "b")}
+for tag, S in (("a", A), ("b", B)):
+    ws = {r.get("W") for r in S.values()}
+    assert ws == {100}, f"labels_w100_{tag} W set {ws} != {{100}}"
+
+# V1 counting: mirrors pilot_report.py's V1 block exactly.
+both = sorted(set(A) & set(B))
+a_ov = [s for s in both if A[s]["overturn"] == 1]
+ov_same = sum(1 for s in a_ov
+              if B[s]["overturn"] == 1
+              and B[s]["teacher_pick"] == A[s]["teacher_pick"])
+a_cf = [s for s in both if A[s]["overturn"] == 0]
+cf_same = sum(1 for s in a_cf
+              if B[s]["overturn"] == 0
+              and B[s]["teacher_pick"] == A[s]["teacher_pick"])
+
+# Per-job timings from the labelers' err logs ("done ... secs="),
+# stats by pilot_report.py's COST formula.
+secs = []
+for path in glob.glob(out + "/label_*_shard*_p*.err"):
+    for ln in open(path, errors="replace"):
+        m = re.match(r"done \S+ rows=\d+ secs=([0-9.]+)", ln)
+        if m:
+            secs.append(float(m.group(1)))
+secs.sort()
+n = len(secs)
+mean = sum(secs) / n if n else float("nan")
+p95 = secs[min(n - 1, math.ceil(0.95 * n) - 1)] if n else float("nan")
+mx = secs[-1] if n else float("nan")
+
+v1ov = (ov_same / len(a_ov)) if a_ov else None
+passed = v1ov is not None and v1ov >= 0.50
+verdict = ("PASS - V1-ov >= 0.50: the corpus may run at W=100"
+           if passed else
+           "STOP - V1-ov below 0.50 (or undefined): reported for "
+           "decision; the corpus does not run at W=100")
+rep = {
+    "W": 100,
+    "states_labeled_twice": len(both),
+    "A_overturns": len(a_ov), "A_confirmations": len(a_cf),
+    "V1-ov": {"k": ov_same, "n": len(a_ov),
+              "rate": v1ov,
+              "wilson95": list(wilson(ov_same, len(a_ov)))},
+    "V1-conf": {"k": cf_same, "n": len(a_cf),
+                "rate": (cf_same / len(a_cf)) if a_cf else None,
+                "wilson95": list(wilson(cf_same, len(a_cf)))},
+    "thin": {t: len(v) for t, v in thin.items()},
+    "job_timings": {"n": n, "mean": mean, "p95": p95, "max": mx},
+    "threshold": {"registered": "V1-ov >= 0.50",
+                  "pass": passed, "verdict": verdict},
+}
+json.dump(rep, open(out + "/wcheck_report.json", "w"), indent=1)
+L = []
+L.append("ROUND-8 W=100 V1 CHECK (claude-reply-597d181 sec.3)")
+L.append("")
+L.append(f"V1 AT W=100 (pilot capture states, {len(both)} states "
+         f"labeled twice; A overturns {len(a_ov)}, A confirmations "
+         f"{len(a_cf)}):")
+L.append("  " + rate_line("V1-ov  P(B same overturn | A overturned)",
+                          ov_same, len(a_ov)))
+L.append("  " + rate_line("V1-conf P(B confirms | A confirmed)",
+                          cf_same, len(a_cf)))
+L.append("")
+L.append("THIN (excluded, counted): "
+         + ", ".join(f"w100{t} {len(v)}" for t, v in thin.items()))
+L.append("")
+L.append(f"COST (report-only): {n} label job-runs timed; per-job "
+         f"secs: mean {mean:.1f}  p95 {p95:.1f}  max {mx:.1f}")
+L.append("")
+L.append(f"REGISTERED THRESHOLD: {verdict}")
+txt = "\n".join(L) + "\n"
+open(out + "/wcheck_report.txt", "w").write(txt)
+print(txt)
+PYEOF
+echo "WCHECK COMPLETE - reads in $OUT/wcheck_report.txt and" \
+     "$OUT/wcheck_report.json; the corpus stays gated on the" \
+     "reviewer's read of this check plus the option-(a)" \
+     "declaration in its launch manifest"
