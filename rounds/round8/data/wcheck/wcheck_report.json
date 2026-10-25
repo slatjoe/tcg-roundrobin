@@ -1,0 +1,39 @@
+{
+ "W": 100,
+ "states_labeled_twice": 544,
+ "A_overturns": 66,
+ "A_confirmations": 478,
+ "V1-ov": {
+  "k": 29,
+  "n": 66,
+  "rate": 0.4393939393939394,
+  "wilson95": [
+   0.32628120837648644,
+   0.5591736471184857
+  ]
+ },
+ "V1-conf": {
+  "k": 442,
+  "n": 478,
+  "rate": 0.9246861924686193,
+  "wilson95": [
+   0.8974953947319803,
+   0.9451054079109077
+  ]
+ },
+ "thin": {
+  "a": 2,
+  "b": 1
+ },
+ "job_timings": {
+  "n": 1094,
+  "mean": 45.835923217550274,
+  "p95": 90.6,
+  "max": 115.4
+ },
+ "threshold": {
+  "registered": "V1-ov >= 0.50",
+  "pass": false,
+  "verdict": "STOP - V1-ov below 0.50 (or undefined): reported for decision; the corpus does not run at W=100"
+ }
+}

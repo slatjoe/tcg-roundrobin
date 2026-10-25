@@ -1,0 +1,11 @@
+ROUND-8 W=100 V1 CHECK (claude-reply-597d181 sec.3)
+
+V1 AT W=100 (pilot capture states, 544 states labeled twice; A overturns 66, A confirmations 478):
+  V1-ov  P(B same overturn | A overturned): 29/66 = 0.439 Wilson95 [0.326, 0.559]
+  V1-conf P(B confirms | A confirmed): 442/478 = 0.925 Wilson95 [0.897, 0.945]
+
+THIN (excluded, counted): w100a 2, w100b 1
+
+COST (report-only): 1094 label job-runs timed; per-job secs: mean 45.8  p95 90.6  max 115.4
+
+REGISTERED THRESHOLD: STOP - V1-ov below 0.50 (or undefined): reported for decision; the corpus does not run at W=100
