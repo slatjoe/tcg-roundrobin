@@ -1,0 +1,16 @@
+code/pilot_prep.py - NO CHANGE.
+
+Grep audit (claude-reply-8f834d2 sec.2) found exactly four reads of
+live-row means / n_worlds / priors in pilot_prep.py, all wholesale
+pass-through copies into output records - none indexes any of the
+three fields, positionally or by id:
+  line  70: "priors": r["priors"]        (v1 job record, from the
+           capture snap-index row)
+  line 140: "priors": s["priors"]        (v2 job record, from the
+           live stat row)
+  line 147: "means": s["means"]          (v2 truth record)
+  line 148: "n_worlds": s["n_worlds"]    (v2 truth record)
+The by-id interpretation of the live rows happens at read time in
+pilot_report.py, where the accessor + list-shape assert now live;
+pilot_prep.py therefore needs no change and its sha256 is unchanged:
+3131264b9f02e002926199ee7fcf8bf9c3f217cae87a758d009118076d284a30.

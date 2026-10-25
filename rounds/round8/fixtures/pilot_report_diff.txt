@@ -1,0 +1,79 @@
+UNIFIED DIFF: code/pilot_report.py (45b557418c0517d4dd06562c17460e5fe8923c1d926e17788a33eaf54f85ad94) -> fixed
+
+--- /tmp/r8fix_orig/pilot_report.py	2026-10-25 18:09:57.444264137 +0000
++++ code/pilot_report.py	2026-10-25 18:10:22.750264132 +0000
+@@ -48,6 +48,14 @@
+           (timeout_errs) with the candidates they cut.
+   THIN    labels under the 20-finished-worlds floor: excluded
+           and counted, per run.
++
++LIVE-ROW SHAPE (claude-reply-8f834d2 sec.2): the live stat
++rows' means / n_worlds are keyed by candidate id - DecideInner
++builds them per selected candidate id, and PHP's json_encode
++emits a JSON list only when those keys are exactly 0..n-1, an
++object with string keys otherwise. Every live-side read goes
++through live_by_id, and assert_live_shape proves the collapse
++on every list-shaped row before any read relies on it.
+ """
+ import argparse
+ import json
+@@ -89,6 +97,33 @@
+             f"Wilson95 [{lo:.3f}, {hi:.3f}]") if n else f"{name}: n=0"
+ 
+ 
++def assert_live_shape(row, row_name):
++    """A list-shaped live means / n_worlds is sound only when
++    the row's selected == [0..len-1] (the PHP json_encode key
++    collapse, claude-reply-8f834d2 sec.2). Abort, naming the
++    row, if any list-shaped field violates it."""
++    sel = [int(x) for x in row["selected"]]
++    for field in ("means", "n_worlds"):
++        v = row[field]
++        if isinstance(v, list) and sel != list(range(len(v))):
++            raise SystemExit(
++                f"ABORT: live {field} list-shape assert failed "
++                f"for row {row_name}: selected {sel} != "
++                f"list(range({len(v)}))")
++
++
++def live_by_id(row, field, ci, row_name):
++    """ONE accessor for every live-side read of means /
++    n_worlds: by candidate id in both shapes - v[ci] for a
++    list (the shape assert has proved id == position there),
++    v[str(ci)] for a dict."""
++    assert_live_shape(row, row_name)
++    v = row[field]
++    if isinstance(v, list):
++        return v[ci]
++    return v[str(ci)]
++
++
+ def main():
+     ap = argparse.ArgumentParser()
+     ap.add_argument("--out", required=True)
+@@ -170,17 +205,22 @@
+     L.append("")
+ 
+     # ---- mechanism check ---------------------------------------
++    # Live-row shape proof over EVERY truth row (not only the
++    # labeled ones the z-loop below touches): a list-shaped
++    # means / n_worlds must satisfy selected == [0..len-1].
++    for s in v2_snaps:
++        assert_live_shape(truth[s], s)
+     zs = []
+     skipped = 0
+     for s in v2_labeled:
+         t, lab = truth[s], v2[s]
+         pair = {int(t["prior_pick"]), int(t["teacher_pick"])}
+         sel = [int(x) for x in t["selected"]]
+-        for pos, ci in enumerate(sel):
++        for ci in sel:
+             if ci in pair:
+                 continue
+-            m_live = t["means"][pos]
+-            n_live = t["n_worlds"][pos]
++            m_live = live_by_id(t, "means", ci, s)
++            n_live = live_by_id(t, "n_worlds", ci, s)
+             m_lab = (lab.get("means") or {}).get(str(ci))
+             sd_lab = (lab.get("sds") or {}).get(str(ci))
+             n_lab = (lab.get("n_worlds") or {}).get(str(ci))

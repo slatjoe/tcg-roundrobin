@@ -1,0 +1,135 @@
+UNIFIED DIFF: code/run_pilot.sh (0e4febca5f970214c5fc56b707794cf6ce9090e8e99e466d5ee0042513d6eb70) -> fixed
+
+--- /tmp/r8fix_orig/run_pilot.sh	2026-10-25 18:09:57.448264137 +0000
++++ code/run_pilot.sh	2026-10-25 18:11:21.716264121 +0000
+@@ -68,6 +68,18 @@
+ # re-runs phase 3 in full on fresh games and registers them,
+ # then runs phases 4-7 as in the normal flow. The capture and
+ # the Gravy census are not re-run in resume mode.
++#
++# Report-phase fix (claude-reply-8f834d2 sec.2-3, sec.5): the
++# resumed run's pilot_report.py crashed in the mechanism
++# z-check - the live means / n_worlds are keyed by candidate
++# id and the old code read them by enumerate position.
++# pilot_report.py now reads them through one by-id accessor
++# with a list-shape assert. PILOT_RESUME=report (the nine
++# report-phase input hashes asserted first, then ONLY
++# pilot_report.py and phase 7) is defined next to expect_hash,
++# before the standing pins, so the game/label phases are
++# unreachable in that mode. PILOT_RESUME=equiv refuses to
++# start if $OUT already holds equiv_* files.
+ set -u
+ PY=/home/joe/tcg/rl-env/bin/python
+ SIM=/home/joe/tcg/tcg-sim
+@@ -88,6 +100,74 @@
+   got=$(sha256sum "$1" | awk '{print $1}')
+   [ "$got" = "$2" ] || { echo "ABORT: $3 hash $got != $2" >&2; exit 1; }
+ }
++
++# --- resume modes: validation + the report-only re-entry --------
++# (claude-reply-8f834d2 sec.3 and sec.5)
++# PILOT_RESUME=report is the report-only re-entry for the
++# resumed pilot's crashed report phase. It asserts the nine
++# report-phase input hashes in $OUT FIRST; any mismatch is a
++# PILOT STOP. It then runs ONLY pilot_report.py and phase 7
++# (the teacher-root census, verbatim) - the branch sits before
++# the standing pins and exits before phases 1-5, so
++# containment, capture, equivalence, jobs and labeling are
++# UNREACHABLE in this mode: no games, no labeling, no capture.
++# PILOT_RESUME=equiv is the earlier resume (its step-1
++# assertions sit below, after the standing pins); it also
++# refuses to start if $OUT already holds equiv_* files (sec.5).
++RESUME=${PILOT_RESUME:-}
++if [ -n "$RESUME" ] && [ "$RESUME" != "equiv" ] \
++   && [ "$RESUME" != "report" ]; then
++  echo "ABORT: unknown PILOT_RESUME mode '$RESUME'" >&2
++  exit 1
++fi
++if [ "$RESUME" = "report" ]; then
++  for spec in \
++    "labels_v1a.jsonl 789112b77e5b7f5820a98ade41b6890d0cffb529d6da29ee0bfb8bb4d9c95df3" \
++    "labels_v1b.jsonl 9f1062750ca4ca8656aecb7b4409cb10491504e8dac06a95e1bbcc089fab47a7" \
++    "labels_v2.jsonl 6b20cdfe5d86520190306dc61d98f625ff6cfdf0a0e30fd5ba72086c7bf1ee4a" \
++    "pilot_v2_truth.jsonl 53f3fc4b8e426d65a1cb405541c2255347cc39edc6399ccbb584b5789e5a4240" \
++    "timings_v1a.jsonl d96a113133b6dddcff241c9da77bf6bfe06630876bd5e96dc62fce9d46c03ea9" \
++    "timings_v1b.jsonl c2a442611811a67623d899112cd316e68df80e6ac7e63951d8e078f7bc6f38ee" \
++    "timings_v2.jsonl 4030f7551a4d4260f5b4dba5f56eefbdcbe3b43edcc92273809450f6a84d05ce" \
++    "pilot_times.jsonl b07f21d136f221444eca4c9cc06ecd44fd62932908103d5270ec2b6e8686df6d" \
++    "pilot_cand_times.jsonl 50850c7cc74b98107a6ab6ffc63b02fcc8ce4cb0ae7dd277dbff978f09bda50b"; do
++    set -- $spec
++    got=$(sha256sum "$OUT/$1" | awk '{print $1}')
++    [ "$got" = "$2" ] || {
++      echo "PILOT STOP: report-mode input $1 hash $got !=" \
++           "pinned $2 - not the crashed run's inputs" >&2
++      exit 1; }
++  done
++  echo "report mode: 9 report-phase inputs pinned ok in $OUT"
++  $PY "$CODE_DIR/pilot_report.py" --out "$OUT" \
++    > "$OUT/pilot_report.txt" || {
++      echo "PILOT STOP: pilot_report.py failed" >&2; exit 1; }
++  # phase 7, verbatim (teacher-root census, report-only)
++  cat "$OUT/v1_jobs.jsonl" "$OUT/v2_jobs.jsonl" \
++    > "$OUT/census_jobs.jsonl"
++  rm -rf "$PROBE_TREE"
++  cp -r "$NATIVE" "$PROBE_TREE"
++  find "$PROBE_TREE" -name __pycache__ -type d \
++    -exec rm -rf {} + 2>/dev/null
++  $PY "$CODE_DIR/patch_census_probe.py" "$PROBE_TREE" || exit 1
++  expect_hash "$PROBE_TREE/featurize.php" \
++    b2fa1ffebaf79446afa84a367a0d48de445c1c119970fae26c76374579c3189a \
++    "census-probe featurize (teacher-root census tree)"
++  cp "$CODE_DIR/featurize_snapshot.php" "$PROBE_TREE/"
++  (cd "$PROBE_TREE" && CENSUS_LOG="$OUT/root_census.jsonl" \
++     FEAT_JOBS="$OUT/census_jobs.jsonl" \
++     FEAT_OUT="$OUT/root_census_states.jsonl" \
++     php featurize_snapshot.php "$DECK" "$DECK" \
++       --policy-search --games 1 \
++       > "$OUT/root_census.err" 2>&1) || {
++         echo "PILOT STOP: teacher-root census failed" >&2
++         exit 1; }
++  $PY "$CODE_DIR/tally_census.py" "$OUT/root_census.jsonl" \
++    > "$OUT/root_census_tally.txt" || exit 1
++  echo "REPORT MODE COMPLETE - reads in $OUT/pilot_report.txt" \
++       "and $OUT/root_census_tally.txt"
++  exit 0
++fi
+ expect_hash "$NATIVE/featurize.php" \
+   f81193e0b8a284c4b13a63fd36956ab29614776dd9bdd1c6462537b87a5f0b92 \
+   "native featurize.php"
+@@ -124,19 +204,24 @@
+ }
+ trap cleanup EXIT
+ 
+-# --- resume mode (claude-reply-e73e682 sec.2) ---------------------
+-# PILOT_RESUME=equiv re-enters after the capture phase. Step 1:
+-# assert the intact pilot capture; any mismatch stops the run
+-# with a PILOT STOP line, before containment or any game. Phase
+-# 2 is then skipped, phase 3 re-runs in full on fresh games
+-# (registered right after the phase), and phases 4-7 run as in
+-# the normal flow. No PILOT_RESUME = the normal flow.
+-RESUME=${PILOT_RESUME:-}
+-if [ -n "$RESUME" ] && [ "$RESUME" != "equiv" ]; then
+-  echo "ABORT: unknown PILOT_RESUME mode '$RESUME'" >&2
+-  exit 1
+-fi
++# --- resume mode equiv (claude-reply-e73e682 sec.2) ---------------
++# (RESUME is defined and validated above, next to the report
++# branch.) PILOT_RESUME=equiv re-enters after the capture
++# phase. Step 1: assert the intact pilot capture; any mismatch
++# stops the run with a PILOT STOP line, before containment or
++# any game. Phase 2 is then skipped, phase 3 re-runs in full on
++# fresh games (registered right after the phase), and phases
++# 4-7 run as in the normal flow. No PILOT_RESUME = the normal
++# flow. Guard (claude-reply-8f834d2 sec.5): equiv refuses to
++# start if $OUT already holds equiv_* files - paired_driver.py
++# resumes from its --out file, so it would skip those seeds
++# and silently re-read the old rows.
+ if [ "$RESUME" = "equiv" ]; then
++  if [ -n "$(ls "$OUT"/equiv_* 2>/dev/null)" ]; then
++    echo "ABORT: PILOT_RESUME=equiv refuses to start - $OUT" \
++         "already holds equiv_* files; use a fresh PILOT_OUT" >&2
++    exit 1
++  fi
+   got=$(sha256sum "$CORPUS/corpus_manifest.json" | awk '{print $1}')
+   [ "$got" = \
+     "edc6e4fbea929f60ec3a157c39a30cb45106ca925f2eb5b42dc45fd4b215ea30" ] || {
