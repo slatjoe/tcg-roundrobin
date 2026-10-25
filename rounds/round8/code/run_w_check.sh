@@ -56,6 +56,8 @@ sha256sum "$CODE_DIR"/* > "$OUT/deployed_code_hashes.txt" 2>/dev/null
 
 expect_hash() {
   local got
+  [[ "$2" =~ ^[0-9a-f]{64}$ ]] || {
+    echo "ABORT: pin for $3 is not a 64-char sha256 (got ${#2} chars)" >&2; exit 1; }
   got=$(sha256sum "$1" | awk '{print $1}')
   [ "$got" = "$2" ] || { echo "ABORT: $3 hash $got != $2" >&2; exit 1; }
 }
@@ -66,7 +68,7 @@ expect_hash "$PROD" \
   81ef2cdbefe687cabc97cd7b5f738b2027fc8a1e47c2b0dc72ff787ad85a82d4 \
   "production server"
 expect_hash "$V15" \
-  0400539dda891c34e3573b83de3aa299af42c072f949db49ce4d67d5e9c82c "v15"
+  0400539dda891c34e3573b83de3aa299af42c072f949db49ce4d67d5d0e9c82c "v15"
 [ -f "$V1_JOBS" ] || { echo "ABORT: V1 job source $V1_JOBS missing" >&2; exit 1; }
 
 # --- jobs: the pilot's V1 states, stamped W=100 -----------------
