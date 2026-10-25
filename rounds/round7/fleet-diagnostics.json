@@ -1,0 +1,304 @@
+{
+ "search_stats": {
+  "stat_files": [
+   "/tmp/ggate/gate_c1_teacher_s1_log/search_stats.jsonl",
+   "/tmp/ggate/gate_c1_teacher_s2_log/search_stats.jsonl",
+   "/tmp/ggate/gate_c2_teacher_s1_log/search_stats.jsonl",
+   "/tmp/ggate/gate_c2_teacher_s2_log/search_stats.jsonl",
+   "/tmp/ggate/gate_c3_teacher_s1_log/search_stats.jsonl",
+   "/tmp/ggate/gate_c3_teacher_s2_log/search_stats.jsonl",
+   "/tmp/ggate/gate_c4_teacher_s1_log/search_stats.jsonl",
+   "/tmp/ggate/gate_c4_teacher_s2_log/search_stats.jsonl"
+  ],
+  "total_stat_rows": 37133,
+  "teacher_decision_rows_teacher_eq_1": 37120,
+  "non_teacher_rows_canary_missing": 13,
+  "contested_decisions_contested_eq_1": 9429,
+  "rollout_decision_rows": 9429,
+  "rollout_note": "Manifest assertions equate rollout_rows with contested_rows; the contested rows are exactly the rows carrying det/n_worlds (det_rows counted separately).",
+  "det_rows": 9429,
+  "thin_prior_rows_fallback_eq_thin_prior": 2988,
+  "fields_used": [
+   "teacher",
+   "contested",
+   "fallback",
+   "pick",
+   "prior_pick",
+   "overturn",
+   "n_worlds",
+   "selected",
+   "errors"
+  ],
+  "contested_definition": "rows with contested == 1",
+  "overturn_definition": "rows with overturn == 1 (cross-checked against pick != prior_pick)",
+  "overturn_count": 118,
+  "overturn_field_rows": 6441,
+  "pick_differs_from_prior_pick_all_rows": 118,
+  "pick_differs_from_prior_pick_nonthin_contested": 118,
+  "nonthin_contested_decisions": 6441,
+  "overturns_among_nonthin_contested": 118,
+  "contested_with_any_fallback": 2988,
+  "overturn_per_candidate_worlds": {
+   "field": "n_worlds (list aligned with selected, or dict keyed by candidate id)",
+   "overturn_rows_with_n_worlds": 118,
+   "total_worlds_all_candidates": {
+    "n": 118,
+    "min": 44,
+    "mean": 67.5,
+    "max": 100,
+    "sum": 7965
+   },
+   "picked_candidate_worlds": {
+    "n": 118,
+    "min": 20,
+    "mean": 22.966101694915253,
+    "max": 25,
+    "sum": 2710
+   },
+   "prior_pick_candidate_worlds": {
+    "n": 118,
+    "min": 20,
+    "mean": 23.076271186440678,
+    "max": 25,
+    "sum": 2723
+   },
+   "errors_field_sum_over_those_rows": 735,
+   "note": "n_worlds carries finished-world counts per candidate; there is no separate explicit unfinished-worlds field in the stat rows (errors/abort_reasons are the failure-side fields present)."
+  },
+  "per_file": {
+   "/tmp/ggate/gate_c1_teacher_s1_log/search_stats.jsonl": {
+    "rows": 5039,
+    "teacher_rows": 5036,
+    "contested": 1297,
+    "thin_prior": 402,
+    "overturns": 16
+   },
+   "/tmp/ggate/gate_c1_teacher_s2_log/search_stats.jsonl": {
+    "rows": 4553,
+    "teacher_rows": 4553,
+    "contested": 1127,
+    "thin_prior": 375,
+    "overturns": 11
+   },
+   "/tmp/ggate/gate_c2_teacher_s1_log/search_stats.jsonl": {
+    "rows": 4479,
+    "teacher_rows": 4473,
+    "contested": 1063,
+    "thin_prior": 296,
+    "overturns": 16
+   },
+   "/tmp/ggate/gate_c2_teacher_s2_log/search_stats.jsonl": {
+    "rows": 4549,
+    "teacher_rows": 4549,
+    "contested": 1158,
+    "thin_prior": 351,
+    "overturns": 18
+   },
+   "/tmp/ggate/gate_c3_teacher_s1_log/search_stats.jsonl": {
+    "rows": 4633,
+    "teacher_rows": 4630,
+    "contested": 1167,
+    "thin_prior": 398,
+    "overturns": 13
+   },
+   "/tmp/ggate/gate_c3_teacher_s2_log/search_stats.jsonl": {
+    "rows": 4744,
+    "teacher_rows": 4744,
+    "contested": 1290,
+    "thin_prior": 393,
+    "overturns": 14
+   },
+   "/tmp/ggate/gate_c4_teacher_s1_log/search_stats.jsonl": {
+    "rows": 4688,
+    "teacher_rows": 4688,
+    "contested": 1253,
+    "thin_prior": 437,
+    "overturns": 13
+   },
+   "/tmp/ggate/gate_c4_teacher_s2_log/search_stats.jsonl": {
+    "rows": 4448,
+    "teacher_rows": 4447,
+    "contested": 1074,
+    "thin_prior": 336,
+    "overturns": 17
+   }
+  }
+ },
+ "rates": {
+  "thin_prior_rate": 0.3168946866051543,
+  "thin_prior_rate_definition": "thin_prior rows / teacher rollout decision rows (rollout rows = contested rows, per manifest terminology)",
+  "thin_prior_rate_over_rollout_rows": 0.3168946866051543,
+  "overturn_rate_among_nonthin_contested": 0.01832013662474771,
+  "fallen_back_share_of_contested": 0.3168946866051543,
+  "thin_prior_rate_over_all_teacher_decision_rows": 0.08049568965517241
+ },
+ "primary_recomputed": {
+  "pairs": 400,
+  "teacher_points": 216.0,
+  "raw_points": 213.0,
+  "delta": 0.0075,
+  "sumDiffSq": 18.0,
+  "ci95_normal_approx": [
+   -0.013275942216900777,
+   0.028275942216900777
+  ]
+ },
+ "primary_cross_check": {
+  "expected": {
+   "pairs": 400,
+   "teacher_points": 216.0,
+   "raw_points": 213.0,
+   "delta": 0.0075,
+   "sumDiffSq": 18.0
+  },
+  "recomputed": {
+   "pairs": 400,
+   "teacher_points": 216.0,
+   "raw_points": 213.0,
+   "delta": 0.0075,
+   "sumDiffSq": 18.0
+  },
+  "match": true
+ },
+ "seat_split": {
+  "seat_1": {
+   "pairs": 200,
+   "teacher_points": 109.5,
+   "raw_points": 108.0,
+   "delta": 0.0075,
+   "sumDiffSq": 8.25,
+   "ci95_normal_approx": [
+    -0.020629158359254194,
+    0.03562915835925419
+   ]
+  },
+  "seat_2": {
+   "pairs": 200,
+   "teacher_points": 106.5,
+   "raw_points": 105.0,
+   "delta": 0.0075,
+   "sumDiffSq": 9.75,
+   "ci95_normal_approx": [
+    -0.023082830967717818,
+    0.03808283096771782
+   ]
+  }
+ },
+ "per_chunk": {
+  "chunk_1": {
+   "pairs": 100,
+   "teacher_points": 55.5,
+   "raw_points": 52.5,
+   "delta": 0.03,
+   "sumDiffSq": 4.5,
+   "ci95_normal_approx": [
+    -0.011160000000000003,
+    0.07116
+   ]
+  },
+  "chunk_2": {
+   "pairs": 100,
+   "teacher_points": 51.5,
+   "raw_points": 51.0,
+   "delta": 0.005,
+   "sumDiffSq": 2.25,
+   "ci95_normal_approx": [
+    -0.024383662127107297,
+    0.0343836621271073
+   ]
+  },
+  "chunk_3": {
+   "pairs": 100,
+   "teacher_points": 55.0,
+   "raw_points": 54.0,
+   "delta": 0.01,
+   "sumDiffSq": 7.0,
+   "ci95_normal_approx": [
+    -0.04181967194029696,
+    0.061819671940296965
+   ]
+  },
+  "chunk_4": {
+   "pairs": 100,
+   "teacher_points": 54.0,
+   "raw_points": 55.5,
+   "delta": -0.015,
+   "sumDiffSq": 4.25,
+   "ci95_normal_approx": [
+    -0.055299334982106096,
+    0.025299334982106098
+   ]
+  }
+ },
+ "drop_sensitivity_excluding_teacher_timeout_pairs": {
+  "pairs": 393,
+  "teacher_points": 216.0,
+  "raw_points": 209.5,
+  "delta": 0.01653944020356234,
+  "sumDiffSq": 16.25,
+  "ci95_normal_approx": [
+   -0.003498304218205576,
+   0.03657718462533026
+  ],
+  "excluded_teacher_timeout_pairs": 7
+ },
+ "teacher_time": {
+  "teacher_rows_total": 400,
+  "timeout_rows": 7,
+  "scored_rows": 393,
+  "sum_teacher_secs_scored_rows": 496324.7,
+  "mean_teacher_game_secs_scored_rows": 1262.9127226463104,
+  "teacher_wall_time_total_secs": 496324.7,
+  "timeout_rate": "7/400",
+  "timeout_rate_value": 0.0175
+ },
+ "scoring_rule": "winner==0 -> 0.5; winner==seat -> 1.0; else 0.0; teacher timeout rows score 0.0 for teacher; pairs keyed by (seed, seat) across arms",
+ "ci_method": "normal approx: var = sumDiffSq/n - delta^2; SE = sqrt(var/n); CI = delta +/- 1.96*SE",
+ "server_fallbacks_latest": {
+  "gate_server_s1": 0,
+  "gate_server_s2": 0,
+  "total_latest": 0
+ },
+ "sweeper_totals": {
+  "pass_lines": 2239,
+  "selected_sum": 120349,
+  "unattributed_sum": 24,
+  "deleted_lines": 2239,
+  "deleted_count_sum": 120349,
+  "deleted_failed_sum": 0
+ },
+ "ipcs_shared_memory": {
+  "segments_now": 227,
+  "observed_at_box_time": "2026-10-24T23:45:03.609469",
+  "note": "Post-run observation at diagnostics time, not a run-time value."
+ },
+ "input_sha256": {
+  "/tmp/ggate/gate_c1_raw_s1.jsonl": "04531a69b81da80439b3b1d366eab7adf44a8f5a8e7bf0ffc4ae6dbe4b6563b3",
+  "/tmp/ggate/gate_c1_raw_s2.jsonl": "78c215c3a23dc96bdb7da01638ec66fa675966e16fb13acadcbf8173e90c634d",
+  "/tmp/ggate/gate_c1_teacher_s1.jsonl": "12cac321c0beaf4c28885ff5a8364e526ebb720a59cdae8c5c69e91c796a4750",
+  "/tmp/ggate/gate_c1_teacher_s2.jsonl": "a23772af39f98d014c2afbd0663b938c07fd38096aba2f1c56391dbe3aa7b176",
+  "/tmp/ggate/gate_c2_raw_s1.jsonl": "e755b23bab82205784f3a928b11f6b77a5cb11e895c26505f05ef03fc9c75eeb",
+  "/tmp/ggate/gate_c2_raw_s2.jsonl": "ea545d62f6bf4c6ed24124807495250cf2939934b7901fe6e6fe56a592612ce7",
+  "/tmp/ggate/gate_c2_teacher_s1.jsonl": "605224c546941e60f5dfb085f9cd6830d75810e16b77788aeb127ed25e5eb9b4",
+  "/tmp/ggate/gate_c2_teacher_s2.jsonl": "de1ccc9e35a36acaf7b9d3d67ac30ed9cd100ecd3e77cf63493987756b83bf01",
+  "/tmp/ggate/gate_c3_raw_s1.jsonl": "12c06bf017efd578831dfb4f9d3dde7eb534916b3a333d2b74c5d58bbcd4e73d",
+  "/tmp/ggate/gate_c3_raw_s2.jsonl": "04f1302c6e5696875bc3dbca9dfdc55a2ad8faf5c2344e486969ecb0f0303884",
+  "/tmp/ggate/gate_c3_teacher_s1.jsonl": "49252c7b84a5b0e7c81ff9aa552c6f8e85241681d376d82cfdfd51176d2f9b0f",
+  "/tmp/ggate/gate_c3_teacher_s2.jsonl": "9cc99687a28e89b3acc48009b45d471869142b363cf33ca7561872c3d87b633b",
+  "/tmp/ggate/gate_c4_raw_s1.jsonl": "3a97b84b0bb2e6cf1589b98eabed58829e2314a8b48d45fb75ab0069a0a52e3b",
+  "/tmp/ggate/gate_c4_raw_s2.jsonl": "725629dc909db06f6edb28a9bfc4075b264ed690327e03d110f95293a4b4c26d",
+  "/tmp/ggate/gate_c4_teacher_s1.jsonl": "1563a9f0b1585483afb4bbf3792c9bc88d3e66afca7ab378b99dc5c78b14ed5e",
+  "/tmp/ggate/gate_c4_teacher_s2.jsonl": "e2232a5f936cc47557537078a6a3284d2c55f8b8004b25ce46e8a4435d5ba8fa",
+  "/tmp/ggate/gate_c1_teacher_s1_log/search_stats.jsonl": "01941349eca03770faf2efae2ad3d7ea94eb27e0712ed5a316921083b673abfa",
+  "/tmp/ggate/gate_c1_teacher_s2_log/search_stats.jsonl": "16c918162a7b3148534a4fc1a019cf1957c1b18fd3cc5044456f910e0c341411",
+  "/tmp/ggate/gate_c2_teacher_s1_log/search_stats.jsonl": "31fd9455164bac925adc95c5d43bf54796e095996feae83f81841948ce4351ba",
+  "/tmp/ggate/gate_c2_teacher_s2_log/search_stats.jsonl": "35e67c52ee1b59eebbac99eb2c98c12bf6b8041723f51472278061ba03ade87f",
+  "/tmp/ggate/gate_c3_teacher_s1_log/search_stats.jsonl": "a13177c688d6ffe01c1e45e23e57183405280ef3634b8ee9cdbd5fc0e7da5566",
+  "/tmp/ggate/gate_c3_teacher_s2_log/search_stats.jsonl": "98253b37cfb7c26f38d06ae4151ad931e87b580d931d8b99d392f92ec9d8ffda",
+  "/tmp/ggate/gate_c4_teacher_s1_log/search_stats.jsonl": "54214c82662ca8a72ced0bf195d0b7acc31a7f2a6f8e6d00f4612927428fd87d",
+  "/tmp/ggate/gate_c4_teacher_s2_log/search_stats.jsonl": "89d3988f94e0d614f3f004b2726de4a4e5712fa91fde7c9ca23c1d979e4a63a4",
+  "/tmp/ggate/gate_server_s1.log": "c362790869df2f1c77608246227950c51908d9853b3225b51e45884dcf214d8e",
+  "/tmp/ggate/gate_server_s2.log": "73109d6aed03acc7bbc6ef76898199677bc83f46f098e8ebc167a343a33fc59f",
+  "/tmp/ggate/gate_shm_sweep.log": "df6f2b3dc7327137829592928f132dafa4a657fda6453bfe34cca6490f151978"
+ }
+}

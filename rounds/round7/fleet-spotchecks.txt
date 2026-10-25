@@ -1,0 +1,54 @@
+Round-7 stage-5 Gravy gate fleet — builder spot-checks
+Run on the box (via ~/workspace/tcg-sim/ops/ssh-box.sh), 2026-10-24.
+Commands and RAW stdout verbatim.
+
+(1) Δ line recomputed from the row files
+Command:
+/home/joe/tcg/rl-env/bin/python -c "
+import json, glob
+def scored(r):
+    return r.get("invalid") != "timeout" and "winner" in r
+def score(r, arm):
+    if r.get("invalid") == "timeout" and arm == "teacher":
+        return 0.0
+    w = r.get("winner")
+    if w == 0 or w is None:
+        return 0.5
+    return 1.0 if int(w) == int(r["seat"]) else 0.0
+pairs = {}
+for f in sorted(glob.glob("/tmp/ggate/gate_c*.jsonl")):
+    for l in open(f):
+        if not l.strip():
+            continue
+        r = json.loads(l)
+        key = (r["seed"], r["seat"])
+        arm = r["arm"]
+        cur = pairs.setdefault(key, {}).get(arm)
+        if cur is None or (not scored(cur) and scored(r)):
+            pairs[key][arm] = r
+tp = sum(score(v["teacher"], "teacher") for v in pairs.values())
+rp = sum(score(v["raw"], "raw") for v in pairs.values())
+ss = sum((score(v["teacher"], "teacher") - score(v["raw"], "raw"))**2 for v in pairs.values())
+print(len(pairs), tp, rp, (tp - rp) / len(pairs), ss)
+"
+Raw stdout:
+400 216.0 213.0 0.0075 18.0
+
+(2) Teacher-timeout rate from the row files
+Command:
+/home/joe/tcg/rl-env/bin/python -c "
+import json, glob
+rows = [json.loads(l) for f in sorted(glob.glob("/tmp/ggate/gate_c*_teacher_*.jsonl")) for l in open(f) if l.strip()]
+to = sum(1 for r in rows if r.get("invalid") == "timeout")
+print(to, len(rows), to / len(rows))
+"
+Raw stdout:
+7 400 0.0175
+
+(3) Post-merge registry
+Command:
+sha256sum /tmp/harvest/do_not_train_registry.json
+/home/joe/tcg/rl-env/bin/python -c "import json; print(len(json.load(open(\"/tmp/harvest/do_not_train_registry.json\"))[\"games\"]))"
+Raw stdout:
+fc46f835cafefdca042457bc84b509af47e3f6ed28f63b453fde05261c225521  /tmp/harvest/do_not_train_registry.json
+6161

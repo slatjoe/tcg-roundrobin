@@ -1,0 +1,291 @@
+{
+ "fleet": "round-7 stage-5 Gravy gate fleet (gate_c{1..4}_{teacher,raw}_s{1,2})",
+ "analysis_date": "2026-10-24 (box, America/New_York)",
+ "box_python": "/home/joe/tcg/rl-env/bin/python",
+ "scripts": {
+  "analyze_gate_gravy": {
+   "staging_path": "~/workspace/tcg-sim/roundrobin-repo/rounds/round7/code/analyze_gate_gravy.py",
+   "box_deployment_path": "/tmp/ggate/analyze_gate_gravy.py",
+   "sha256": "d468468eac58a8f192335886ccb54dca6d2d36d28682089b03dc036d825247db",
+   "fleet_alignment_pin": "d468468eac58a8f192335886ccb54dca6d2d36d28682089b03dc036d825247db (fleet-alignment.md package table, sha256 d468468e...)",
+   "pin_verified": true,
+   "edits": "none (run as transferred; byte-identical to staging)"
+  },
+  "analyze_gate_stock_underlying": {
+   "staging_paths": [
+    "~/workspace/tcg-sim/roundrobin-repo/rounds/round3/code/analyze_gate.py",
+    "~/workspace/tcg-sim/roundrobin-repo/rounds/round4/code/analyze_gate.py"
+   ],
+   "sha256": "a5e2086677a69c6055a47de433ada1dfbf29f37e49264af6d4dab0e824277a6e",
+   "note": "also found byte-identical on box at /tmp/gravytree/analyze_gate.py, /tmp/otree/analyze_gate.py, /tmp/gatetree_r4/analyze_gate.py"
+  },
+  "l1_check": {
+   "staging_path": "~/workspace/tcg-sim/roundrobin-repo/rounds/round3/code/l1_check.py (round4 copy byte-identical)",
+   "sha256_original": "956923d06733aa1e93343b44ae8f2ccdf9e1a21f458f26fdf4119689acae1be1",
+   "box_original_path": "/tmp/ggate/l1_check.py",
+   "deployment_copy_path": "/tmp/ggate/l1_check_deploy.py",
+   "sha256_deployment": "10c7d91e7a07bf6f45aa223b547efb9f36bf7527c20b4dfe50b174934e878c48",
+   "substitution_O2": "input glob /tmp/gate_r4/gate_c*_teacher_*_log/search_stats.jsonl -> /tmp/ggate/gate_c*_teacher_*_log/search_stats.jsonl (line 4)",
+   "diff_unified": "--- /tmp/ggate/l1_check.py\t2026-10-24 23:47:10.763898193 -0400\n+++ /tmp/ggate/l1_check_deploy.py\t2026-10-24 23:47:23.355702686 -0400\n@@ -1,7 +1,7 @@\n import json, glob\n from collections import Counter\n \n-files = sorted(glob.glob('/tmp/gate_r4/gate_c*_teacher_*_log/search_stats.jsonl'))\n+files = sorted(glob.glob('/tmp/ggate/gate_c*_teacher_*_log/search_stats.jsonl'))\n contested = 0\n u1 = 0            # all candidates unanimous (every mean in {-1,0,1})\n u2 = 0            # prior pick unanimous (mean in {-1,1})\n"
+  },
+  "analyze_l3": {
+   "staging_path": "~/workspace/tcg-sim/roundrobin-repo/rounds/round3/code/analyze_l3.py (round4 copy byte-identical)",
+   "sha256_original": "16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9",
+   "box_original_path": "/tmp/ggate/analyze_l3.py",
+   "deployment_copy_path": "/tmp/ggate/analyze_l3_deploy.py",
+   "sha256_deployment": "3919bbb80db29eec91c87e6f640e6eb689fa8324865fb450a69292843008dd72",
+   "substitution_O3": "DELTA = 0.2525 -> DELTA = 0.0075 (line 31; the fleet's measured primary pooled delta, +0.0075). TEACHER_GAMES = 400 unchanged.",
+   "diff_unified": "--- /tmp/ggate/analyze_l3.py\t2026-10-24 23:47:11.967921413 -0400\n+++ /tmp/ggate/analyze_l3_deploy.py\t2026-10-24 23:47:23.360696058 -0400\n@@ -28,7 +28,7 @@\n import sys\n from collections import defaultdict\n \n-DELTA = 0.2525\n+DELTA = 0.0075\n TEACHER_GAMES = 400\n \n \n"
+  },
+  "gate_first_divergence_G3": {
+   "staging_path": "~/workspace/tcg-sim/roundrobin-repo/rounds/round3/code/gate_first_divergence.py",
+   "box_deployment_path": "/tmp/ggate/gate_first_divergence.py",
+   "sha256": "9aaca15536332c856b8d69e377d7662170e783ef8708f61a47ec69155b0c541d",
+   "edits": "none"
+  },
+  "classify_divergence_G3_companion": {
+   "staging_path": "~/workspace/tcg-sim/roundrobin-repo/rounds/round3/code/classify_divergence.py",
+   "box_deployment_path": "/tmp/ggate/classify_divergence.py",
+   "sha256": "1518427bd4904a581fd2158b702b0e58e902b2cf1c64371f40da51c6fc7b0533",
+   "edits": "none (must sit beside gate_first_divergence.py; it is invoked via HERE)"
+  },
+  "audit_overturns_L3_jobs": {
+   "staging_path": "~/workspace/tcg-sim/roundrobin-repo/rounds/round3/code/audit_overturns.py",
+   "box_deployment_path": "/tmp/ggate/audit_overturns.py",
+   "sha256": "20853c435901ef725adcc604c69ddaa56a1670cc9c3175608f1d490332e610bb",
+   "edits": "none"
+  },
+  "probe_swap20_L2": {
+   "staging_path": "~/workspace/tcg-sim/roundrobin-repo/rounds/round3/code/probe_swap20.php",
+   "sha256_staging": "6993ece4f84bf2aea3540635c5b1cd8b2f0c9a787c0ed42cf426d4a3f8160243",
+   "box_tree_path": "/tmp/gravytree/probe_swap20.php",
+   "sha256_box_tree": "400a921567b8739c8d88387e12ef75d2fb42587a53c1d5762b2db200a0bc5c2c",
+   "note": "box tree copy differs from repo copy by the registered build-package sec.6 one-line bootstrap deck substitution (line 17: decks/nats2026_ashlyn_fai_60.txt -> decks/nats2026_eriksen_gravy_60.txt, verified by grep)"
+  }
+ },
+ "input_files_sha256": {
+  "/tmp/ggate/gate_c1_raw_s1.jsonl": "04531a69b81da80439b3b1d366eab7adf44a8f5a8e7bf0ffc4ae6dbe4b6563b3",
+  "/tmp/ggate/gate_c1_raw_s2.jsonl": "78c215c3a23dc96bdb7da01638ec66fa675966e16fb13acadcbf8173e90c634d",
+  "/tmp/ggate/gate_c1_teacher_s1.jsonl": "12cac321c0beaf4c28885ff5a8364e526ebb720a59cdae8c5c69e91c796a4750",
+  "/tmp/ggate/gate_c1_teacher_s2.jsonl": "a23772af39f98d014c2afbd0663b938c07fd38096aba2f1c56391dbe3aa7b176",
+  "/tmp/ggate/gate_c2_raw_s1.jsonl": "e755b23bab82205784f3a928b11f6b77a5cb11e895c26505f05ef03fc9c75eeb",
+  "/tmp/ggate/gate_c2_raw_s2.jsonl": "ea545d62f6bf4c6ed24124807495250cf2939934b7901fe6e6fe56a592612ce7",
+  "/tmp/ggate/gate_c2_teacher_s1.jsonl": "605224c546941e60f5dfb085f9cd6830d75810e16b77788aeb127ed25e5eb9b4",
+  "/tmp/ggate/gate_c2_teacher_s2.jsonl": "de1ccc9e35a36acaf7b9d3d67ac30ed9cd100ecd3e77cf63493987756b83bf01",
+  "/tmp/ggate/gate_c3_raw_s1.jsonl": "12c06bf017efd578831dfb4f9d3dde7eb534916b3a333d2b74c5d58bbcd4e73d",
+  "/tmp/ggate/gate_c3_raw_s2.jsonl": "04f1302c6e5696875bc3dbca9dfdc55a2ad8faf5c2344e486969ecb0f0303884",
+  "/tmp/ggate/gate_c3_teacher_s1.jsonl": "49252c7b84a5b0e7c81ff9aa552c6f8e85241681d376d82cfdfd51176d2f9b0f",
+  "/tmp/ggate/gate_c3_teacher_s2.jsonl": "9cc99687a28e89b3acc48009b45d471869142b363cf33ca7561872c3d87b633b",
+  "/tmp/ggate/gate_c4_raw_s1.jsonl": "3a97b84b0bb2e6cf1589b98eabed58829e2314a8b48d45fb75ab0069a0a52e3b",
+  "/tmp/ggate/gate_c4_raw_s2.jsonl": "725629dc909db06f6edb28a9bfc4075b264ed690327e03d110f95293a4b4c26d",
+  "/tmp/ggate/gate_c4_teacher_s1.jsonl": "1563a9f0b1585483afb4bbf3792c9bc88d3e66afca7ab378b99dc5c78b14ed5e",
+  "/tmp/ggate/gate_c4_teacher_s2.jsonl": "e2232a5f936cc47557537078a6a3284d2c55f8b8004b25ce46e8a4435d5ba8fa",
+  "/tmp/ggate/gate_c1_teacher_s1_log/search_stats.jsonl": "01941349eca03770faf2efae2ad3d7ea94eb27e0712ed5a316921083b673abfa",
+  "/tmp/ggate/gate_c1_teacher_s2_log/search_stats.jsonl": "16c918162a7b3148534a4fc1a019cf1957c1b18fd3cc5044456f910e0c341411",
+  "/tmp/ggate/gate_c2_teacher_s1_log/search_stats.jsonl": "31fd9455164bac925adc95c5d43bf54796e095996feae83f81841948ce4351ba",
+  "/tmp/ggate/gate_c2_teacher_s2_log/search_stats.jsonl": "35e67c52ee1b59eebbac99eb2c98c12bf6b8041723f51472278061ba03ade87f",
+  "/tmp/ggate/gate_c3_teacher_s1_log/search_stats.jsonl": "a13177c688d6ffe01c1e45e23e57183405280ef3634b8ee9cdbd5fc0e7da5566",
+  "/tmp/ggate/gate_c3_teacher_s2_log/search_stats.jsonl": "98253b37cfb7c26f38d06ae4151ad931e87b580d931d8b99d392f92ec9d8ffda",
+  "/tmp/ggate/gate_c4_teacher_s1_log/search_stats.jsonl": "54214c82662ca8a72ced0bf195d0b7acc31a7f2a6f8e6d00f4612927428fd87d",
+  "/tmp/ggate/gate_c4_teacher_s2_log/search_stats.jsonl": "89d3988f94e0d614f3f004b2726de4a4e5712fa91fde7c9ca23c1d979e4a63a4",
+  "/tmp/ggate/gate_shm_sweep.log": "df6f2b3dc7327137829592928f132dafa4a657fda6453bfe34cca6490f151978",
+  "/tmp/ggate/gate_server_s1.log": "c362790869df2f1c77608246227950c51908d9853b3225b51e45884dcf214d8e",
+  "/tmp/ggate/gate_server_s2.log": "73109d6aed03acc7bbc6ef76898199677bc83f46f098e8ebc167a343a33fc59f",
+  "/tmp/harvest/do_not_train_registry.json": "fc46f835cafefdca042457bc84b509af47e3f6ed28f63b453fde05261c225521",
+  "/tmp/ggate/jobs_all.jsonl (built by audit_overturns.py from fleet stat rows + snapshot indexes)": "5fe5c0d85baf09f65777124f030a852db1c58fbf4b756f6cac587fe2f120e89b"
+ },
+ "components": {
+  "primary_and_nonwin_coreport": {
+   "command": "cd /tmp/ggate && /home/joe/tcg/rl-env/bin/python analyze_gate_gravy.py --rows gate_c1_teacher_s1.jsonl gate_c1_teacher_s2.jsonl gate_c1_raw_s1.jsonl gate_c1_raw_s2.jsonl gate_c2_teacher_s1.jsonl gate_c2_teacher_s2.jsonl gate_c2_raw_s1.jsonl gate_c2_raw_s2.jsonl gate_c3_teacher_s1.jsonl gate_c3_teacher_s2.jsonl gate_c3_raw_s1.jsonl gate_c3_raw_s2.jsonl gate_c4_teacher_s1.jsonl gate_c4_teacher_s2.jsonl gate_c4_raw_s1.jsonl gate_c4_raw_s2.jsonl --stats gate_c1_teacher_s1_log/search_stats.jsonl gate_c1_teacher_s2_log/search_stats.jsonl gate_c2_teacher_s1_log/search_stats.jsonl gate_c2_teacher_s2_log/search_stats.jsonl gate_c3_teacher_s1_log/search_stats.jsonl gate_c3_teacher_s2_log/search_stats.jsonl gate_c4_teacher_s1_log/search_stats.jsonl gate_c4_teacher_s2_log/search_stats.jsonl --registry /tmp/harvest/do_not_train_registry.json --out /tmp/ggate/primary_report.txt",
+   "exit_code": 0,
+   "box_output_file": "/tmp/ggate/primary_report.txt",
+   "box_output_sha256": "7d3caea18609f98a9b6a48297ac63908c69707541709c4b7819e4816512c41d2",
+   "stdout_full": "========================================================================\nGATE ANALYSIS - unit (seed, seat); paired teacher vs raw\n========================================================================\nunits total: 400 | scored: 400 | unscored: 0\ncapped games among scored units: 105 (scored 0.5 per ruling)\n\nPRIMARY - paired delta (teacher score - raw score)\npooled      : n=400 units, 200 seeds | teacher 0.5400 - raw 0.5325 = delta +0.0075 | bootstrap CI (clustered by seed, B=10000) [-0.0138, +0.0288]\nseat 1      : n=200 units, 200 seeds | teacher 0.5475 - raw 0.5400 = delta +0.0075 | bootstrap CI (clustered by seed, B=10000) [-0.0200, +0.0350]\nseat 2      : n=200 units, 200 seeds | teacher 0.5325 - raw 0.5250 = delta +0.0075 | bootstrap CI (clustered by seed, B=10000) [-0.0225, +0.0400]\n\nCO-REPORT - paired delta under NON-WIN scoring (capped = 0 for both arms; draws and timeout rulings unchanged; no band read attaches to the co-report)\npooled      : n=400 units, 200 seeds | teacher 0.4325 - raw 0.4075 = delta +0.0250 | bootstrap CI (clustered by seed, B=10000) [+0.0025, +0.0500]\nseat 1      : n=200 units, 200 seeds | teacher 0.4350 - raw 0.4150 = delta +0.0200 | bootstrap CI (clustered by seed, B=10000) [-0.0100, +0.0500]\nseat 2      : n=200 units, 200 seeds | teacher 0.4300 - raw 0.4000 = delta +0.0300 | bootstrap CI (clustered by seed, B=10000) [-0.0050, +0.0650]\n\nDISCORDANT: teacher>raw 19 | teacher<raw 17 | tied 364 | exact sign test (two-sided) p = 0.8679\n\nREGISTERED BANDS:\n  delta >= +0.05 with CI lower bound > 0 -> converts\n  lower bound > 0 but delta < +0.05      -> real but small\n  CI includes 0 with upper bound < +0.10 -> the projection overstated conversion\n  delta > +0.20                          -> impeach before reading\nREAD (pooled): PROJECTION OVERSTATED (CI includes 0, upper < +0.10)\n\nTEACHER TIMEOUTS: 7 of 400 teacher games (1.75%)\nSENSITIVITY (teacher-timeout pairs dropped): n=393 delta +0.0165 CI [-0.0038, +0.0370]\n\n\nTEACHER STAT MONITORS\n  [gate_c1_teacher_s1_log] root_calls=5039 canary=3 refusal_rate=0.060% (cap 2%) | contested=1297 overturns=16 overturn_rate=1.23%\n    abort_reasons={'abort': 4983} abort_by_cand={'0': 286, '1': 263, '9': 15, 4: 180, 7: 44, 8: 20, 6: 66, 11: 2, 3: 215, 5: 196, 2: 192, '3': 174, '4': 72, '5': 26, 1: 163, '8': 23, '2': 103, 10: 8, '7': 9, 9: 12, '10': 11, 12: 1, '6': 13, '12': 10} child_fallbacks=0 det_persisted_missing=0\n  [gate_c1_teacher_s2_log] root_calls=4553 canary=0 refusal_rate=0.000% (cap 2%) | contested=1127 overturns=11 overturn_rate=0.98%\n    abort_reasons={'abort': 4101} abort_by_cand={3: 169, 5: 148, 4: 187, 6: 53, 8: 11, '0': 210, '1': 244, '3': 129, 2: 205, 7: 27, 1: 164, '2': 78, 9: 6, '4': 34, '5': 36, '7': 21, '6': 9, '9': 21, 10: 6, '8': 10, 12: 1, '11': 1, '10': 5, 13: 1} child_fallbacks=0 det_persisted_missing=0\n  [gate_c2_teacher_s1_log] root_calls=4479 canary=6 refusal_rate=0.134% (cap 2%) | contested=1063 overturns=16 overturn_rate=1.51%\n    abort_reasons={'abort': 4597} abort_by_cand={1: 156, 3: 171, 5: 167, 8: 14, 7: 28, 4: 206, 2: 183, 6: 52, '0': 267, '2': 84, '4': 55, '1': 283, '3': 155, '5': 27, 9: 20, 10: 13, '7': 3, '6': 31, '9': 10, 14: 1, '10': 4, 11: 1, 12: 2, '8': 5} child_fallbacks=0 det_persisted_missing=0\n  [gate_c2_teacher_s2_log] root_calls=4549 canary=0 refusal_rate=0.000% (cap 2%) | contested=1158 overturns=18 overturn_rate=1.55%\n    abort_reasons={'abort': 5103} abort_by_cand={5: 229, 4: 244, '0': 281, '1': 240, '8': 14, '7': 15, 2: 172, 3: 208, 6: 59, 1: 132, '3': 150, '5': 50, '2': 103, 7: 37, 8: 16, 9: 5, '6': 17, '4': 66, '9': 31, '10': 7, 12: 2, 10: 4, 11: 1, 13: 1, '11': 14, '12': 6, 14: 1} child_fallbacks=0 det_persisted_missing=0\n  [gate_c3_teacher_s1_log] root_calls=4633 canary=3 refusal_rate=0.065% (cap 2%) | contested=1167 overturns=13 overturn_rate=1.11%\n    abort_reasons={'abort': 4323} abort_by_cand={2: 156, 4: 173, 5: 186, 6: 51, 3: 168, '0': 251, '1': 273, '4': 85, '2': 92, '3': 143, 7: 38, 8: 20, '13': 3, 12: 3, 1: 102, '7': 7, '8': 15, 10: 2, '6': 16, 11: 3, '10': 2, '5': 18, 9: 6, '9': 3} child_fallbacks=0 det_persisted_missing=0\n  [gate_c3_teacher_s2_log] root_calls=4744 canary=0 refusal_rate=0.000% (cap 2%) | contested=1290 overturns=14 overturn_rate=1.09%\n    abort_reasons={'abort': 4441} abort_by_cand={6: 52, 5: 151, 3: 190, 4: 196, 9: 9, 8: 12, 1: 156, 2: 173, '1': 276, '2': 126, '3': 188, '0': 295, 7: 25, 13: 1, '5': 35, '8': 2, '4': 64, '9': 9, '11': 3, 11: 1, 10: 7, '7': 12, 12: 1, '6': 40, '10': 10} child_fallbacks=0 det_persisted_missing=0\n  [gate_c4_teacher_s1_log] root_calls=4688 canary=0 refusal_rate=0.000% (cap 2%) | contested=1253 overturns=13 overturn_rate=1.04%\n    abort_reasons={'abort': 4667} abort_by_cand={6: 50, 4: 233, 3: 207, 7: 38, '0': 257, '1': 238, '5': 22, 5: 175, '6': 18, '2': 81, '3': 157, 2: 179, 1: 133, 9: 9, 8: 19, '4': 61, 10: 6, 11: 2, '9': 16, '7': 12, '8': 5} child_fallbacks=0 det_persisted_missing=0\n  [gate_c4_teacher_s2_log] root_calls=4448 canary=1 refusal_rate=0.022% (cap 2%) | contested=1074 overturns=17 overturn_rate=1.58%\n    abort_reasons={'abort': 4823} abort_by_cand={5: 206, 4: 223, 2: 161, 3: 177, '2': 90, 8: 21, '0': 241, '1': 181, '4': 33, '3': 124, 11: 3, 9: 11, 7: 58, 6: 55, 1: 153, 10: 4, '6': 23, 12: 2, '9': 26, '5': 11, '8': 18, '10': 8, '12': 3, '7': 9, 15: 1, 13: 1} child_fallbacks=0 det_persisted_missing=0\n  POOLED: contested=9429 overturns=118 overturn_rate=1.25% (expect ~5%)\n\nG5 CALIBRATION - prior-pick rollout mean by decision ordinal\n  predicted = (prior-pick rollout mean + 1) / 2 (rollout outcomes are +1/-1/0); realized = the game's outcome for the learner (win 1 / draw 0.5 / loss 0)\n  bin          pred   realized        n\n  1          0.5131     0.5496      393\n  2          0.5120     0.5496      393\n  3          0.5395     0.5497      392\n  4          0.5301     0.5499      391\n  5          0.5166     0.5491      387\n  6-10       0.5200     0.5467     1894\n  11-20      0.4896     0.5226     3161\n  21-40      0.4018     0.4231     2016\n  41+        0.8025     0.7840       81\n",
+   "headline": {
+    "units_total": 400,
+    "scored": 400,
+    "unscored": 0,
+    "capped_games_among_scored_units": 105,
+    "primary_pooled": {
+     "teacher_score": 0.54,
+     "raw_score": 0.5325,
+     "delta": 0.0075,
+     "bootstrap_ci_clustered_by_seed_B10000": [
+      -0.0138,
+      0.0288
+     ]
+    },
+    "primary_seat1": {
+     "teacher_score": 0.5475,
+     "raw_score": 0.54,
+     "delta": 0.0075,
+     "ci": [
+      -0.02,
+      0.035
+     ]
+    },
+    "primary_seat2": {
+     "teacher_score": 0.5325,
+     "raw_score": 0.525,
+     "delta": 0.0075,
+     "ci": [
+      -0.0225,
+      0.04
+     ]
+    },
+    "band_read_pooled": "PROJECTION OVERSTATED (CI includes 0, upper < +0.10) [script wording; per build-package C3 the Gravy wording for this band is 'no detectable conversion']",
+    "discordant": {
+     "teacher_gt_raw": 19,
+     "teacher_lt_raw": 17,
+     "tied": 364,
+     "exact_sign_test_two_sided_p": 0.8679
+    },
+    "teacher_timeouts": {
+     "count": 7,
+     "of": 400,
+     "rate_pct": 1.75
+    },
+    "sensitivity_teacher_timeout_pairs_dropped": {
+     "n": 393,
+     "delta": 0.0165,
+     "ci": [
+      -0.0038,
+      0.037
+     ]
+    },
+    "stat_monitors_pooled": {
+     "contested": 9429,
+     "overturns": 118,
+     "overturn_rate_pct": 1.25,
+     "canary_refusals_by_arm_seat": "c1s1 3/5039 0.060%; c1s2 0/4553 0.000%; c2s1 6/4479 0.134%; c2s2 0/4549 0.000%; c3s1 3/4633 0.065%; c3s2 0/4744 0.000%; c4s1 0/4688 0.000%; c4s2 1/4448 0.022%"
+    }
+   },
+   "nonwin_coreport": {
+    "pooled": {
+     "teacher_nonwin_score": 0.4325,
+     "raw_nonwin_score": 0.4075,
+     "delta": 0.025,
+     "ci": [
+      0.0025,
+      0.05
+     ]
+    },
+    "seat1": {
+     "teacher_nonwin_score": 0.435,
+     "raw_nonwin_score": 0.415,
+     "delta": 0.02,
+     "ci": [
+      -0.01,
+      0.05
+     ]
+    },
+    "seat2": {
+     "teacher_nonwin_score": 0.43,
+     "raw_nonwin_score": 0.4,
+     "delta": 0.03,
+     "ci": [
+      -0.005,
+      0.065
+     ]
+    },
+    "note": "non-win scoring: capped row = 0 for that arm; draws without cap keep 0.5; timeout rulings unchanged; no band read attaches to the co-report"
+   }
+  },
+  "L1": {
+   "command": "cd /tmp/ggate && /home/joe/tcg/rl-env/bin/python l1_check_deploy.py",
+   "exit_code": 0,
+   "box_output_file": "/tmp/ggate/l1_output.txt",
+   "box_output_sha256": "6cfa716e77b0f179670f1bc5f22d276117cf792cadc52857449d967d2e4c2df7",
+   "stdout_full": "contested rows: 9429\nU1 all-candidates-unanimous: 3504 (37.16%)\nany-candidate-unanimous: 4146 (43.97%)\nU2 prior-pick-unanimous: 3772 (40.00%)\noverturn rows: 118; se_diff present: 118\nL1 paired-comparison unanimity (se_diff == 0): 2 (1.69%)\nse_diff min=0.0000 p25=0.1565 median=0.1694 p75=0.2253 max=0.3204\n",
+   "headline": {
+    "contested_rows": 9429,
+    "U1_all_candidates_unanimous": {
+     "count": 3504,
+     "pct": 37.16
+    },
+    "any_candidate_unanimous": {
+     "count": 4146,
+     "pct": 43.97
+    },
+    "U2_prior_pick_unanimous": {
+     "count": 3772,
+     "pct": 40.0
+    },
+    "overturn_rows": 118,
+    "se_diff_present": 118,
+    "paired_comparison_unanimity_se_diff_eq_0": {
+     "count": 2,
+     "pct": 1.69
+    },
+    "se_diff": {
+     "min": 0.0,
+     "p25": 0.1565,
+     "median": 0.1694,
+     "p75": 0.2253,
+     "max": 0.3204
+    }
+   }
+  },
+  "G3": {
+   "command": "cd /tmp/ggate && /home/joe/tcg/rl-env/bin/python gate_first_divergence.py --unit gate_c1_teacher_s1.jsonl gate_c1_raw_s1.jsonl gate_c1_teacher_s1_log gate_c1_raw_s1_log --unit gate_c1_teacher_s2.jsonl gate_c1_raw_s2.jsonl gate_c1_teacher_s2_log gate_c1_raw_s2_log --unit gate_c2_teacher_s1.jsonl gate_c2_raw_s1.jsonl gate_c2_teacher_s1_log gate_c2_raw_s1_log --unit gate_c2_teacher_s2.jsonl gate_c2_raw_s2.jsonl gate_c2_teacher_s2_log gate_c2_raw_s2_log --unit gate_c3_teacher_s1.jsonl gate_c3_raw_s1.jsonl gate_c3_teacher_s1_log gate_c3_raw_s1_log --unit gate_c3_teacher_s2.jsonl gate_c3_raw_s2.jsonl gate_c3_teacher_s2_log gate_c3_raw_s2_log --unit gate_c4_teacher_s1.jsonl gate_c4_raw_s1.jsonl gate_c4_teacher_s1_log gate_c4_raw_s1_log --unit gate_c4_teacher_s2.jsonl gate_c4_raw_s2.jsonl gate_c4_teacher_s2_log gate_c4_raw_s2_log",
+   "exit_code": 0,
+   "box_output_file": "/tmp/ggate/g3_output.txt",
+   "box_output_sha256": "fdae6a016fcf0aa04d755f0a502a05ec6a52e6115a3002790bb1ac4f42a69e67",
+   "stdout_full": "LEGAL seed=8005 seat=1 seq=550 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8021 seat=1 seq=103 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8022 seat=1 seq=107 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8028 seat=1 seq=232 class=DECISION overturn (decide_pick=3, prior argmax=1)\nLEGAL seed=8034 seat=1 seq=347 class=DECISION overturn (decide_pick=3, prior argmax=0)\nLEGAL seed=8035 seat=1 seq=312 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8036 seat=1 seq=593 class=DECISION overturn (decide_pick=12, prior argmax=0)\nLEGAL seed=8042 seat=1 seq=103 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8044 seat=1 seq=163 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8049 seat=1 seq=564 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8003 seat=2 seq=160 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8007 seat=2 seq=437 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8009 seat=2 seq=329 class=DECISION overturn (decide_pick=2, prior argmax=1)\nLEGAL seed=8020 seat=2 seq=121 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8026 seat=2 seq=68 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8027 seat=2 seq=21 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8033 seat=2 seq=398 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8040 seat=2 seq=27 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8047 seat=2 seq=109 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8052 seat=1 seq=166 class=DECISION overturn (decide_pick=2, prior argmax=1)\nLEGAL seed=8053 seat=1 seq=245 class=DECISION overturn (decide_pick=5, prior argmax=0)\nLEGAL seed=8055 seat=1 seq=350 class=DECISION overturn (decide_pick=2, prior argmax=1)\nLEGAL seed=8058 seat=1 seq=155 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8061 seat=1 seq=308 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8066 seat=1 seq=224 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8074 seat=1 seq=243 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8075 seat=1 seq=246 class=DECISION overturn (decide_pick=3, prior argmax=0)\nLEGAL seed=8077 seat=1 seq=42 class=DECISION overturn (decide_pick=4, prior argmax=0)\nLEGAL seed=8078 seat=1 seq=207 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8079 seat=1 seq=188 class=DECISION overturn (decide_pick=1, prior argmax=2)\nLEGAL seed=8087 seat=1 seq=101 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8092 seat=1 seq=238 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8051 seat=2 seq=461 class=DECISION overturn (decide_pick=1, prior argmax=2)\nLEGAL seed=8052 seat=2 seq=3 class=DECISION overturn (decide_pick=2, prior argmax=1)\nLEGAL seed=8057 seat=2 seq=479 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8063 seat=2 seq=325 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8064 seat=2 seq=397 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8066 seat=2 seq=219 class=DECISION overturn (decide_pick=0, prior argmax=2)\nLEGAL seed=8072 seat=2 seq=265 class=DECISION overturn (decide_pick=2, prior argmax=1)\nLEGAL seed=8077 seat=2 seq=171 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8079 seat=2 seq=21 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8088 seat=2 seq=94 class=DECISION overturn (decide_pick=2, prior argmax=1)\nLEGAL seed=8089 seat=2 seq=376 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8100 seat=2 seq=272 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8104 seat=1 seq=301 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8105 seat=1 seq=179 class=DECISION overturn (decide_pick=8, prior argmax=1)\nLEGAL seed=8106 seat=1 seq=375 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8113 seat=1 seq=95 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8114 seat=1 seq=533 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8117 seat=1 seq=493 class=DECISION overturn (decide_pick=3, prior argmax=1)\nLEGAL seed=8121 seat=1 seq=258 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8122 seat=1 seq=253 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8132 seat=1 seq=81 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8133 seat=1 seq=156 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8139 seat=1 seq=611 class=DECISION overturn (decide_pick=3, prior argmax=1)\nLEGAL seed=8146 seat=1 seq=237 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8147 seat=1 seq=269 class=DECISION overturn (decide_pick=3, prior argmax=0)\nLEGAL seed=8113 seat=2 seq=168 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8115 seat=2 seq=185 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8121 seat=2 seq=107 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8122 seat=2 seq=659 class=DECISION overturn (decide_pick=3, prior argmax=0)\nLEGAL seed=8123 seat=2 seq=250 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8126 seat=2 seq=424 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8128 seat=2 seq=22 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8132 seat=2 seq=154 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8136 seat=2 seq=958 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8139 seat=2 seq=152 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8146 seat=2 seq=3 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8148 seat=2 seq=120 class=DECISION overturn (decide_pick=2, prior argmax=1)\nLEGAL seed=8158 seat=1 seq=593 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8159 seat=1 seq=416 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8166 seat=1 seq=265 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8167 seat=1 seq=30 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8174 seat=1 seq=394 class=DECISION overturn (decide_pick=4, prior argmax=0)\nLEGAL seed=8177 seat=1 seq=1 class=DECISION overturn (decide_pick=2, prior argmax=1)\nLEGAL seed=8191 seat=1 seq=452 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8196 seat=1 seq=11 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8151 seat=2 seq=209 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8154 seat=2 seq=133 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8157 seat=2 seq=373 class=DECISION overturn (decide_pick=6, prior argmax=0)\nLEGAL seed=8158 seat=2 seq=214 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8160 seat=2 seq=242 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8164 seat=2 seq=246 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8173 seat=2 seq=232 class=DECISION overturn (decide_pick=1, prior argmax=0)\nLEGAL seed=8174 seat=2 seq=127 class=DECISION overturn (decide_pick=6, prior argmax=0)\nLEGAL seed=8180 seat=2 seq=695 class=DECISION overturn (decide_pick=2, prior argmax=0)\nLEGAL seed=8194 seat=2 seq=483 class=DECISION overturn (decide_pick=0, prior argmax=1)\nLEGAL seed=8200 seat=2 seq=597 class=DECISION overturn (decide_pick=2, prior argmax=0)\nunits identical=305 legal_diverged=88 skipped_invalid=7 defects=0\n",
+   "headline": {
+    "units_identical": 305,
+    "legal_diverged": 88,
+    "skipped_invalid": 7,
+    "defects": 0,
+    "verdict": "no machinery defect; every differing unit's first divergence is a DECISION overturn (all 88 LEGAL lines)"
+   }
+  },
+  "L3_jobs_build": {
+   "command": "cd /tmp/ggate && /home/joe/tcg/rl-env/bin/python audit_overturns.py --snap-dir gate_c1_teacher_s1_snaps --snap-dir gate_c1_teacher_s2_snaps --snap-dir gate_c2_teacher_s1_snaps --snap-dir gate_c2_teacher_s2_snaps --snap-dir gate_c3_teacher_s1_snaps --snap-dir gate_c3_teacher_s2_snaps --snap-dir gate_c4_teacher_s1_snaps --snap-dir gate_c4_teacher_s2_snaps --stats gate_c1_teacher_s1_log/search_stats.jsonl gate_c1_teacher_s2_log/search_stats.jsonl gate_c2_teacher_s1_log/search_stats.jsonl gate_c2_teacher_s2_log/search_stats.jsonl gate_c3_teacher_s1_log/search_stats.jsonl gate_c3_teacher_s2_log/search_stats.jsonl gate_c4_teacher_s1_log/search_stats.jsonl gate_c4_teacher_s2_log/search_stats.jsonl --out /tmp/ggate/jobs_all.jsonl --sample 100000 --seed 20261023",
+   "exit_code": 0,
+   "box_output_file": "/tmp/ggate/audit_overturns_output.txt",
+   "box_output_sha256": "77bfc966a19f992e57b74bb9753d24c1ba9a14e4f31fdcf169b438ab7ed5d004",
+   "stdout_full": "stat overturns: 118 of 9429 contested rows\nsnapshot index entries: 118\njobs emitted: 118 (sample seed 20261023, cap 100000)\nrelabel (post-gate): MEAS_JOBS=/tmp/ggate/jobs_all.jsonl LABEL_W=50 php meas_label_main.php <deck> <deck> --policy-search --games 1\n",
+   "headline": {
+    "stat_overturns": 118,
+    "contested_rows": 9429,
+    "snapshot_index_entries": 118,
+    "jobs_emitted": 118,
+    "jobs_file": "/tmp/ggate/jobs_all.jsonl",
+    "jobs_file_sha256": "5fe5c0d85baf09f65777124f030a852db1c58fbf4b756f6cac587fe2f120e89b"
+   }
+  },
+  "L3": {
+   "status": "FAILED - cannot be produced from the available inputs",
+   "attempted_command": "cd /tmp/ggate && /home/joe/tcg/rl-env/bin/python analyze_l3_deploy.py --jobs /tmp/ggate/jobs_all.jsonl --labels /tmp/ggate/l3_out_0.jsonl",
+   "exit_code": 1,
+   "box_output_file": "/tmp/ggate/l3_attempt_output.txt",
+   "box_output_sha256": "20c96a5d516c666476892fce21f56ff4c33277386b8e5dd3807fa6652bd45285",
+   "failure_verbatim": "Traceback (most recent call last):\n  File \"/tmp/ggate/analyze_l3_deploy.py\", line 212, in <module>\n    sys.exit(main())\n             ~~~~^^\n  File \"/tmp/ggate/analyze_l3_deploy.py\", line 187, in main\n    with open(path) as f:\n         ~~~~^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/ggate/l3_out_0.jsonl'\n",
+   "reason": "No L3 label files exist in the fleet outputs: ls /tmp/ggate/*l3* /tmp/ggate/*label* /tmp/ggate/*l2* returned only the analyze_l3 scripts and the attempt log ('cannot access /tmp/ggate/*label*', 'cannot access /tmp/ggate/*l2*'). The labels are produced by a separate post-gate relabel run (meas_label_main.php at LABEL_W=50 on the production server, per audit_overturns.py's printed relabel line and build-package sec.7), which is not part of the fleet outputs in /tmp/ggate and was not run. No hand-rolled substitute was used.",
+   "headline": {
+    "mean_paired_diff": null,
+    "per_game_gain": null,
+    "gain_share_of_delta_DELTA_0.0075": null,
+    "note": "not producible without label rows; DELTA deployment substitution (O3) was made and recorded regardless, and the deployment copy is the file the failed attempt ran"
+   }
+  },
+  "L2": {
+   "status": "FAILED - cannot be produced from the available inputs",
+   "attempted_command": "cd /tmp/gravytree && SWAP_JOBS=/tmp/ggate/jobs_l2.jsonl SWAP_IDX=0 SWAP_OUT=/tmp/ggate/l2_out.jsonl timeout 120 php probe_swap20.php",
+   "exit_code": 2,
+   "box_output_file": "/tmp/ggate/l2_attempt_output.txt",
+   "box_output_sha256": "e290d7160dc42c697f0cf1435435eecb2f1f06f7c664cea4b43ec93e33085eae",
+   "failure_verbatim": "policy: v1 (deck-aware)\npolicy: search (seat 1 via /tmp/tcg_policy.sock)\nno job at idx 0\n",
+   "reason": "No L2 jobs file or L2 output exists in the fleet outputs (/tmp/ggate/jobs_l2.jsonl and /tmp/ggate/l2_out.jsonl are absent; verified by ls). The registered L2 is a separate post-gate run of probe_swap20.php on the production server over 20 seeded overturn snapshots x both picks (build-package sec.7, seed 20261023; selection = seeded shuffle of the L3 jobs file, first 20); that run and its inputs are not among the fleet outputs and were not launched. The attempt above ran the Gravy tree copy (sha256 400a9215...) and exited 2 with 'no job at idx 0' because the jobs file does not exist. No hand-rolled substitute was used.",
+   "headline": null
+  }
+ },
+ "spotchecks_summary": {
+  "file": "~/workspace/tcg-sim/roundrobin-repo/rounds/round7/fleet-spotchecks.txt",
+  "sc1_delta_line": "400 216.0 213.0 0.0075 18.0",
+  "sc2_teacher_timeout_rate": "7 400 0.0175",
+  "sc3_registry": "fc46f835cafefdca042457bc84b509af47e3f6ed28f63b453fde05261c225521  /tmp/harvest/do_not_train_registry.json ; 6161 games",
+  "all_match_expected": true
+ }
+}

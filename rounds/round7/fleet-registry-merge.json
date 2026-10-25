@@ -1,0 +1,60 @@
+{
+ "before_count": 5031,
+ "before_sha256": "71cacfb0bfc190f34b4c252e43d515236e65430bcc761a248d1f82e0c519cd5d",
+ "after_count": 6161,
+ "after_sha256": "fc46f835cafefdca042457bc84b509af47e3f6ed28f63b453fde05261c225521",
+ "n_fleet_rows_read": 800,
+ "fleet_row_id_field": "gamename",
+ "n_fleet_row_ids_collected": 793,
+ "n_fleet_row_id_entries_total": 793,
+ "n_timeout_spawn_ids_collected": 442,
+ "n_timeout_spawn_id_entries_total": 445,
+ "n_union_ids_collected": 1130,
+ "n_new_ids_added": 1130,
+ "n_already_present": 0,
+ "tag_used": "gate:gate",
+ "tag_note": "Same tag for fleet row ids and timeout_new_games spawn ids, following the pregate merge convention (all 50 pregate game ids tagged gate:gate; no separate spawn tag exists in registry conventions).",
+ "sample_verified_ids": [
+  "969608432",
+  "214723822",
+  "147742645",
+  "127827778",
+  "533437181",
+  "970540730"
+ ],
+ "sample_verification": [
+  {
+   "id": "969608432",
+   "present": true,
+   "tag": "gate:gate"
+  },
+  {
+   "id": "214723822",
+   "present": true,
+   "tag": "gate:gate"
+  },
+  {
+   "id": "147742645",
+   "present": true,
+   "tag": "gate:gate"
+  },
+  {
+   "id": "127827778",
+   "present": true,
+   "tag": "gate:gate"
+  },
+  {
+   "id": "533437181",
+   "present": true,
+   "tag": "gate:gate"
+  },
+  {
+   "id": "970540730",
+   "present": true,
+   "tag": "gate:gate"
+  }
+ ],
+ "vault_refresh": "Before-merge copy saved as /home/joe/tcg/registry-vault/do_not_train_registry.bak-20261024-234503-gatefleet-pre.json (pattern of prior *.bak-<ts>-<label>-pre vault copies); after-merge copy saved as /home/joe/tcg/registry-vault/do_not_train_registry-20261024-234503-gatefleet.json (pattern of prior do_not_train_registry-<ts>-<label>.json vault copies). Box-side merge note written to /tmp/ggate/gate_registry_merge.txt mirroring pregate_registry_merge.txt.",
+ "vault_before_copy": "do_not_train_registry.bak-20261024-234503-gatefleet-pre.json",
+ "vault_after_copy": "do_not_train_registry-20261024-234503-gatefleet.json"
+}
