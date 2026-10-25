@@ -5,14 +5,29 @@
 For each job snapshot and each ARM (the distilled policy served
 by the corrected tree; v15 as control, served by the native
 tree): snapshot B is built by swapping the ROOT PLAYER'S
-OPPONENT's hand[0] with their deck[0] in gamestate.txt - two
-cards that are equally hidden from the root. The arm's pick on
-B must equal its pick on A, and the featurized states must be
-deep-identical: a policy whose pick moves when two hidden cards
-exchange places is reading information it cannot have (the
-round-3 L2 definition). Invariance is required on BOTH arms
-(the reply's form); a failure on either is a finding about that
-arm's serving path, reported per arm.
+OPPONENT's hand[i] with their deck[j] in gamestate.txt - two
+cards that are equally hidden from the root. The swap pair is
+REQUIRED to hold two DIFFERENT cards (claude-reply-a076148
+sec.4.4): with three copies of the same card in hand and deck,
+hand[0] <-> deck[0] can exchange a card for itself and the
+"swap" changes nothing. make_swapped takes the first (i, j)
+pair whose cards differ; a snapshot with no differing pair is
+unswappable. The arm's pick on B must equal its pick on A, and
+the featurized states must be deep-identical: a policy whose
+pick moves when two hidden cards exchange places is reading
+information it cannot have (the round-3 L2 definition).
+Invariance is required on BOTH arms (the reply's form); a
+failure on either is a finding about that arm's serving path,
+reported per arm.
+
+Swap-effect proof: featurize_snapshot.php emits the PARSED
+opponent hand as a debug field outside the state
+(debug_opp_hand). For every tested snapshot the A and B debug
+hands must DIFFER as sequences; if they are equal, the swap did
+not take effect in the parsed state and the snapshot counts as
+INVALID - never as a pass. Featurize errors/missing rows are
+INVALID the same way. The verdict reads INVARIANT only with
+zero failures, zero invalids, and >= 20 tested snapshots.
 
 Why this form and not probe_swap20.php's: probe_swap20 measures
 forced ROLLOUT trajectories from swapped states - that is the
@@ -59,15 +74,17 @@ def featurize(tree, jobs, out_path, deck):
         cwd=tree, env=env, capture_output=True, text=True)
     if "FEATURIZE-DONE" not in p.stderr:
         raise SystemExit(f"featurize failed in {tree}: {p.stderr[-500:]}")
-    states = {}
+    rows = {}
     for ln in open(out_path):
         r = json.loads(ln)
-        if "state" in r:
-            states[r["snap"]] = r["state"]
-    return states
+        rows[r["snap"]] = r
+    return rows
 
 
 def make_swapped(job, dst_root):
+    """Build snapshot B. Returns (dst, swap_info) or None when
+    the snapshot is unswappable: empty opponent hand/deck, or NO
+    hand/deck pair whose cards DIFFER (sec.4.4)."""
     dst = os.path.join(dst_root, job["snap"] + "_swapB")
     if os.path.exists(dst):
         shutil.rmtree(dst)
@@ -79,15 +96,26 @@ def make_swapped(job, dst_root):
     hl, dl = HAND_LINE[opp], DECK_LINE[opp]
     hand = lines[hl].split()
     deck = lines[dl].split()
-    if not hand or not deck:
+    pair = None
+    for i, hc in enumerate(hand):
+        for j, dc in enumerate(deck):
+            if hc != dc:
+                pair = (i, j)
+                break
+        if pair:
+            break
+    if pair is None:
         shutil.rmtree(dst)
         return None
-    hand[0], deck[0] = deck[0], hand[0]
+    i, j = pair
+    info = {"hand_idx": i, "deck_idx": j,
+            "hand_card": hand[i], "deck_card": deck[j]}
+    hand[i], deck[j] = deck[j], hand[i]
     lines[hl] = " ".join(hand)
     lines[dl] = " ".join(deck)
     with open(gs_path, "wb") as f:
         f.write("\r\n".join(lines).encode("utf-8"))
-    return dst
+    return dst, info
 
 
 def pick(state, cands, net, vocab, bc_features, bc_features_v3):
@@ -114,20 +142,41 @@ def run_arm(name, tree, ckpt_path, jobs, swapped, scratch):
     ja = [{"snap_dir": j["snap_dir"], "snap": j["snap"],
            "game": j["game"], "player": j["player"],
            "branch": j["branch"], "cands": j["cands"]} for j in jobs]
-    st_a = featurize(tree, ja, f"{scratch}/{name}_a.jsonl", deck)
-    jb = [{"snap_dir": swapped[j["snap"]],
+    rows_a = featurize(tree, ja, f"{scratch}/{name}_a.jsonl", deck)
+    jb = [{"snap_dir": swapped[j["snap"]][0],
            "snap": j["snap"] + "_swapB",
            "game": j["game"], "player": j["player"],
            "branch": j["branch"], "cands": j["cands"]} for j in jobs
           if j["snap"] in swapped]
-    st_b = featurize(tree, jb, f"{scratch}/{name}_b.jsonl", deck)
-    rows, fails = [], 0
+    rows_b = featurize(tree, jb, f"{scratch}/{name}_b.jsonl", deck)
+    rows, fails, invalids = [], 0, 0
     for j in jobs:
         snap = j["snap"]
         if snap not in swapped:
             rows.append({"snap": snap, "result": "unswappable"})
             continue
-        a_state, b_state = st_a[snap], st_b[snap + "_swapB"]
+        ra = rows_a.get(snap) or {}
+        rb = rows_b.get(snap + "_swapB") or {}
+        if "state" not in ra or "state" not in rb:
+            invalids += 1
+            rows.append({"snap": snap, "result": "INVALID",
+                         "reason": "featurize error or missing row",
+                         "a_error": ra.get("error"),
+                         "b_error": rb.get("error")})
+            continue
+        ha, hb = ra.get("debug_opp_hand"), rb.get("debug_opp_hand")
+        if ha is None or hb is None or ha == hb:
+            # The swap did not take effect in the parsed state
+            # (or the debug field is missing): INVALID, never a
+            # pass (sec.4.4).
+            invalids += 1
+            rows.append({"snap": snap, "result": "INVALID",
+                         "reason": "parsed opponent hands A/B do "
+                                   "not differ - swap not in effect",
+                         "debug_hand_a": ha, "debug_hand_b": hb,
+                         "swap": swapped[snap][1]})
+            continue
+        a_state, b_state = ra["state"], rb["state"]
         same_state = (json.dumps(a_state, sort_keys=True)
                       == json.dumps(b_state, sort_keys=True))
         pa = pick(a_state, j["cands"], net, ck["vocab"],
@@ -137,13 +186,15 @@ def run_arm(name, tree, ckpt_path, jobs, swapped, scratch):
         ok = same_state and pa == pb
         fails += 0 if ok else 1
         rows.append({"snap": snap, "state_identical": same_state,
-                     "pick_a": pa, "pick_b": pb, "result":
+                     "pick_a": pa, "pick_b": pb,
+                     "swap": swapped[snap][1], "result":
                      "PASS" if ok else "FAIL"})
     del sys.modules["bc_features"], sys.modules["bc_features_v3"]
     sys.path.remove(tree)
-    return {"arm": name, "tested": len([r for r in rows
-                                        if r["result"] != "unswappable"]),
-            "failures": fails, "rows": rows}
+    return {"arm": name,
+            "tested": len([r for r in rows
+                           if r["result"] in ("PASS", "FAIL")]),
+            "failures": fails, "invalid": invalids, "rows": rows}
 
 
 def main():
@@ -160,23 +211,29 @@ def main():
     jobs = [json.loads(l) for l in open(a.jobs) if l.strip()]
     swapped = {}
     for j in jobs:
-        dst = make_swapped(j, a.scratch)
-        if dst:
-            swapped[j["snap"]] = dst
+        got = make_swapped(j, a.scratch)
+        if got:
+            swapped[j["snap"]] = got
     rep = {"jobs": len(jobs), "swappable": len(swapped), "arms": []}
     rep["arms"].append(run_arm("distilled", a.corrected_tree,
                                a.distilled, jobs, swapped, a.scratch))
     rep["arms"].append(run_arm("v15_control", a.native_tree,
                                a.v15, jobs, swapped, a.scratch))
-    rep["verdict"] = ("INVARIANT on both arms"
-                       if all(x["failures"] == 0 for x in rep["arms"])
-                       else "INVARIANCE FAILURE - see per-arm rows")
+    if any(x["failures"] > 0 for x in rep["arms"]):
+        rep["verdict"] = ("INVARIANCE FAILURE - see per-arm rows")
+    elif (any(x["invalid"] > 0 for x in rep["arms"])
+          or any(x["tested"] < 20 for x in rep["arms"])):
+        rep["verdict"] = ("NOT ESTABLISHED - invalid snapshots or "
+                          "fewer than 20 tested on an arm; a "
+                          "conversion read requires a clean re-run")
+    else:
+        rep["verdict"] = "INVARIANT on both arms"
     json.dump(rep, open(a.out, "w"), indent=1)
     print(json.dumps({k: rep[k] for k in ("jobs", "swappable",
                                            "verdict")}, indent=1))
     for arm in rep["arms"]:
         print(f"{arm['arm']}: tested {arm['tested']}, "
-              f"failures {arm['failures']}")
+              f"failures {arm['failures']}, invalid {arm['invalid']}")
 
 
 if __name__ == "__main__":

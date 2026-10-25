@@ -1,0 +1,46 @@
+normal row: seed 8004 winner 1
++ D=/tmp/r8_fixture_retry
++ rm -rf /tmp/r8_fixture_retry
++ mkdir -p /tmp/r8_fixture_retry/log
++ PY=/home/joe/tcg/rl-env/bin/python
++ /home/joe/tcg/rl-env/bin/python -
++ SRVPID=3154595
++ TCG_POLICY_SOCK=/tmp/r8_fixture_retry/retry.sock
++ TCG_LEARNER_SEAT=1
++ SEARCH_MODEL=/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt
++ setsid nohup /home/joe/tcg/rl-env/bin/python /tmp/distilltree_native/rl/search_server.py
+++ seq 1 30
++ for i in $(seq 1 30)
++ grep -q 'search model loaded' /tmp/r8_fixture_retry/server.log
++ sleep 1
++ for i in $(seq 1 30)
++ grep -q 'search model loaded' /tmp/r8_fixture_retry/server.log
++ break
++ grep 'search model loaded' /tmp/r8_fixture_retry/server.log
+search_server: search model loaded (/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt) on cuda
+=== CONTROL RUN (no timeout rows) ===
++ echo '=== CONTROL RUN (no timeout rows) ==='
++ GATE_GAME_IDS_FILE=/tmp/r8_fixture_retry/control_game_ids.txt
++ /home/joe/tcg/rl-env/bin/python /tmp/distilltree_native/gate_raw_retry.py --tree /tmp/distilltree_native --sock /tmp/r8_fixture_retry/retry.sock --seat 1 --timeout 700 --deck /tmp/distilltree_native/decks/nats2026_ashlyn_fai_60.txt --rows /tmp/r8_fixture_retry/rows_control.jsonl --logdir /tmp/r8_fixture_retry/log
+no raw timeouts; nothing to retry
+=== MAIN RUN (one normal row + one injected timeout row, seed 999901) ===
++ echo '=== MAIN RUN (one normal row + one injected timeout row, seed 999901) ==='
++ GATE_GAME_IDS_FILE=/tmp/r8_fixture_retry/game_ids.txt
++ /home/joe/tcg/rl-env/bin/python /tmp/distilltree_native/gate_raw_retry.py --tree /tmp/distilltree_native --sock /tmp/r8_fixture_retry/retry.sock --seat 1 --timeout 700 --deck /tmp/distilltree_native/decks/nats2026_ashlyn_fai_60.txt --rows /tmp/r8_fixture_retry/rows.jsonl --logdir /tmp/r8_fixture_retry/log
+raw retry seed 999901: completed winner=1
+=== FINAL rows.jsonl ===
++ echo '=== FINAL rows.jsonl ==='
++ cat /tmp/r8_fixture_retry/rows.jsonl
+{"seed": 8004, "arm": "raw", "seat": 1, "server_seat": 1, "seat_mismatch_errors": 0, "mode_line": "policy: server (v1-equivalent via /tmp/ggate_s1.sock)", "connect_failed": 0, "secs": 4.1, "winner": 1, "draw": false, "capped": false, "cap_reason": null, "turns": 28, "gamename": "442638022", "firstPlayer": 1, "stuck": false, "p1life": 38, "p2life": -1, "decisions": 585, "gamelog_sha": "06960962edc60b70", "gamelog_bytes": 82318, "gamestate_sha": "119224cd078e4547", "gamestate_norm_sha": "791bdd0177fd3097"}
+{"seed": 999901, "arm": "raw", "seat": 1, "server_seat": 1, "seat_mismatch_errors": 0, "mode_line": "policy: server (v1-equivalent via /tmp/r8_fixture_retry/retry.sock)", "connect_failed": 0, "secs": 2.5, "winner": 1, "draw": false, "capped": false, "cap_reason": null, "turns": 23, "gamename": "520460677", "firstPlayer": 1, "stuck": false, "p1life": 1, "p2life": -2, "decisions": 853, "gamelog_sha": "0f23a006ec3c2be1", "gamelog_bytes": 134692, "gamestate_sha": "354561dd7c4ac547", "gamestate_norm_sha": "f171ab745f13b061"}
+=== game ids file ===
+520460677
+=== logdir ===
++ echo '=== game ids file ==='
++ cat /tmp/r8_fixture_retry/game_ids.txt
++ echo '=== logdir ==='
++ ls /tmp/r8_fixture_retry/log
+trace
+FIXTURE-DONE
++ kill 3154595
++ echo FIXTURE-DONE

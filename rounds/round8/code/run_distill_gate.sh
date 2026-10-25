@@ -69,6 +69,12 @@ expect_hash "$CORR/featurize.php" \
   3dcf32c9776df2fe47987a1588b5dfd719a4d697a94894b588f908eff907030a "corrected featurize.php"
 expect_hash "$V15" \
   0400539dda891c34e3573b83de3aa299af42c072f949db49ce4d67d5d0e9c82c "v15"
+expect_hash "$NATIVE/gate_raw_retry.py" \
+  c3fb227e76084a7a9e509ca9cde38295c9f3e286ed48f79295749fd895e20a93 \
+  "native gate_raw_retry.py (stock)"
+expect_hash "$CORR/gate_raw_retry.py" \
+  c3fb227e76084a7a9e509ca9cde38295c9f3e286ed48f79295749fd895e20a93 \
+  "corrected gate_raw_retry.py (stock)"
 echo "distilled ckpt sha256: $(sha256sum "$DISTILL_CKPT" | awk '{print $1}')"
 
 SRV_PIDS=""
@@ -103,34 +109,6 @@ start_sweeper() { # tag gamesdir
     --interval 60 --stop-file "$OUT/shm_$1.stop" &
   SWEEP_PIDS="$SWEEP_PIDS $!"
 }
-
-RAW_RETRY_POLICY=$(cat <<'EOF'
-import json, sys
-rows = [json.loads(l) for l in open(sys.argv[1]) if l.strip()]
-pending = [r["seed"] for r in rows
-           if (not r.get("keep_game_dir") and not r.get("gamelog_sha256"))]
-old = {r["seed"]: r for r in rows}
-out = []
-seen = set()
-for path in sys.argv[2:]:
-    for l in open(path):
-        if not l.strip():
-            continue
-        r = json.loads(l)
-        s = r["seed"]
-        if s in pending and s not in seen and (
-                r.get("keep_game_dir") or r.get("gamelog_sha256")):
-            out.append(r); seen.add(s)
-ok = len(seen) == len(pending)
-with open(sys.argv[1], "w") as f:
-    for r in rows:
-        f.write(json.dumps(r) + "\n")
-    for r in out:
-        f.write(json.dumps(r) + "\n")
-print(f"raw_retry: {len(seen)}/{len(pending)} timeouts recovered")
-sys.exit(0 if ok else 1)
-EOF
-)
 
 run_chunk() {
   local chunk=$1 lo=$2 hi=$3 seat
@@ -185,26 +163,27 @@ run_chunk() {
   wait $p_dist1 || rc=1
   wait $p_dist2 || rc=1
   [ "$rc" = 0 ] || return 1
-  # Timeout recovery (the round-7 gate_raw_retry pattern): a raw
-  # timeout leaves no record but the bare result row; re-run
-  # those seeds once (the retry replays the identical game) and
-  # splice the full record in.
+  # Timeout recovery: the STOCK gate_raw_retry.py from the arm's
+  # own tree (hash-pinned above), exactly as round 7 ran it. It
+  # selects only rows with invalid == "timeout", removes them,
+  # and re-invokes the tree's driver for exactly those seeds
+  # (the driver resumes from the row file, so removed seeds are
+  # the only ones replayed); a re-run that times out again leaves
+  # its fresh timeout row standing, which the analysis scores
+  # 0.5. GATE_GAME_IDS_FILE is the arm's main ids file, as in
+  # round 7, so retried games' ids merge with the fleet's.
   local arm tree tag
   for arm in raw dist; do
     for seat in 1 2; do
       if [ "$arm" = raw ]; then tree=$NATIVE; else tree=$CORR; fi
       tag=${arm}_${chunk}_s${seat}
-      GATE_GAME_IDS_FILE="$OUT/${tag}_retry_game_ids.txt" \
-      KEEP_GAME_ON_TIMEOUT=1 \
-        $PY "$tree/paired_driver.py" --tree "$tree" \
-          --sock "$OUT/${tag}.sock" --seat "$seat" --arm raw \
-          --arm2 retry --timeout "$GATE_TIMEOUT" \
+      GATE_GAME_IDS_FILE="$OUT/${tag}_game_ids.txt" \
+        $PY "$tree/gate_raw_retry.py" --tree "$tree" \
+          --sock "$OUT/${tag}.sock" --seat "$seat" \
+          --timeout "$GATE_TIMEOUT" \
           --deck "$tree/$DECK_NAME" \
-          --out "$OUT/${tag}_retry.jsonl" \
-          --logdir "$OUT/${tag}_retry_log" \
-          --base-rows "$OUT/${tag}.jsonl" || return 1
-      $PY -c "$RAW_RETRY_POLICY" "$OUT/${tag}.jsonl" \
-        "$OUT/${tag}_retry.jsonl" || return 1
+          --rows "$OUT/${tag}.jsonl" \
+          --logdir "$OUT/${tag}_log" || return 1
     done
   done
   for pid in $SRV_PIDS; do kill "$pid" 2>/dev/null; done

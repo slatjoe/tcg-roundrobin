@@ -12,8 +12,11 @@
 // returns under LABEL_DRIVER. Jobs come from env FEAT_JOBS (jsonl),
 // one output row per job to env FEAT_OUT (jsonl):
 //   job: {snap_dir, snap, game, player, branch, cands}
-//   out: {snap, game, player, branch, state, canary: true}
+//   out: {snap, game, player, branch, state, canary: true,
+//         debug_opp_hand: [card ids]}
 //        or {snap, ..., error: "..."} (canary throw included)
+//        debug_opp_hand is a debug field OUTSIDE the state: the
+//        parsed opponent hand (swap-test swap-effect proof).
 //
 // The snapshot load mirrors SimLabel_RunForSnapshot's own sequence
 // (search.php): copy into Games/<game>/, DeleteCache BEFORE
@@ -56,6 +59,14 @@ foreach ($jobs as $j) {
     SimFeat_Canary($player, $st);
     $row["state"] = $st;
     $row["canary"] = true;
+    // Debug-only (OUTSIDE "state", never featurized): the PARSED
+    // opponent hand as the engine loaded it. The swap test
+    // asserts A/B debug hands DIFFER after its gamestate-text
+    // swap - proof the swap took effect in the parsed state
+    // (a silent same-cards or unswapped parse must not read as
+    // invariance; claude-reply-a076148 sec.4.4).
+    $row["debug_opp_hand"] = SimFeat_ZoneIDs(GetHand(3 - $player),
+                                             HandPieces());
   } catch (Throwable $e) {
     $row["error"] = $e->getMessage();
   }

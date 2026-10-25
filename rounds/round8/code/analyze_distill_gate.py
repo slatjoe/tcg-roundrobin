@@ -1,25 +1,43 @@
 #!/usr/bin/env python3
 """Round-8 gate analysis (build-package sec.5; the bands are
-claude-reply-926f6c3 sec.5's, registered before the fleet runs).
+claude-reply-926f6c3 sec.5's, registered before the fleet runs;
+the row handling is the fix package's rewrite against the
+driver's real row schema, per claude-reply-a076148 sec.2.2).
 
 PRIMARY: the paired draw-scored delta, distilled minus v15, over
 the fleet's paired units (seed x seat; both arms raw, Fai mirror
-vs heuristic; pre-capped/drawn games score 0.5). Scoring mirrors
-the accepted gate convention EXCEPT timeouts: a post-retry
-timeout scores 0.5 for that arm (the round-7 fleet's convention -
-an unrecovered timeout is a driver artifact, not a policy
-outcome; the counts are reported alongside).
+vs heuristic).
 
-Reported with the primary: cluster bootstrap 95% CI (resample by
-seed), normal-approximation cross-check, exact sign test,
-per-seat deltas, the distilled arm's absolute score beside the
-raw arm's (and, labeled historical, the Fai gate's raw 0.4500 -
-the fleet's own raw arm is the contemporaneous control), and
-the DIVERGENCE RATE: the share of paired units whose two arms'
-gamelog hashes differ (the registered read), plus - when the
-rows carry per-decision pick sequences - the mean decision
-depth of the first divergence (reported as available; the rate
-does not depend on it).
+ROW SCHEMA (the paired driver's own, verified against round 7's
+published rows from the same driver): each row carries `seed`,
+`arm`, `seat`, `winner` (0 on a draw or an engine cap), `capped`,
+`draw`, `gamelog_sha`, and - on a wall-clock timeout row only -
+`invalid` == "timeout".
+
+SCORING - explicit branches, in this order (per row):
+  1. invalid == "timeout"  -> 0.5 for that arm, counted as a
+     timeout unit (the registered raw-arm convention: a timeout
+     is a driver artifact, not a policy outcome; the stock
+     gate_raw_retry.py gets one re-run at it before the fleet is
+     read, and a row still standing as a timeout scores 0.5).
+  2. any other `invalid`   -> the row is UNUSABLE: the unit is
+     reported and excluded, never silently scored.
+  3. capped or draw or winner in {0, None} -> 0.5.
+  4. otherwise a win (1.0) or loss (0.0) by the row's own seat.
+
+DIVERGENCE: a paired unit is diverged iff the two arms'
+`gamelog_sha` values differ. Timeout units are counted
+separately and are never counted as diverged. When the rows
+carry per-decision pick sequences, the mean decision depth of
+the first divergence is reported as available; the rate does
+not depend on it.
+
+Reported with the primary: cluster bootstrap 95% CI (resample
+by seed), normal-approximation cross-check, exact sign test,
+per-seat deltas, and the distilled arm's absolute score beside
+the raw arm's (and, labeled historical, the Fai gate's raw
+0.4500 - the fleet's own raw arm is the contemporaneous
+control).
 
 Bands (registered):
   CONVERTS      delta >= +0.10 AND CI lower bound > 0
@@ -53,42 +71,43 @@ import sys
 from collections import defaultdict
 
 REG = "/tmp/harvest/do_not_train_registry.json"
-SEED_SET = set(range(9001, 9201))
 
 
 def norm_cdf(x):
     return 0.5 * (1 + math.erf(x / math.sqrt(2)))
 
 
+def score_row(r):
+    """One driver row -> (score, kind). kind is 'timeout',
+    'invalid:<value>', 'drawn' or 'decided'. A score of None
+    marks the row unusable (branch 2 only)."""
+    inv = r.get("invalid")
+    if inv == "timeout":
+        return 0.5, "timeout"
+    if inv:
+        return None, "invalid:" + str(inv)
+    w = r.get("winner")
+    if r.get("capped") or r.get("draw") or w is None or w == 0:
+        return 0.5, "drawn"
+    return (1.0 if int(w) == int(r["seat"]) else 0.0), "decided"
+
+
 def score(pair):
-    """(score_a, score_b) or None for a unit the caller must read
-    on its own (a malformed row - reported, never dropped)."""
+    """(score_raw, score_dist, kinds) or None if either row is
+    unusable (branch 2)."""
     a, b = pair
-    def s(r, opp):
-        w = r.get("winner")
-        if w not in (1, 2):
-            return None
-        if r.get("capped"):
-            return 0.5
-        return 1.0 if int(w) == int(r["learner_seat"]) else 0.0
-    # Timeout rows carry no usable winner (the driver writes
-    # winner -1 / no keep flag): score 0.5 for that arm.
-    def s2(r):
-        if r.get("timed_out") or (r.get("winner") not in (1, 2)
-                                  and not r.get("gamelog_sha256")):
-            return 0.5
-        return s(r, None)
-    sa, sb = s2(a), s2(b)
+    sa, ka = score_row(a)
+    sb, kb = score_row(b)
     if sa is None or sb is None:
         return None
-    return sa, sb
+    return sa, sb, (ka, kb)
 
 
 def collect(fleet, chunks, arm_raw, arm_dist):
     pairs = {}
     raw_rows = {arm_raw: {}, arm_dist: {}}
     for chunk in chunks:
-        for arm, name in ((arm_raw, "raw"), (arm_dist, "dist")):
+        for arm in (arm_raw, arm_dist):
             for seat in (1, 2):
                 for path in glob.glob(
                         os.path.join(fleet, f"{arm}_{chunk}_s{seat}.jsonl")):
@@ -121,22 +140,40 @@ def bootstrap(deltas, seeds_of, iters=10000, rng_seed=20261025):
     return means[int(0.025 * iters)], means[int(0.975 * iters)]
 
 
-def divergence(pairs):
+def divergence(pairs, kinds_of):
+    """Divergence on the two arms' gamelog hashes. Timeout units
+    (either arm's row a timeout) are counted separately and are
+    never counted as diverged."""
     units = len(pairs)
+    timeout_units = 0
     diff_units = 0
+    identical_units = 0
     depths = []
-    for (seed, seat), (a, b) in sorted(pairs.items()):
-        if str(a.get("gamelog_sha256")) != str(b.get("gamelog_sha256")):
-            diff_units += 1
-            ta = a.get("trace_picks") or []
-            tb = b.get("trace_picks") or []
-            for i, (x, y) in enumerate(zip(ta, tb)):
-                if x != y:
-                    depths.append(i)
-                    break
+    for key in sorted(pairs):
+        a, b = pairs[key]
+        if "timeout" in kinds_of[key]:
+            timeout_units += 1
+            continue
+        ha, hb = a.get("gamelog_sha"), b.get("gamelog_sha")
+        if ha is not None and ha == hb:
+            identical_units += 1
+            continue
+        diff_units += 1
+        ta = a.get("trace_picks") or []
+        tb = b.get("trace_picks") or []
+        for i, (x, y) in enumerate(zip(ta, tb)):
+            if x != y:
+                depths.append(i)
+                break
+    scored = units - timeout_units
     return {"paired_units": units,
+            "timeout_units": timeout_units,
+            "identical_units": identical_units,
             "diverged_units": diff_units,
-            "divergence_rate": (diff_units / units) if units else None,
+            "divergence_rate_of_scored_units":
+                (diff_units / scored) if scored else None,
+            "divergence_rate_of_all_units":
+                (diff_units / units) if units else None,
             "mean_first_divergence_depth":
                 (sum(depths) / len(depths)) if depths else None,
             "units_with_trace_depth": len(depths)}
@@ -166,13 +203,26 @@ def main():
     raw_name, dist_name = a.arm_names
     pairs, _ = collect(a.fleet, a.chunks, raw_name, dist_name)
     print(f"paired units: {len(pairs)} (expect 400)")
-    bad = {k: p for k, p in pairs.items() if score(p) is None}
-    for k in bad:
-        print(f"  UNUSABLE unit {k} - inspect before reading")
-    usable = {k: score(p) for k, p in pairs.items()
-              if score(p) is not None}
-    deltas = [sb - sa for (sa, sb) in
-              (usable[k] for k in sorted(usable))]
+    scored = {}
+    bad = {}
+    kinds_of = {}
+    for k in sorted(pairs):
+        s = score(pairs[k])
+        if s is None:
+            ka = score_row(pairs[k][0])[1]
+            kb = score_row(pairs[k][1])[1]
+            bad[k] = (ka, kb)
+        else:
+            scored[k] = (s[0], s[1])
+            kinds_of[k] = s[2]
+    for k, kinds in bad.items():
+        print(f"  UNUSABLE unit {k} - row kinds {kinds}; inspect "
+              f"before reading")
+    n_timeout = sum(1 for k in kinds_of.values() if "timeout" in k)
+    print(f"timeout units (scored 0.5 for the timed-out arm): "
+          f"{n_timeout}")
+    usable = scored
+    deltas = [usable[k][1] - usable[k][0] for k in sorted(usable)]
     keys = sorted(usable)
     seeds_of = [k[0] for k in keys]
     n = len(deltas)
@@ -198,7 +248,7 @@ def main():
         if ds:
             per_seat[f"seat{seat}"] = {
                 "n": len(ds), "delta": sum(ds) / len(ds)}
-    div = divergence(pairs)
+    div = divergence(pairs, kinds_of)
 
     if mean > 0.25:
         verdict = ("IMPEACH - delta exceeds +0.25, above the "
@@ -214,6 +264,8 @@ def main():
 
     rep = {
         "paired_units": n, "unusable_units": len(bad),
+        "timeout_units": n_timeout,
+        "sum_paired_diffs": sum(deltas),
         "primary_delta_distilled_minus_v15": mean,
         "ci95_bootstrap_cluster_by_seed": [lo, hi],
         "normal_approx": {"se": se, "z": z, "p": p_norm},

@@ -36,6 +36,22 @@
 // wipes the fixed Games/label_scratch/ dir and Games/<game>/, so
 // concurrent label processes in one tree collide; the corpus
 // runner shards jobs across separate tree copies instead.
+//
+// DISTILL_SPLIT_CANDS=1 (the pilot's deadline-accounting mode,
+// fix package): each job's candidates are labeled in SEPARATE
+// SimLabel_RunForSnapshot calls, one per candidate, with the
+// SAME per-job seed base - the world seed for (candidate, world)
+// is seedBase + w*31337 regardless of grouping, so the emitted
+// rows are identical to the grouped call's; only the invocation
+// grouping differs. Each call's wall time is that candidate
+// batch's wall time (the batch forks its W children together and
+// collects them against the label path's 300 s deadline), which
+// is what the pilot's deadline accounting reads: a batch whose
+// wall exceeds the live teacher's 180 s candidate deadline had
+// worlds finishing after 180 s. Per-candidate rows {snap, cand,
+// secs, worlds, finished, timeout_errs} go to the jsonl file
+// named by env DISTILL_TIMINGS. The corpus runner never sets
+// this mode.
 $jobsFile = getenv("DISTILL_JOBS"); $outFile = getenv("DISTILL_OUT");
 $seedBase = intval(getenv("DISTILL_SEED") ?: 424242);
 $wEnv = getenv("LABEL_W");
@@ -53,6 +69,8 @@ foreach (file($jobsFile) as $ln) {
   $j = json_decode($ln, true); if (is_array($j)) $jobs[] = $j;
 }
 fwrite(STDERR, "distill label jobs=" . count($jobs) . " W=$W\n");
+$splitCands = getenv("DISTILL_SPLIT_CANDS") === "1";
+$timingsFile = getenv("DISTILL_TIMINGS");
 foreach ($jobs as $ji => $j) {
   $t0 = microtime(true);
   $meta = ["snap" => $j["snap"], "game" => strval($j["game"]),
@@ -61,8 +79,37 @@ foreach ($jobs as $ji => $j) {
   $cfg = ["W" => $W, "cap" => count($j["cands"]),
           "seedBase" => $seedBase + $ji * 100003,
           "pair" => "va", "candIdx" => $j["selected"]];
+  $rows = [];
   try {
-    $rows = SimLabel_RunForSnapshot(rtrim($j["snap_dir"], "/") . "/", $meta, $cfg);
+    if ($splitCands) {
+      foreach ($j["selected"] as $ci) {
+        $ct0 = microtime(true);
+        $cfgC = $cfg; $cfgC["candIdx"] = [intval($ci)];
+        $rowsC = SimLabel_RunForSnapshot(
+          rtrim($j["snap_dir"], "/") . "/", $meta, $cfgC);
+        $fin = 0; $toErr = 0;
+        foreach ($rowsC as $r) {
+          $res = $r["result"] ?? null;
+          if (is_array($res) && ($res["error"] ?? null) === "timeout") {
+            $toErr++;
+          } elseif (is_array($res) && !isset($res["error"])
+                    && !empty($res["finished"])) {
+            $fin++;
+          }
+        }
+        if ($timingsFile) {
+          file_put_contents($timingsFile, json_encode([
+            "snap" => $j["snap"], "cand" => intval($ci),
+            "secs" => round(microtime(true) - $ct0, 2),
+            "worlds" => count($rowsC), "finished" => $fin,
+            "timeout_errs" => $toErr]) . "\n", FILE_APPEND);
+        }
+        $rows = array_merge($rows, $rowsC);
+      }
+    } else {
+      $rows = SimLabel_RunForSnapshot(
+        rtrim($j["snap_dir"], "/") . "/", $meta, $cfg);
+    }
   } catch (Throwable $e) {
     fwrite(STDERR, "snap " . $j["snap"] . " failed: " . $e->getMessage() . "\n");
     continue;

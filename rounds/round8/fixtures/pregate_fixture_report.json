@@ -1,0 +1,36 @@
+{
+ "determinism": [
+  {
+   "tree": "native",
+   "units": 20,
+   "deterministic": true,
+   "diffs": [],
+   "key_mismatch": []
+  },
+  {
+   "tree": "corrected",
+   "units": 20,
+   "deterministic": true,
+   "diffs": [],
+   "key_mismatch": []
+  }
+ ],
+ "featurizer_only_control": {
+  "paired_units": 20,
+  "identical_gamelog": 20,
+  "winner_differs": 0,
+  "note": "report-only (sec.5(3)): the featurizer correction's isolated effect on v15's play"
+ },
+ "seat_control": {
+  "native": {
+   "seeds": 10,
+   "differing": 10,
+   "pass": true
+  },
+  "corrected": {
+   "seeds": 10,
+   "differing": 10,
+   "pass": true
+  }
+ }
+}

@@ -1,0 +1,51 @@
+registry sha256: fc46f835cafefdca042457bc84b509af47e3f6ed28f63b453fde05261c225521
+paired units: 400 (expect 400)
+timeout units (scored 0.5 for the timed-out arm): 7
+{
+ "paired_units": 400,
+ "unusable_units": 0,
+ "timeout_units": 7,
+ "sum_paired_diffs": 6.5,
+ "primary_delta_distilled_minus_v15": 0.01625,
+ "ci95_bootstrap_cluster_by_seed": [
+  -0.00375,
+  0.03625
+ ],
+ "normal_approx": {
+  "se": 0.010057595728084021,
+  "z": 1.6156942910943226,
+  "p": 0.10616042590567543
+ },
+ "sign_test": {
+  "wins": 19,
+  "losses": 10,
+  "ties": 371,
+  "p": 1.0
+ },
+ "absolute_scores": {
+  "distilled": 0.54875,
+  "v15_this_fleet": 0.5325,
+  "v15_historical_fai_gate": 0.45
+ },
+ "per_seat": {
+  "seat1": {
+   "n": 200,
+   "delta": 0.0175
+  },
+  "seat2": {
+   "n": 200,
+   "delta": 0.015
+  }
+ },
+ "divergence": {
+  "paired_units": 400,
+  "timeout_units": 7,
+  "identical_units": 305,
+  "diverged_units": 88,
+  "divergence_rate_of_scored_units": 0.22391857506361323,
+  "divergence_rate_of_all_units": 0.22,
+  "mean_first_divergence_depth": null,
+  "units_with_trace_depth": 0
+ },
+ "verdict": "DOES NOT CONVERT (CI includes 0)"
+}

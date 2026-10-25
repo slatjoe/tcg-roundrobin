@@ -7,7 +7,7 @@ round-4 lesson. Two report-only checks:
 1. DETERMINISM per tree: the same raw-arm run (seeds 11001-11010,
    both seats, vs heuristic) executed twice must produce
    identical per-game records - same winner, turns, decisions,
-   and gamelog sha256 (the D1/D2 fields).
+   and gamelog hash.
 2. FEATURIZER-ONLY CONTROL (claude-reply-926f6c3 sec.5(3)): v15
    raw on the corrected tree vs v15 raw on the native tree,
    paired on the same seeds - the count of identical paired
@@ -17,16 +17,24 @@ The R16-style seat control (the two raw seats of one tree must
 differ on at least one seed) is computed from the same rows and
 printed - a control that passed on both pre-restructure fleets.
 
+ROW SCHEMA (the paired driver's own, verified against round 7's
+published rows): rows are keyed by (seed, arm, seat); the fields
+read are `winner`, `turns`, `decisions` and `gamelog_sha`. (The
+fix package's rewrite keys on these fields only - the earlier
+draft read field names the driver does not write.)
+
 Usage: pregate_compare.py --native-run1 <rows> --native-run2 <rows>
   --corr-run1 <rows> --corr-run2 <rows> --out <report json>
 """
 import argparse
 import json
 
+FIELDS = ("winner", "turns", "decisions", "gamelog_sha")
+
 
 def load(path):
     rows = [json.loads(l) for l in open(path) if l.strip()]
-    return {(r["seed"], r["arm"], r["learner_seat"]): r for r in rows}
+    return {(r["seed"], r["arm"], r["seat"]): r for r in rows}
 
 
 def det_report(r1, r2, label):
@@ -34,9 +42,9 @@ def det_report(r1, r2, label):
     diffs = []
     for k in keys:
         a, b = r1[k], r2[k]
-        for f in ("winner", "turns", "decisions", "gamelog_sha256"):
+        for f in FIELDS:
             if str(a.get(f)) != str(b.get(f)):
-                diffs.append({"key": k, "field": f,
+                diffs.append({"key": str(k), "field": f,
                               "run1": a.get(f), "run2": b.get(f)})
     missing = sorted(set(r1) ^ set(r2))
     return {"tree": label, "units": len(keys),
@@ -59,8 +67,8 @@ def main():
     # Featurizer-only control: native run1 vs corrected run1.
     keys = sorted(set(n1) & set(c1))
     ident = sum(1 for k in keys
-                if str(n1[k].get("gamelog_sha256"))
-                == str(c1[k].get("gamelog_sha256")))
+                if str(n1[k].get("gamelog_sha"))
+                == str(c1[k].get("gamelog_sha")))
     wdiff = sum(1 for k in keys
                 if str(n1[k].get("winner")) != str(c1[k].get("winner")))
     rep["featurizer_only_control"] = {
@@ -76,8 +84,8 @@ def main():
               if k[1] == "raw" and k[2] == 2}
         common = sorted(set(s1) & set(s2))
         nd = sum(1 for s in common
-                 if str(s1[s].get("gamelog_sha256"))
-                 != str(s2[s].get("gamelog_sha256")))
+                 if str(s1[s].get("gamelog_sha"))
+                 != str(s2[s].get("gamelog_sha")))
         rep.setdefault("seat_control", {})[label] = {
             "seeds": len(common), "differing": nd,
             "pass": nd >= 1}

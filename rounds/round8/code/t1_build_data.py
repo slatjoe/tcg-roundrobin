@@ -18,11 +18,22 @@ Datasets written:
     labels are absent from labels.jsonl by construction and are
     never trained on.
   * KL shards (kl_shard_*.pt): uncontested states from the same
-    corpus games - native AND corrected tensors paired.
+    corpus games - native AND corrected tensors paired. States
+    with a single candidate (ncand <= 1) are DROPPED from the KL
+    set and counted: a single legal move gives a KL of exactly
+    0, so the state carries no anchoring signal
+    (claude-reply-a076148 sec.4.3).
   * states_index.jsonl + split.json: every used state, and the
     held-out split (~10% of corpus GAMES, split by game, seeded;
     the trainer's early stopping reads held-out CE only).
-  * build_report.json: counts and the featurization assertion.
+  * build_report.json: counts, the featurization assertion, and
+    the input hashes (labels.jsonl, corpus_manifest.json).
+
+Registry assertion (sec.4.3): the corpus's game ids must be
+disjoint from the do-not-train registry - the corpus is fresh
+games by construction, and this assert is what keeps an
+accident (a corpus dir pointed at gate outputs) from training
+on registered eval games. The build ABORTS on any overlap.
 
 The assertion: for every snapshot whose capture index row stored
 the LIVE state, the offline native featurization must equal it
@@ -37,6 +48,7 @@ trees), with the vocab from the v15 checkpoint.
 """
 import argparse
 import glob
+import hashlib
 import json
 import math
 import os
@@ -45,6 +57,10 @@ import subprocess
 import sys
 
 import torch
+
+
+def sha256_file(path):
+    return hashlib.sha256(open(path, "rb").read()).hexdigest()
 
 
 def deep_equal(a, b):
@@ -87,6 +103,8 @@ def main():
     ap.add_argument("--outdir", required=True)
     ap.add_argument("--holdout-frac", type=float, default=0.10)
     ap.add_argument("--split-seed", type=int, default=20261025)
+    ap.add_argument("--registry",
+                    default="/tmp/harvest/do_not_train_registry.json")
     a = ap.parse_args()
     os.makedirs(a.outdir, exist_ok=True)
 
@@ -94,6 +112,13 @@ def main():
     for ln in open(a.labels):
         r = json.loads(ln)
         labels[r["state_id"]] = r
+    input_hashes = {"labels": {"path": a.labels,
+                               "sha256": sha256_file(a.labels)}}
+    manifest_path = a.corpus.rstrip("/") + "/corpus_manifest.json"
+    assert os.path.exists(manifest_path), \
+        f"corpus manifest missing: {manifest_path}"
+    input_hashes["corpus_manifest"] = {
+        "path": manifest_path, "sha256": sha256_file(manifest_path)}
 
     # ---- gather snapshots -------------------------------------
     contested, uncontested = {}, {}
@@ -120,6 +145,19 @@ def main():
     # ---- split by game -----------------------------------------
     games = sorted({rec["game"] for rec in
                     list(contested.values()) + list(uncontested.values())})
+
+    # Registry assertion: corpus game ids must not intersect the
+    # do-not-train registry (sec.4.3).
+    reg = json.load(open(a.registry))
+    reg_ids = {str(g) for g in reg["games"]}
+    overlap = sorted(set(games) & reg_ids)
+    assert not overlap, (
+        f"corpus game ids intersect the do-not-train registry: "
+        f"{overlap[:10]} ({len(overlap)} total) - the corpus must "
+        f"be fresh games only")
+    print(f"registry assertion: {len(games)} corpus games, "
+          f"0 in the registry ({len(reg_ids)} registered)")
+
     rng = random.Random(a.split_seed)
     shuffled = games[:]
     rng.shuffle(shuffled)
@@ -169,6 +207,8 @@ def main():
 
     con = new_acc()
     con["action"] = []
+    con["prior_pick"] = []
+    con["overturn"] = []
     kl = {k: [] for k in ("sv_n", "own_n", "opp_n", "sv_c", "own_c",
                           "opp_c", "ci", "zi", "ncand", "game", "split")}
     index_rows = []
@@ -186,12 +226,20 @@ def main():
         con["ncand"].append(len(ci)); con["game"].append(rec["game"])
         con["split"].append("heldout" if rec["game"] in heldout else "train")
         con["action"].append(int(lab["teacher_pick"]))
+        con["prior_pick"].append(int(lab["prior_pick"]))
+        con["overturn"].append(int(lab["overturn"]))
         index_rows.append({"snap": snap, "game": rec["game"],
                            "kind": "contested",
                            "split": con["split"][-1],
                            "snap_dir": rec["snap_dir"]})
+    n_kl_single_dropped = 0
     for snap, rec in uncontested.items():
         if snap in drop:
+            continue
+        if len(rec["cands"]) <= 1:
+            # A single legal move gives a KL of exactly 0 - no
+            # anchoring signal (sec.4.3). Dropped and counted.
+            n_kl_single_dropped += 1
             continue
         svn, ownn, oppn, ci, zi = encode(nat[snap], rec["cands"])
         svc, ownc, oppc, _, _ = encode(cor[snap], rec["cands"])
@@ -224,10 +272,15 @@ def main():
             f.write(json.dumps(r) + "\n")
     report = {"contested_records": len(con["game"]),
               "kl_records": len(kl["game"]),
+              "kl_single_candidate_dropped": n_kl_single_dropped,
               "thin_or_unlabeled_dropped": n_thin_dropped,
               "stored_state_mismatches_dropped": len(mismatched),
               "mismatched_snaps": mismatched[:50],
               "heldout_games": len(heldout),
+              "input_hashes": input_hashes,
+              "registry_assertion": {
+                  "corpus_games": len(games),
+                  "registry_games": len(reg_ids), "overlap": 0},
               "shards": con_files, "kl_shards": kl_files}
     json.dump(report, open(a.outdir + "/build_report.json", "w"), indent=1)
     print(json.dumps(report, indent=1))

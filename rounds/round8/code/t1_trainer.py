@@ -19,6 +19,22 @@ the held-out-CE minimum, with the patience stated in the config
 in advance, is the ONE checkpoint written. Exactly one
 checkpoint enters the gate.
 
+Epoch -1 (claude-reply-a076148 sec.4.1): held-out CE is also
+evaluated at epoch -1 - v15 itself, before any training. If no
+epoch beats epoch -1, T1 records "no improvement on held-out
+labels" and writes a DOES-NOT-CONVERT-AT-TRAINING marker
+instead of a gate checkpoint: no gate runs on such a run, and
+the round's result is "does not convert" at the training stage.
+Per-epoch held-out OVERTURN RECALL and CONFIRMATION ACCURACY
+are logged alongside CE, report-only (held-out CE is ~87%
+confirmations; CE alone can hide whether overturns were
+learned).
+
+The frozen value-head parameter set is asserted NON-EMPTY (by
+name) before training: if PPOPolicyV3's head were not named
+value_head*, the freeze - and the post-training equality assert
+- would both pass vacuously.
+
 Init: v15 (D2). Architecture and vocab: v15's (PPOPolicyV3).
 
 Usage: t1_trainer.py --data <builder outdir> --config
@@ -105,10 +121,20 @@ def main():
     for p in v15.parameters():
         p.requires_grad_(False)
     # The value head is NOT trained (registered): freeze it in the
-    # student and keep it out of the optimizer.
+    # student and keep it out of the optimizer. The frozen set is
+    # asserted non-empty by name (sec.4.1) - a vacuous freeze
+    # would let the head train while every check passes.
+    frozen_names = []
     for name, p in student.named_parameters():
         if name.startswith("value_head"):
             p.requires_grad_(False)
+            frozen_names.append(name)
+    assert frozen_names, (
+        "no parameters matched 'value_head*' in PPOPolicyV3 - the "
+        "value-head freeze would be vacuous; check the model's "
+        "head naming before training")
+    print(f"frozen value-head parameters ({len(frozen_names)}): "
+          f"{frozen_names}", flush=True)
     opt = torch.optim.Adam(
         [p for p in student.parameters() if p.requires_grad],
         lr=float(cfg["lr"]))
@@ -125,9 +151,15 @@ def main():
           f"KL train {len(kl_tr)}", flush=True)
     assert con_tr and con_ho and kl_tr
 
-    def heldout_ce():
+    def heldout_eval():
+        """Held-out CE (the registered stopping quantity) plus
+        report-only overturn recall / confirmation accuracy
+        (sec.4.1): among held-out records whose label is an
+        overturn, the fraction where the student's argmax is the
+        teacher's pick; among confirmations, the same fraction."""
         student.eval()
         tot, n = 0.0, 0
+        ov_hit = ov_n = cf_hit = cf_n = 0
         with torch.no_grad():
             for idx in batches(len(con_ho), int(cfg["batch"]), rng):
                 sel = [con_ho[i] for i in idx.tolist()]
@@ -141,13 +173,37 @@ def main():
                 tot += float(Fn.cross_entropy(logits, act,
                                               reduction="sum"))
                 n += len(sel)
+                pred = logits.argmax(dim=1).tolist()
+                for r, i in enumerate(sel):
+                    hit = int(pred[r] == int(con["action"][i]))
+                    if int(con["overturn"][i]) == 1:
+                        ov_n += 1
+                        ov_hit += hit
+                    else:
+                        cf_n += 1
+                        cf_hit += hit
         student.train()
-        return tot / max(1, n)
+        return {"heldout_ce": tot / max(1, n),
+                "overturn_recall": (ov_hit / ov_n) if ov_n else None,
+                "overturn_n": ov_n,
+                "confirmation_accuracy": (cf_hit / cf_n) if cf_n
+                else None,
+                "confirmation_n": cf_n}
 
     beta = float(cfg["beta"])
-    best_ce, best_epoch, best_sd = float("inf"), -1, None
+    # Epoch -1: v15 itself on the held-out labels (sec.4.1). The
+    # best-so-far starts at epoch -1, so an epoch only wins by
+    # beating v15 itself by min_delta.
+    m1 = heldout_eval()
+    log = {"config": cfg, "frozen_value_head": frozen_names,
+           "epochs": [{"epoch": -1, "train_loss": None,
+                       "secs": 0.0, **m1}]}
+    print(f"epoch -1 (v15 itself): held-out CE "
+          f"{m1['heldout_ce']:.4f}; overturn recall "
+          f"{m1['overturn_recall']}; confirmation accuracy "
+          f"{m1['confirmation_accuracy']}", flush=True)
+    best_ce, best_epoch, best_sd = m1["heldout_ce"], -1, None
     stale = 0
-    log = {"config": cfg, "epochs": []}
     for ep in range(int(cfg["epochs_max"])):
         t0 = time.time()
         student.train()
@@ -192,14 +248,17 @@ def main():
             opt.step()
             loss_sum += float(loss) * len(sel)
             seen += len(sel)
-        ce = heldout_ce()
+        m = heldout_eval()
         rec = {"epoch": ep, "train_loss": loss_sum / max(1, seen),
-               "heldout_ce": ce, "secs": round(time.time() - t0, 1)}
+               "secs": round(time.time() - t0, 1), **m}
         log["epochs"].append(rec)
         print(f"epoch {ep}: train {rec['train_loss']:.4f} "
-              f"heldout CE {ce:.4f} ({rec['secs']}s)", flush=True)
-        if ce < best_ce - float(cfg["min_delta"]):
-            best_ce, best_epoch = ce, ep
+              f"heldout CE {m['heldout_ce']:.4f} "
+              f"ov-recall {m['overturn_recall']} "
+              f"conf-acc {m['confirmation_accuracy']} "
+              f"({rec['secs']}s)", flush=True)
+        if m["heldout_ce"] < best_ce - float(cfg["min_delta"]):
+            best_ce, best_epoch = m["heldout_ce"], ep
             best_sd = {k: v.detach().cpu().clone()
                        for k, v in student.state_dict().items()}
             stale = 0
@@ -210,7 +269,25 @@ def main():
                       f"{cfg['patience']}); best epoch {best_epoch}",
                       flush=True)
                 break
-    assert best_sd is not None
+    if best_epoch < 0:
+        # No epoch beat epoch -1 (v15 itself) on held-out labels:
+        # record "no improvement on held-out labels" and write
+        # the DOES-NOT-CONVERT-AT-TRAINING marker instead of a
+        # gate checkpoint (sec.4.1). No gate runs on this run.
+        log["best_epoch"] = -1
+        log["best_heldout_ce"] = best_ce
+        log["result"] = "no improvement on held-out labels"
+        json.dump(log, open(a.log, "w"), indent=1)
+        with open(a.out + ".does_not_convert.json", "w") as f:
+            json.dump({"result": "no improvement on held-out labels",
+                       "best_epoch": -1,
+                       "best_heldout_ce": best_ce,
+                       "train_log": a.log}, f, indent=1)
+        print("result: no improvement on held-out labels - "
+              "does-not-convert-at-training marker written "
+              f"({a.out}.does_not_convert.json); NO gate checkpoint",
+              flush=True)
+        return
     # The frozen value head must be untouched - assert it.
     for k, v in value_head_before.items():
         assert torch.equal(best_sd[k].cpu(), v.cpu()), \

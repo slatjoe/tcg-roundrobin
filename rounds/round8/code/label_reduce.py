@@ -23,6 +23,11 @@ The arithmetic mirrors SimTeacher_Decide (search.php, gate build
     paired_thin (counted, not hidden).
   * if best == prior the label confirms the prior
     (mean_diff / se_diff null, exactly as Decide logs them).
+  * every label row also carries the per-candidate finished-world
+    MEANS and sample SDs ("means" / "sds", keyed by candidate
+    index, aligned with "candidates") - the pilot's mechanism
+    check (claude-reply-a076148 sec.3) reads them against the
+    live stat rows' means.
 
 Inputs: --jobs (the labeler's job file), --raw (one or more raw
 row files from distill_label_main.php), --out labels file,
@@ -89,9 +94,18 @@ def main():
                                    f"{n_worlds.get(prior, 0)} < 20 worlds"})
             continue
         means = {}
+        sds = {}
         for ci in sel:
             vals = list(outcomes.get((snap, ci), {}).values())
-            means[ci] = (sum(vals) / len(vals)) if vals else None
+            if vals:
+                m = sum(vals) / len(vals)
+                means[ci] = m
+                sds[ci] = (math.sqrt(
+                    sum((v - m) ** 2 for v in vals)
+                    / max(1, len(vals) - 1)) if len(vals) > 1 else 0.0)
+            else:
+                means[ci] = None
+                sds[ci] = None
         best = prior
         best_mean = means[prior]
         for ci in sel:
@@ -103,6 +117,8 @@ def main():
                "branch": j["branch"], "turn": int(j.get("turn", 0)),
                "prior_pick": prior, "candidates": sel,
                "n_worlds": {str(k): v for k, v in n_worlds.items()},
+               "means": {str(k): v for k, v in means.items()},
+               "sds": {str(k): v for k, v in sds.items()},
                "paired_n": None, "mean_diff": None, "se_diff": None}
         if best == prior:
             counts["confirm"] += 1

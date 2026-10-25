@@ -1,36 +1,58 @@
 #!/usr/bin/env python3
-"""pilot_report.py - the round-8 pilot's reads (build-package
-sec.3): label-job timing (mean + p95), V1 self-consistency, V2
-live-consistency, thin-label counts.
+"""pilot_report.py - the round-8 pilot's reads, as corrected by
+claude-reply-a076148 sec.3 (the fix package's restructure).
 
-V1 (self-consistency): the same 20 snapshots labeled twice under
-different world seeds (runs A and B). Reported as the overall
-pick-agreement rate plus the two conditional rates the reply
-asks for: agreement on overturns (of the snaps where run A
-overturned, the fraction where run B overturned to the same
-pick) and agreement on confirmations (of the snaps where run A
-confirmed, the fraction where run B confirmed). Run B's
-conditionals are printed too - the two runs are symmetric.
+Inputs (pilot out dir): labels_v1a.jsonl / labels_v1b.jsonl (the
+V1 states labeled twice), labels_v2.jsonl (the V2 gate-overturn
+snapshots labeled once), thin_*.jsonl, pilot_v2_truth.jsonl (the
+live picks + live per-candidate means), pilot_times.jsonl
+(per-job secs), pilot_cand_times.jsonl (per-candidate batch
+timings + finish counts).
 
-V2 (live-consistency): each run's picks against the LIVE teacher
-picks recorded in the gate snap index. All 20 pilot snaps are
-live overturns, so V2 agreement = the fraction where the label
-run overturned to the live pick.
-
-The pass read (claude-reply-926f6c3 sec.1: V2 "statistically
-indistinguishable" from V1) is NOT auto-decided here. The report
-prints both rates with Wilson 95% intervals and a two-proportion
-z-test of the difference; the judgment is Claude's at pilot
-review, and the corpus run is gated on it plus Joe's go.
-
-Inputs (pilot out dir): labels_a.jsonl, labels_b.jsonl,
-thin_a.jsonl, thin_b.jsonl, pilot_v2_truth.jsonl,
-pilot_times.jsonl (one row per job-run: {snap, run, secs} -
-parsed by run_pilot.sh from the label mains' own stderr lines).
+Reads:
+  COST    per-job secs over every pilot label job-run: mean,
+          p95, MAX. The corpus estimate is computed from these
+          (~1,200 pilot jobs), at the mean and at the p95.
+  V1      on UNSELECTED states (the pilot capture's contested
+          states, labeled twice, runs A and B):
+            V1-ov   = P(B makes the same overturn | A overturned)
+            V1-conf = P(B confirms | A confirmed)
+          with Wilson 95% intervals. Run A's labels are ordinary
+          corpus labels.
+  V2      on 100 gate-fleet overturn snapshots (live-selected):
+            V2 = P(labeler pick == live pick | live overturned)
+          Exchangeability predicts V2 ~= V1-ov; both are printed
+          with Wilson intervals and the two-proportion test of
+          V2 vs V1-ov. One caveat, stated with the read: gate
+          states lie on teacher trajectories and V1's on v15's;
+          they are the same game up to each trajectory's first
+          overturn. The judgment is the reviewer's at pilot
+          review - this report carries numbers, not a verdict.
+  MECH    (report-only) per-candidate z-scores on the V2
+          snapshots: for candidates in the live selected set but
+          NOT in the live overturn pair (prior pick, live pick -
+          the selected-on side), z = (labeler mean - live mean)
+          / (sd_labeler * sqrt(1/n_labeler + 1/n_live)), the
+          per-world sd borrowed from the labeler's own worlds
+          for that candidate (the live rows record means and
+          counts, not per-world outcomes). Roughly standard
+          normal is the expectation.
+  DEADLINE accounting: the label path's per-candidate deadline
+          is 300 s against the live teacher's 180 s. From the
+          per-candidate batch timings: batches whose wall ran
+          past 180 s (their finished worlds are the upper bound
+          on worlds finished after 180 s - the exact per-world
+          finish times are not recorded by the machinery, and
+          batches at or under 180 s contribute exactly 0), and
+          the worlds killed at the 300 s label deadline
+          (timeout_errs) with the candidates they cut.
+  THIN    labels under the 20-finished-worlds floor: excluded
+          and counted, per run.
 """
 import argparse
 import json
 import math
+from collections import defaultdict
 
 
 def wilson(k, n, z=1.959964):
@@ -55,104 +77,168 @@ def z_two_prop(k1, n1, k2, n2):
 
 
 def load(path):
-    return [json.loads(ln) for ln in open(path) if ln.strip()]
+    try:
+        return [json.loads(ln) for ln in open(path) if ln.strip()]
+    except FileNotFoundError:
+        return []
+
+
+def rate_line(name, k, n):
+    lo, hi = wilson(k, n)
+    return (f"{name}: {k}/{n} = {k / n:.3f} "
+            f"Wilson95 [{lo:.3f}, {hi:.3f}]") if n else f"{name}: n=0"
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
+    ap.add_argument("--corpus-labels", type=int, default=10000,
+                    help="contested-label target the corpus "
+                         "estimate is computed for")
     a = ap.parse_args()
     o = a.out.rstrip("/")
 
-    la = {r["state_id"]: r for r in load(o + "/labels_a.jsonl")}
-    lb = {r["state_id"]: r for r in load(o + "/labels_b.jsonl")}
-    tha = load(o + "/thin_a.jsonl")
-    thb = load(o + "/thin_b.jsonl")
+    v1a = {r["state_id"]: r for r in load(o + "/labels_v1a.jsonl")}
+    v1b = {r["state_id"]: r for r in load(o + "/labels_v1b.jsonl")}
+    v2 = {r["state_id"]: r for r in load(o + "/labels_v2.jsonl")}
+    thin = {tag: load(o + f"/thin_{tag}.jsonl")
+            for tag in ("v1a", "v1b", "v2")}
     truth = {r["snap"]: r for r in load(o + "/pilot_v2_truth.jsonl")}
     times = load(o + "/pilot_times.jsonl")
+    cands = load(o + "/pilot_cand_times.jsonl")
+    L = []
+    L.append("ROUND-8 PILOT REPORT (corrected V1/V2 design)")
+    L.append("")
 
-    snaps = sorted(set(la) | set(lb))
-    lines = []
-    lines.append("ROUND-8 PILOT REPORT")
-    lines.append("")
+    # ---- cost -------------------------------------------------
     secs = sorted(t["secs"] for t in times)
     if secs:
         n = len(secs)
         mean = sum(secs) / n
         p95 = secs[min(n - 1, math.ceil(0.95 * n) - 1)]
-        lines.append(f"label jobs timed: {n} job-runs "
-                     f"(20 snapshots x 2 runs)")
-        lines.append(f"per-job secs: mean {mean:.1f}  p95 {p95:.1f}  "
-                     f"max {secs[-1]:.1f}")
-        lines.append(f"corpus sizing read (10,000 labels): "
-                     f"~{10000 * mean / 3600:.1f} box-hours serial at the "
-                     f"mean, ~{10000 * p95 / 3600:.1f} at the p95; "
-                     f"divide by the label stage's tree parallelism "
-                     f"(4) for wall-clock")
-    lines.append("")
-    lines.append(f"thin labels (excluded, counted): run A {len(tha)}, "
-                 f"run B {len(thb)} of {len(snaps)} jobs each")
-    lines.append("")
+        L.append(f"COST: {n} label job-runs timed")
+        L.append(f"  per-job secs: mean {mean:.1f}  p95 {p95:.1f}  "
+                 f"max {secs[-1]:.1f}")
+        tgt = a.corpus_labels
+        L.append(f"  corpus estimate ({tgt} contested labels): "
+                 f"{tgt * mean / 3600:.1f} box-hours serial at the "
+                 f"mean, {tgt * p95 / 3600:.1f} at the p95; "
+                 f"/4 label shards for wall-clock")
+    L.append("")
 
-    # V1: A vs B
-    both = [s for s in snaps if s in la and s in lb]
-    agree = sum(1 for s in both
-                if la[s]["teacher_pick"] == lb[s]["teacher_pick"])
-    lo, hi = wilson(agree, len(both))
-    lines.append(f"V1 self-consistency: pick agreement "
-                 f"{agree}/{len(both)} = {agree / len(both):.3f} "
-                 f"Wilson95 [{lo:.3f}, {hi:.3f}]")
+    # ---- thin ---------------------------------------------------
+    L.append("THIN (excluded, counted): "
+             + ", ".join(f"{tag} {len(v)}" for tag, v in thin.items()))
+    L.append("")
 
-    def conditional(x, y, kind):
-        # of the snaps where run x made a `kind` decision, the
-        # fraction where run y made the SAME decision
-        idx = [s for s in both
-               if (x[s]["overturn"] == 1) == (kind == "overturn")]
-        if not idx:
-            return f"  {kind}: none in run"
-        same = sum(1 for s in idx
-                   if y[s]["teacher_pick"] == x[s]["teacher_pick"]
-                   and y[s]["overturn"] == x[s]["overturn"])
-        return (f"  agreement on {kind} (run of {len(idx)}): "
-                f"{same}/{len(idx)} = {same / len(idx):.3f}")
-    lines.append(conditional(la, lb, "overturn"))
-    lines.append(conditional(la, lb, "confirm"))
-    lines.append(conditional(lb, la, "overturn"))
-    lines.append(conditional(lb, la, "confirm"))
-    lines.append("")
+    # ---- V1 -----------------------------------------------------
+    both = sorted(set(v1a) & set(v1b))
+    a_ov = [s for s in both if v1a[s]["overturn"] == 1]
+    ov_same = sum(1 for s in a_ov
+                  if v1b[s]["overturn"] == 1
+                  and v1b[s]["teacher_pick"] == v1a[s]["teacher_pick"])
+    a_cf = [s for s in both if v1a[s]["overturn"] == 0]
+    cf_same = sum(1 for s in a_cf
+                  if v1b[s]["overturn"] == 0
+                  and v1b[s]["teacher_pick"] == v1a[s]["teacher_pick"])
+    L.append(f"V1 (unselected states, {len(both)} states labeled "
+             f"twice; A overturns {len(a_ov)}, A confirmations "
+             f"{len(a_cf)}):")
+    L.append("  " + rate_line("V1-ov  P(B same overturn | A "
+                             "overturned)", ov_same, len(a_ov)))
+    L.append("  " + rate_line("V1-conf P(B confirms | A confirmed)",
+                              cf_same, len(a_cf)))
+    L.append("")
 
-    # V2: each run vs the live picks (all live decisions overturn)
-    v2k = v2n = 0
-    for name, lab in (("A", la), ("B", lb)):
-        idx = [s for s in snaps if s in lab and s in truth]
-        k = sum(1 for s in idx
-                if lab[s]["teacher_pick"] == truth[s]["teacher_pick"])
-        lo, hi = wilson(k, len(idx))
-        lines.append(f"V2 live-consistency (run {name}): "
-                     f"{k}/{len(idx)} = {k / len(idx):.3f} "
-                     f"Wilson95 [{lo:.3f}, {hi:.3f}]")
-        v2k += k
-        v2n += len(idx)
-    lo, hi = wilson(v2k, v2n)
-    lines.append(f"V2 pooled: {v2k}/{v2n} = {v2k / v2n:.3f} "
-                 f"Wilson95 [{lo:.3f}, {hi:.3f}]")
-    p = z_two_prop(v2k, v2n, agree, len(both))
-    lines.append(f"V2-pooled vs V1-overall difference: "
-                 f"two-proportion z-test p = {p:.3f} "
-                 f"(the indistinguishability judgment is the "
-                 f"reviewer's, from these numbers)")
-    lines.append("")
-    lines.append("per-snap detail (snap: live / A / B picks, "
-                 "A/B overturn flags):")
-    for s in snaps:
-        lv = truth[s]["teacher_pick"] if s in truth else "-"
-        pa = la[s]["teacher_pick"] if s in la else "thin"
-        pb = lb[s]["teacher_pick"] if s in lb else "thin"
-        oa = la[s]["overturn"] if s in la else "-"
-        ob = lb[s]["overturn"] if s in lb else "-"
-        lines.append(f"  {s}: live={lv} A={pa} (ov {oa}) "
-                     f"B={pb} (ov {ob})")
-    print("\n".join(lines))
+    # ---- V2 -----------------------------------------------------
+    v2_snaps = sorted(truth)
+    v2_labeled = [s for s in v2_snaps if s in v2]
+    v2_hit = sum(1 for s in v2_labeled
+                 if v2[s]["teacher_pick"] == truth[s]["teacher_pick"])
+    L.append(f"V2 ({len(v2_snaps)} gate overturn snapshots drawn; "
+             f"{len(v2_labeled)} labeled, "
+             f"{len(v2_snaps) - len(v2_labeled)} thin/excluded):")
+    L.append("  " + rate_line("V2  P(labeler pick == live pick | "
+                              "live overturned)", v2_hit,
+                              len(v2_labeled)))
+    p = z_two_prop(v2_hit, len(v2_labeled), ov_same, len(a_ov))
+    L.append(f"  V2 vs V1-ov: two-proportion z-test p = {p:.3f} "
+             f"(exchangeability predicts V2 ~= V1-ov; caveat: "
+             f"gate states lie on teacher trajectories, V1's on "
+             f"v15's - the same game up to each trajectory's first "
+             f"overturn. The read is the reviewer's.)")
+    L.append("")
+
+    # ---- mechanism check ---------------------------------------
+    zs = []
+    skipped = 0
+    for s in v2_labeled:
+        t, lab = truth[s], v2[s]
+        pair = {int(t["prior_pick"]), int(t["teacher_pick"])}
+        sel = [int(x) for x in t["selected"]]
+        for pos, ci in enumerate(sel):
+            if ci in pair:
+                continue
+            m_live = t["means"][pos]
+            n_live = t["n_worlds"][pos]
+            m_lab = (lab.get("means") or {}).get(str(ci))
+            sd_lab = (lab.get("sds") or {}).get(str(ci))
+            n_lab = (lab.get("n_worlds") or {}).get(str(ci))
+            if (m_lab is None or sd_lab is None or not n_lab
+                    or not sd_lab):
+                skipped += 1
+                continue
+            denom = sd_lab * math.sqrt(1 / n_lab + 1 / n_live)
+            zs.append((m_lab - m_live) / denom)
+    if zs:
+        mz = sum(zs) / len(zs)
+        sdz = math.sqrt(sum((z - mz) ** 2 for z in zs)
+                        / max(1, len(zs) - 1))
+        big = sum(1 for z in zs if abs(z) > 2)
+        L.append(f"MECHANISM (report-only): {len(zs)} unselected-"
+                 f"candidate comparisons (skipped {skipped}): "
+                 f"z mean {mz:+.2f}, sd {sdz:.2f}, "
+                 f"max |z| {max(abs(z) for z in zs):.2f}, "
+                 f"|z|>2: {big} ({big / len(zs):.1%}; ~5% expected "
+                 f"under N(0,1))")
+    else:
+        L.append(f"MECHANISM: no comparable candidates "
+                 f"(skipped {skipped})")
+    L.append("")
+
+    # ---- deadline accounting -------------------------------------
+    batches = cands
+    over180 = [c for c in batches if c["secs"] > 180]
+    late_ub = sum(c["finished"] for c in over180)
+    cut_worlds = sum(c["timeout_errs"] for c in batches)
+    cut_cands = sum(1 for c in batches if c["timeout_errs"] > 0)
+    L.append(f"DEADLINE ACCOUNTING (label deadline 300 s vs live "
+             f"180 s): {len(batches)} candidate batches timed")
+    L.append(f"  batches past 180 s: {len(over180)} - worlds "
+             f"finished after 180 s are at most their finished "
+             f"count, {late_ub} (batches at/under 180 s contribute "
+             f"exactly 0; exact per-world finish times are not "
+             f"recorded by the machinery)")
+    L.append(f"  worlds killed at the 300 s label deadline: "
+             f"{cut_worlds}, across {cut_cands} candidates")
+    L.append("")
+
+    # ---- detail ---------------------------------------------------
+    L.append("V2 per-snap detail (snap: live pick / labeler pick):")
+    for s in v2_snaps:
+        lp = v2[s]["teacher_pick"] if s in v2 else "thin"
+        L.append(f"  {s}: live={truth[s]['teacher_pick']} "
+                 f"labeler={lp}")
+    dis = [s for s in both
+           if v1a[s]["teacher_pick"] != v1b[s]["teacher_pick"]
+           or v1a[s]["overturn"] != v1b[s]["overturn"]]
+    L.append(f"V1 A/B disagreements: {len(dis)} of {len(both)} "
+             f"states")
+    for s in dis[:40]:
+        L.append(f"  {s}: A pick {v1a[s]['teacher_pick']} "
+                 f"(ov {v1a[s]['overturn']}), B pick "
+                 f"{v1b[s]['teacher_pick']} (ov {v1b[s]['overturn']})")
+    print("\n".join(L))
 
 
 if __name__ == "__main__":

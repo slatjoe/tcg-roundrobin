@@ -32,6 +32,17 @@
 # touched). Its featurize.php stays NATIVE: capture states are
 # the gated teacher's states. The corrected featurization of
 # every state happens later, offline, in the T1 data builder.
+# The capture-patch product is ASSERTED at its known hash
+# (044ca8ec..., verified on a throwaway copy at build time),
+# not merely recorded.
+#
+# PILOT_CAPTURE=1 (the round-8 pilot's first phase, fix
+# package): run ONLY the heur seat-1 stream restricted to seeds
+# 10001-10020 - the pilot labels those games' contested states
+# (V1). The full corpus run (no PILOT_CAPTURE) later re-runs all
+# six streams including those 20 games; capture is deterministic
+# at raw speed, so the re-run reproduces the same snapshots and
+# overwrites the pilot subset's rows.
 #
 # Outputs under $OUT (default /home/joe/tcg/distill_corpus - the
 # durable disk, NOT tmpfs: snapshots run ~260 KB each and the
@@ -76,8 +87,11 @@ $PY "$CODE_DIR/patch_capture_uncontested.py" "$CTREE" || exit 1
 expect_hash "$CTREE/featurize.php" \
   f81193e0b8a284c4b13a63fd36956ab29614776dd9bdd1c6462537b87a5f0b92 \
   "corpus featurize.php (must stay native)"
+expect_hash "$CTREE/search.php" \
+  044ca8ecbce1aba5fa86d0ea206b8dfece1f431ec0b2df45b4cc75fbc313627d \
+  "corpus search.php (capture-patch product, asserted)"
 CORPUS_SEARCH_SHA=$(sha256sum "$CTREE/search.php" | awk '{print $1}')
-echo "corpus tree search.php (patched): $CORPUS_SEARCH_SHA"
+echo "corpus tree search.php (patched, asserted): $CORPUS_SEARCH_SHA"
 
 SRV_PIDS=""
 cleanup() { for pid in $SRV_PIDS; do kill "$pid" 2>/dev/null; done; }
@@ -119,17 +133,22 @@ print("capture manifest OK:", m["assertions"]["capture_rows"], "capture rows")
 PYEOF
 }
 
-run_stream heur   1 10001-10080 "heuristic:1.0" || exit 1
-run_stream heur   2 10081-10160 "heuristic:1.0" || exit 1
-run_stream bc3    1 10161-10220 "ckptpath:$BC3:1.0" || exit 1
-run_stream bc3    2 10221-10280 "ckptpath:$BC3:1.0" || exit 1
-run_stream mirror 1 10281-10340 "ckptpath:$V15:1.0" || exit 1
-run_stream mirror 2 10341-10400 "ckptpath:$V15:1.0" || exit 1
+if [ "${PILOT_CAPTURE:-0}" = "1" ]; then
+  run_stream heur 1 10001-10020 "heuristic:1.0" || exit 1
+else
+  run_stream heur   1 10001-10080 "heuristic:1.0" || exit 1
+  run_stream heur   2 10081-10160 "heuristic:1.0" || exit 1
+  run_stream bc3    1 10161-10220 "ckptpath:$BC3:1.0" || exit 1
+  run_stream bc3    2 10221-10280 "ckptpath:$BC3:1.0" || exit 1
+  run_stream mirror 1 10281-10340 "ckptpath:$V15:1.0" || exit 1
+  run_stream mirror 2 10341-10400 "ckptpath:$V15:1.0" || exit 1
+fi
 
-$PY - "$OUT" "$CORPUS_SEARCH_SHA" <<'PYEOF'
+$PY - "$OUT" "$CORPUS_SEARCH_SHA" "${PILOT_CAPTURE:-0}" <<'PYEOF'
 import glob, json, sys
 out, search_sha = sys.argv[1], sys.argv[2]
-man = {"corpus_search_sha256": search_sha, "streams": {}}
+man = {"corpus_search_sha256": search_sha,
+       "pilot_subset": sys.argv[3] == "1", "streams": {}}
 tot_c = tot_u = 0
 for idx in sorted(glob.glob(out + "/*_log/snaps/teacher_snap_index.jsonl")):
     stream = idx.split("/")[-3]
