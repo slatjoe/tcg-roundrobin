@@ -1,0 +1,12 @@
+| seed | pair | verdict | within-row hits | seq | outcome equal | modes ok | seat ok | assert ok |
+|---|---|---|---|---|---|---|---|---|
+| 12001 | capture vs raw | IDENTICAL | 0 | None | True | True | True | True |
+| 12002 | capture vs raw | IDENTICAL | 0 | None | True | True | True | True |
+| 12003 | capture vs raw | IDENTICAL | 0 | None | True | True | True | True |
+| 12004 | capture vs raw | IDENTICAL | 0 | None | True | True | True | True |
+| 12005 | capture vs raw | IDENTICAL | 0 | None | True | True | True | True |
+| 12006 | capture vs raw | IDENTICAL | 0 | None | True | True | True | True |
+| 12007 | capture vs raw | IDENTICAL | 0 | None | True | True | True | True |
+| 12008 | capture vs raw | IDENTICAL | 0 | None | True | True | True | True |
+| 12009 | capture vs raw | IDENTICAL | 0 | None | True | True | True | True |
+| 12010 | capture vs raw | IDENTICAL | 0 | None | True | True | True | True |

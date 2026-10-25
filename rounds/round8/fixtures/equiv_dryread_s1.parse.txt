@@ -1,0 +1,1 @@
+PARSE-PASS: 10 rows, every row IDENTICAL with within-row hits 0, outcome equal True, modes ok True, seat ok True, assert ok True

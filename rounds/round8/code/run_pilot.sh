@@ -53,6 +53,21 @@
 # equivalence check, which stops the pilot on failure. The
 # report goes to Claude and Joe; the corpus runs only after
 # Claude's pilot review and Joe's go.
+#
+# Fix (claude-reply-e73e682 sec.2 - a build fix, not a
+# reclassification): the 2026-10-25 pilot run stopped at phase 3
+# because the read named BOTH arms raw=, so every capture row
+# was tested against raw's MODE_PREFIX ("policy: server") and
+# failed mode_ok; INVALID_MODE takes precedence in r3_pair.py,
+# so the classifier's verdict was never reached. The read now
+# names the capture arm capture= (its registered prefix is
+# "policy: search", exactly what the capture rows carry), with
+# capture as the base arm. PILOT_RESUME=equiv is the guarded
+# resume mode from the same ruling: it asserts the intact
+# capture (resume step 1, before containment), skips phase 2,
+# re-runs phase 3 in full on fresh games and registers them,
+# then runs phases 4-7 as in the normal flow. The capture and
+# the Gravy census are not re-run in resume mode.
 set -u
 PY=/home/joe/tcg/rl-env/bin/python
 SIM=/home/joe/tcg/tcg-sim
@@ -109,6 +124,50 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# --- resume mode (claude-reply-e73e682 sec.2) ---------------------
+# PILOT_RESUME=equiv re-enters after the capture phase. Step 1:
+# assert the intact pilot capture; any mismatch stops the run
+# with a PILOT STOP line, before containment or any game. Phase
+# 2 is then skipped, phase 3 re-runs in full on fresh games
+# (registered right after the phase), and phases 4-7 run as in
+# the normal flow. No PILOT_RESUME = the normal flow.
+RESUME=${PILOT_RESUME:-}
+if [ -n "$RESUME" ] && [ "$RESUME" != "equiv" ]; then
+  echo "ABORT: unknown PILOT_RESUME mode '$RESUME'" >&2
+  exit 1
+fi
+if [ "$RESUME" = "equiv" ]; then
+  got=$(sha256sum "$CORPUS/corpus_manifest.json" | awk '{print $1}')
+  [ "$got" = \
+    "edc6e4fbea929f60ec3a157c39a30cb45106ca925f2eb5b42dc45fd4b215ea30" ] || {
+    echo "PILOT STOP: corpus manifest hash $got !=" \
+         "edc6e4fbea929f60ec3a157c39a30cb45106ca925f2eb5b42dc45fd4b215ea30" >&2
+    exit 1; }
+  got=$(sha256sum "$CTREE/search.php" | awk '{print $1}')
+  [ "$got" = \
+    "044ca8ecbce1aba5fa86d0ea206b8dfece1f431ec0b2df45b4cc75fbc313627d" ] || {
+    echo "PILOT STOP: corpus search.php hash $got !=" \
+         "044ca8ecbce1aba5fa86d0ea206b8dfece1f431ec0b2df45b4cc75fbc313627d" >&2
+    exit 1; }
+  $PY - "$CORPUS" <<'PYEOF'
+import json, sys
+corpus = sys.argv[1]
+m = json.load(open(corpus + "/corpus_manifest.json"))
+tot = m["totals"]
+assert tot["contested"] == 547 and tot["uncontested"] == 855, \
+    "corpus counts %r != 547 contested + 855 uncontested" % (tot,)
+sm = json.load(open(corpus + "/heur_s1.jsonl.manifest.json"))
+assert sm.get("assert_ok") is True, \
+    "stream manifest assert_ok is not true"
+print("resume step 1 ok: corpus manifest pinned (hash + counts"
+      " 547 contested + 855 uncontested), stream assert_ok true,"
+      " corpus search.php pinned")
+PYEOF
+  [ $? -eq 0 ] || {
+    echo "PILOT STOP: intact-capture assertions failed - see above" >&2
+    exit 1; }
+fi
+
 # --- phase 1: containment ---------------------------------------
 ipcs -m > "$OUT/ipcs_before.txt"
 bash "$CODE_DIR/g8_sweep.sh" "$OUT/g8" || exit 1
@@ -123,15 +182,20 @@ SWEEP_PID=$!
 SRV_PIDS="$SRV_PIDS $SWEEP_PID"
 
 # --- phase 2: pilot capture (first 20 corpus games) -------------
-PILOT_CAPTURE=1 CORPUS_OUT="$CORPUS" CODE_DIR="$CODE_DIR" \
-  NATIVE_TREE="$NATIVE" CORPUS_TREE="$CTREE" \
-  bash "$CODE_DIR/run_capture_corpus.sh" \
-  > "$OUT/pilot_capture.log" 2>&1 || {
-    echo "PILOT STOP: pilot capture failed - $OUT/pilot_capture.log" >&2
-    exit 1; }
-expect_hash "$CTREE/search.php" \
-  044ca8ecbce1aba5fa86d0ea206b8dfece1f431ec0b2df45b4cc75fbc313627d \
-  "corpus search.php (capture-patch product)"
+if [ "$RESUME" = "equiv" ]; then
+  echo "resume mode: capture phase not re-run - the intact" \
+       "capture was asserted in resume step 1"
+else
+  PILOT_CAPTURE=1 CORPUS_OUT="$CORPUS" CODE_DIR="$CODE_DIR" \
+    NATIVE_TREE="$NATIVE" CORPUS_TREE="$CTREE" \
+    bash "$CODE_DIR/run_capture_corpus.sh" \
+    > "$OUT/pilot_capture.log" 2>&1 || {
+      echo "PILOT STOP: pilot capture failed - $OUT/pilot_capture.log" >&2
+      exit 1; }
+  expect_hash "$CTREE/search.php" \
+    044ca8ecbce1aba5fa86d0ea206b8dfece1f431ec0b2df45b4cc75fbc313627d \
+    "corpus search.php (capture-patch product)"
+fi
 
 # --- phase 3: capture equivalence check ---------------------------
 start_tree_server() { # seat sock log
@@ -164,7 +228,7 @@ for seat in 1 2; do
       --out "$OUT/equiv_raw_s${seat}.jsonl" \
       --logdir "$OUT/equiv_raw_s${seat}_log" || exit 1
   (cd "$NATIVE" && $PY r3_pair.py \
-     raw="$OUT/equiv_cap_s${seat}.jsonl,$OUT/equiv_cap_s${seat}_log" \
+     capture="$OUT/equiv_cap_s${seat}.jsonl,$OUT/equiv_cap_s${seat}_log" \
      raw="$OUT/equiv_raw_s${seat}.jsonl,$OUT/equiv_raw_s${seat}_log" \
      > "$OUT/equiv_pair_s${seat}.txt" 2>&1)
   if ! $PY "$CODE_DIR/parse_r3_pair.py" --expect-rows 10 \
@@ -176,6 +240,30 @@ for seat in 1 2; do
   fi
   echo "capture equivalence seat $seat: IDENTICAL (strict parse)"
 done
+
+# --- resume only: register the fresh equivalence games ------------
+# (claude-reply-e73e682 sec.2 step 2: the fresh equivalence games
+# are registered the same way as the failed run's 20 - tag
+# distill_equiv_eval, per pilot-registry-merge.json. Before/after
+# counts and hashes print to the run log.)
+if [ "$RESUME" = "equiv" ]; then
+  REG=${REGISTRY:-/tmp/harvest/do_not_train_registry.json}
+  $PY - "$REG" <<'PYEOF'
+import hashlib, json, sys
+p = sys.argv[1]
+reg = json.load(open(p))
+print("registry before merge: n_games=%d sha256=%s"
+      % (reg["n_games"],
+         hashlib.sha256(open(p, "rb").read()).hexdigest()))
+PYEOF
+  $PY "$CODE_DIR/merge_registry.py" --registry "$REG" \
+    --tag distill_equiv_eval \
+    --ids "$OUT/equiv_cap_s1_game_ids.txt" \
+    --ids "$OUT/equiv_raw_s1_game_ids.txt" \
+    --ids "$OUT/equiv_cap_s2_game_ids.txt" \
+    --ids "$OUT/equiv_raw_s2_game_ids.txt" \
+    --vault /home/joe/tcg/registry-vault || exit 1
+fi
 
 # --- phase 4: jobs --------------------------------------------------
 $PY "$CODE_DIR/pilot_prep.py" --mode v1 --corpus "$CORPUS" \
