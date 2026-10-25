@@ -18,7 +18,9 @@ The arithmetic mirrors SimTeacher_Decide (search.php, gate build
   * if best != prior: paired diffs over the worlds BOTH finished;
     with >= 20 paired worlds, mean_diff and se_diff (sample sd /
     sqrt(n), Decide's formula) and an overturn iff
-    mean_diff > 1.5 * se_diff. With < 20 paired worlds the live
+    mean_diff > margin * se_diff (margin is the pinned run
+    parameter below; its registered default, 1.5, is SimTeacher_
+    Decide's own constant). With < 20 paired worlds the live
     teacher cannot overturn: the label is a CONFIRMATION flagged
     paired_thin (counted, not hidden).
   * if best == prior the label confirms the prior
@@ -38,6 +40,17 @@ The arithmetic mirrors SimTeacher_Decide (search.php, gate build
     own width. (The "20" constants in the arithmetic are the
     registered finished-worlds floor, not W, and never change
     with W.)
+  * margin (the overturn test's multiple of se_diff) is a
+    PINNED run parameter, following the W pattern
+    (claude-reply-0140eab sec.2): the pin is the LABEL_MARGIN
+    environment variable, validated as a positive number,
+    default 1.5. Every JOB must carry a "margin" numerically
+    equal to the pin; a job with a missing, non-numeric or
+    unequal margin ABORTS the reduce before anything is
+    emitted - one reduce covers one label rule, and a job set
+    is stamped by its runner the way job sets carry W. The
+    value is carried onto every label row, every thin row,
+    and the counts, so a label set states its own margin.
 
 Inputs: --jobs (the labeler's job file), --raw (one or more raw
 row files from distill_label_main.php), --out labels file,
@@ -46,7 +59,23 @@ row files from distill_label_main.php), --out labels file,
 import argparse
 import json
 import math
+import os
 from collections import defaultdict
+
+
+def margin_pin():
+    raw = os.environ.get("LABEL_MARGIN", "1.5")
+    try:
+        m = float(raw)
+    except (TypeError, ValueError):
+        raise SystemExit(
+            f"ABORT: LABEL_MARGIN {raw!r} is not a number - "
+            "the margin pin must be a positive number")
+    if not math.isfinite(m) or m <= 0:
+        raise SystemExit(
+            f"ABORT: LABEL_MARGIN {raw!r} is not a positive "
+            "number - the margin pin must be a positive number")
+    return m
 
 
 def main():
@@ -63,6 +92,20 @@ def main():
         if ln:
             j = json.loads(ln)
             jobs[j["snap"]] = j
+
+    # The margin pin (LABEL_MARGIN, default 1.5): every job
+    # must carry it, exactly as a job set carries its W for
+    # the labeler. Validated BEFORE any raw row is read, so a
+    # mismatched job set never produces a partial reduce.
+    MARGIN = margin_pin()
+    for snap, j in jobs.items():
+        jm = j.get("margin")
+        if not isinstance(jm, (int, float)) \
+                or isinstance(jm, bool) or float(jm) != MARGIN:
+            raise SystemExit(
+                f"ABORT: job for snap {snap} carries margin "
+                f"{jm!r} != the LABEL_MARGIN pin {MARGIN} - "
+                "stamp the pin on every job before reducing")
 
     # outcomes[(snap, cand)][world] = outcome, finished only
     outcomes = defaultdict(dict)
@@ -96,7 +139,8 @@ def main():
                 float(res["outcome"])
 
     labels, thin = [], []
-    counts = {"W": W, "jobs": len(jobs), "no_rows": 0,
+    counts = {"W": W, "margin": MARGIN, "jobs": len(jobs),
+              "no_rows": 0,
               "prior_not_selected": 0,
               "thin": 0, "confirm": 0, "confirm_paired_thin": 0,
               "overturn": 0, "no_overturn_tested": 0}
@@ -113,6 +157,7 @@ def main():
         if n_worlds.get(prior, 0) < 20:
             counts["thin"] += 1
             thin.append({"snap": snap, "game": j["game"], "W": W,
+                         "margin": MARGIN,
                          "n_worlds": n_worlds,
                          "reason": "prior candidate finished "
                                    f"{n_worlds.get(prior, 0)} < 20 worlds"})
@@ -137,6 +182,7 @@ def main():
                 best_mean = means[ci]
                 best = ci
         row = {"state_id": snap, "snap_dir": j["snap_dir"], "W": W,
+               "margin": MARGIN,
                "game": j["game"], "player": int(j["player"]),
                "branch": j["branch"], "turn": int(j.get("turn", 0)),
                "prior_pick": prior, "candidates": sel,
@@ -160,7 +206,7 @@ def main():
             se = math.sqrt(var / max(1, len(ds) - 1)) / math.sqrt(len(ds))
             row["mean_diff"] = md
             row["se_diff"] = se
-            if md > 1.5 * se:
+            if md > MARGIN * se:
                 counts["overturn"] += 1
                 row["teacher_pick"] = best
                 row["overturn"] = 1

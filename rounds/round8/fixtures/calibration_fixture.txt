@@ -1,0 +1,6 @@
+CALIBRATION FIXTURE - m=1.5 reproduction of the W=100 check's shipped reads
+
+run A: per-row decision agreement at m=1.5: 545/545
+run B: per-row decision agreement at m=1.5: 546/546
+full-set (544 states) at m=1.5: A overturns 66 (expected 66); V1-ov 29/66 (expected 29/66); V1-conf 442/478 (expected 442/478)
+FIXTURE: PASS - the m=1.5 recomputation reproduces the check's reads exactly
