@@ -1,0 +1,1 @@
+{"batch":1024,"beta":1.0,"epochs_max":30,"holdout_frac":0.1,"init_ckpt":"/home/joe/tcg/tcg-sim/rl_out/fai_ppo_bc3b_20261016/ckpt_v15.pt","init_ckpt_sha256":"0400539dda891c34e3573b83de3aa299af42c072f949db49ce4d67d5d0e9c82c","lr":0.0001,"min_delta":0.0001,"patience":5,"seed":20261025,"split_seed":20261025}
