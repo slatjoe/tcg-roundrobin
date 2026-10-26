@@ -1,0 +1,507 @@
+{
+ "panel_states": 240,
+ "per_setting": {
+  "B0": {
+   "evals_rows": {
+    "mine": 17025,
+    "analyzer": 17025,
+    "agree": true
+   },
+   "stats_rows": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "states_complete": {
+    "mine": 84,
+    "analyzer": 84,
+    "agree": true
+   },
+   "completion": {
+    "mine": 0.35,
+    "analyzer": 0.35,
+    "agree": true
+   },
+   "candidate_completion": {
+    "mine": 0.5609397944199707,
+    "analyzer": 0.5609397944199707,
+    "agree": true
+   },
+   "pooled_finished_share": {
+    "mine": 0.7905433186490455,
+    "analyzer": 0.7905433186490455,
+    "agree": true
+   },
+   "thin_prior_rate": {
+    "mine": 0.4708333333333333,
+    "analyzer": 0.4708333333333333,
+    "agree": true
+   },
+   "wall_mean": {
+    "mine": 57.60103333333333,
+    "analyzer": 57.60103333333333,
+    "agree": true
+   },
+   "wall_p95": {
+    "mine": 96.73185,
+    "analyzer": 96.73185,
+    "agree": true
+   },
+   "wall_max": {
+    "mine": 149.688,
+    "analyzer": 149.688,
+    "agree": true
+   },
+   "wall_total": {
+    "mine": 13824.248,
+    "analyzer": 13824.248,
+    "agree": true
+   },
+   "overturn_draw0": {
+    "mine": 0.031496062992125984,
+    "analyzer": 0.031496062992125984,
+    "agree": true
+   },
+   "overturn_half": {
+    "mine": 0.031496062992125984,
+    "analyzer": 0.031496062992125984,
+    "agree": true
+   },
+   "cand_finished_mismatches": {
+    "mine": 0,
+    "analyzer": 0,
+    "agree": true
+   },
+   "error_tally": {
+    "mine": {
+     "abort": 3566
+    },
+    "analyzer": {
+     "abort": 3566
+    },
+    "agree": true
+   }
+  },
+  "B0+H": {
+   "evals_rows": {
+    "mine": 17025,
+    "analyzer": 17025,
+    "agree": true
+   },
+   "stats_rows": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "states_complete": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "completion": {
+    "mine": 1.0,
+    "analyzer": 1.0,
+    "agree": true
+   },
+   "candidate_completion": {
+    "mine": 1.0,
+    "analyzer": 1.0,
+    "agree": true
+   },
+   "pooled_finished_share": {
+    "mine": 0.9998237885462555,
+    "analyzer": 0.9998237885462555,
+    "agree": true
+   },
+   "thin_prior_rate": {
+    "mine": 0.0,
+    "analyzer": 0.0,
+    "agree": true
+   },
+   "wall_mean": {
+    "mine": 26.566170833333334,
+    "analyzer": 26.566170833333334,
+    "agree": true
+   },
+   "wall_p95": {
+    "mine": 46.877449999999996,
+    "analyzer": 46.877449999999996,
+    "agree": true
+   },
+   "wall_max": {
+    "mine": 55.838,
+    "analyzer": 55.838,
+    "agree": true
+   },
+   "wall_total": {
+    "mine": 6375.881,
+    "analyzer": 6375.881,
+    "agree": true
+   },
+   "overturn_draw0": {
+    "mine": 0.09166666666666666,
+    "analyzer": 0.09166666666666666,
+    "agree": true
+   },
+   "overturn_half": {
+    "mine": 0.125,
+    "analyzer": 0.125,
+    "agree": true
+   },
+   "cand_finished_mismatches": {
+    "mine": 0,
+    "analyzer": 0,
+    "agree": true
+   },
+   "error_tally": {
+    "mine": {
+     "abort": 3
+    },
+    "analyzer": {
+     "abort": 3
+    },
+    "agree": true
+   }
+  },
+  "H8k-180+H": {
+   "evals_rows": {
+    "mine": 17025,
+    "analyzer": 17025,
+    "agree": true
+   },
+   "stats_rows": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "states_complete": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "completion": {
+    "mine": 1.0,
+    "analyzer": 1.0,
+    "agree": true
+   },
+   "candidate_completion": {
+    "mine": 1.0,
+    "analyzer": 1.0,
+    "agree": true
+   },
+   "pooled_finished_share": {
+    "mine": 0.9998237885462555,
+    "analyzer": 0.9998237885462555,
+    "agree": true
+   },
+   "thin_prior_rate": {
+    "mine": 0.0,
+    "analyzer": 0.0,
+    "agree": true
+   },
+   "wall_mean": {
+    "mine": 26.54863333333333,
+    "analyzer": 26.54863333333333,
+    "agree": true
+   },
+   "wall_p95": {
+    "mine": 46.820399999999985,
+    "analyzer": 46.820399999999985,
+    "agree": true
+   },
+   "wall_max": {
+    "mine": 56.382,
+    "analyzer": 56.382,
+    "agree": true
+   },
+   "wall_total": {
+    "mine": 6371.672,
+    "analyzer": 6371.672,
+    "agree": true
+   },
+   "overturn_draw0": {
+    "mine": 0.09166666666666666,
+    "analyzer": 0.09166666666666666,
+    "agree": true
+   },
+   "overturn_half": {
+    "mine": 0.125,
+    "analyzer": 0.125,
+    "agree": true
+   },
+   "cand_finished_mismatches": {
+    "mine": 0,
+    "analyzer": 0,
+    "agree": true
+   },
+   "error_tally": {
+    "mine": {
+     "abort": 3
+    },
+    "analyzer": {
+     "abort": 3
+    },
+    "agree": true
+   }
+  },
+  "H8k-360+H": {
+   "evals_rows": {
+    "mine": 17025,
+    "analyzer": 17025,
+    "agree": true
+   },
+   "stats_rows": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "states_complete": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "completion": {
+    "mine": 1.0,
+    "analyzer": 1.0,
+    "agree": true
+   },
+   "candidate_completion": {
+    "mine": 1.0,
+    "analyzer": 1.0,
+    "agree": true
+   },
+   "pooled_finished_share": {
+    "mine": 0.9998237885462555,
+    "analyzer": 0.9998237885462555,
+    "agree": true
+   },
+   "thin_prior_rate": {
+    "mine": 0.0,
+    "analyzer": 0.0,
+    "agree": true
+   },
+   "wall_mean": {
+    "mine": 26.57187083333333,
+    "analyzer": 26.57187083333333,
+    "agree": true
+   },
+   "wall_p95": {
+    "mine": 46.91215,
+    "analyzer": 46.91215,
+    "agree": true
+   },
+   "wall_max": {
+    "mine": 56.272,
+    "analyzer": 56.272,
+    "agree": true
+   },
+   "wall_total": {
+    "mine": 6377.249,
+    "analyzer": 6377.249,
+    "agree": true
+   },
+   "overturn_draw0": {
+    "mine": 0.09166666666666666,
+    "analyzer": 0.09166666666666666,
+    "agree": true
+   },
+   "overturn_half": {
+    "mine": 0.125,
+    "analyzer": 0.125,
+    "agree": true
+   },
+   "cand_finished_mismatches": {
+    "mine": 0,
+    "analyzer": 0,
+    "agree": true
+   },
+   "error_tally": {
+    "mine": {
+     "abort": 3
+    },
+    "analyzer": {
+     "abort": 3
+    },
+    "agree": true
+   }
+  },
+  "H16k-180+H": {
+   "evals_rows": {
+    "mine": 17025,
+    "analyzer": 17025,
+    "agree": true
+   },
+   "stats_rows": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "states_complete": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "completion": {
+    "mine": 1.0,
+    "analyzer": 1.0,
+    "agree": true
+   },
+   "candidate_completion": {
+    "mine": 1.0,
+    "analyzer": 1.0,
+    "agree": true
+   },
+   "pooled_finished_share": {
+    "mine": 0.9998237885462555,
+    "analyzer": 0.9998237885462555,
+    "agree": true
+   },
+   "thin_prior_rate": {
+    "mine": 0.0,
+    "analyzer": 0.0,
+    "agree": true
+   },
+   "wall_mean": {
+    "mine": 26.5908625,
+    "analyzer": 26.5908625,
+    "agree": true
+   },
+   "wall_p95": {
+    "mine": 47.37169999999999,
+    "analyzer": 47.37169999999999,
+    "agree": true
+   },
+   "wall_max": {
+    "mine": 55.424,
+    "analyzer": 55.424,
+    "agree": true
+   },
+   "wall_total": {
+    "mine": 6381.807,
+    "analyzer": 6381.807,
+    "agree": true
+   },
+   "overturn_draw0": {
+    "mine": 0.09166666666666666,
+    "analyzer": 0.09166666666666666,
+    "agree": true
+   },
+   "overturn_half": {
+    "mine": 0.125,
+    "analyzer": 0.125,
+    "agree": true
+   },
+   "cand_finished_mismatches": {
+    "mine": 0,
+    "analyzer": 0,
+    "agree": true
+   },
+   "error_tally": {
+    "mine": {
+     "abort": 3
+    },
+    "analyzer": {
+     "abort": 3
+    },
+    "agree": true
+   }
+  },
+  "H16k-360+H": {
+   "evals_rows": {
+    "mine": 17025,
+    "analyzer": 17025,
+    "agree": true
+   },
+   "stats_rows": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "states_complete": {
+    "mine": 240,
+    "analyzer": 240,
+    "agree": true
+   },
+   "completion": {
+    "mine": 1.0,
+    "analyzer": 1.0,
+    "agree": true
+   },
+   "candidate_completion": {
+    "mine": 1.0,
+    "analyzer": 1.0,
+    "agree": true
+   },
+   "pooled_finished_share": {
+    "mine": 0.9998237885462555,
+    "analyzer": 0.9998237885462555,
+    "agree": true
+   },
+   "thin_prior_rate": {
+    "mine": 0.0,
+    "analyzer": 0.0,
+    "agree": true
+   },
+   "wall_mean": {
+    "mine": 26.6267375,
+    "analyzer": 26.6267375,
+    "agree": true
+   },
+   "wall_p95": {
+    "mine": 46.921899999999994,
+    "analyzer": 46.921899999999994,
+    "agree": true
+   },
+   "wall_max": {
+    "mine": 55.703,
+    "analyzer": 55.703,
+    "agree": true
+   },
+   "wall_total": {
+    "mine": 6390.417,
+    "analyzer": 6390.417,
+    "agree": true
+   },
+   "overturn_draw0": {
+    "mine": 0.09166666666666666,
+    "analyzer": 0.09166666666666666,
+    "agree": true
+   },
+   "overturn_half": {
+    "mine": 0.125,
+    "analyzer": 0.125,
+    "agree": true
+   },
+   "cand_finished_mismatches": {
+    "mine": 0,
+    "analyzer": 0,
+    "agree": true
+   },
+   "error_tally": {
+    "mine": {
+     "abort": 3
+    },
+    "analyzer": {
+     "abort": 3
+    },
+    "agree": true
+   }
+  }
+ },
+ "analyzer_selection": {
+  "verdict": "CALIBRATED SETTING",
+  "setting": "H8k-180+H",
+  "completion": 1.0,
+  "wall_s": {
+   "mean": 26.54863333333333,
+   "p95": 46.820399999999985,
+   "max": 56.382,
+   "total": 6371.672
+  }
+ },
+ "my_selection": {
+  "verdict": "CALIBRATED SETTING",
+  "setting": "H8k-180+H"
+ },
+ "all_agree": true
+}

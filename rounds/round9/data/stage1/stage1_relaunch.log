@@ -1,0 +1,63 @@
+registry pre-check: n_games=6281
+setting B0: 240 job copies stamped {"name": "B0", "hooks": 4000, "deadline_s": 180, "horizon": 0, "horizon_value": 0, "k": 25}
+setting B0 shard 1 player 1: 48 jobs
+setting B0 shard 3 player 1: 24 jobs
+setting B0 shard 2 player 1: 16 jobs
+setting B0 shard 0 player 1: 68 jobs
+setting B0 shard 2 player 2: 8 jobs
+setting B0 shard 3 player 2: 16 jobs
+setting B0 shard 1 player 2: 16 jobs
+setting B0 shard 0 player 2: 44 jobs
+setting B0 done: 17025 world rows, 240 stat rows
+B0 gate: B0-only settings file written
+B0 gate PASSED: B0's rows pass every analyzer integrity check; continuing to the +H settings
+setting B0+H: 240 job copies stamped {"name": "B0+H", "hooks": 4000, "deadline_s": 180, "horizon": 62, "horizon_value": -1, "k": 25}
+setting B0+H shard 0 player 1: 68 jobs
+setting B0+H shard 1 player 1: 48 jobs
+setting B0+H shard 2 player 1: 16 jobs
+setting B0+H shard 3 player 1: 24 jobs
+setting B0+H shard 2 player 2: 8 jobs
+setting B0+H shard 3 player 2: 16 jobs
+setting B0+H shard 1 player 2: 16 jobs
+setting B0+H shard 0 player 2: 44 jobs
+setting B0+H done: 17025 world rows, 240 stat rows
+setting H8k-180+H: 240 job copies stamped {"name": "H8k-180+H", "hooks": 8000, "deadline_s": 180, "horizon": 62, "horizon_value": -1, "k": 25}
+setting H8k-180+H shard 2 player 1: 16 jobs
+setting H8k-180+H shard 3 player 1: 24 jobs
+setting H8k-180+H shard 1 player 1: 48 jobs
+setting H8k-180+H shard 0 player 1: 68 jobs
+setting H8k-180+H shard 2 player 2: 8 jobs
+setting H8k-180+H shard 3 player 2: 16 jobs
+setting H8k-180+H shard 1 player 2: 16 jobs
+setting H8k-180+H shard 0 player 2: 44 jobs
+setting H8k-180+H done: 17025 world rows, 240 stat rows
+setting H8k-360+H: 240 job copies stamped {"name": "H8k-360+H", "hooks": 8000, "deadline_s": 360, "horizon": 62, "horizon_value": -1, "k": 25}
+setting H8k-360+H shard 2 player 1: 16 jobs
+setting H8k-360+H shard 3 player 1: 24 jobs
+setting H8k-360+H shard 1 player 1: 48 jobs
+setting H8k-360+H shard 0 player 1: 68 jobs
+setting H8k-360+H shard 2 player 2: 8 jobs
+setting H8k-360+H shard 3 player 2: 16 jobs
+setting H8k-360+H shard 1 player 2: 16 jobs
+setting H8k-360+H shard 0 player 2: 44 jobs
+setting H8k-360+H done: 17025 world rows, 240 stat rows
+setting H16k-180+H: 240 job copies stamped {"name": "H16k-180+H", "hooks": 16000, "deadline_s": 180, "horizon": 62, "horizon_value": -1, "k": 25}
+setting H16k-180+H shard 2 player 1: 16 jobs
+setting H16k-180+H shard 1 player 1: 48 jobs
+setting H16k-180+H shard 0 player 1: 68 jobs
+setting H16k-180+H shard 3 player 1: 24 jobs
+setting H16k-180+H shard 2 player 2: 8 jobs
+setting H16k-180+H shard 3 player 2: 16 jobs
+setting H16k-180+H shard 1 player 2: 16 jobs
+setting H16k-180+H shard 0 player 2: 44 jobs
+setting H16k-180+H done: 17025 world rows, 240 stat rows
+setting H16k-360+H: 240 job copies stamped {"name": "H16k-360+H", "hooks": 16000, "deadline_s": 360, "horizon": 62, "horizon_value": -1, "k": 25}
+setting H16k-360+H shard 3 player 1: 24 jobs
+setting H16k-360+H shard 1 player 1: 48 jobs
+setting H16k-360+H shard 2 player 1: 16 jobs
+setting H16k-360+H shard 0 player 1: 68 jobs
+setting H16k-360+H shard 2 player 2: 8 jobs
+setting H16k-360+H shard 3 player 2: 16 jobs
+setting H16k-360+H shard 1 player 2: 16 jobs
+setting H16k-360+H shard 0 player 2: 44 jobs
+setting H16k-360+H done: 17025 world rows, 240 stat rows

@@ -1,0 +1,8 @@
+=== STAGE 1 CALIBRATION REPORT ===
+panel: 240 states; validity floor 20 of k; completion bar 0.95; margin 1.5 paired SE
+setting       compl   cand pooled   thin    mean_s     p95_s     max_s    ot_d0   ot_0.5
+B0           0.3500 0.5609 0.7905 0.4708     57.60     96.73    149.69   0.0315   0.0315  CONTROL (not selectable)
+    errors: abort 3566 [unfinished]
+B0 panel thin-prior 0.4708 beside the fleet's 0.3170 (different population -- raw-trajectory roots vs the fleet teacher's own trajectory; a comparability check, not an identity)
+completion is the per-state rate (panel states where EVERY selected candidate reached the validity floor / panel states) and IS the selection metric; the cand and pooled columns are diagnostics only. The horizon-less setting is the control: read and reported, never selectable
+SELECTION: NO CALIBRATED SETTING -- no +H setting reached per-state completion >= 0.95; the round stops here (ruling sec.4.3)

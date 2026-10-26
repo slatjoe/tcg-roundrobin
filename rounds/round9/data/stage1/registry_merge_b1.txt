@@ -1,0 +1,4 @@
+merged: +40 new (tag r9s1_capture), 0 already under this tag; n_games=6281
+backup: /home/joe/tcg/registry-vault/do_not_train_registry.json.bak-20261026T072418
+registry sha256: 902682fcd8c6ad109f66f3c50a1d21eb48d32d5c3339158bd541982e635b7bf3
+vault copy: /home/joe/tcg/registry-vault/do_not_train_registry_20261026T072418.json

@@ -1,0 +1,18 @@
+registry pre-check: n_games=6241
+segments before: 0 (nattch=0: 0, attached: 0)
+kernel.shmmni: 4096
+segments after: 0
+capture assertions OK (capture seat 1): {'stat_rows': 1911, 'teacher_rows': 1910, 'contested_rows': 464, 'rollout_rows': 0, 'trace_rules': {'teacher': 1910, 'bridge_pick': 1865, 'dq_pick': 6700, 'pass_gate': 5342}, 'teacher_trace_rows': 1910, 'teacher_trace_rows_with_priors': 1910, 'teacher_trace_pick_argmax_agree': 1910, 'capture_rows': 464}
+capture assertions OK (capture seat 2): {'stat_rows': 1859, 'teacher_rows': 1859, 'contested_rows': 490, 'rollout_rows': 0, 'trace_rules': {'bridge_pick': 1958, 'teacher': 1859, 'dq_pick': 6750, 'pass_gate': 5272}, 'teacher_trace_rows': 1859, 'teacher_trace_rows_with_priors': 1859, 'teacher_trace_pick_argmax_agree': 1859, 'capture_rows': 490}
+merged: +40 new (tag r9s1_capture), 0 already under this tag; n_games=6281
+backup: /home/joe/tcg/registry-vault/do_not_train_registry.json.bak-20261026T072418
+registry sha256: 902682fcd8c6ad109f66f3c50a1d21eb48d32d5c3339158bd541982e635b7bf3
+vault copy: /home/joe/tcg/registry-vault/do_not_train_registry_20261026T072418.json
+CAPTURE BLOCK 1 DONE
+panel: 240 states over 31 games (branches {'ARS': 36, 'B': 29, 'D': 2, 'M': 53, 'P': 120}; index rows 954, skipped by cap 446)
+panel: 240 jobs; all snap dirs asserted present
+setting B0: 240 job copies stamped {"name": "B0", "hooks": 4000, "deadline_s": 180, "horizon": 0, "horizon_value": 0, "k": 25}
+/home/joe/tcg/round9_code/run_stage1.sh: line 343: pid: command not found
+/home/joe/tcg/round9_code/run_stage1.sh: line 380: PIDS: unbound variable
+setting B0 shard 0 player 1: 68 jobs
+Terminated                 MEAS_JOBS="$OUT/jobs_${NAME}_shard${s}_p$p.jsonl" MEAS_OUT="$OUT/evals_${NAME}_shard${s}_p$p.jsonl" EVAL_STATS="$OUT/stats_${NAME}_shard${s}_p$p.jsonl" MEAS_SEED=$((885001 + s * 100000000)) EVAL_SETTING_NAME="$NAME" EVAL_HOOKS="$HOOKS" EVAL_DEADLINE_S="$DEADLINE" LABEL_HORIZON="$HZENV" EVAL_HORIZON_VALUE="$HVAL" EVAL_K="$K" TCG_POLICY_SOCK="$OUT/prod_s$p.sock" php s1_eval_main.php "$tree/$DECK_REL" "$tree/$DECK_REL" --policy-search --games 1 > "$OUT/eval_${NAME}_shard${s}_p$p.err" 2>&1

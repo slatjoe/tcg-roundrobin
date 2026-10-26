@@ -1,0 +1,21 @@
+registry pre-check: n_games=6281
+=== STAGE 1 CALIBRATION REPORT ===
+panel: 240 states; validity floor 20 of k; completion bar 0.95; margin 1.5 paired SE
+setting       compl   cand pooled   thin    mean_s     p95_s     max_s    ot_d0   ot_0.5
+B0           0.3500 0.5609 0.7905 0.4708     57.60     96.73    149.69   0.0315   0.0315  CONTROL (not selectable)
+    errors: abort 3566 [unfinished]
+B0+H         1.0000 1.0000 0.9998 0.0000     26.57     46.88     55.84   0.0917   0.1250  QUALIFIES
+    errors: abort 3 [unfinished]
+H8k-180+H    1.0000 1.0000 0.9998 0.0000     26.55     46.82     56.38   0.0917   0.1250  QUALIFIES
+    errors: abort 3 [unfinished]
+H8k-360+H    1.0000 1.0000 0.9998 0.0000     26.57     46.91     56.27   0.0917   0.1250  QUALIFIES
+    errors: abort 3 [unfinished]
+H16k-180+H   1.0000 1.0000 0.9998 0.0000     26.59     47.37     55.42   0.0917   0.1250  QUALIFIES
+    errors: abort 3 [unfinished]
+H16k-360+H   1.0000 1.0000 0.9998 0.0000     26.63     46.92     55.70   0.0917   0.1250  QUALIFIES
+    errors: abort 3 [unfinished]
+B0 panel thin-prior 0.4708 beside the fleet's 0.3170 (different population -- raw-trajectory roots vs the fleet teacher's own trajectory; a comparability check, not an identity)
+completion is the per-state rate (panel states where EVERY selected candidate reached the validity floor / panel states) and IS the selection metric; the cand and pooled columns are diagnostics only. The horizon-less setting is the control: read and reported, never selectable
+SELECTION: CALIBRATED SETTING H8k-180+H (completion 1.0000; mean wall 26.55 s, p95 46.82 s, max 56.38 s)
+{"verdict": "CALIBRATED SETTING", "setting": "H8k-180+H", "completion": 1.0, "wall_s": {"mean": 26.54863333333333, "p95": 46.820399999999985, "max": 56.382, "total": 6371.672}}
+STAGE 1 COMPLETE - /home/joe/tcg/r9s1_out/stage1_manifest.json
