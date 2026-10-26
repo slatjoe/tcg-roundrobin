@@ -183,3 +183,14 @@ use 4 worlds per candidate, so the guard takes an
 --expect-rows parameter (default 50, the registered width; the
 runner passes no override) and run_fixtures.py passes 4
 explicitly. See stage0-report-fix.md sec.3 for the disclosure.
+- `fx_tie_as_loss.py` — fixture for code/tie_as_loss.py (the
+  sec.3 tie-as-loss co-read). Three planted jobs over two
+  games with hand-computed expectations in both modes:
+  standard mean 0.625/3 vs tie-as-loss 0.5/3, per-job diffs
+  (+0.375/+0.25/0.0 -> +0.5/+0.5/-0.5), 3 paired drawn worlds
+  per candidate role, and the population rules exercised
+  (error row, finished==0 row, unpaired world and a duplicate
+  world all excluded or counted exactly as the registered
+  scorer counts them). Standalone: run it directly; exit 0
+  iff all 12 checks pass. Result at the Stage 0 build:
+  ALL PASS.

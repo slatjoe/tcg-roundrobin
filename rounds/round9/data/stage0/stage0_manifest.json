@@ -1,0 +1,223 @@
+{
+ "out": "/home/joe/tcg/r9s0_out",
+ "labels_primary_rows": 11800,
+ "labels_horizon_rows": 11800,
+ "sha256": {
+  "jobs_all.jsonl": "117792c57e41a427cd3f66c1d74fa982e66f0ec3130c1569d2b66a610d8a3124",
+  "jobs_all_h.jsonl": "cf8b6bc75655efee146e5594af63a895ca747b03835a6013216f475fe87ebbdf",
+  "jobs_h_shard0.jsonl": "9b1dc63aeecd292482b8d08641963fdfa155951c83027e3bf833952a03e71980",
+  "jobs_h_shard0_p1.jsonl": "68e1f599de2fd58151ef85c748119d59096afc9bb98dd8551a53a49861615674",
+  "jobs_h_shard0_p2.jsonl": "a7b2aaaaf59291440825b0b9709703f798c2ccf763fc5ce7a98ae616cb14fc42",
+  "jobs_h_shard1.jsonl": "2412d11c1592813ca74aed145246219c3bf3305911381307cf9d5dbfffd4e26e",
+  "jobs_h_shard1_p1.jsonl": "aa657ee81743450a0e90e1dde12b13ccff712bfedaaa1d261dbbdd54d83b308e",
+  "jobs_h_shard1_p2.jsonl": "3738e1e9b5be739625f4759f84411625fde7534185436cc067178fb2617294ee",
+  "jobs_h_shard2.jsonl": "3d2685131f05ceaf6dd274e287bfb76140564cbc139f50bb74f938af8cfc2aeb",
+  "jobs_h_shard2_p1.jsonl": "63c070cde0116dca50dd28533ee3942feda0780f2db7878ea6d9945e6c6ce400",
+  "jobs_h_shard2_p2.jsonl": "dbfe9cbca0c204120ddd20bc521442c5638ae85c9be10a587ce5687ceafb01ca",
+  "jobs_h_shard3.jsonl": "c8a9a949fc8bb195733b9ef4c9841d65bcb952f5809384c242664a07f118d49b",
+  "jobs_h_shard3_p1.jsonl": "c80ed00eb418c4241993203b0a89cd19387e9f4929b355864e2f821ee9a58d48",
+  "jobs_h_shard3_p2.jsonl": "f2a97b97c226c505a22b28a072a1a89944ecab0983a0c0127d2e32745f8d760f",
+  "jobs_p_shard0_p1.jsonl": "f3982276d22643b581f1401067cea6d66d11dd72bd5034eb4d454cd99e2b0b6a",
+  "jobs_p_shard0_p2.jsonl": "1a2a8839946e89c5d2cb57596b6c150e93831321ec7ba2cfa90011313bdf653c",
+  "jobs_p_shard1_p1.jsonl": "48b191feecd720037048e63186cdfc33578e5d6bb31ad450f0316cf42fc42e98",
+  "jobs_p_shard1_p2.jsonl": "97c3ae4d9868f7f6e6b0f80edae86a5be2fe0a700930bd275afc804022f658d6",
+  "jobs_p_shard2_p1.jsonl": "b6e2c1dad48748bdb8a0526d6f7c4ae65fafd7c481bf12cd618b6be4b87d32a4",
+  "jobs_p_shard2_p2.jsonl": "b1cf776d6a3e99d61a218be5fffc798bdb7730fc2cfc723b6d535f3ed3335b8f",
+  "jobs_p_shard3_p1.jsonl": "ec98afe1063b237efcfc86b66777b50e42255ec1e8de878d593abf2ff2f6fd0e",
+  "jobs_p_shard3_p2.jsonl": "ab370775eea30decc3a566a0693171df41f459bd8f7afd84a263edce63b84fd4",
+  "jobs_shard0.jsonl": "44a4f7f605c05c86548d10d2cd0a6551b79a452782dea3f2aee0d4fb311cec54",
+  "jobs_shard1.jsonl": "e473c1e6a66df2237fc7c7323f823bd0d65ef61b5425c6bfc0cd585a43e6c4be",
+  "jobs_shard2.jsonl": "ac1077c24e2ad37f6f6d4342f67401e42934654cdfe705082299a2360004a174",
+  "jobs_shard3.jsonl": "8c7260ec391ce6505c5408eb3005555c09bc2c8d4fc2f39ca5086bdf17dc5dfd",
+  "labels_h_shard0_p1.jsonl": "fc8c35d23c5612d160729aa4e694b22a428ae22dc6da13a9b7fa12847a4931cc",
+  "labels_h_shard0_p2.jsonl": "55549bf0df1bfb1982d29ca27002b165ed9145255f58ec7098391d4145542fc5",
+  "labels_h_shard1_p1.jsonl": "66dd8843975d2f80368a29532310bfbec3dafcef8ea37f3cd2731eaadf8e9827",
+  "labels_h_shard1_p2.jsonl": "71a2932ec148162bb6234c4cc595ad75dc74430ed02b676be4a6c96576b630b5",
+  "labels_h_shard2_p1.jsonl": "e1907052125fa60a5fd6b5b89b70145787bf059b36471d36018dda63fbdb014b",
+  "labels_h_shard2_p2.jsonl": "80686e626bc82376a9c32c79b98264b0b9e70cf9a204c16d90ab39db579569ef",
+  "labels_h_shard3_p1.jsonl": "b3d38387aa6cdbf77e2f11ed8c2a5104254dd7b99c84c5f7060e104c4a94a163",
+  "labels_h_shard3_p2.jsonl": "a44882ba2c26bf68c424b7e3f9fcc37b2db42cfeb43c18b926c6247f37a822af",
+  "labels_horizon.jsonl": "79276a209d89b7b5a879e31264361409ab1f276b6e8a9a94a45dbda7bc073b20",
+  "labels_p_shard0_p1.jsonl": "bc6eea3e67e15f93c027a55db07286abb4491a3bbf28232cbea2eed38768b01c",
+  "labels_p_shard0_p2.jsonl": "212d00621741f206bbe515866598a1e771068687fb89f1339feb2ba70cfc1b6f",
+  "labels_p_shard1_p1.jsonl": "f1d1b150574c38432f748b47e1086831a34dbd7d4337fd99a0b37b03192a2f06",
+  "labels_p_shard1_p2.jsonl": "a78eaf573df3d43b1d6eac743e7b05da0551a479cb5f2968b0b4b56d096ebf79",
+  "labels_p_shard2_p1.jsonl": "2fcd62b9f3e729be138fb08500658d4109e927991e38c5658fa9f99e857b25f3",
+  "labels_p_shard2_p2.jsonl": "048a70a03635146da3847ad69209d2b30d71d547f950cb705bbddc6b49147e84",
+  "labels_p_shard3_p1.jsonl": "4ab05022261b9dbacbc6c49066b362df44789f63f08651cabf4281ab86af936b",
+  "labels_p_shard3_p2.jsonl": "714aa84c0e604b51b05cca2d4b45d26c68c06f9de791032e737cda11d0817ab3",
+  "labels_primary.jsonl": "efe1e7b3c14df977a9d69dc848e292a80bcd9f0e246796828e76a32daf551f6f",
+  "report_horizon.json": "aa0e1f6b95451d918db450aff2a9a8818698839cd351e8a0d15a5f462451b2c6",
+  "report_primary.json": "6a8048d1b46104cecdc6b8eda4781097366479cf89d87665770e5a9b272f5566",
+  "score_horizon_stdout.txt": "e48d0694f0922596bdc2b0c5850ff826920f6257589d3993340b075e6d56aac3",
+  "score_primary_stdout.txt": "50981c934a6b83835e8dca5e4f5066fc3e39b877da5ed7ec7ffa87466469bc8e"
+ },
+ "report_primary": {
+  "pass": "primary",
+  "primary": {
+   "jobs_scored": 118,
+   "mean_diff": 0.08001050061092273,
+   "ci": [
+    0.044370107400254835,
+    0.1206210995861558
+   ],
+   "frac_pos": 0.6101694915254238,
+   "frac_zero": 0.11864406779661017,
+   "frac_neg": 0.2711864406779661,
+   "per_game_gain": 0.023603097680222205,
+   "integrity": {
+    "rows": 11800,
+    "error_rows": 1430,
+    "unfinished": 0,
+    "fallbacks": 7,
+    "null_results": 0,
+    "unknown_snap": 0,
+    "dup_world": 0,
+    "jobs_total": 118,
+    "jobs_missing": 0,
+    "worlds_min": 26
+   }
+  },
+  "cross_check": "AGREE (1e-9) with the deployment scorer's standalone run",
+  "unfinished": {
+   "teacher": {
+    "rows": 5900,
+    "finished": 5202,
+    "unfinished": 698,
+    "refusal": 0
+   },
+   "prior": {
+    "rows": 5900,
+    "finished": 5168,
+    "unfinished": 732,
+    "refusal": 0
+   },
+   "share_teacher": 0.1183050847457627,
+   "share_prior": 0.12406779661016949,
+   "share_pooled": 0.1211864406779661,
+   "error_classes": {
+    "teacher": {
+     "abort": 698
+    },
+    "prior": {
+     "abort": 732
+    },
+    "pooled": {
+     "abort": 1430
+    }
+   }
+  },
+  "paired_n": {
+   "jobs_scored": 118,
+   "jobs_missing": 0,
+   "min": 26,
+   "p25": 37.0,
+   "median": 40.0,
+   "mean": 40.347457627118644,
+   "p75": 43.75,
+   "max": 50,
+   "buckets": {
+    "n=50": 8,
+    "40-49": 62,
+    "20-39": 48,
+    "1-19": 0
+   }
+  },
+  "sensitivity": {
+   "jobs": 118,
+   "worlds": 5900,
+   "mean_diff": 0.07728813559322033,
+   "ci": [
+    0.04177419354838708,
+    0.11669172932330826
+   ],
+   "per_game_gain": 0.022799999999999994
+  },
+  "instrument_limited": false,
+  "verdict": "POSITIVE \u2014 the read stands regardless of the unfinished share (registered condition, claude-reply-8dddf38 sec.1)"
+ },
+ "report_horizon": {
+  "pass": "horizon",
+  "primary": {
+   "jobs_scored": 118,
+   "mean_diff": 0.07010549982704947,
+   "ci": [
+    0.03613207547169811,
+    0.10884957208689923
+   ],
+   "frac_pos": 0.6440677966101694,
+   "frac_zero": 0.05084745762711865,
+   "frac_neg": 0.3050847457627119,
+   "per_game_gain": 0.020681122448979593,
+   "integrity": {
+    "rows": 11800,
+    "error_rows": 2,
+    "unfinished": 0,
+    "fallbacks": 219,
+    "null_results": 0,
+    "unknown_snap": 0,
+    "dup_world": 0,
+    "jobs_total": 118,
+    "jobs_missing": 0,
+    "worlds_min": 49
+   }
+  },
+  "cross_check": "AGREE (1e-9) with the deployment scorer's standalone run",
+  "unfinished": {
+   "teacher": {
+    "rows": 5900,
+    "finished": 5899,
+    "unfinished": 1,
+    "refusal": 0
+   },
+   "prior": {
+    "rows": 5900,
+    "finished": 5899,
+    "unfinished": 1,
+    "refusal": 0
+   },
+   "share_teacher": 0.00016949152542372882,
+   "share_prior": 0.00016949152542372882,
+   "share_pooled": 0.00016949152542372882,
+   "error_classes": {
+    "teacher": {
+     "abort": 1
+    },
+    "prior": {
+     "abort": 1
+    },
+    "pooled": {
+     "abort": 2
+    }
+   }
+  },
+  "paired_n": {
+   "jobs_scored": 118,
+   "jobs_missing": 0,
+   "min": 49,
+   "p25": 50.0,
+   "median": 50.0,
+   "mean": 49.983050847457626,
+   "p75": 50.0,
+   "max": 50,
+   "buckets": {
+    "n=50": 116,
+    "40-49": 2,
+    "20-39": 0,
+    "1-19": 0
+   }
+  },
+  "sensitivity": {
+   "jobs": 118,
+   "worlds": 5900,
+   "mean_diff": 0.07016949152542372,
+   "ci": [
+    0.03621621621621619,
+    0.10896825396825396
+   ],
+   "per_game_gain": 0.020699999999999996
+  },
+  "instrument_limited": false,
+  "verdict": "POSITIVE \u2014 the read stands regardless of the unfinished share (registered condition, claude-reply-8dddf38 sec.1)"
+ }
+}

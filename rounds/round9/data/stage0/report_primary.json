@@ -1,0 +1,84 @@
+{
+ "pass": "primary",
+ "primary": {
+  "jobs_scored": 118,
+  "mean_diff": 0.08001050061092273,
+  "ci": [
+   0.044370107400254835,
+   0.1206210995861558
+  ],
+  "frac_pos": 0.6101694915254238,
+  "frac_zero": 0.11864406779661017,
+  "frac_neg": 0.2711864406779661,
+  "per_game_gain": 0.023603097680222205,
+  "integrity": {
+   "rows": 11800,
+   "error_rows": 1430,
+   "unfinished": 0,
+   "fallbacks": 7,
+   "null_results": 0,
+   "unknown_snap": 0,
+   "dup_world": 0,
+   "jobs_total": 118,
+   "jobs_missing": 0,
+   "worlds_min": 26
+  }
+ },
+ "cross_check": "AGREE (1e-9) with the deployment scorer's standalone run",
+ "unfinished": {
+  "teacher": {
+   "rows": 5900,
+   "finished": 5202,
+   "unfinished": 698,
+   "refusal": 0
+  },
+  "prior": {
+   "rows": 5900,
+   "finished": 5168,
+   "unfinished": 732,
+   "refusal": 0
+  },
+  "share_teacher": 0.1183050847457627,
+  "share_prior": 0.12406779661016949,
+  "share_pooled": 0.1211864406779661,
+  "error_classes": {
+   "teacher": {
+    "abort": 698
+   },
+   "prior": {
+    "abort": 732
+   },
+   "pooled": {
+    "abort": 1430
+   }
+  }
+ },
+ "paired_n": {
+  "jobs_scored": 118,
+  "jobs_missing": 0,
+  "min": 26,
+  "p25": 37.0,
+  "median": 40.0,
+  "mean": 40.347457627118644,
+  "p75": 43.75,
+  "max": 50,
+  "buckets": {
+   "n=50": 8,
+   "40-49": 62,
+   "20-39": 48,
+   "1-19": 0
+  }
+ },
+ "sensitivity": {
+  "jobs": 118,
+  "worlds": 5900,
+  "mean_diff": 0.07728813559322033,
+  "ci": [
+   0.04177419354838708,
+   0.11669172932330826
+  ],
+  "per_game_gain": 0.022799999999999994
+ },
+ "instrument_limited": false,
+ "verdict": "POSITIVE \u2014 the read stands regardless of the unfinished share (registered condition, claude-reply-8dddf38 sec.1)"
+}

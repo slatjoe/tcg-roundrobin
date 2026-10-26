@@ -1,0 +1,85 @@
+{
+ "integrity": {
+  "rows": 11800,
+  "error_rows": 2,
+  "unfinished": 0,
+  "fallbacks": 219,
+  "null_results": 0,
+  "unknown_snap": 0,
+  "dup_world": 0,
+  "jobs_total": 118
+ },
+ "diag": {
+  "finished_rows": 11798,
+  "outcome_values": {
+   "1.0": 5267,
+   "-1.0": 5083,
+   "0.0": 1448
+  },
+  "marker_violations": 0,
+  "paired_marker_violations": 0,
+  "paired_missing_winner": 0,
+  "horizon1_finished": 1448,
+  "horizon1_winner_nonzero": 0
+ },
+ "reads": {
+  "standard": {
+   "jobs_scored": 118,
+   "mean_diff": 0.07010549982704947,
+   "ci": [
+    0.03613207547169811,
+    0.10884957208689923
+   ],
+   "frac_pos": 0.6440677966101694,
+   "frac_zero": 0.05084745762711865,
+   "frac_neg": 0.3050847457627119,
+   "per_game_gain": 0.020681122448979593,
+   "integrity": {
+    "rows": 11800,
+    "error_rows": 2,
+    "unfinished": 0,
+    "fallbacks": 219,
+    "null_results": 0,
+    "unknown_snap": 0,
+    "dup_world": 0,
+    "jobs_total": 118,
+    "jobs_missing": 0,
+    "worlds_min": 49
+   },
+   "paired_drawn_worlds": {
+    "teacher": 717,
+    "prior": 730
+   }
+  },
+  "tie_as_loss": {
+   "jobs_scored": 118,
+   "mean_diff": 0.07120373573158077,
+   "ci": [
+    0.03577184720041863,
+    0.11130241187384042
+   ],
+   "frac_pos": 0.6016949152542372,
+   "frac_zero": 0.13559322033898305,
+   "frac_neg": 0.2627118644067797,
+   "per_game_gain": 0.021005102040816327,
+   "integrity": {
+    "rows": 11800,
+    "error_rows": 2,
+    "unfinished": 0,
+    "fallbacks": 219,
+    "null_results": 0,
+    "unknown_snap": 0,
+    "dup_world": 0,
+    "jobs_total": 118,
+    "jobs_missing": 0,
+    "worlds_min": 49
+   },
+   "paired_drawn_worlds": {
+    "teacher": 717,
+    "prior": 730
+   }
+  }
+ },
+ "standard_cross_check": "AGREE (1e-9) with the box report's primary read",
+ "pass": "horizon"
+}

@@ -1,0 +1,16 @@
+=== STAGE 0 (D) REPORT — pass: primary ===
+PRIMARY (deployment scorer analyze_l3_deploy.py; cross-check: AGREE (1e-9) with the deployment scorer's standalone run):
+  jobs scored 118 of 118 (missing 0); mean paired diff 0.0800; CI [0.0444, 0.1206]
+  frac better / tied / worse: 0.6102 / 0.1186 / 0.2712; per-game gain 0.0236 (TEACHER_GAMES=400)
+UNFINISHED WORLDS (refusals excluded from every share and from the sensitivity read; every other error counts as unfinished):
+  teacher rows 5900: finished 5202, unfinished 698, refusal 0; share 0.1183
+  prior   rows 5900: finished 5168, unfinished 732, refusal 0; share 0.1241
+  pooled : finished 10370, unfinished 1430, refusal 0; share 0.1212
+ERROR TALLIES BY CLASS (REFUSAL = determinization refusal, excluded; unfinished = priced as a draw in the sensitivity read):
+  abort                    1430  [unfinished]
+PAIRED-N (finished worlds shared by both candidates, per scored job):
+  min 26, p25 37.0, median 40.0, mean 40.35, p75 43.75, max 50; buckets {'n=50': 8, '40-49': 62, '20-39': 48, '1-19': 0}; jobs missing 0
+SENSITIVITY (unfinished worlds scored as draws, 0.5; pairs dropped only on a refusal):
+  jobs 118 over 5900 worlds; mean paired diff 0.0773; CI [0.0418, 0.1167]; per-game gain 0.0228
+REGISTERED CONDITION (pooled unfinished share 0.1212; threshold 0.2000):
+  POSITIVE — the read stands regardless of the unfinished share (registered condition, claude-reply-8dddf38 sec.1)
