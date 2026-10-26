@@ -1,0 +1,302 @@
+Diff: code/search_s1.php (sha256 1fcacaa3eb35d06e33a13b4f53a7b901279cf48eb34bdea14539c86e770ecd52, the Stage 1 evaluator build) -> code/search_s2.php (the Stage 2 live teacher build). Generated with diff -u; the Stage 2 build changes ONLY what this diff shows.
+
+--- a/search_s1.php
++++ b/search_s2.php
+@@ -1,4 +1,40 @@
+ <?php
++// Round-9 Stage 2 LIVE TEACHER build: byte-derived from
++// code/search_s1.php (the Stage 1 evaluator build) with ONLY the
++// Stage 2 changes listed in fixtures/search_s2_diff.txt:
++//   (1) the live teacher tuple (SimTeacher_Tuple): the run-pinned
++//       parameter set {name, hooks, deadline_s, horizon,
++//       horizon_value, k, margin} read from env TEACHER_TUPLE_JSON,
++//       validated before any decision (malformed = throw, caught
++//       by the Decide wrapper and logged as an abort), stamped on
++//       every teacher stat row. UNPINNED (env absent) the tuple is
++//       the legacy live constants (hooks 4000 via the label-path
++//       default, deadline 180, horizon 0/off, k 25, margin 1.5),
++//       so an unparameterized call reproduces the pre-Stage-2
++//       live teacher and the registered label instrument exactly.
++//   (2) SimTeacher_DecideInner passes the tuple's horizon and
++//       hook budget through cfg into its rollout children (the
++//       children's hook guards in SimLabel_ChildChoose /
++//       SimLabel_ChildDQ read $GLOBALS["ssLabelHookBudget"],
++//       which SimLabel_RunRollout sets from cfg -- the live tuple
++//       now reaches it; previously the live path passed neither
++//       key and the children ran at the 4000 label default), the
++//       parent deadline and k and the paired margin come from the
++//       tuple, and a drawn world (winner 0, horizon-ended or
++//       natural) is priced at the tuple's horizon_value INSIDE
++//       the candidate means, where it changes picks (ruling
++//       sec.3.1: the -1 that replaces the 0.5).
++//   (3) SimLabel_RunRollout records both players' life totals
++//       (life_root / life_opp, via GetHealth as in play_game's
++//       result JSON) on every world that ends at the horizon, so
++//       the life-differential price is computable from the row
++//       (ruling sec.3.2). Non-horizon worlds carry no life
++//       fields; the offline label rows' outcome/winner/horizon
++//       semantics are unchanged, so the Stage 0/1 analyzers read
++//       this build's label rows exactly as before.
++// The (b) featurizer correction stays OUT (not in this lineage).
++// Nothing else changes.
++//
+ // Round-9 Stage 1 evaluator build: byte-derived from
+ // code/search_horizon.php (sha256 6d63f5c3...) with ONLY the
+ // clause-8 parameterization of the LABEL path (see
+@@ -802,6 +838,73 @@
+   @file_put_contents($dir . "/search_stats.jsonl", json_encode($rec) . "\n", FILE_APPEND);
+ }
+ 
++// ==============================================================
++// Round-9 Stage 2: the live teacher tuple. The run's parameters
++// are pinned by env TEACHER_TUPLE_JSON (a JSON object set by the
++// runner from rounds/round9/code/settings_stage2.json, the file
++// placement of the same values; the games analyzer audits every
++// stat row's stamp against that file -- the second placement,
++// stage1 pattern). SimTeacher_Tuple() is called at the top of
++// SimTeacher_DecideInner, BEFORE any eval or decision: a present
++// but malformed pin throws, the Decide wrapper logs the abort,
++// and the run's manifest gate fails on the abort row -- a
++// mis-pinned run degrades loudly, never silently. An ABSENT pin
++// is the legacy instrument: the pre-Stage-2 live constants,
++// which are also the registered label defaults, so the label
++// path's unparameterized behavior is untouched.
++function SimTeacher_Tuple() {
++  static $tuple = null;
++  if ($tuple !== null) return $tuple;
++  $raw = getenv("TEACHER_TUPLE_JSON");
++  if ($raw === false || strval($raw) === "") {
++    $tuple = ["name" => "unpinned", "hooks" => 4000,
++              "deadline_s" => 180, "horizon" => 0,
++              "horizon_value" => 0.0, "k" => 25, "margin" => 1.5,
++              "pinned" => 0];
++    return $tuple;
++  }
++  $t = json_decode(strval($raw), true);
++  $bad = null;
++  if (!is_array($t)) $bad = "not_a_json_object";
++  elseif (!isset($t["name"]) || strval($t["name"]) === "") $bad = "name";
++  elseif (!isset($t["hooks"]) || !is_numeric($t["hooks"])
++          || intval($t["hooks"]) != $t["hooks"]
++          || intval($t["hooks"]) < 1) $bad = "hooks";
++  elseif (!isset($t["deadline_s"]) || !is_numeric($t["deadline_s"])
++          || intval($t["deadline_s"]) != $t["deadline_s"]
++          || intval($t["deadline_s"]) < 1) $bad = "deadline_s";
++  elseif (!isset($t["horizon"]) || !is_numeric($t["horizon"])
++          || intval($t["horizon"]) != $t["horizon"]
++          || intval($t["horizon"]) < 0) $bad = "horizon";
++  elseif (!isset($t["horizon_value"]) || !is_numeric($t["horizon_value"]))
++    $bad = "horizon_value";
++  elseif (!isset($t["k"]) || !is_numeric($t["k"])
++          || intval($t["k"]) != $t["k"] || intval($t["k"]) < 20
++          || intval($t["k"]) > 1000) $bad = "k";
++  elseif (!isset($t["margin"]) || !is_numeric($t["margin"])
++          || floatval($t["margin"]) <= 0.0) $bad = "margin";
++  if ($bad !== null) {
++    throw new Exception("teacher tuple pin malformed: field " . $bad);
++  }
++  $tuple = ["name" => strval($t["name"]),
++            "hooks" => intval($t["hooks"]),
++            "deadline_s" => intval($t["deadline_s"]),
++            "horizon" => intval($t["horizon"]),
++            "horizon_value" => floatval($t["horizon_value"]),
++            "k" => intval($t["k"]),
++            "margin" => floatval($t["margin"]),
++            "pinned" => 1];
++  return $tuple;
++}
++
++// The stamp for rows written on paths where the tuple itself may
++// be the failure (the Decide wrapper's exception row): the tuple
++// when it parses, a named marker when it does not.
++function SimTeacher_TupleStamp() {
++  try { return SimTeacher_Tuple(); }
++  catch (Throwable $e) { return ["name" => "malformed"]; }
++}
++
+ // Parent-side: run the search for one real decision. Returns the chosen
+ // candidate index, or null to fall back to plain net play.
+ // ============================================================== teacher
+@@ -812,6 +915,10 @@
+ // continuation pair "va" = argmax v15, the deployed continuation.
+ // Overturn the prior pick only when the paired mean margin over the
+ // prior pick exceeds 1.5 paired SE (n >= 20 shared finished worlds).
++// (Stage 2: k, the margin, the deadline, the rollout horizon and
++// hook budget, and the price of a drawn world are the run-pinned
++// tuple's; unpinned they take exactly the values in this comment
++// and the pre-Stage-2 constants -- see SimTeacher_Tuple.)
+ function SimTeacher_Decide($branch, $cands, $candRecs, $player, $gameDir, $bridgeState = null) {
+   // Abort-reason logging wrapper (round 4): the gate body lives in
+   // SimTeacher_DecideInner below, byte-identical. This wrapper only
+@@ -827,6 +934,7 @@
+     $GLOBALS["ssTeacherAbortReason"] = "exception:" . get_class($e)
+       . ":" . substr(strval($e->getMessage()), 0, 120);
+     SimSearch_LogStat(["teacher" => 1, "fallback" => "exception",
++      "setting" => SimTeacher_TupleStamp(),
+       "abort_reason" => $GLOBALS["ssTeacherAbortReason"],
+       "branch" => $branch, "player" => $player,
+       "turn" => intval($GLOBALS["currentTurn"] ?? 0),
+@@ -838,6 +946,11 @@
+ function SimTeacher_DecideInner($branch, $cands, $candRecs, $player, $gameDir, $bridgeState = null) {
+   $t0 = microtime(true);
+   $ncand = count($candRecs);
++  // Stage 2: resolve (and validate) the run-pinned tuple BEFORE
++  // any eval or decision; a malformed pin throws here and the
++  // Decide wrapper logs the abort. Every stat row below carries
++  // the tuple as "setting".
++  $T = SimTeacher_Tuple();
+   // R17: the ROOT priors come from the state the bridge built
+   // (passed down from Choose through RootDecide), evaluated as-is.
+   // The trace stash is set from that same state, so the root row's
+@@ -873,7 +986,7 @@
+     if (empty($GLOBALS["ssTeacherAbortReason"])) {
+       $GLOBALS["ssTeacherAbortReason"] = "root_eval_failed";
+     }
+-    SimSearch_LogStat(["teacher" => 1, "fallback" => "eval",
++    SimSearch_LogStat(["teacher" => 1, "fallback" => "eval", "setting" => $T,
+                        "abort_reason" => $GLOBALS["ssTeacherAbortReason"],
+                        "branch" => $branch, "player" => $player,
+                        "turn" => intval($GLOBALS["currentTurn"] ?? 0),
+@@ -884,7 +997,7 @@
+   $priorPick = SimLabel_PriorArgmax($priors);
+   $bp = $priors[$priorPick] ?? 0.0;
+   if ($ncand <= 1 || $bp >= 0.97) {
+-    SimSearch_LogStat(["teacher" => 1, "contested" => 0, "branch" => $branch,
++    SimSearch_LogStat(["teacher" => 1, "contested" => 0, "setting" => $T, "branch" => $branch,
+       "player" => $player, "turn" => intval($GLOBALS["currentTurn"] ?? 0),
+       "ncand" => $ncand, "prior_pick" => $priorPick, "pick" => $priorPick,
+       "ms" => intval((microtime(true) - $t0) * 1000)]);
+@@ -927,7 +1040,7 @@
+             "selected" => $sel]) . "\n", FILE_APPEND);
+       }
+     }
+-    SimSearch_LogStat(["teacher" => 1, "contested" => 1, "capture" => 1,
++    SimSearch_LogStat(["teacher" => 1, "contested" => 1, "capture" => 1, "setting" => $T,
+       "det" => "file-v3", "branch" => $branch, "player" => $player,
+       "turn" => intval($GLOBALS["currentTurn"] ?? 0), "ncand" => $ncand,
+       "selected" => $sel, "prior_pick" => $priorPick,
+@@ -935,7 +1048,7 @@
+       "ms" => intval((microtime(true) - $t0) * 1000)]);
+     return $priorPick;
+   }
+-  $K = 25;
++  $K = intval($T["k"]);
+   $seedBase = random_int(1, PHP_INT_MAX - 1000000);
+   $rootKey = $branch . "|" . $player . "|" . implode(",", array_map(
+     function ($c) { return strval($c["card_id"]) . "@" . strval($c["zone"]); },
+@@ -948,8 +1061,12 @@
+     else { $assignments[$w] = $a; }
+   }
+   $outcomes = []; $childFallbacks = 0; $errors = 0;
++  $hzWorlds = []; $drawWorlds = []; $hzLife = [];
+   foreach ($sel as $ci) {
+     $outcomes[$ci] = [];
++    $hzWorlds[$ci] = 0; $drawWorlds[$ci] = 0;
++    $hzLife[$ci] = ["ahead" => 0, "behind" => 0, "tied" => 0,
++                    "life_root_sum" => 0, "life_opp_sum" => 0];
+     $kids = [];
+     foreach ($assignments as $w => $a) {
+       if ($a === null) continue;
+@@ -962,12 +1079,14 @@
+         SimLabel_RunRollout(rtrim($gameDir, "/") . "/", $resFile, $a,
+           ["rootPlayer" => $player, "rootKey" => $rootKey, "forceIdx" => $ci,
+            "snapGame" => strval($GLOBALS["gameName"] ?? ""),
++           "horizon" => intval($T["horizon"]),
++           "hookBudget" => intval($T["hooks"]),
+            "pair" => "va", "seed" => $seedBase + $w * 31337]);
+         if (function_exists("posix_kill")) posix_kill(posix_getpid(), 9); exit(0);
+       }
+       $kids[$pid] = [$resFile, $w];
+     }
+-    $deadline = time() + 180;
++    $deadline = time() + intval($T["deadline_s"]);
+     while (!empty($kids) && time() < $deadline) {
+       $pid = pcntl_waitpid(-1, $status, WNOHANG);
+       if ($pid > 0 && isset($kids[$pid])) {
+@@ -977,7 +1096,29 @@
+         @unlink($resFile);
+         $res = $raw ? json_decode($raw, true) : null;
+         if (is_array($res) && !isset($res["error"]) && !empty($res["finished"])) {
+-          $outcomes[$ci][$w] = floatval($res["outcome"]);
++          $oc = floatval($res["outcome"]);
++          if (intval($res["winner"] ?? -1) === 0) {
++            // A drawn world -- horizon-ended or natural -- is
++            // priced at the pinned horizon_value INSIDE the
++            // candidate means (ruling sec.3.1). Unpinned, the
++            // value is 0.0, the raw outcome: legacy behavior.
++            $oc = floatval($T["horizon_value"]);
++            ++$drawWorlds[$ci];
++            if (!empty($res["horizon"])) {
++              ++$hzWorlds[$ci];
++              $lr = $res["life_root"] ?? null;
++              $lo = $res["life_opp"] ?? null;
++              if ($lr !== null && $lo !== null) {
++                $lr = intval($lr); $lo = intval($lo);
++                if ($lr > $lo) ++$hzLife[$ci]["ahead"];
++                elseif ($lr < $lo) ++$hzLife[$ci]["behind"];
++                else ++$hzLife[$ci]["tied"];
++                $hzLife[$ci]["life_root_sum"] += $lr;
++                $hzLife[$ci]["life_opp_sum"] += $lo;
++              }
++            }
++          }
++          $outcomes[$ci][$w] = $oc;
+           $childFallbacks += intval($res["fallbacks"] ?? 0);
+         } else {
+           ++$errors;
+@@ -999,10 +1140,12 @@
+     $means[$ci] = count($vals) ? array_sum($vals) / count($vals) : null;
+   }
+   $base = ["teacher" => 1, "contested" => 1, "det" => "file-v3",
+-    "det_persisted" => 1, "branch" => $branch,
++    "det_persisted" => 1, "setting" => $T, "branch" => $branch,
+     "player" => $player, "turn" => intval($GLOBALS["currentTurn"] ?? 0),
+     "ncand" => $ncand, "selected" => $sel, "prior_pick" => $priorPick,
+     "means" => $means, "n_worlds" => $nWorlds,
++    "n_horizon" => $hzWorlds, "n_draws" => $drawWorlds,
++    "horizon_life" => $hzLife,
+     "canary_worlds" => $canaryWorlds, "errors" => $errors,
+     "child_fallbacks" => $childFallbacks,
+     "ms" => intval((microtime(true) - $t0) * 1000)];
+@@ -1031,7 +1174,7 @@
+       $var = 0.0;
+       foreach ($ds as $d) { $var += ($d - $meanD) * ($d - $meanD); }
+       $seD = sqrt($var / max(1, count($ds) - 1)) / sqrt(count($ds));
+-      if ($meanD > 1.5 * $seD) { $pick = $best; $overturn = 1; }
++      if ($meanD > floatval($T["margin"]) * $seD) { $pick = $best; $overturn = 1; }
+     }
+   }
+   $base["abort_reasons"] = $abortReasons;
+@@ -1437,7 +1580,7 @@
+     $winner = IsGameOver() ? intval($GLOBALS["winner"] ?? 0) : 0;
+     $outcome = $winner === 0 ? 0.0 : ($winner === $root ? 1.0 : -1.0);
+     $horizonApplied = ($horizonHit && !IsGameOver()) ? 1 : 0;
+-    @file_put_contents($resFile, json_encode([
++    $resOut = [
+       "det_persisted" => 1,
+       "winner" => $winner, "outcome" => $outcome,
+       "horizon" => $horizonApplied,
+@@ -1446,7 +1589,22 @@
+       "hooks" => intval($GLOBALS["ssHooks"] ?? 0),
+       "fallbacks" => intval($GLOBALS["ssLabelFallbacks"] ?? 0),
+       "child_state" => $GLOBALS["ssLabelChildState"],
+-    ]));
++    ];
++    if ($horizonApplied === 1) {
++      // Ruling sec.3.2: both players' life totals on every
++      // horizon-ended world, root frame (life_root = the root
++      // player's life, life_opp = the opponent's), read through
++      // GetHealth -- the same accessor play_game's result JSON
++      // uses for p1life/p2life. The life-differential price
++      // (ahead = win, behind = loss, tied = draw at the read's
++      // draw price) is computed from these two fields by the
++      // analyzers; the raw outcome stays the instrument's draw.
++      $resOut["life_root"] = function_exists("GetHealth")
++        ? intval(GetHealth($root)) : null;
++      $resOut["life_opp"] = function_exists("GetHealth")
++        ? intval(GetHealth(3 - $root)) : null;
++    }
++    @file_put_contents($resFile, json_encode($resOut));
+     SimSearch_WipeDir($workDir);
+     if (function_exists("DeleteCache")) DeleteCache($childGame);
+   } catch (Throwable $e) {

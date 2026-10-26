@@ -1,0 +1,68 @@
+Diff: code/s1_eval_main.php -> code/s2_label_main.php (Stage 2 L3 driver derivation). Generated with diff -u.
+
+--- a/s1_eval_main.php
++++ b/s2_label_main.php
+@@ -1,4 +1,26 @@
+ <?php
++// Round-9 Stage 2 L3 label driver: derived from
++// s1_eval_main.php (the Stage 1 evaluator driver) with ONLY
++// the changes in fixtures/s2_label_main_diff.txt: the header,
++// the driver name in messages, and teacher_pick carried from
++// each job onto every emitted world row and stat row (the
++// Stage 2 analyzer pairs teacher vs prior from the jobs file;
++// the stamp makes each row self-describing, as in Stage 1).
++// The pin machinery is the Stage 1 clause-8 pattern verbatim:
++// the run's setting is pinned by env (EVAL_SETTING_NAME,
++// EVAL_HOOKS, EVAL_DEADLINE_S, LABEL_HORIZON,
++// EVAL_HORIZON_VALUE, EVAL_K); every job must carry a
++// "setting" object equal to the pins field by field, else the
++// driver aborts (exit 2) before any labeling; every emitted
++// row is stamped with the full tuple. For Stage 2 the runner
++// pins the registered L3 tuple (settings_stage2.json
++// label_tuple: L3-W50+H -- hooks 8000, deadline 180, horizon
++// 62, horizon_value -1, k = LABEL_W = 50). The valuation is
++// applied by stage2_analyze.py from the raw world outcomes +
++// horizon flags + life fields; the driver writes drawn
++// worlds as outcome 0.0 / winner 0, as in Stages 0/1.
++//
++// Original Stage 1 header follows.
+ // Round-9 Stage 1 evaluator driver: derived from
+ // r9_label_main.php (sha256 2463fc29...) -- the sec.4(C)
+ // pinned-parameter pattern generalized from the single
+@@ -117,12 +139,13 @@
+              " != run pin " . json_encode($SETTING));
+   }
+ }
+-fwrite(STDERR, "s1 eval jobs=" . count($jobs) . " setting=" .
++fwrite(STDERR, "s2 label jobs=" . count($jobs) . " setting=" .
+        json_encode($SETTING) . "\n");
+ foreach ($jobs as $ji => $j) {
+   $meta = ["snap" => $j["snap"], "game" => strval($j["game"]),
+            "player" => intval($j["player"]), "branch" => strval($j["branch"]),
+            "cands" => $j["cands"]];
++  $teacherPick = intval($j["teacher_pick"]);
+   $cfg = ["W" => $K, "horizon" => $HORIZON, "hookBudget" => $HOOKS,
+           "deadlineS" => $DEADLINE, "cap" => count($j["cands"]),
+           "seedBase" => $seedBase + $ji * 100003,
+@@ -139,6 +162,7 @@
+   foreach ($rows as $r) {
+     $r["setting"] = $SETTING;
+     $r["prior_pick"] = intval($j["prior_pick"]);
++    $r["teacher_pick"] = $teacherPick;
+     $r["game"] = strval($j["game"]);
+     fwrite($fh, json_encode($r) . "\n");
+   }
+@@ -166,6 +190,7 @@
+            "wall_ms" => $wallMs, "cand_finished" => (object)$fin,
+            "cand_rows" => (object)$cnt, "errors" => (object)$errs,
+            "fallbacks" => $fb, "prior_pick" => intval($j["prior_pick"]),
++           "teacher_pick" => $teacherPick,
+            "selected" => array_map("intval", $j["selected"])];
+   $sf = fopen($statsFile, "a");
+   fwrite($sf, json_encode($stat) . "\n");
+@@ -173,4 +198,4 @@
+   fwrite(STDERR, "done " . $j["snap"] . " rows=" . count($rows) .
+          " wall_ms=" . $wallMs . "\n");
+ }
+-fwrite(STDERR, "S1-EVAL-DONE setting=" . $ST_NAME . "\n");
++fwrite(STDERR, "S2-LABEL-DONE setting=" . $ST_NAME . "\n");

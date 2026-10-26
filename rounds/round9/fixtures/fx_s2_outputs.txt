@@ -1,0 +1,131 @@
+===== fx_s2_live =====
+PASS flip0 harness ran 
+PASS flip0: hv=0.0 (draw at the 0.5-equivalent) picks the draw-heavy candidate pick=1
+PASS flip0: overturn recorded 
+PASS flip0: means price draws at 0 means=[-1, 0]
+PASS flip0: tuple stamped (name FX-HV0, pinned) 
+PASS flip0: horizon tallies (25 horizon worlds, 25 draws on cand 1) 
+PASS flip0: overturn snapshot captured 
+PASS flip1 harness ran 
+PASS flip1: hv=-1 rejects the draw-heavy candidate (prior pick stands) pick=0
+PASS flip1: no overturn 
+PASS flip1: means price draws at -1 means=[-1, -1]
+PASS flip1: tuple stamped (name FX-HVm1, hv -1) 
+PASS flip1: horizon life tallies (25 behind, sums 200/350) horizon_life[1]={'ahead': 0, 'behind': 25, 'tied': 0, 'life_root_sum': 200, 'life_opp_sum': 350}
+PASS flip1: no snapshot (no overturn) 
+PASS unpinned harness ran 
+PASS unpinned: legacy behavior (win candidate overturns) 
+PASS unpinned: stamp names the unpinned tuple 
+PASS unpinned: no horizon worlds recorded 
+PASS pin_bad harness ran 
+PASS pin_bad: Decide aborts before any decision (pick null) 
+PASS pin_bad: abort row written, fallback=exception, stamp 'malformed', reason names the tuple row={'fallback': 'exception', 'abort_reason': 'exception:Exception:teacher tuple pin malformed: field deadline_s'}
+PASS pin_bad: no contested row was produced 
+PASS pin_bad_k harness ran 
+PASS pin_bad_k: Decide aborts before any decision (pick null) 
+PASS pin_bad_k: abort row written, fallback=exception, stamp 'malformed', reason names the tuple row={'fallback': 'exception', 'abort_reason': 'exception:Exception:teacher tuple pin malformed: field k'}
+PASS pin_bad_k: no contested row was produced 
+PASS hooks_live harness ran 
+PASS hooks_live: 6,000-hook worlds complete under the pinned 8,000 (pick = hook candidate) pick=1 n_worlds=[25, 25]
+PASS hooks_low harness ran 
+PASS hooks_low: the same worlds abort under a 4,000 pin (prior pick stands, aborts tallied) pick=0 errors=25 abort_reasons={'abort': 25}
+PASS label_default harness ran 
+PASS label_default: cand 0 worlds finish as losses (horizon off) rows=3
+PASS label_default: cand 1 (draw script) worlds do NOT finish with the horizon off, and carry no life fields rows=3
+PASS label_default: cand 2 (6,000-hook script) aborts at the DEFAULT 4,000 hook budget rows=3
+PASS label_horizon harness ran 
+PASS label_horizon: horizon-ended worlds record life_root=8, life_opp=14 on every row rows=3
+PASS label_horizon: non-horizon worlds carry NO life fields rows=3
+FX-S2-LIVE: ALL PASS
+SUITE fx_s2_live: PASS
+===== fx_s2_label =====
+PASS happy path (exit 0, S2-LABEL-DONE)
+PASS badk abort exit code 2
+PASS nosetting abort exit code 2
+PASS row count = 2 jobs x 2 selected x 50 rows=200
+PASS every row stamped with the L3 tuple 
+PASS teacher_pick stamped per job (fxA=1, fxB=0) 
+PASS prior_pick stamped per job (fxA=0, fxB=2) 
+PASS horizon rows keep life_root/life_opp through the driver horizon rows=40
+PASS cfg forwarded per job (W=50, horizon 62, hooks 8000, deadline 180, pair va) 
+PASS stat rows carry teacher_pick + setting 
+PASS badk aborted (exit 2 recorded by runner, ABORT logged) 
+PASS badk wrote no rows 
+PASS nosetting aborted (exit 2 recorded by runner, ABORT logged) 
+PASS nosetting wrote no rows 
+FX-S2-LABEL: ALL PASS
+SUITE fx_s2_label: PASS
+===== fx_s2_blocks =====
+PASS run_stage2_pregate.sh: no three-name assignment form
+PASS run_stage2_pregate.sh block inventory: PS-GHOST PS-SRV PS-SWEEP 
+PASS run_stage2_games.sh: no three-name assignment form
+PASS run_stage2_games.sh block inventory: GS-DRIVERS GS-SRV GS-SWEEP 
+PASS run_stage2_l3.sh: no three-name assignment form
+PASS run_stage2_l3.sh block inventory: LS-SHARD LS-SRV LS-SWEEP 
+PASS PS-SRV: stub server loads -> block completes
+PASS PS-SRV: silent server -> block aborts
+PASS GS-SRV: stub server loads -> block completes
+PASS GS-SRV: silent server -> block aborts
+PASS LS-SRV: stub server loads -> block completes
+PASS LS-SRV: silent server -> block aborts
+PASS PS-SWEEP: 2 sweepers spawned
+PASS GS-SWEEP: 4 sweepers spawned
+PASS LS-SWEEP: 4 sweepers spawned
+PASS PS-GHOST: 2 workers ran, block completes
+PASS PS-GHOST: a failing worker fails the block
+PASS GS-DRIVERS: 4 workers ran, block completes
+PASS GS-DRIVERS: a failing worker fails the block
+PASS LS-SHARD: 8 workers ran, block completes
+PASS LS-SHARD: a failing worker fails the block
+FX-S2-BLOCKS: ALL PASS
+SUITE fx_s2_blocks: PASS
+===== fx_build_s2_jobs =====
+PASS builder exit 0 
+PASS 3 jobs 
+PASS selected = sorted {prior, teacher} 
+PASS cands carried verbatim (records) 
+PASS label tuple stamped from settings 
+PASS snap_dir = PREFIX/<snap> 
+PASS shards partition the jobs 
+PASS report: 3 jobs over 2 games 
+PASS teacher==prior row aborts (exit 2) rc=2
+PASS duplicate snap aborts (exit 2) 
+FX-BUILD-S2-JOBS: ALL PASS
+SUITE fx_build_s2_jobs: PASS
+===== fx_pregate_check =====
+PASS clean: IDENTICAL, exit 0 PREGATE: IDENTICAL
+PASS k6: unstamped thin-prior rows only -> IDENTICAL 
+PASS k6: mechanical line printed (13 3 0 0) 
+PASS bad: one unstamped non-thin row -> NOT IDENTICAL 
+PASS diverged gamelog -> NOT IDENTICAL 
+FX-PREGATE-CHECK: ALL PASS
+SUITE fx_pregate_check: PASS
+===== fx_stage2_games_report =====
+PASS report exit 0 
+PASS games accounting (2 completed, 1 timeout) 
+PASS draw-scored outcomes 1W/1D/0L = 1.5 pts 
+PASS live rates (thin 0.25, overturn 0.25, overturns/game 0.5) 
+PASS tuple audit OK over 5 teacher rows 
+PASS abort tallies carried (abort 2, child fb 3) 
+PASS wrong tuple value on a row fails the audit (exit 2) 
+PASS tuple-malformation abort row fails the audit (exit 2) 
+FX-STAGE2-GAMES-REPORT: ALL PASS
+SUITE fx_stage2_games_report: PASS
+===== fx_stage2_analyze =====
+PASS analyzer exit 0 
+PASS primary mean == 0.375 got 0.375
+PASS draw05 mean == 0.40625 
+PASS lifediff mean == 0.4375 (ahead wins, behind loses, tied draws at 0) 
+PASS per-game gain == 0.375 (live overturns/game) 
+PASS tripwire fired (per-game > 0.25, mean > 0.20) 
+PASS LOGO range == [0.0, 0.75] got [0.0, 0.75]
+PASS sensitivity mean == 0.364583... got 0.3645833333333333
+PASS impeachment printed BEFORE the read 
+PASS unfinished pooled share == 1/31, refusals 1 
+PASS verdict is a band verdict (not STOP) got 'DOES NOT PROCEED'
+PASS negated population: STOP, no tripwire verdict='STOP' mean=-0.4375
+PASS wrong tuple stamp on a row aborts (exit 2) 
+PASS dropped row trips the world-count guard (exit 2) 
+FX-STAGE2-ANALYZE: ALL PASS
+SUITE fx_stage2_analyze: PASS
+FX-S2 SUITE: ALL PASS
