@@ -123,14 +123,29 @@ result, and §4 above is the backstop if they don't.
   0** for the search and the reads from Stage 1 onward. Nothing
   in this reference re-opens it — a Swiss draw earns nothing,
   and an elimination draw is not a recordable result.
-- The turn-62 horizon is a search instrument (a bound on
-  non-terminating rollouts), not a model of a tournament clock:
-  the games the project most wants to emulate — top-cut games —
-  have no clock for it to model. A turn-versus-time curve, if
-  built, describes Swiss play only.
-- Forward observation for Stage 2/3: competition's own price
-  for a deadlocked game is **life-differential** (§4 Steps 1–2:
-  ahead on life wins, behind loses). The registered −1
-  root-player price for a horizon-ended world is the
-  conservative simplification of that price. Recorded, not
-  proposed as a change.
+- What the project models is **Swiss advancement**. The clock,
+  the zero-point draw, and the turn-plus-one ending all exist
+  only in Swiss, and Swiss is where advancement — day 2, the top
+  cut — is decided. The turn-62 horizon is a search instrument
+  (a bound on non-terminating rollouts), not a model of a
+  tournament clock. A turn-versus-time curve, if built,
+  describes Swiss rounds; note the §5 table's turn/time points
+  come from *untimed* games, so they would overstate how many
+  turns fit inside a Swiss round.
+- The −1 price for a horizon-ended world is **exact for
+  Swiss**: a deadlocked Swiss game is a draw — 0 match points
+  to both — so for the player who needed the win it prices as a
+  loss. For top-cut play the same price is an approximation:
+  there a deadlocked game is settled on life total (§4 Steps
+  1–2), so −1 is right when the root player is behind on life
+  and harsh when ahead. Stage 2's build records **both
+  players' life totals on every simulation that ends at the
+  turn-62 cutoff**, so a life-based price (ahead = win, behind
+  = loss, tied = draw) can be reported beside the primary
+  without re-running anything.
+
+*(§6 amended 2026-10-26 on Claude's review of this file: the
+original text described top-cut games as "the games the project
+most wants to emulate" and −1 as a conservative simplification
+of the top-8 rule. The modelled context is Swiss advancement;
+the record now reads that way.)*
