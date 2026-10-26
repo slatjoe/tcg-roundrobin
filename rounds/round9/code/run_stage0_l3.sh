@@ -94,7 +94,7 @@ expect_hash "$CODE_DIR/analyze_l3_deploy.py" \
   3919bbb80db29eec91c87e6f640e6eb689fa8324865fb450a69292843008dd72 \
   "analyze_l3_deploy.py (O3 scorer)"
 expect_hash "$CODE_DIR/stage0_report.py" \
-  5019d94ee21c0d4b71e454b101bf2d0eff23d4749e2dd2033557fd4bd7a6ecef \
+  5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf \
   "stage0_report.py ((D) reporting)"
 expect_hash "$CODE_DIR/shm_sweep.py" \
   98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33 \
