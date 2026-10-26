@@ -70,6 +70,7 @@ def run_report(jobs, rows):
     p = subprocess.run(
         [sys.executable, os.path.join(CODE, "stage0_report.py"),
          "--jobs", jp, "--labels", lp, "--pass-name", "fixture",
+         "--expect-rows", "4",
          "--json-out", op], capture_output=True, text=True)
     if p.returncode != 0:
         print(p.stdout)

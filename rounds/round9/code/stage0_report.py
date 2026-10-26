@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Round-9 Stage 0 (D) reporting (claude-reply-8dddf38 sec.1).
+"""Round-9 Stage 0 (D) reporting (claude-reply-8dddf38 sec.1;
+error taxonomy per claude-reply-2db6b77 sec.2).
 
 Companion to the registered L3 scorer (analyze_l3_deploy.py, the
 O3 deployment copy: stock analyze_l3.py with DELTA = 0.0075). The
@@ -7,28 +8,48 @@ stock scorer's aggregation counts unfinished worlds in one global
 integrity counter; the (D) condition requires more, computed here
 from the same jobs + label rows:
 
+ERROR TAXONOMY (review sec.2). A row's error class decides its
+treatment everywhere in this report:
+  * REFUSAL classes (REFUSAL_CLASSES below) are determinization
+    refusals: the label machinery excluded the world itself. Such
+    rows are tallied by class, excluded from every unfinished
+    share, and drop their pair from the sensitivity read.
+  * EVERY other error class -- abort, timeout, and any unlisted
+    string; the unlisted default is NON-TERMINATION -- counts as
+    UNFINISHED: it enters the unfinished shares (denominator =
+    all rows minus refusals) and is priced as a draw (0.5) in the
+    sensitivity read.
+  * A non-error row with finished == 0 is unfinished (a world
+    that ran and did not terminate); a row with no usable result
+    at all is unfinished under the pseudo-class "null_result".
+
   (i)   unfinished-world share per candidate role (teacher pick /
-        prior pick) and pooled. A candidate's share is
-        unfinished / (finished + unfinished) over that candidate's
-        rows; error rows (result carries "error", or a null result)
-        are counted separately and never enter a share.
+        prior pick) and pooled, refusals excluded as above.
   (ii)  the paired-n distribution: per job, the number of worlds
         both candidates finished (the primary read's n_worlds) --
         min / p25 / median / mean / p75 / max, plus bucket counts.
-  (iii) the SENSITIVITY read: worlds where BOTH candidates have a
-        non-error row are scored with unfinished = draw (score
-        0.5, the instrument's own price for a game that does not
-        end). Per-job sensitivity diff = mean over those worlds of
-        (teacher score - prior score); the read is the mean over
-        jobs with a game-clustered bootstrap CI (the scorer's own
-        cluster_bootstrap, imported), plus per-game gain at
-        TEACHER_GAMES = 400.
+  (iii) the SENSITIVITY read: worlds where NEITHER candidate's
+        row is a refusal are scored with unfinished = draw
+        (score 0.5, the instrument's own price for a game that
+        does not end). Per-job sensitivity diff = mean over those
+        worlds of (teacher score - prior score); the read is the
+        mean over jobs with a game-clustered bootstrap CI (the
+        scorer's own cluster_bootstrap, imported), plus per-game
+        gain at TEACHER_GAMES = 400.
   (iv)  the registered condition, printed with its inputs: if the
         pooled unfinished share exceeds 20%, a null (CI includes
         0) or negative (mean <= 0) primary read is
         INSTRUMENT-LIMITED and cannot trigger CLOSE at Stage 0; a
         positive read (mean > 0 with CI lower > 0) stands either
         way.
+
+WORLD-COUNT GUARD (review sec.3.1): neither label driver pins W
+on its jobs, so this report asserts exactly EXPECT rows per
+(job, candidate) over the pass's label files and aborts
+otherwise -- a truncated label file must not silently shrink
+the paired n. EXPECT defaults to 50, the registered Stage 0
+width (the runner passes no override); the synthetic fixtures
+pass their own small width explicitly.
 
 The primary read itself is computed by IMPORTING the deployment
 scorer's aggregate/summarize, and, when --scorer-json is given,
@@ -48,6 +69,15 @@ import sys
 from collections import defaultdict
 
 HERE = __file__.rsplit("/", 1)[0]
+
+# Determinization refusals (review sec.2): excluded from both the
+# unfinished share and the sensitivity read, tallied separately.
+# Every other error class -- and any unlisted one -- defaults to
+# NON-TERMINATION and counts as unfinished.
+REFUSAL_CLASSES = frozenset({
+    "canary_hook_failed", "det_persist_failed",
+    "det_verify_failed", "det_verify_hook_failed",
+})
 
 
 def load_scorer():
@@ -71,11 +101,32 @@ def quantile(sorted_vals, q):
     return sorted_vals[lo] + (sorted_vals[hi] - sorted_vals[lo]) * (i - lo)
 
 
+def classify(res):
+    """Classify one label row's result.
+
+    Returns (kind, err_class): kind is "finished", "unfinished"
+    or "refusal"; err_class is the row's error string for error
+    rows ("null_result" for a row with no usable result), else
+    None.
+    """
+    if not isinstance(res, dict):
+        return "unfinished", "null_result"
+    if "error" in res:
+        ec = str(res["error"])
+        if ec in REFUSAL_CLASSES:
+            return "refusal", ec
+        return "unfinished", ec
+    if int(res.get("finished") or 0) == 0:
+        return "unfinished", None
+    return "finished", None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--jobs", required=True)
     ap.add_argument("--labels", nargs="+", required=True)
     ap.add_argument("--pass-name", required=True)
+    ap.add_argument("--expect-rows", type=int, default=50)
     ap.add_argument("--scorer-json")
     ap.add_argument("--json-out")
     a = ap.parse_args()
@@ -88,6 +139,27 @@ def main():
                 if l.strip():
                     rows.append(json.loads(l))
     job_by_snap = {str(j["snap"]): j for j in jobs}
+
+    # ---- world-count guard (review sec.3.1): exactly
+    # EXPECT rows per (job, candidate) in this pass (default
+    # 50, the registered width), or the report aborts --
+    # neither driver pins W on its jobs, so a short label file
+    # must fail here rather than shrink the paired n silently.
+    pair_counts = defaultdict(int)
+    for r in rows:
+        snap = str(r.get("snap"))
+        if snap in job_by_snap:
+            pair_counts[(snap, int(r["cand"]))] += 1
+    for snap, j in sorted(job_by_snap.items()):
+        for cand in sorted({int(j["teacher_pick"]),
+                            int(j["prior_pick"])}):
+            n = pair_counts.get((snap, cand), 0)
+            if n != a.expect_rows:
+                print("ABORT: world-count guard: pass %s job %s "
+                      "candidate %d has %d rows, expected exactly "
+                      "%d" % (a.pass_name, snap, cand, n,
+                              a.expect_rows))
+                return 2
 
     # ---- primary read via the deployment scorer's own code
     scorer = load_scorer()
@@ -115,9 +187,12 @@ def main():
 
     # ---- extended per-world aggregation
     # worlds[(snap, cand)] = {world: ("finished", outcome) |
-    #                          ("unfinished", None) | ("error", None)}
+    #                          ("unfinished", None) |
+    #                          ("refusal", None)}
     worlds = defaultdict(dict)
     role_counts = {"teacher": defaultdict(int), "prior": defaultdict(int)}
+    class_tallies = {"teacher": defaultdict(int),
+                     "prior": defaultdict(int)}
     for r in rows:
         snap = str(r.get("snap"))
         if snap not in job_by_snap:
@@ -130,20 +205,16 @@ def main():
             role = "prior"
         else:
             continue
-        res = r.get("result")
-        if not isinstance(res, dict) or "error" in res:
-            kind = "error"
-        elif int(res.get("finished") or 0) == 0:
-            kind = "unfinished"
-        else:
-            kind = "finished"
+        kind, err_class = classify(r.get("result"))
         role_counts[role]["rows"] += 1
         role_counts[role][kind] += 1
+        if err_class is not None:
+            class_tallies[role][err_class] += 1
         prev = worlds[(snap, cand)].get(int(r["world"]))
         if prev is None:
             worlds[(snap, cand)][int(r["world"])] = (
-                kind, float(res["outcome"]) if kind == "finished"
-                else None)
+                kind, float(r["result"]["outcome"])
+                if kind == "finished" else None)
 
     def share(role):
         c = role_counts[role]
@@ -153,7 +224,12 @@ def main():
     sh_t, sh_p = share("teacher"), share("prior")
     fin = sum(role_counts[r]["finished"] for r in role_counts)
     unf = sum(role_counts[r]["unfinished"] for r in role_counts)
+    ref = sum(role_counts[r]["refusal"] for r in role_counts)
     sh_pool = (unf / (fin + unf)) if (fin + unf) else None
+    pooled_tally = defaultdict(int)
+    for role in ("teacher", "prior"):
+        for ec, n in class_tallies[role].items():
+            pooled_tally[ec] += n
 
     # ---- paired-n distribution (the primary's per-job n_worlds)
     ns = sorted(r["n_worlds"] for r in records)
@@ -177,7 +253,9 @@ def main():
                 "max": ns[-1] if ns else None,
                 "buckets": buckets}
 
-    # ---- sensitivity read: unfinished worlds scored as draws (0.5)
+    # ---- sensitivity read: unfinished worlds scored as draws
+    # (0.5); a world is dropped only when either side's row is a
+    # refusal (review sec.2).
     sens_records = []
     sens_worlds = 0
     for snap, j in sorted(job_by_snap.items()):
@@ -188,7 +266,7 @@ def main():
         for w in sorted(set(wt) & set(wp)):
             kt, ot = wt[w]
             kp, op = wp[w]
-            if kt == "error" or kp == "error":
+            if kt == "refusal" or kp == "refusal":
                 continue
             st = (ot + 1.0) / 2.0 if kt == "finished" else 0.5
             sp = (op + 1.0) / 2.0 if kp == "finished" else 0.5
@@ -236,7 +314,11 @@ def main():
                "teacher": dict(role_counts["teacher"]),
                "prior": dict(role_counts["prior"]),
                "share_teacher": sh_t, "share_prior": sh_p,
-               "share_pooled": sh_pool},
+               "share_pooled": sh_pool,
+               "error_classes": {
+                   "teacher": dict(class_tallies["teacher"]),
+                   "prior": dict(class_tallies["prior"]),
+                   "pooled": dict(pooled_tally)}},
            "paired_n": paired_n, "sensitivity": sens,
            "instrument_limited": instrument_limited,
            "verdict": verdict}
@@ -256,17 +338,29 @@ def main():
                                       pct(primary["frac_zero"]),
                                       pct(primary["frac_neg"]),
                                       pct(primary["per_game_gain"])))
-    print("UNFINISHED WORLDS (error rows counted apart, never in a "
-          "share):")
+    print("UNFINISHED WORLDS (refusals excluded from every share "
+          "and from the sensitivity read; every other error counts "
+          "as unfinished):")
     for role in ("teacher", "prior"):
         c = role_counts[role]
-        print("  %-7s rows %d: finished %d, unfinished %d, error %d; "
+        print("  %-7s rows %d: finished %d, unfinished %d, refusal %d; "
               "share %s" % (role, c["rows"], c["finished"],
-                            c["unfinished"], c["error"],
+                            c["unfinished"], c["refusal"],
                             pct(share(role)) if share(role) is not None
                             else "n/a"))
-    print("  pooled : finished %d, unfinished %d; share %s"
-          % (fin, unf, pct(sh_pool) if sh_pool is not None else "n/a"))
+    print("  pooled : finished %d, unfinished %d, refusal %d; share %s"
+          % (fin, unf, ref, pct(sh_pool) if sh_pool is not None
+             else "n/a"))
+    print("ERROR TALLIES BY CLASS (REFUSAL = determinization "
+          "refusal, excluded; unfinished = priced as a draw in the "
+          "sensitivity read):")
+    if pooled_tally:
+        for ec, n in sorted(pooled_tally.items(),
+                            key=lambda kv: (-kv[1], kv[0])):
+            tag = "REFUSAL" if ec in REFUSAL_CLASSES else "unfinished"
+            print("  %-24s %4d  [%s]" % (ec, n, tag))
+    else:
+        print("  (no error rows)")
     print("PAIRED-N (finished worlds shared by both candidates, "
           "per scored job):")
     print("  min %s, p25 %s, median %s, mean %s, p75 %s, max %s; "
@@ -275,7 +369,8 @@ def main():
              ("%.2f" % paired_n["mean"]) if paired_n["mean"] is not None
              else "n/a", paired_n["p75"], paired_n["max"],
              paired_n["buckets"], paired_n["jobs_missing"]))
-    print("SENSITIVITY (unfinished worlds scored as draws, 0.5):")
+    print("SENSITIVITY (unfinished worlds scored as draws, 0.5; "
+          "pairs dropped only on a refusal):")
     if sens["mean_diff"] is not None:
         print("  jobs %d over %d worlds; mean paired diff %s; CI "
               "[%s, %s]; per-game gain %s"

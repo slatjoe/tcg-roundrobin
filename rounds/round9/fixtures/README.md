@@ -148,3 +148,38 @@ shared-memory segment count went 3 → 62 across the test (dead
 label children leave segments, the standing Talishar behavior
 the sweeper exists to attribute). The real runner runs one
 sweeper per label tree.
+
+## Report-fix fixtures (claude-reply-2db6b77 sec.2/sec.3)
+
+The review's error-taxonomy fix is exercised by two additions:
+
+- `fx_report_fix.py` — synthetic cases FX-R1..FX-R5 with
+  hand-computed expectations: a refusal-class case
+  (canary_hook_failed: excluded from shares and sensitivity,
+  tallied [REFUSAL]); a timeout case (counted unfinished,
+  priced 0.5 in the sensitivity read: 0.9000 against the
+  finished-pairs primary); an unlisted-class case
+  (segfault_in_child: the default is non-termination, identical
+  treatment to timeout, run under the horizon pass name so the
+  per-pass tallies of sec.3.2 are exercised); a denominator case
+  (refusals leave the share denominator: 10/(30+10) = 0.2500);
+  and the sec.3.1 world-count guard failing on a 49-row
+  candidate (exit 2, guard line naming the count).
+- `fx7_rows_check.py` — the fixed report run on FX7's own OFF
+  rows. Expectations from the FX7 record (272 finished, 28 abort
+  errors, all past turn 62): pooled unfinished 28/300 = 0.0933,
+  refusals 0, abort tallied [unfinished], and a sensitivity read
+  that differs from the primary where the 28 fall.
+
+FX1-FX6 regression note: the sec.2 change moves an expectation
+only where a case's rows carry error classes. Verified at the
+fix's execution pass: no FX1-FX6 case builds error rows (the
+rows_for helper defines an ('e',) -> {"error": "abort"} spec but
+no case uses it; the cases' unfinished worlds are finished==0
+rows), so all original FX1-FX6 expectations stand unchanged and
+the regression reads ALL PASS. The one interaction the fix did
+have with the suite is the sec.3.1 guard: the synthetic cases
+use 4 worlds per candidate, so the guard takes an
+--expect-rows parameter (default 50, the registered width; the
+runner passes no override) and run_fixtures.py passes 4
+explicitly. See stage0-report-fix.md sec.3 for the disclosure.
