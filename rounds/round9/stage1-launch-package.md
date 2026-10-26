@@ -5,7 +5,9 @@ the Stage 0 package (§4(C) faithful evaluation, deferred there
 by scope) and builds Stage 1 exactly as settled by
 `claude-reply-16f02e2.md` §4. Stage 1 launches only on Claude's
 code review of this package at its committed sha plus Joe's
-explicit go for Stage 1.
+explicit go for Stage 1. **A fix pass for the first review
+(`claude-reply-edddf5e.md`, changes requested) is applied —
+see §13.**
 
 Parent records: `gravy-calibrated-search-design.md` (committed
 at `8dddf387`), `claude-reply-8dddf38.md` (design approval,
@@ -15,10 +17,12 @@ at `8dddf387`), `claude-reply-8dddf38.md` (design approval,
 **Two places where the ruling supersedes the design text, and
 this package follows the ruling:** (i) the selection rule —
 the design's §4.4 proposal (pooled thin-prior ≤ 5%) is
-replaced by the ruling's §4.3: **all-candidate completion
-≥ 95%** (every candidate reaching the ≥20-finished-world
-validity floor, as a fraction of all candidate evaluations),
-cheapest by mean per-decision wall, ties by p95 then max;
+replaced by the ruling's §4.3: **per-state completion
+≥ 95%** (a state completes iff *every* selected candidate
+reaches the ≥20-finished-world validity floor; the rate is
+completing states over panel states), cheapest by mean
+per-decision wall, ties by p95 then max, over the five +H
+settings — B0 is the control and is never selected;
 (ii) the grid — the design's horizon-less factorial is
 replaced by the ruling's §4.2: **B0** (old bounds, no
 horizon, control), **B0+H**, and **{8,000 / 16,000} ×
@@ -42,16 +46,25 @@ do-not-train registry before the panel is built.
 
 ## 2. Definitions that decide readings (for the reviewer's eye)
 
-- **Completion (the selection metric)** is a property of a
-  *(state, candidate)* evaluation: it completes iff ≥ 20 of
-  its 25 worlds finished. A setting's completion is the
-  fraction of ALL its candidate evaluations that complete —
-  **not** the pooled finished-world share. The two part
-  company exactly when a few candidates stall just under the
-  floor in many states; fixture FX-ANALYZE scenario A plants
-  that case (pooled 0.97, all-candidate 0.875) and the
-  analyzer uses the all-candidate figure. The pooled share
-  is printed as a diagnostic only.
+- **Completion (the selection metric)** is a property of
+  a *state*: a candidate evaluation completes iff ≥ 20 of
+  its 25 worlds finished, and a state completes iff
+  **every** selected candidate for it completes. A
+  setting's completion is the fraction of panel states
+  that complete. The candidate-level completion rate and
+  the pooled finished-world share are computed and
+  reported as **diagnostics only** — the three part
+  company exactly when a few candidates stall just under
+  the floor in many states (at 2–4 candidates per state, a
+  95% candidate-level rate can leave 10–20% of states
+  holding an incomplete candidate, and a decision cannot
+  overturn unless the challenger completes — the round-7
+  symptom the bar exists to close). Fixture FX-ANALYZE
+  plants the separations: scenario A (per-state 0.75,
+  candidate-level 0.875, pooled 0.97 — qualifies on none
+  of the diagnostics' say-so) and scenario D
+  (candidate-level exactly 0.95 with per-state 0.90 —
+  does **not** qualify; its twin at per-state 0.95 does).
 - **Thin-prior** is the co-report from the design: the
   fraction of panel states whose *prior* candidate does not
   complete, printed beside the fleet's 31.7% (different
@@ -79,10 +92,19 @@ do-not-train registry before the panel is built.
   (ruling §4.6); that is a Stage-2 package item, flagged
   here so it is not lost.
 - **B0's native valuation is 0** (draws priced 0.5): B0 is
-  the fleet teacher as it ran — the control. Its tuple says
-  so, and per the point above, none of B0's *reported*
+  the fleet teacher as it ran — **the control**. Its tuple
+  says so, and per the point above, none of B0's *reported*
   reads depend on the native value, since both valuations
-  are computed for it anyway.
+  are computed for it anyway. As the control, B0 is
+  audited, read and reported like every other setting
+  (its completion, its thin-prior beside the fleet's
+  31.7%, its walls), but it is **excluded from selection**
+  (review §2): Stage 2 never fields a horizon-less,
+  legacy-priced teacher, whatever B0's completion or cost.
+  Selection ranges over the five +H settings only.
+  Fixture FX-ANALYZE scenario E plants B0 qualifying at
+  per-state 1.0 as the cheapest setting and proves the
+  selection skips it.
 - **The margin never moves:** the overturn co-reports use
   the registered rule (candidate means over finished
   worlds; best by strict improvement in ascending order;
@@ -115,9 +137,9 @@ package rebuilds it.
 | `s1_eval_main.php` | `73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a` | the evaluator driver: `r9_label_main.php`'s pin pattern generalized to the full setting tuple; per-job wall + per-candidate finished/error tallies to the stats file |
 | `paired_driver_gravy.py` | `3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359` | the capture driver (gate-driver lineage): arms incl. `capture`, per-arm assertions, timeout SHM cleanup, registry id harvest (G9). **Builder's fix at build time:** the inherited default deck was the *Fai* deck — now the Gravy deck, with a fail-loud abort on any non-Gravy deck (§8) |
 | `build_panel.py` | `8f22d84546e0f0775b5c538c1e356fda622632a30731be4e335eaa30807db576` | the panel builder: first 240 contested snapshots in capture order, ≤ 8/game; a non-capture row or a duplicate snap aborts (exit 2); a shortfall writes what it found, marks the report incomplete, exits 3 |
-| `stage1_analyze.py` | `1ee8511edcfb5108c43753f237556b36725ee76fe9ca01042a1ba387e7b7dada` | the analyzer: clause-8 tuple audit (second placement), world-count guard (exactly k rows per candidate), stat/world cross-checks, draw-marker agreement check, completion + thin-prior + wall distribution, overturn co-reports under both valuations, the registered selection |
+| `stage1_analyze.py` | `384676138d3fb57ca26fa66b2ead31420a2d6589618b4ebe6494b927d319e381` | the analyzer: clause-8 tuple audit (second placement), world-count guard (exactly k rows per candidate), stat/world cross-checks, draw-marker agreement check, **per-state completion** (candidate-level rate + pooled share as diagnostics), thin-prior, wall distribution, overturn co-reports under both valuations, the registered selection over the +H settings (B0 the control, excluded) |
 | `merge_registry.py` | `13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe` | the registry merge (round-7 pattern): retag conflicts abort, atomic write + timestamped backup + vault copy, prints the merged sha256 |
-| `run_stage1.sh` | `7e166c42885b35ef287fa7e3beba1bfafd7708222383ce2517ef33c5d725c419` | the runner (§6). Every pin literal in it was machine-copied from `sha256sum` output and is format-asserted (`^[0-9a-f]{64}$`) by `expect_hash` before comparison — verified at build time: all 17 literals are 64-hex and match the files above |
+| `run_stage1.sh` | `c138a313ebf1e5d102398fecb25cda487abdb317d8a679a1c8a4c3d3ea74b284` | the runner (§6), incl. the B0 gate (§13). Every pin literal in it was machine-copied from `sha256sum` output and is format-asserted (`^[0-9a-f]{64}$`) by `expect_hash` before comparison — verified at build time and again after the fix pass: all 17 literals are 64-hex and match the files above |
 | `shm_sweep.py` / `g8_sweep.sh` | `98027a8b…` / (as Stage 0) | the standing (C)/(G8) containment pair, byte copies |
 
 Syntax verification at build time: all PHP lints clean
@@ -181,7 +203,14 @@ to run one setting's eval). Order inside `all`:
    per tree); per-shard player split against that seat's
    server; the setting's own deadline enforced by the build
    itself. After each setting, its row counts print
-   (status only). The remaining settings price off B0's
+   (status only). **The B0 gate (ruling §4.4):** at the
+   end of B0's iteration, the runner runs the analyzer
+   over B0's rows alone (a B0-only settings file) and
+   reads only its exit code — if B0's pass aborted (an
+   eval-shard exit, in the iteration) or B0's rows fail
+   any analyzer integrity check, the runner **stops
+   before the +H settings** rather than continuing in
+   file order. B0 is the smoke. The remaining settings price off B0's
    measured walls before they are committed — the
    sequencing the design registered (§4.2) — because the
    runner runs settings strictly in file order and B0's
@@ -196,23 +225,40 @@ paths only, never figures (standing rule).
 
 ## 7. Fixtures
 
-Four suites, **46 checks, ALL PASS** locally (verbatim
-transcript: `fixtures/fx_stage1_outputs.txt`; entries in
+Five suites, **66 PASS lines, ALL PASS** locally, rerun in
+full after the fix pass (verbatim transcript:
+`fixtures/fx_stage1_outputs.txt`; entries in
 `fixtures/README.md`):
 
-- **`fx_s1_eval/`** (21 checks) — the REAL
+- **`fx_s1_eval/`** (20 PASS lines) — the REAL
   `s1_eval_main.php` against a stub `play_game.php`:
   stamping, stats accounting (a drawn world counts
   finished), the cfg-forwarding proof, and four abort
   cases (job/pin mismatch, missing job setting, malformed
   horizon-value pin, malformed hooks pin), each exiting 2
   with **no rows written**.
-- **`fx_stage1_analyze.py`** (14 checks) — the completion
-  metric trap (pooled 0.97 vs all-candidate 0.875), the
-  horizon-value flip (overturn at 0.5, none at draw = 0,
-  planted means exact), the p95 tie-break, the max
-  tie-break, NO CALIBRATED SETTING, and the tuple-audit
-  abort.
+- **`fx_stage1_analyze.py`** (25 checks) — the per-state
+  completion metric and its diagnostics (scenario A:
+  per-state 0.75 vs candidate-level 0.875 vs pooled 0.97;
+  scenario D, the review's divergence plant:
+  candidate-level exactly 0.95 with per-state 0.90 does
+  NOT qualify, its per-state-0.95 twin does, and the
+  cheaper non-qualifier is not selected), the B0-control
+  exclusion (scenario E: B0 qualifying at per-state 1.0
+  and cheapest is skipped; selection takes the +H
+  setting), the horizon-value flip (overturn at 0.5, none
+  at draw = 0, planted means exact), the p95 tie-break,
+  the max tie-break, NO CALIBRATED SETTING, and the
+  tuple-audit abort.
+- **`fx_b0_gate.sh`** (10 checks) — the runner's B0 stop
+  condition (ruling §4.4): the fixture **extracts the
+  runner's own B0GATE block verbatim** and executes it
+  against planted B0 outputs — intact rows pass the gate
+  (exit 0, gate report written); a stat row corrupted
+  against its world rows aborts the analyzer inside the
+  block and the block stops the run (exit 1, "stopping
+  BEFORE the +H settings"); the B0-only and later-setting
+  invocations are no-ops.
 - **`fx_build_panel.py`** (5 checks) — order + cap, the
   shortfall exit 3, both abort modes.
 - **`fx_merge_registry.py`** (6 checks) — clean merge,
@@ -275,16 +321,26 @@ package does not presume it.
   `settings_stage1.json` is the single source for the
   runner, the driver pins, and the analyzer's audit.
 - §4.3 **Selection** (cheapest by mean wall, ties p95 then
-  max; all-candidate completion ≥ 95%; thin-prior
-  co-reported vs 31.7%; NO CALIBRATED SETTING stops the
-  round): **DONE** — analyzer + fixtures for the metric,
-  both tie-breaks, and the no-qualifier verdict.
+  max; **per-state completion ≥ 95%** — a state completes
+  iff every selected candidate reaches the floor;
+  candidate-level rate and pooled share co-reported as
+  diagnostics; thin-prior co-reported vs 31.7%; **B0 the
+  control, excluded from selection** — the five +H
+  settings only; NO CALIBRATED SETTING stops the round):
+  **DONE** — analyzer + fixtures for the metric (incl.
+  the candidate-vs-state divergence plant), the control
+  exclusion, both tie-breaks, and the no-qualifier
+  verdict.
 - §4.4 **Faithful settings / clause 8** (env-read,
   run-pinned, recorded on every row, abort on mismatch;
   each setting's own deadline at 4-way fleet contention;
-  B0 first): **DONE** — §5 of this package; the contention
-  is the runner's 4 shard trees; B0 is first in the
-  settings file and the runner runs file order.
+  B0 first; **B0 stop condition** — a B0 abort or any B0
+  analyzer-integrity failure stops the runner before
+  the +H settings): **DONE** — §5 of this package; the
+  contention is the runner's 4 shard trees; B0 is first
+  in the settings file and the runner runs file order,
+  with the B0 gate at the end of B0's iteration (§6,
+  §13).
 - §4.5 **Containment and registry as standing;
   publication pattern; status-only interim notices:**
   **DONE** — (C)/(G8) in the runner; registry merge before
@@ -361,3 +417,70 @@ ghost pre-gate is **not** a Stage-1 launch condition
 4. Whether a box smoke (a few panel states through B0 and
    B0+H under the launch pins) is required before the full
    eval, or the fixtures + B0-first sequencing suffice.
+
+## 13. Fix note — claude-reply-edddf5e (changes requested; this pass)
+
+The review of this package at `edddf5e` accepted the build,
+the driver, the pins, capture/panel, registry, containment
+and the `decide()` replication, and requested changes in
+four places. All four are applied here; nothing the review
+marked accepted changed bytes (the analyzer's `decide()`
+and audit blocks are byte-identical to the reviewed file;
+`settings_stage1.json`, `search_s1.php`,
+`s1_eval_main.php`, `paired_driver_gravy.py`,
+`build_panel.py` and `merge_registry.py` are untouched).
+
+- **Review §1 (blocking) — completion is per-state.**
+  `stage1_analyze.py` now computes completion as the
+  fraction of panel states where **every** selected
+  candidate reaches the validity floor, and qualifies on
+  that figure against the 0.95 bar. The candidate-level
+  rate and the pooled finished-world share are still
+  computed and printed, labeled diagnostics. §2 and §9
+  of this package are reworded to match. Fixtures:
+  scenario A's plant now reads per-state 0.75 /
+  candidate-level 0.875 / pooled 0.97 (the analyzer must
+  use the first); new scenario D plants the review's
+  case exactly — candidate-level **0.95** with per-state
+  **0.90** does not qualify, its per-state-0.95 twin
+  does, and the cheaper non-qualifier is not selected.
+- **Review §2 (blocking) — B0 is a control, not a
+  candidate.** The analyzer tags the horizon-less
+  setting `role: control`, reports it in full (its
+  per-state completion, its thin-prior beside the
+  fleet's 31.7%, its walls, its overturn co-reports),
+  and excludes it from the selection sort; selection
+  ranges over the five +H settings only. New fixture
+  scenario E: B0 qualifies (per-state 1.0) and is the
+  cheapest by 9× — the selection skips it and takes the
+  +H setting.
+- **Review §4.4 — the B0 stop condition, explicit in
+  the runner.** `run_stage1.sh` gains a gate at the end
+  of B0's eval iteration (the `B0GATE` block): a B0-only
+  settings file is written and the analyzer is run over
+  B0's rows alone; its exit code decides. A B0 eval
+  abort already exited inside the iteration; now any
+  analyzer integrity failure on B0's rows also stops
+  the run, with an ABORT line naming the stop, **before
+  the +H settings** — the runner no longer simply
+  continues in file order. Proof: new fixture
+  `fx_b0_gate.sh` extracts the committed block verbatim
+  and executes it against planted B0 outputs (intact →
+  proceeds; stat corrupted against its world rows →
+  stops; single-setting and +H invocations → no-ops).
+  The runner's analyzer pin literal was refreshed
+  (machine-copied) for the changed analyzer; all 17
+  literals re-verified 64-hex and matching.
+- **Review §5 — hygiene.** The two committed
+  `__pycache__/*.pyc` files under
+  `rounds/round9/fixtures/` are deleted, and a
+  `.gitignore` at the repo root now covers
+  `__pycache__/` and `*.pyc`.
+
+The review's other §4 rulings required no change:
+§4.2 confirms §2's horizon-value application point as
+built; §4.3 accepts B0's native valuation of 0; §4.4's
+"no box smoke" is answered by the gate above (B0 *is*
+the smoke). Fixtures were rerun in full after the fix:
+five suites, 66 PASS lines, ALL PASS
+(`fixtures/fx_stage1_outputs.txt`).

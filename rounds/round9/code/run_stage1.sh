@@ -39,7 +39,13 @@
 #     fixtures) and s1_eval_main.php as the driver. The full
 #     setting tuple is env-pinned AND stamped into every
 #     job copy; the driver aborts on any mismatch before
-#     evaluating (clause 8, first placement). Worlds W=25
+#     evaluating (clause 8, first placement). STOP
+#     CONDITION (ruling sec.4.4): B0 is the smoke -- if
+#     B0's pass aborts, or B0's rows fail any analyzer
+#     integrity check (the B0 gate at the end of B0's
+#     iteration, below), the runner stops BEFORE the +H
+#     settings rather than continuing in file order.
+#     Worlds W=25
 #     per candidate, pair "va", production server, 4 shards
 #     by game = the fleet's 4-way contention; each setting
 #     runs its own deadline (the build's per-candidate
@@ -47,14 +53,19 @@
 #     seed bases 885001 + shard x 10^8 (settings constants).
 #   * ANALYZE: stage1_analyze.py audits every row's tuple
 #     stamp against settings_stage1.json (clause 8, second
-#     placement) and reads completion (all-candidate, the
-#     selection metric), thin-prior beside the fleet's
+#     placement) and reads completion (PER-STATE, the
+#     selection metric: a state completes iff every
+#     selected candidate reaches the validity floor; the
+#     candidate-level rate and the pooled finished share
+#     are diagnostics only), thin-prior beside the fleet's
 #     31.7%, per-decision wall mean/p95/max, and the
 #     overturn co-reports under both draw valuations
 #     (draw = 0 primary per ruling sec.3; 0.5 co-reported).
 #     Selection: cheapest qualifier (mean wall; ties p95,
-#     then max) at all-candidate completion >= 0.95, else
-#     NO CALIBRATED SETTING and the round stops.
+#     then max) among the +H settings at per-state
+#     completion >= 0.95 -- B0 is the control: read and
+#     reported, never selected -- else NO CALIBRATED
+#     SETTING and the round stops.
 #   * Containment: pre-launch G8 sweep, then one (C)
 #     kernel-attribution sweeper per tree, as standing.
 #
@@ -130,7 +141,7 @@ expect_hash "$CODE_DIR/build_panel.py" \
   8f22d84546e0f0775b5c538c1e356fda622632a30731be4e335eaa30807db576 \
   "build_panel.py (panel builder)"
 expect_hash "$CODE_DIR/stage1_analyze.py" \
-  1ee8511edcfb5108c43753f237556b36725ee76fe9ca01042a1ba387e7b7dada \
+  384676138d3fb57ca26fa66b2ead31420a2d6589618b4ebe6494b927d319e381 \
   "stage1_analyze.py (analyzer)"
 expect_hash "$CODE_DIR/merge_registry.py" \
   13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe \
@@ -286,6 +297,7 @@ for s in spec["settings"]:
 PYEOF
 )"
   [ -n "$SETLIST" ] || { echo "ABORT: no such setting" >&2; exit 1; }
+  NSETTINGS=$(printf '%s\n' "$SETLIST" | grep -c .)
   while read -r NAME HOOKS DEADLINE HZENV HVAL K; do
     # Retire the previous setting's sweepers before its trees
     # are recreated (their stop files were already touched;
@@ -373,6 +385,44 @@ PYEOF
     cat "$OUT"/evals_${NAME}_shard*_p*.jsonl > "$OUT/evals_${NAME}.jsonl"
     cat "$OUT"/stats_${NAME}_shard*_p*.jsonl > "$OUT/stats_${NAME}.jsonl"
     echo "setting $NAME done: $(wc -l < "$OUT/evals_${NAME}.jsonl") world rows, $(wc -l < "$OUT/stats_${NAME}.jsonl") stat rows"
+    # B0GATE-BEGIN (ruling sec.4.4, as ruled in
+    # claude-reply-edddf5e sec.4.4: B0 IS the smoke. A B0
+    # eval abort already exited inside this iteration -
+    # the "an eval shard failed" exit above. This gate is
+    # the other half of the condition: if B0's rows fail
+    # ANY analyzer integrity check, the run stops HERE,
+    # before the +H settings, instead of continuing in
+    # file order. It runs the analyzer over a B0-only
+    # settings file and reads only its exit code (0 =
+    # every audit passed; 2 = an integrity abort); the
+    # subset report's selection verdict is meaningless -
+    # B0 alone is the control - and is never read.
+    # fixtures/fx_b0_gate.sh extracts and executes exactly
+    # this block against planted B0 outputs.)
+    if [ "$NAME" = "B0" ] && [ "$NSETTINGS" -gt 1 ]; then
+      $PY - "$CODE_DIR/settings_stage1.json" \
+            "$OUT/b0_gate_settings.json" <<'PYEOF' || exit 1
+import json, sys
+spec = json.load(open(sys.argv[1]))
+spec["settings"] = [s for s in spec["settings"]
+                    if s["name"] == "B0"]
+assert len(spec["settings"]) == 1, "B0 not unique in settings"
+json.dump(spec, open(sys.argv[2], "w"), indent=1)
+print("B0 gate: B0-only settings file written")
+PYEOF
+      if $PY "$CODE_DIR/stage1_analyze.py" \
+          --panel "$OUT/panel_jobs.jsonl" \
+          --settings "$OUT/b0_gate_settings.json" \
+          --evals-dir "$OUT" \
+          --json-out "$OUT/b0_gate_report.json" \
+          > "$OUT/b0_gate_report.txt" 2>&1; then
+        echo "B0 gate PASSED: B0's rows pass every analyzer integrity check; continuing to the +H settings"
+      else
+        echo "ABORT: B0 failed the analyzer integrity gate (see $OUT/b0_gate_report.txt) - stopping BEFORE the +H settings (ruling sec.4.4)" >&2
+        exit 1
+      fi
+    fi
+    # B0GATE-END
   done <<< "$SETLIST"
 fi
 

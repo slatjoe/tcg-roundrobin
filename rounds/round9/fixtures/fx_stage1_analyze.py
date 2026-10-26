@@ -1,27 +1,31 @@
 #!/usr/bin/env python3
 """fx_stage1_analyze - known-answer fixture for
 code/stage1_analyze.py (the clause-8 second placement, the
-all-candidate completion metric, the selection rule with its
-tie-breaks, and the horizon-value co-reports).
+per-state completion metric with its candidate-level and
+pooled diagnostics, the B0-control selection exclusion,
+the selection rule with its tie-breaks, and the
+horizon-value co-reports).
 
 Planted truths (hand-computed; the arithmetic is inline):
 
 Scenario A - metric discrimination + p95 tie-break + the
   horizon-value flip.
   B0: state s1's prior finishes 19/25 (thin) while every
-  other candidate finishes 25/25. All-candidate completion
-  = 7/8 = 0.875 (< 0.95 bar: does NOT qualify) while the
-  pooled finished share = 194/200 = 0.97 (>= bar) - the
-  two metrics part company here by construction, and the
-  analyzer must use the all-candidate one. thin-prior 1/4.
-  State s2 is the valuation flip: prior 15W/10L (mean +0.2
-  under both prices); challenger 15W/5 draws/5L - priced
-  draw = 0 its mean is +0.2 (ties the prior, no overturn);
-  priced 0.5 its mean is +0.4 and the paired test over the
-  25 shared worlds (five +1 diffs, twenty 0s; mean 0.2,
-  SE 0.0816, 1.5 SE = 0.1225) overturns. So for s2:
-  overturn_half True, overturn_draw0 False; B0's non-thin
-  states are s2, s3, s4, so overturn_half = 1/3,
+  other candidate finishes 25/25. Per-state completion
+  (the selection metric): s1 does not complete, s2-s4 do
+  -> 3/4 = 0.75 (< 0.95 bar: does NOT qualify). The two
+  diagnostics part company with it by construction: the
+  candidate-level rate is 7/8 = 0.875 and the pooled
+  finished share is 194/200 = 0.97 (>= bar) - the analyzer
+  must qualify on the per-state figure alone. thin-prior
+  1/4. State s2 is the valuation flip: prior 15W/10L (mean
+  +0.2 under both prices); challenger 15W/5 draws/5L -
+  priced draw = 0 its mean is +0.2 (ties the prior, no
+  overturn); priced 0.5 its mean is +0.4 and the paired
+  test over the 25 shared worlds (five +1 diffs, twenty
+  0s; mean 0.2, SE 0.0816, 1.5 SE = 0.1225) overturns. So
+  for s2: overturn_half True, overturn_draw0 False; B0's
+  non-thin states are s2, s3, s4, so overturn_half = 1/3,
   overturn_draw0 = 0.
   P1 and P2 both complete everything and tie on mean wall
   (6.0 s); P1's p95 is 8.4 (walls 5,5,5,9), P2's is 6.0
@@ -34,10 +38,30 @@ Scenario B - max tie-break. Five states; X walls (s)
   selection must pick Y on the max tie-break.
 
 Scenario C - no qualifier + the tuple audit. Setting Z
-  leaves one candidate at 10/25 finished in one of two
-  states: completion 3/4 = 0.75 - verdict must be
+  (a +H candidate) leaves one candidate at 10/25 finished
+  in one of two states: per-state completion 1/2 = 0.5,
+  candidate-level 3/4 = 0.75 - verdict must be
   NO CALIBRATED SETTING. A copy with one world row's tuple
   corrupted (hooks 9999) must abort (exit 2).
+
+Scenario D - the review's divergence case
+  (claude-reply-edddf5e sec.1): candidate-level >= 0.95
+  but per-state < 0.95 must NOT qualify. 20 states, 2
+  candidates each. SBAD breaks candidate 1 in 2 states:
+  candidate-level 38/40 = 0.95 (clears the bar as a
+  diagnostic) but per-state 18/20 = 0.90 - does not
+  qualify. SGOOD breaks candidate 1 in 1 state:
+  candidate-level 39/40 = 0.975, per-state 19/20 = 0.95
+  - qualifies. SBAD is the cheaper setting (walls 5 s vs
+  9 s): if it wrongly qualified it would be selected;
+  the selection must be SGOOD.
+
+Scenario E - the control is never selected
+  (claude-reply-edddf5e sec.2). B0 completes every state
+  (per-state 1.0, so it meets the metric) and is by far
+  the cheapest (walls 1 s vs H1's 9 s). B0 must be read
+  as the control (role, its completion reported) and the
+  selection must skip it and pick H1.
 """
 import json
 import os
@@ -181,10 +205,13 @@ def main():
     check("A analyzer exit 0", pA.returncode == 0,
           pA.stdout[-200:] + pA.stderr[-200:])
     b0 = repA["settings"]["B0"]
-    check("A1 B0 completion == 0.875 (all-candidate)",
-          abs(b0["completion"] - 0.875) < 1e-12, str(b0["completion"]))
+    check("A1 B0 completion == 0.75 (per-state metric)",
+          abs(b0["completion"] - 0.75) < 1e-12, str(b0["completion"]))
     check("A1 B0 does not qualify", b0["qualifies"] is False)
-    check("A2 B0 pooled share == 0.97 (the metric trap)",
+    check("A1b B0 candidate-level == 0.875 (diagnostic)",
+          abs(b0["candidate_completion"] - 0.875) < 1e-12,
+          str(b0["candidate_completion"]))
+    check("A2 B0 pooled share == 0.97 (diagnostic)",
           abs(b0["pooled_finished_share"] - 0.97) < 1e-12,
           str(b0["pooled_finished_share"]))
     check("A3 B0 thin-prior == 0.25",
@@ -242,7 +269,7 @@ def main():
 
     # ---------------- Scenario C
     statesC = [("u1", "g1", 1), ("u2", "g1", 2)]
-    settingsC = [T("Z", 4000, 180, 0, 0)]
+    settingsC = [T("Z", 4000, 180, 62, -1)]
     worldsC = {("Z", "u1"): {0: [1.0] * 10 + [("err", "abort")] * 15,
                              1: FULL1},
                ("Z", "u2"): dict(full)}
@@ -251,6 +278,11 @@ def main():
     panelC, setC = scenario(dC, statesC, settingsC, worldsC, wallsC)
     pC, repC = run_analyzer(dC, panelC, setC, "C")
     check("C analyzer exit 0", pC.returncode == 0, pC.stderr[-200:])
+    z = repC["settings"]["Z"]
+    check("C0 Z per-state == 0.5, candidate-level == 0.75",
+          abs(z["completion"] - 0.5) < 1e-12
+          and abs(z["candidate_completion"] - 0.75) < 1e-12,
+          "%r %r" % (z["completion"], z["candidate_completion"]))
     check("C1 verdict NO CALIBRATED SETTING",
           repC["selection"]["verdict"] == "NO CALIBRATED SETTING"
           and repC["selection"]["setting"] is None,
@@ -265,6 +297,70 @@ def main():
     check("C2 corrupted tuple aborts (exit 2)",
           pCb.returncode == 2 and "ABORT" in pCb.stdout,
           "rc=%d out=%s" % (pCb.returncode, pCb.stdout.strip()[:120]))
+
+    # ---------------- Scenario D (review sec.1: the
+    # candidate-level rate clears the bar, the per-state
+    # rate does not -> must NOT qualify)
+    statesD = [("v%d" % i, "g%d" % (1 + i % 5), 1 + i % 2)
+               for i in range(1, 21)]
+    settingsD = [T("SBAD", 8000, 180, 62, -1),
+                 T("SGOOD", 16000, 360, 62, -1)]
+    broken = [1.0] * 10 + [("err", "abort")] * 15
+    worldsD, wallsD = {}, {}
+    for st in settingsD:
+        for s, _, _ in statesD:
+            worldsD[(st["name"], s)] = dict(full)
+            wallsD[(st["name"], s)] = (5000 if st["name"] == "SBAD"
+                                       else 9000)
+    for s in ("v1", "v2"):
+        worldsD[("SBAD", s)] = {0: FULL0, 1: broken}
+    worldsD[("SGOOD", "v1")] = {0: FULL0, 1: broken}
+    dD = os.path.join(tmp, "scD")
+    panelD, setD = scenario(dD, statesD, settingsD, worldsD, wallsD)
+    pD, repD = run_analyzer(dD, panelD, setD, "D")
+    check("D analyzer exit 0", pD.returncode == 0, pD.stderr[-200:])
+    sb, sg = repD["settings"]["SBAD"], repD["settings"]["SGOOD"]
+    check("D1 SBAD candidate-level == 0.95 (clears the bar "
+          "as a diagnostic)",
+          abs(sb["candidate_completion"] - 0.95) < 1e-12,
+          str(sb["candidate_completion"]))
+    check("D2 SBAD per-state == 0.90 and does NOT qualify",
+          abs(sb["completion"] - 0.90) < 1e-12
+          and sb["qualifies"] is False,
+          "%r %r" % (sb["completion"], sb["qualifies"]))
+    check("D3 SGOOD per-state == 0.95 and qualifies",
+          abs(sg["completion"] - 0.95) < 1e-12
+          and sg["qualifies"] is True,
+          "%r %r" % (sg["completion"], sg["qualifies"]))
+    check("D4 selection is SGOOD, not the cheaper SBAD",
+          repD["selection"]["setting"] == "SGOOD",
+          json.dumps(repD["selection"]))
+
+    # ---------------- Scenario E (review sec.2: B0
+    # qualifies and is cheapest -> selection must skip it)
+    statesE = [("w1", "g1", 1), ("w2", "g1", 2), ("w3", "g2", 1)]
+    settingsE = [T("B0", 4000, 180, 0, 0), T("H1", 4000, 180, 62, -1)]
+    worldsE, wallsE = {}, {}
+    for st in settingsE:
+        for s, _, _ in statesE:
+            worldsE[(st["name"], s)] = dict(full)
+            wallsE[(st["name"], s)] = (1000 if st["name"] == "B0"
+                                       else 9000)
+    dE = os.path.join(tmp, "scE")
+    panelE, setE = scenario(dE, statesE, settingsE, worldsE, wallsE)
+    pE, repE = run_analyzer(dE, panelE, setE, "E")
+    check("E analyzer exit 0", pE.returncode == 0, pE.stderr[-200:])
+    eb = repE["settings"]["B0"]
+    check("E1 B0 is the control and meets the metric "
+          "(per-state 1.0, qualifies True)",
+          eb["role"] == "control"
+          and abs(eb["completion"] - 1.0) < 1e-12
+          and eb["qualifies"] is True,
+          "%r %r %r" % (eb["role"], eb["completion"],
+                        eb["qualifies"]))
+    check("E2 selection skips B0 (cheapest) and picks H1",
+          repE["selection"]["setting"] == "H1",
+          json.dumps(repE["selection"]))
 
     shutil.rmtree(tmp, ignore_errors=True)
     print("FX-STAGE1-ANALYZE: %s"

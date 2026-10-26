@@ -6,14 +6,23 @@ Reads the panel jobs, the registered settings
 (settings_stage1.json) and, per setting, the evaluator's
 world rows + stat rows, and computes:
 
-  * COMPLETION (the selection metric): a candidate
-    evaluation COMPLETES iff it has >= validity_floor (20)
-    finished worlds of its k (25). A setting's all-candidate
-    completion is the fraction of ALL (state, candidate)
-    evaluations that complete -- NOT a pooled finished-world
-    share (the pooled share is printed as a diagnostic only;
-    the two part company exactly when a few candidates stall
-    just under the floor in many states).
+  * COMPLETION (the selection metric; per-state, as
+    registered and as fixed per claude-reply-edddf5e
+    sec.1): a candidate evaluation completes iff it has
+    >= validity_floor (20) finished worlds of its k (25);
+    a panel STATE completes iff EVERY selected candidate
+    for that state completes. A setting's completion is
+    the fraction of panel states that complete. The
+    candidate-level completion rate and the pooled
+    finished-world share are computed and reported as
+    DIAGNOSTICS only -- they are not selection inputs.
+    (The three part company exactly when a few candidates
+    stall just under the floor in many states: the
+    candidate-level rate can clear the bar while a tenth
+    or more of states still hold an incomplete candidate,
+    which is the round-7 symptom the bar exists to close
+    -- a decision cannot overturn unless the challenger
+    completes.)
   * THIN-PRIOR rate per setting (co-report): the fraction
     of states whose PRIOR candidate does not complete --
     beside the fleet's 31.7% for B0 (different population:
@@ -35,11 +44,19 @@ world rows + stat rows, and computes:
     horizon_value: B0's is the 0.5 price (the fleet
     teacher's own), every +H setting's is draw = 0. The
     selection never depends on the valuation.
-  * SELECTION (ruling sec.4.3): the cheapest qualifying
-    setting -- lowest mean per-decision wall, ties by p95
-    then max -- among settings whose all-candidate
-    completion >= the registered bar (0.95). If none
-    qualifies: NO CALIBRATED SETTING, and the round stops.
+  * SELECTION (ruling sec.4.3; review sec.2): the cheapest
+    qualifying setting -- lowest mean per-decision wall,
+    ties by p95 then max -- among the +H settings whose
+    state-level completion >= the registered bar (0.95).
+    The horizon-less setting (B0) is the CONTROL: audited,
+    read and reported like every other setting (its
+    completion, its thin-prior beside the fleet's, its
+    walls), but EXCLUDED from selection -- it is the fleet
+    teacher as it ran, at the legacy draw price (its tuple
+    carries horizon_value 0), and selecting it would
+    contradict D7 and the sec.3 tie registration. If no
+    +H setting qualifies: NO CALIBRATED SETTING, and the
+    round stops.
 
 Audits (any failure aborts, exit 2, before any read):
 every world row and stat row must carry the setting tuple
@@ -294,6 +311,7 @@ def main():
         # ---- per-setting measures
         cand_evals = 0
         completes = 0
+        states_complete = 0
         thin_states = 0
         pooled_fin = 0
         pooled_rows = 0
@@ -309,6 +327,8 @@ def main():
                 pooled_rows += cnt.get((snap, ci), 0)
                 if len(fmap[ci]) >= floor:
                     completes += 1
+            if all(len(fmap[ci]) >= floor for ci in selected):
+                states_complete += 1
             thin = len(fmap[prior]) < floor
             if thin:
                 thin_states += 1
@@ -343,13 +363,20 @@ def main():
                          len(fin.get((snap, prior), {}))})
 
         walls_sorted = sorted(walls)
-        completion = (completes / cand_evals) if cand_evals else 0.0
+        completion = (states_complete / len(panel)) if panel else 0.0
+        cand_completion = ((completes / cand_evals)
+                           if cand_evals else 0.0)
+        role = ("control" if int(pinned["horizon"]) == 0
+                else "candidate")
         entry = {
             "tuple": {f: pinned[f] for f in TUPLE_FIELDS},
+            "role": role,
             "states": len(panel),
+            "states_completing": states_complete,
+            "completion": completion,
             "candidate_evals": cand_evals,
             "completes": completes,
-            "completion": completion,
+            "candidate_completion": cand_completion,
             "qualifies": completion >= bar,
             "thin_prior_rate": (thin_states / len(panel)),
             "pooled_finished_share":
@@ -373,8 +400,11 @@ def main():
         out["settings"][name] = entry
         table.append((name, entry))
 
-    # ---- selection (ruling sec.4.3)
-    qualifiers = [(n, e) for n, e in table if e["qualifies"]]
+    # ---- selection (ruling sec.4.3): qualifying +H
+    # settings only -- the control is read, never selected
+    # (claude-reply-edddf5e sec.2)
+    qualifiers = [(n, e) for n, e in table
+                  if e["qualifies"] and e["role"] != "control"]
     qualifiers.sort(key=lambda ne: (ne[1]["wall_s"]["mean"],
                                     ne[1]["wall_s"]["p95"],
                                     ne[1]["wall_s"]["max"]))
@@ -397,18 +427,25 @@ def main():
     print("panel: %d states; validity floor %d of k; completion "
           "bar %.2f; margin %.1f paired SE"
           % (len(panel), floor, bar, margin))
-    hdr = ("%-12s %6s %6s %6s %9s %9s %9s %8s %8s"
-           % ("setting", "compl", "thin", "pooled", "mean_s",
-              "p95_s", "max_s", "ot_d0", "ot_0.5"))
+    hdr = ("%-12s %6s %6s %6s %6s %9s %9s %9s %8s %8s"
+           % ("setting", "compl", "cand", "pooled", "thin",
+              "mean_s", "p95_s", "max_s", "ot_d0", "ot_0.5"))
     print(hdr)
     for name, e in table:
-        print("%-12s %6.4f %6.4f %6.4f %9.2f %9.2f %9.2f %8.4f %8.4f"
-              "  %s" % (name, e["completion"], e["thin_prior_rate"],
-                        e["pooled_finished_share"] or 0.0,
-                        e["wall_s"]["mean"], e["wall_s"]["p95"],
-                        e["wall_s"]["max"], e["overturn_draw0"] or 0.0,
-                        e["overturn_half"] or 0.0,
-                        "QUALIFIES" if e["qualifies"] else ""))
+        if e["role"] == "control":
+            tag = "CONTROL (not selectable)"
+        elif e["qualifies"]:
+            tag = "QUALIFIES"
+        else:
+            tag = ""
+        print("%-12s %6.4f %6.4f %6.4f %6.4f %9.2f %9.2f %9.2f "
+              "%8.4f %8.4f  %s"
+              % (name, e["completion"], e["candidate_completion"],
+                 e["pooled_finished_share"] or 0.0,
+                 e["thin_prior_rate"], e["wall_s"]["mean"],
+                 e["wall_s"]["p95"], e["wall_s"]["max"],
+                 e["overturn_draw0"] or 0.0,
+                 e["overturn_half"] or 0.0, tag))
         if e["error_tally"]:
             print("    errors: %s" % ", ".join(
                 "%s %d [%s]" % (ec, n, e["error_classes_tagged"][ec])
@@ -419,10 +456,13 @@ def main():
               "the fleet teacher's own trajectory; a comparability "
               "check, not an identity)"
               % (out["settings"]["B0"]["thin_prior_rate"], fleet_ref))
-    print("completion is the all-candidate rate (candidates "
-          "reaching the validity floor / all candidate "
-          "evaluations); the pooled column is a diagnostic only "
-          "and is NOT the selection metric")
+    print("completion is the per-state rate (panel states "
+          "where EVERY selected candidate reached the "
+          "validity floor / panel states) and IS the "
+          "selection metric; the cand and pooled columns "
+          "are diagnostics only. The horizon-less setting "
+          "is the control: read and reported, never "
+          "selectable")
     if selection["setting"]:
         print("SELECTION: CALIBRATED SETTING %s (completion "
               "%.4f; mean wall %.2f s, p95 %.2f s, max %.2f s)"
@@ -431,9 +471,9 @@ def main():
                  selection["wall_s"]["p95"],
                  selection["wall_s"]["max"]))
     else:
-        print("SELECTION: NO CALIBRATED SETTING -- no setting "
-              "reached all-candidate completion >= %.2f; the "
-              "round stops here (ruling sec.4.3)" % bar)
+        print("SELECTION: NO CALIBRATED SETTING -- no +H "
+              "setting reached per-state completion >= %.2f; "
+              "the round stops here (ruling sec.4.3)" % bar)
     return 0
 
 

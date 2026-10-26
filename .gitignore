@@ -1,0 +1,4 @@
+# Python bytecode caches (claude-reply-edddf5e sec.5: binary
+# caches do not belong in the review venue)
+__pycache__/
+*.pyc

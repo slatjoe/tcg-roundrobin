@@ -197,14 +197,16 @@ explicitly. See stage0-report-fix.md sec.3 for the disclosure.
 
 ## Stage 1 fixtures (claude-reply-16f02e2 sec.4; clause 8)
 
-Four suites, 46 checks, ALL PASS locally 2026-10-26 (verbatim
-transcript: `fx_stage1_outputs.txt`). The PHP suite ran on a
-user-space PHP 8.3.6 (deb extraction); the box runs PHP 8.5.4
-and every Stage 1 PHP file also lints clean under 8.3.6.
+Five suites, 66 PASS lines, ALL PASS locally 2026-10-26
+(rerun in full after the `claude-reply-edddf5e` fix pass;
+verbatim transcript: `fx_stage1_outputs.txt`). The PHP
+suite ran on a user-space PHP 8.3.6 (deb extraction); the
+box runs PHP 8.5.4 and every Stage 1 PHP file also lints
+clean under 8.3.6.
 
 - `fx_s1_eval/` — clause 8's first placement against the REAL
   `code/s1_eval_main.php`, driven through a stub `play_game.php`
-  (synthetic `SimLabel_RunForSnapshot`). 21 checks: the happy
+  (synthetic `SimLabel_RunForSnapshot`). 20 PASS lines: the happy
   path stamps every world row and stat row with the full
   setting tuple; the stub's cfg log proves the pins reach the
   label machinery (hookBudget/deadlineS/horizon/W/pair from the
@@ -216,17 +218,38 @@ and every Stage 1 PHP file also lints clean under 8.3.6.
   `EVAL_HOOKS`) — each exits 2 with ABORT logged and NO rows
   written.
 - `fx_stage1_analyze.py` — `code/stage1_analyze.py` on planted
-  rows, 14 checks. Scenario A is the metric trap: a setting
-  whose pooled finished share is 0.97 but whose all-candidate
-  completion is 0.875 must NOT qualify — and does not; the
-  same state set proves the valuation flip (challenger
-  15W/5 draws/5L vs prior 15W/10L: overturn at draw = 0.5,
-  none at draw = 0, means 0.4 vs 0.2 exactly as planted) and
-  the p95 selection tie-break (P2 over P1 at equal mean 6.0).
+  rows, 25 checks. The completion metric is PER-STATE (a
+  state completes iff every selected candidate reaches the
+  validity floor); the candidate-level rate and the pooled
+  finished share are diagnostics. Scenario A: per-state
+  0.75 vs candidate-level 0.875 vs pooled 0.97 — the
+  setting must NOT qualify, and does not; the same states
+  prove the valuation flip (challenger 15W/5 draws/5L vs
+  prior 15W/10L: overturn at draw = 0.5, none at draw = 0,
+  means 0.4 vs 0.2 exactly as planted) and the p95
+  selection tie-break (P2 over P1 at equal mean 6.0).
   Scenario B proves the max tie-break (equal mean 8.0 and
   p95 20.0; max 23 beats 24). Scenario C: NO CALIBRATED
-  SETTING at completion 0.75, and a corrupted row tuple
-  aborts the analyzer (exit 2).
+  SETTING at per-state 0.5, and a corrupted row tuple
+  aborts the analyzer (exit 2). Scenario D is the
+  review's divergence plant (`claude-reply-edddf5e`
+  sec.1): a setting at candidate-level exactly 0.95 but
+  per-state 0.90 does NOT qualify, its per-state-0.95
+  twin does, and the cheaper non-qualifier is not
+  selected. Scenario E (review sec.2): B0 completes
+  every state and is the cheapest setting — it is read
+  as the control and the selection skips it for the +H
+  setting.
+- `fx_b0_gate.sh` — the runner's B0 stop condition
+  (`claude-reply-edddf5e` sec.4.4), 10 checks. The
+  fixture extracts the B0GATE block from
+  `code/run_stage1.sh` verbatim and executes it against
+  planted B0 outputs: intact rows pass the gate (exit
+  0, gate report written); a stat row corrupted against
+  its world rows makes the analyzer abort inside the
+  block and the block stops the run (exit 1, before the
+  +H settings); a B0-only invocation and a +H iteration
+  are no-ops.
 - `fx_build_panel.py` — `code/build_panel.py`, 5 checks:
   first-N-in-capture-order with the per-game cap respected;
   the cap binding before a shortfall (exit 3, report marked
