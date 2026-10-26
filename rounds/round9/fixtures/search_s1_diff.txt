@@ -1,0 +1,27 @@
+1a2,11
+> // Round-9 Stage 1 evaluator build: byte-derived from
+> // code/search_horizon.php (sha256 6d63f5c3...) with ONLY the
+> // clause-8 parameterization of the LABEL path (see
+> // fixtures/search_s1_diff.txt): the rollout hook budget and the
+> // per-candidate parent deadline become cfg parameters
+> // (hookBudget / deadlineS, defaults 4000 / 300 = the registered
+> // label instrument, so an unparameterized call is byte-equivalent
+> // in behavior). The D7 horizon block is inherited unchanged. The
+> // teacher Decide path and every non-label function are
+> // byte-identical to the horizon build.
+1310c1320
+<   if (($GLOBALS["ssHooks"] ?? 0) > 4000) throw new SimSearchAbort();
+---
+>   if (($GLOBALS["ssHooks"] ?? 0) > intval($GLOBALS["ssLabelHookBudget"] ?? 4000)) throw new SimSearchAbort();
+1356c1366
+<   if (($GLOBALS["ssHooks"] ?? 0) > 4000) throw new SimSearchAbort();
+---
+>   if (($GLOBALS["ssHooks"] ?? 0) > intval($GLOBALS["ssLabelHookBudget"] ?? 4000)) throw new SimSearchAbort();
+1392a1403
+>     $GLOBALS["ssLabelHookBudget"] = intval($cfg["hookBudget"] ?? 4000);
+1507a1519
+>            "hookBudget" => intval($cfg["hookBudget"] ?? 4000),
+1513c1525
+<     $deadline = time() + 300;
+---
+>     $deadline = time() + intval($cfg["deadlineS"] ?? 300);

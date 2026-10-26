@@ -1,0 +1,64 @@
+Stage-1 fixture outputs - run locally 2026-10-26 (builder VM).
+PHP: PHP 8.3.6 (cli) (built: Sep  2 2026 12:56:02) (NTS) (user-space extraction of the php8.3 debs; on the box, system php 8.5).
+
+=== fx_s1_eval (code/s1_eval_main.php against the stub tree) ===
+PASS happy path (exit 0, S1-EVAL-DONE)
+PASS row count fxA got 50
+PASS row count fxB got 50
+PASS all rows stamped with the run tuple 
+PASS fxA rows stamped prior_pick 0 / game gA 
+PASS fxB rows stamped prior_pick 1 / game gB 
+PASS fxA stat cand_finished 25/25 {"0": 25, "1": 25}
+PASS fxA stat errors empty 
+PASS fxB stat cand_finished 22/22 {"0": 22, "1": 22}
+PASS fxB stat cand_rows 25/25 
+PASS fxB stat errors {abort: 6} {"abort": 6}
+PASS fxB stat: draw counts finished, so 22 = 21 decisive + 1 drawn world 
+PASS stat rows carry the tuple + wall_ms 
+PASS two label calls recorded 
+PASS cfg pins forwarded (job 1) {"W": 25, "horizon": 62, "hookBudget": 4000, "deadlineS": 180, "cap": 3, "seedBase": 885001, "pair": "va", "candIdx": [0, 1]}
+PASS cfg seedBase strides by job index (job 2) {"W": 25, "horizon": 62, "hookBudget": 4000, "deadlineS": 180, "cap": 2, "seedBase": 985004, "pair": "va", "candIdx": [0, 1]}
+FX-S1-EVAL checker: ALL PASS
+PASS bad_hooks (exit 2, ABORT logged, no rows written)
+PASS missing_setting (exit 2, ABORT logged, no rows written)
+PASS bad_horizon_value (exit 2, ABORT logged, no rows written)
+PASS bad_hook_pin (exit 2, ABORT logged, no rows written)
+FX-S1-EVAL: ALL PASS
+
+=== fx_stage1_analyze (code/stage1_analyze.py) ===
+PASS A analyzer exit 0 oor / all candidate evaluations); the pooled column is a diagnostic only and is NOT the selection metric
+SELECTION: CALIBRATED SETTING P2 (completion 1.0000; mean wall 6.00 s, p95 6.00 s, max 6.00 s)
+
+PASS A1 B0 completion == 0.875 (all-candidate) 0.875
+PASS A1 B0 does not qualify 
+PASS A2 B0 pooled share == 0.97 (the metric trap) 0.97
+PASS A3 B0 thin-prior == 0.25 
+PASS A4 s2 flip: overturn_draw0 False, overturn_half True {"overturn_draw0": false, "overturn_half": true}
+PASS A5 s2 challenger means: draw0 0.2, half 0.4 {"draw0": 0.2, "half": 0.4}
+PASS A6 B0 overturn_half == 1/3, overturn_draw0 == 0 0.3333333333333333 0.0
+PASS A7 selection is P2 (mean tie 6.0, p95 6.0 < 8.4) {"verdict": "CALIBRATED SETTING", "setting": "P2", "completion": 1.0, "wall_s": {"mean": 6.0, "p95": 6.0, "max": 6.0, "total": 24.0}}
+PASS B analyzer exit 0 
+PASS B1 X/Y tie on mean (8.0) and p95 (20.0) {'mean': 8.0, 'p95': 19.999999999999996, 'max': 24.0, 'total': 40.0} {'mean': 8.0, 'p95': 19.999999999999996, 'max': 23.0, 'total': 40.0}
+PASS B2 selection is Y (max 23 < 24) {"verdict": "CALIBRATED SETTING", "setting": "Y", "completion": 1.0, "wall_s": {"mean": 8.0, "p95": 19.999999999999996, "max": 23.0, "total": 40.0}}
+PASS C analyzer exit 0 
+PASS C1 verdict NO CALIBRATED SETTING {"verdict": "NO CALIBRATED SETTING", "setting": null}
+PASS C2 corrupted tuple aborts (exit 2) rc=2 out=ABORT: setting Z: world row for snap u1 carries tuple {'name': 'Z', 'hooks': 9999, 'deadline_s': 180, 'horizon': 0, 'hor
+FX-STAGE1-ANALYZE: ALL PASS
+
+=== fx_build_panel (code/build_panel.py) ===
+PASS case1 exit 0, 12 states over 6 games, cap respected rc=0 states=12
+PASS case1 capture order preserved (g1_t1 first) capA/g1_t1
+PASS case2 cap binds then shortfall: exit 3, 20 states, 20 skipped by cap, complete False rc=3 states=20 skipped=20
+PASS case3 row without selected aborts (exit 2) rc=2
+PASS case4 duplicate snap aborts (exit 2) rc=2
+FX-BUILD-PANEL: ALL PASS
+
+=== fx_merge_registry (code/merge_registry.py) ===
+PASS clean merge: +3, n_games 4, tag recorded merged: +3 new (tag r9s1_capture), 0 already under this tag; n_games=4
+PASS printed sha256 == merged file's sha256 
+PASS backup written beside the registry ['registry.json.bak-20261026T105224']
+PASS vault copy written 
+PASS same-tag re-merge is a no-op (+0, sha stable) merged: +0 new (tag r9s1_capture), 3 already under this tag; n_games=4
+backup: /
+PASS retag conflict aborts (exit 1), registry unchanged rc=1
+FX-MERGE-REGISTRY: ALL PASS

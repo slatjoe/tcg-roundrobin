@@ -1,0 +1,2 @@
+{"snap":"fxA","game":"gA","player":1,"branch":"P","cands":[0,1,2],"selected":[0,1],"prior_pick":0,"setting":{"name":"B0+H","hooks":4000,"deadline_s":180,"horizon":62,"horizon_value":-1,"k":25}}
+{"snap":"fxB","game":"gB","player":2,"branch":"M","cands":[0,1],"selected":[0,1],"prior_pick":1,"setting":{"name":"B0+H","hooks":4000,"deadline_s":180,"horizon":62,"horizon_value":-1,"k":25}}

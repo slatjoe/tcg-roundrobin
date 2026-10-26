@@ -194,3 +194,46 @@ explicitly. See stage0-report-fix.md sec.3 for the disclosure.
   scorer counts them). Standalone: run it directly; exit 0
   iff all 12 checks pass. Result at the Stage 0 build:
   ALL PASS.
+
+## Stage 1 fixtures (claude-reply-16f02e2 sec.4; clause 8)
+
+Four suites, 46 checks, ALL PASS locally 2026-10-26 (verbatim
+transcript: `fx_stage1_outputs.txt`). The PHP suite ran on a
+user-space PHP 8.3.6 (deb extraction); the box runs PHP 8.5.4
+and every Stage 1 PHP file also lints clean under 8.3.6.
+
+- `fx_s1_eval/` — clause 8's first placement against the REAL
+  `code/s1_eval_main.php`, driven through a stub `play_game.php`
+  (synthetic `SimLabel_RunForSnapshot`). 21 checks: the happy
+  path stamps every world row and stat row with the full
+  setting tuple; the stub's cfg log proves the pins reach the
+  label machinery (hookBudget/deadlineS/horizon/W/pair from the
+  env pins; seedBase 885001 + job index x 100003); stat
+  accounting on a job with a drawn world and abort errors
+  (22 finished = 21 decisive + 1 draw, errors {abort: 6});
+  and four abort cases (job/pin hooks mismatch, missing job
+  setting, malformed `EVAL_HORIZON_VALUE`, malformed
+  `EVAL_HOOKS`) — each exits 2 with ABORT logged and NO rows
+  written.
+- `fx_stage1_analyze.py` — `code/stage1_analyze.py` on planted
+  rows, 14 checks. Scenario A is the metric trap: a setting
+  whose pooled finished share is 0.97 but whose all-candidate
+  completion is 0.875 must NOT qualify — and does not; the
+  same state set proves the valuation flip (challenger
+  15W/5 draws/5L vs prior 15W/10L: overturn at draw = 0.5,
+  none at draw = 0, means 0.4 vs 0.2 exactly as planted) and
+  the p95 selection tie-break (P2 over P1 at equal mean 6.0).
+  Scenario B proves the max tie-break (equal mean 8.0 and
+  p95 20.0; max 23 beats 24). Scenario C: NO CALIBRATED
+  SETTING at completion 0.75, and a corrupted row tuple
+  aborts the analyzer (exit 2).
+- `fx_build_panel.py` — `code/build_panel.py`, 5 checks:
+  first-N-in-capture-order with the per-game cap respected;
+  the cap binding before a shortfall (exit 3, report marked
+  incomplete); a capture row without `selected` aborts
+  (exit 2); a duplicated snap aborts (exit 2).
+- `fx_merge_registry.py` — `code/merge_registry.py`,
+  6 checks: clean merge with backup + vault copy and the
+  printed sha256 equal to the merged file's; same-tag
+  re-merge is a no-op; a retag conflict aborts (exit 1)
+  leaving the registry byte-identical.
