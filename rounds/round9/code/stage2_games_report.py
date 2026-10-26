@@ -14,9 +14,20 @@ the run's audited facts (ruling sec.3.4 / sec.3.7 co-reports):
     reported, per the registration), and the games' draw-
     scored outcomes from the teacher's seat (win 1, draw 0.5,
     loss 0) for the co-report beside the fleet's record.
-  * LIVE RATES for the sec.3.7 co-report: contested
-    decisions, thin-prior share of contested, overturn share
-    of contested, overturns per completed teacher game.
+  * LIVE RATES for the sec.3.7 co-report and the sec.3.6
+    bands. BAND RATE (review sec.2.2): the contested /
+    thin-prior / overturn tallies count ONLY stat rows
+    whose "game" is a completed driver row's "gamename"
+    (completed = no "invalid" key), and overturns/game
+    divides by completed games -- an overturn in a
+    timed-out or invalid game does not enter the rate the
+    bands use. The same tallies over ALL stat rows are
+    co-reported beside it (the *_all keys). Timed-out
+    games' overturns stay in the L3 job population
+    (build_s2_jobs.py is unaffected by this split): they
+    are valid decisions, they just do not enter the rate.
+    Outcome points are printed at draw = 0.5 and at
+    draw = 0 (W only, the settled tie value).
   * fallbacks + abort-reason tallies from the stat rows.
 
 Usage:
@@ -87,10 +98,18 @@ def main():
         else:
             wdl["L"] += 1
     games_completed = len(completed)
+    points_draw0 = float(wdl["W"])
+    completed_names = {str(r["gamename"]) for r in completed
+                       if r.get("gamename") is not None}
 
     # ---- tuple audit + live rates (stat rows) ---------------
     teacher_rows = [r for r in stats if r.get("teacher") == 1]
-    contested = [r for r in teacher_rows if r.get("contested") == 1]
+    contested_all = [r for r in teacher_rows
+                     if r.get("contested") == 1]
+    # BAND RATE population (review sec.2.2): stat rows in
+    # completed games only.
+    contested = [r for r in contested_all
+                 if str(r.get("game")) in completed_names]
     audit_bad = []
     for i, r in enumerate(teacher_rows):
         s = r.get("setting")
@@ -113,10 +132,16 @@ def main():
     thin = sum(1 for r in contested
                if r.get("fallback") == "thin_prior")
     overturns = sum(1 for r in contested if r.get("overturn") == 1)
+    thin_all = sum(1 for r in contested_all
+                   if r.get("fallback") == "thin_prior")
+    overturns_all = sum(1 for r in contested_all
+                        if r.get("overturn") == 1)
+    # fallbacks / abort tallies are diagnostics over ALL
+    # contested rows, not rate inputs.
     child_fb = sum(int(r.get("child_fallbacks") or 0)
-                   for r in contested)
+                   for r in contested_all)
     abort_reasons = Counter()
-    for r in contested:
+    for r in contested_all:
         ar = r.get("abort_reasons") or {}
         if isinstance(ar, dict):
             for k, v in ar.items():
@@ -133,8 +158,20 @@ def main():
             "W": wdl["W"], "D": wdl["D"], "L": wdl["L"],
             "points": points,
             "points_per_game": (points / games_completed
-                                if games_completed else None)},
+                                if games_completed else None),
+            "points_draw0": points_draw0,
+            "points_draw0_per_game": (points_draw0
+                                      / games_completed
+                                      if games_completed
+                                      else None)},
         "teacher_stat_rows": len(teacher_rows),
+        "rate_basis": ("band rate (contested_rows, "
+                       "thin_prior_rate, overturn_rate, "
+                       "overturns_per_game) counts stat rows "
+                       "in completed games only (review "
+                       "sec.2.2); *_all keys are the same "
+                       "tallies over every stat row, "
+                       "co-reported"),
         "contested_rows": len(contested),
         "thin_prior_rows": thin,
         "thin_prior_rate": (thin / len(contested)
@@ -144,6 +181,16 @@ def main():
                           if contested else None),
         "overturns_per_game": (overturns / games_completed
                                if games_completed else None),
+        "contested_rows_all": len(contested_all),
+        "thin_prior_rows_all": thin_all,
+        "thin_prior_rate_all": (thin_all / len(contested_all)
+                                if contested_all else None),
+        "overturn_rows_all": overturns_all,
+        "overturn_rate_all": (overturns_all / len(contested_all)
+                              if contested_all else None),
+        "overturns_per_game_all": (overturns_all
+                                   / games_completed
+                                   if games_completed else None),
         "child_fallbacks": child_fb,
         "abort_reasons": dict(abort_reasons),
         "eval_fail_rows": eval_fail,
@@ -158,17 +205,29 @@ def main():
     with open(a.json_out, "w") as f:
         json.dump(report, f, indent=1)
     print("games: %d rows, %d completed, invalid %s; teacher "
-          "W/D/L %d/%d/%d = %.1f pts (%.4f/game)"
+          "W/D/L %d/%d/%d = %.1f pts at draw=0.5 (%.4f/game); "
+          "%.1f pts at draw=0 (W only, %.4f/game)"
           % (len(rows), games_completed, dict(invalid),
              wdl["W"], wdl["D"], wdl["L"], points,
              report["teacher_outcomes_draw_scored"]
-                   ["points_per_game"] or 0.0))
-    print("teacher rows %d, contested %d, thin-prior %d "
-          "(%.4f), overturns %d (%.4f of contested, %.4f/game)"
+                   ["points_per_game"] or 0.0,
+             points_draw0,
+             report["teacher_outcomes_draw_scored"]
+                   ["points_draw0_per_game"] or 0.0))
+    print("band rates (completed games only): teacher rows "
+          "%d, contested %d, thin-prior %d (%.4f), overturns "
+          "%d (%.4f of contested, %.4f/game)"
           % (len(teacher_rows), len(contested), thin,
              report["thin_prior_rate"] or 0.0, overturns,
              report["overturn_rate"] or 0.0,
              report["overturns_per_game"] or 0.0))
+    print("co-report (all stat rows incl. timed-out/invalid "
+          "games): contested %d, thin-prior %d (%.4f), "
+          "overturns %d (%.4f of contested, %.4f/game)"
+          % (len(contested_all), thin_all,
+             report["thin_prior_rate_all"] or 0.0, overturns_all,
+             report["overturn_rate_all"] or 0.0,
+             report["overturns_per_game_all"] or 0.0))
     print("tuple audit: %d rows checked, %d bad, %d malformed-"
           "pin aborts -> %s"
           % (len(teacher_rows), len(audit_bad), len(malformed),

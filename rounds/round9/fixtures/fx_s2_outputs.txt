@@ -59,7 +59,7 @@ SUITE fx_s2_label: PASS
 PASS run_stage2_pregate.sh: no three-name assignment form
 PASS run_stage2_pregate.sh block inventory: PS-GHOST PS-SRV PS-SWEEP 
 PASS run_stage2_games.sh: no three-name assignment form
-PASS run_stage2_games.sh block inventory: GS-DRIVERS GS-SRV GS-SWEEP 
+PASS run_stage2_games.sh block inventory: GS-DRIVERS GS-SRV GS-SWEEP PREGATE-GATE 
 PASS run_stage2_l3.sh: no three-name assignment form
 PASS run_stage2_l3.sh block inventory: LS-SHARD LS-SRV LS-SWEEP 
 PASS PS-SRV: stub server loads -> block completes
@@ -77,6 +77,11 @@ PASS GS-DRIVERS: 4 workers ran, block completes
 PASS GS-DRIVERS: a failing worker fails the block
 PASS LS-SHARD: 8 workers ran, block completes
 PASS LS-SHARD: a failing worker fails the block
+PASS PREGATE-GATE pass (want pass, block exit 0)
+PASS PREGATE-GATE absent (want abort, block exit 1)
+PASS PREGATE-GATE verdict (want abort, block exit 1)
+PASS PREGATE-GATE hash (want abort, block exit 1)
+PASS PREGATE-GATE tuple (want abort, block exit 1)
 FX-S2-BLOCKS: ALL PASS
 SUITE fx_s2_blocks: PASS
 ===== fx_build_s2_jobs =====
@@ -107,6 +112,10 @@ PASS draw-scored outcomes 1W/1D/0L = 1.5 pts
 PASS live rates (thin 0.25, overturn 0.25, overturns/game 0.5) 
 PASS tuple audit OK over 5 teacher rows 
 PASS abort tallies carried (abort 2, child fb 3) 
+PASS outcome line: draw=0.5 and draw=0 points on the same line (review sec.4) games: 4 rows, 2 completed, invalid {'timeout': 1, 'seat_mismatch': 1}; teacher W/D/L 1/1/0 = 1.5 pts at draw=0.5 (0.7500/game); 1.0 pts at draw=0 (W only, 0.5000/game)
+PASS timeout-overturn variant: report exit 0 
+PASS timed-out game's overturn EXCLUDED from the band rate (overturns 1, contested 4, 0.5/game) 
+PASS timed-out game's overturn PRESENT in the all-rows co-report (overturns_all 2, contested_all 5, 1.0/game) 
 PASS wrong tuple value on a row fails the audit (exit 2) 
 PASS tuple-malformation abort row fails the audit (exit 2) 
 FX-STAGE2-GAMES-REPORT: ALL PASS
@@ -124,6 +133,8 @@ PASS impeachment printed BEFORE the read
 PASS unfinished pooled share == 1/31, refusals 1 
 PASS verdict is a band verdict (not STOP) got 'DOES NOT PROCEED'
 PASS negated population: STOP, no tripwire verdict='STOP' mean=-0.4375
+PASS no-shared-world job counted beside jobs (jobs_no_shared_worlds 1, read unchanged) got 1
+PASS PRIMARY line prints jobs_no_shared_worlds 
 PASS wrong tuple stamp on a row aborts (exit 2) 
 PASS dropped row trips the world-count guard (exit 2) 
 FX-STAGE2-ANALYZE: ALL PASS

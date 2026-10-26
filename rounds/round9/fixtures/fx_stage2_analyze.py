@@ -24,7 +24,10 @@ Hand-computed reads over the 4 jobs:
   unfinished pooled share 1/31; refusal tally 1.
 A negated copy must read STOP with no tripwire; a row with
 a wrong tuple stamp aborts (exit 2); a dropped row trips
-the world-count guard (exit 2).
+the world-count guard (exit 2). A variant with a fifth job
+whose prior candidate finishes no world (no shared
+finished world) must report jobs_no_shared_worlds == 1
+beside jobs and leave the read unchanged (review sec.4).
 Run: python3 fx_stage2_analyze.py (own temp dirs)."""
 import json
 import os
@@ -82,7 +85,8 @@ JOBSPEC = {
 GAME = {"j1": "gA", "j2": "gA", "j3": "gB", "j4": "gB"}
 
 
-def build(tmp, negate=False, bad_stamp=False, drop=False):
+def build(tmp, negate=False, bad_stamp=False, drop=False,
+          no_shared=False):
     jobs, labels = [], []
     for snap in ("j1", "j2", "j3", "j4"):
         jobs.append({"snap": snap, "game": GAME[snap],
@@ -103,6 +107,24 @@ def build(tmp, negate=False, bad_stamp=False, drop=False):
                     st["k"] = 25
                 labels.append({"snap": snap, "cand": cand,
                                "world": w, "result": r,
+                               "setting": st,
+                               "prior_pick": 0, "teacher_pick": 1})
+    if no_shared:
+        # j5: the teacher candidate finishes all 4 worlds,
+        # the prior candidate finishes none (aborts) -> the
+        # job produces NO shared finished world and must be
+        # counted as jobs_no_shared_worlds, not in the read.
+        jobs.append({"snap": "j5", "game": "gB",
+                     "player": 1, "branch": "M",
+                     "prior_pick": 0, "teacher_pick": 1,
+                     "setting": LT})
+        for cand, world_list in ((1, [fin(1)] * 4),
+                                 (0, [err("abort")] * 4)):
+            for w, res in enumerate(world_list):
+                st = dict(LT)
+                st["pinned"] = 1
+                labels.append({"snap": "j5", "cand": cand,
+                               "world": w, "result": dict(res),
                                "setting": st,
                                "prior_pick": 0, "teacher_pick": 1})
     if drop:
@@ -185,6 +207,17 @@ def main():
           "verdict=%r mean=%r" % (read2 and read2["verdict"],
                                   read2 and
                                   read2["primary"]["mean_diff"]))
+    r5, read5 = build(tempfile.mkdtemp(), no_shared=True)
+    check("no-shared-world job counted beside jobs "
+          "(jobs_no_shared_worlds 1, read unchanged)",
+          r5.returncode == 0 and read5
+          and read5["jobs_no_shared_worlds"] == 1
+          and read5["primary"]["jobs"] == 4
+          and approx(read5["primary"]["mean_diff"], 0.375),
+          "got %r" % (read5 and
+                      read5.get("jobs_no_shared_worlds")))
+    check("PRIMARY line prints jobs_no_shared_worlds",
+          "jobs_no_shared_worlds 1 (of 5 jobs)" in r5.stdout)
     r3, _ = build(tempfile.mkdtemp(), bad_stamp=True)
     check("wrong tuple stamp on a row aborts (exit 2)",
           r3.returncode == 2)

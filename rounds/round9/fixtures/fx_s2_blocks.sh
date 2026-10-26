@@ -110,7 +110,7 @@ run_block() { # name runner blockid extra_env...
 
 declare -A EXPECT=(
   [run_stage2_pregate.sh]="PS-SRV PS-SWEEP PS-GHOST"
-  [run_stage2_games.sh]="GS-SRV GS-SWEEP GS-DRIVERS"
+  [run_stage2_games.sh]="GS-SRV GS-SWEEP GS-DRIVERS PREGATE-GATE"
   [run_stage2_l3.sh]="LS-SRV LS-SWEEP LS-SHARD"
 )
 for runner in run_stage2_pregate.sh run_stage2_games.sh run_stage2_l3.sh; do
@@ -203,6 +203,53 @@ run_workers_env() { # name runner blockid n failvar
 run_workers_env "PS-GHOST" "$CODE/run_stage2_pregate.sh" PS-GHOST 2 FX_STUB_FAIL_pg_ghost_s1
 run_workers_env "GS-DRIVERS" "$CODE/run_stage2_games.sh" GS-DRIVERS 4 FX_STUB_FAIL_games_s1a
 run_workers_env "LS-SHARD" "$CODE/run_stage2_l3.sh" LS-SHARD 8 FX_STUB_FAIL_labels_shard0_p1
+
+# ---- PREGATE-GATE: planted manifests (review sec.2.1) -----
+# The gate is a read/abort block: it spawns and waits for
+# nothing, and its python is stdlib-only file reading, so
+# the fixture executes the extracted block VERBATIM with
+# the REAL interpreter (PY=python3 in run_block's export
+# list overrides the stub) against planted manifests:
+# pass / absent / NOT IDENTICAL / hash mismatch / tuple
+# mismatch.
+GATE_TUPLE=$(python3 -c 'import json, sys; print(json.dumps(json.load(open(sys.argv[1]))["teacher_tuple"]))' "$CODE/settings_stage2.json")
+GATE_SHA=85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa
+GATE_TUPLE_OFF=$(python3 -c 'import json, sys; t = json.loads(sys.argv[1]); t["margin"] = 2.0; print(json.dumps(t))' "$GATE_TUPLE")
+gate_manifest() { # dir verdict sha tuple
+  mkdir -p "$1"
+  python3 - "$1/pregate_manifest.json" "$2" "$3" "$4" <<'PYEOF'
+import json, sys
+json.dump({"stage": "round9-stage2-pregate",
+           "verdict": sys.argv[2],
+           "search_s2_sha256": sys.argv[3],
+           "teacher_tuple_json": sys.argv[4]},
+          open(sys.argv[1], "w"), indent=1)
+PYEOF
+}
+gate_case() { # name manifest_path want(pass|abort)
+  local name=$1 mf=$2 want=$3 rc
+  if run_block "PREGATE-GATE-$name" "$CODE/run_stage2_games.sh" \
+       PREGATE-GATE "PY=python3" "PREGATE_MANIFEST=$mf" \
+       "PIN_SEARCH_S2_SHA256=$GATE_SHA" \
+       "TEACHER_TUPLE_JSON=$GATE_TUPLE" \
+       > "$WORK/gate_$name.log" 2>&1; then rc=0; else rc=1; fi
+  if { [ "$want" = pass ] && [ "$rc" = 0 ]; } || \
+     { [ "$want" = abort ] && [ "$rc" = 1 ]; }; then
+    note "PASS PREGATE-GATE $name (want $want, block exit $rc)"
+  else
+    bad "PREGATE-GATE $name (want $want, block exit $rc)"
+    sed -n 1,3p "$WORK/gate_$name.log"
+  fi
+}
+gate_manifest "$WORK/gate_pass" IDENTICAL "$GATE_SHA" "$GATE_TUPLE"
+gate_case pass "$WORK/gate_pass/pregate_manifest.json" pass
+gate_case absent "$WORK/gate_absent/pregate_manifest.json" abort
+gate_manifest "$WORK/gate_verdict" "NOT IDENTICAL" "$GATE_SHA" "$GATE_TUPLE"
+gate_case verdict "$WORK/gate_verdict/pregate_manifest.json" abort
+gate_manifest "$WORK/gate_hash" IDENTICAL 0000000000000000000000000000000000000000000000000000000000000000 "$GATE_TUPLE"
+gate_case hash "$WORK/gate_hash/pregate_manifest.json" abort
+gate_manifest "$WORK/gate_tuple" IDENTICAL "$GATE_SHA" "$GATE_TUPLE_OFF"
+gate_case tuple "$WORK/gate_tuple/pregate_manifest.json" abort
 
 rmdir /tmp/r9s2_l3_tree_0 /tmp/r9s2_l3_tree_1 \
       /tmp/r9s2_l3_tree_2 /tmp/r9s2_l3_tree_3 2>/dev/null

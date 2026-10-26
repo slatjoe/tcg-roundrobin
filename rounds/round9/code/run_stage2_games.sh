@@ -7,7 +7,10 @@
 # Launches only on Claude's code review of this Stage 2
 # package at its committed sha, a PASSED ghost pre-gate
 # (run_stage2_pregate.sh, IDENTICAL), and Joe's explicit
-# go for Stage 2.
+# go for Stage 2. The pre-gate is enforced mechanically
+# below (PREGATE-GATE block, review sec.2.1): no manifest
+# recording IDENTICAL under this run's build pin and
+# tuple, no run.
 #
 # The teacher build is code/search_s2.php installed into
 # per-block copies of the fleet tree; the run tuple is
@@ -82,7 +85,7 @@ expect_hash "$CODE_DIR/paired_driver_gravy.py" \
   3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359 \
   "paired_driver_gravy.py"
 expect_hash "$CODE_DIR/stage2_games_report.py" \
-  eb514b4ed7c383e68ca96aca79d0fbf5a819cafea2ade68601f9726116a547e9 \
+  62b5b319243df01211f928210dbbc6da216a48032b009b486f179ee9583ddfef \
   "stage2_games_report.py"
 expect_hash "$CODE_DIR/merge_registry.py" \
   13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe \
@@ -108,6 +111,50 @@ print(json.dumps(s["teacher_tuple"]))
 PYEOF
 ) || exit 1
 export TEACHER_TUPLE_JSON
+
+PREGATE_MANIFEST=${STAGE2_OUT:-/home/joe/tcg/r9s2_out}/pregate/pregate_manifest.json
+PIN_SEARCH_S2_SHA256=85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa
+
+# BLOCK:PREGATE-GATE-BEGIN
+# Read/abort gate (review sec.2.1): this run proceeds only
+# if the pre-gate manifest records verdict IDENTICAL under
+# THIS run's search_s2.php pin and THIS run's tuple. The
+# tuple comparison is string equality against the manifest's
+# recorded teacher_tuple_json; the canonical form is the
+# runners' shared builder output (python json.dumps of
+# settings_stage2.json's teacher_tuple, default separators,
+# file key order) -- both runners build it identically, and
+# the pre-gate records the string it ran under verbatim.
+[[ "$PIN_SEARCH_S2_SHA256" =~ ^[0-9a-f]{64}$ ]] || {
+  echo "ABORT: pre-gate gate pin is not a 64-char sha256" >&2
+  exit 1; }
+$PY - "$PREGATE_MANIFEST" "$PIN_SEARCH_S2_SHA256" <<'PYEOF' || exit 1
+import json, os, sys
+man_p, want_sha = sys.argv[1], sys.argv[2]
+want_tuple = os.environ.get("TEACHER_TUPLE_JSON", "")
+def abort(why):
+    sys.stderr.write("ABORT: pre-gate gate: %s\n" % why)
+    sys.exit(1)
+if not want_tuple:
+    abort("TEACHER_TUPLE_JSON is unset in this run")
+try:
+    man = json.load(open(man_p))
+except Exception as e:
+    abort("pre-gate manifest absent or unreadable at %s (%s)"
+          % (man_p, e))
+if man.get("verdict") != "IDENTICAL":
+    abort("pre-gate verdict is %r, not IDENTICAL"
+          % (man.get("verdict"),))
+if man.get("search_s2_sha256") != want_sha:
+    abort("pre-gate ran under search_s2.php %s; this run "
+          "pins %s" % (man.get("search_s2_sha256"), want_sha))
+if man.get("teacher_tuple_json") != want_tuple:
+    abort("pre-gate ran under a different TEACHER_TUPLE_JSON "
+          "than this run builds from settings_stage2.json")
+print("pre-gate gate: manifest IDENTICAL under this run's "
+      "search_s2.php pin and tuple - proceeding")
+PYEOF
+# BLOCK:PREGATE-GATE-END
 
 # --- containment: G8 pre-launch sweep -------------------------
 bash "$CODE_DIR/g8_sweep.sh" "$OUT/g8" || exit 1

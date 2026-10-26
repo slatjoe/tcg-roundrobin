@@ -53,6 +53,12 @@ overturn rate against the panel's (0 and 0.0917 at draw =
 round-7 record (settings file). Both come from the games
 report -- this analyzer does not recompute them.
 
+COVERAGE (review sec.4 note): the PRIMARY line and the
+JSON print jobs_no_shared_worlds beside jobs -- the jobs
+whose two candidates share no finished world and so
+enter no read -- so the coverage of the overturn
+population is visible next to the read.
+
 Usage:
   stage2_analyze.py --jobs jobs_all.jsonl --labels l.jsonl
       --games-report games_report.json
@@ -250,6 +256,7 @@ def main():
     primary = reads["primary_draw0"]
     mean = primary["mean_diff"]
     lo = primary["ci"][0] if primary["ci"] else None
+    jobs_no_shared = len(jobs) - primary["jobs"]
 
     live_opg = grep.get("overturns_per_game")
     per_game = (mean * live_opg
@@ -273,6 +280,7 @@ def main():
             verdict = "DOES NOT PROCEED"
 
     out = {
+        "jobs_no_shared_worlds": jobs_no_shared,
         "primary": {k: primary[k] for k in ("jobs", "mean_diff",
                                             "ci")},
         "coreport_draw05": {k: reads["coreport_draw05"][k]
@@ -348,9 +356,11 @@ def main():
         lines.append("TRIPWIRE CHECKS COMPLETE - the read "
                      "follows.")
     p = primary
-    lines.append("PRIMARY (draw = 0): jobs %d; mean paired "
-                 "diff %s; CI [%s, %s]"
-                 % (p["jobs"], pct(p["mean_diff"]),
+    lines.append("PRIMARY (draw = 0): jobs %d; "
+                 "jobs_no_shared_worlds %d (of %d jobs); "
+                 "mean paired diff %s; CI [%s, %s]"
+                 % (p["jobs"], jobs_no_shared, len(jobs),
+                    pct(p["mean_diff"]),
                     pct(p["ci"][0]) if p["ci"] else "n/a",
                     pct(p["ci"][1]) if p["ci"] else "n/a"))
     lines.append("  per-game gain %s (mean diff x LIVE "

@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """fx_stage2_games_report: stage2_games_report.py on planted
 games output. Known answers: 4 driver rows (2 completed --
-one teacher win, one draw; 1 timeout; 1 seat_mismatch) and
-stat rows with 4 contested rows (1 thin-prior, 1 overturn)
--> completed 2, timeouts 1, W/D/L 1/1/0 = 1.5 pts,
-thin-prior rate 0.25, overturn rate 0.25, overturns/game
-0.5, tuple audit OK. A stat row with a wrong tuple value
-fails the audit (exit 2); so does a tuple-malformation
-abort row.
+one teacher win, one draw; 1 timeout; 1 seat_mismatch),
+each carrying gamename fxg22001..fxg22004, and stat rows
+attributed by "game" to the two completed games, with 4
+contested rows (1 thin-prior, 1 overturn) -> completed 2,
+timeouts 1, W/D/L 1/1/0 = 1.5 pts at draw=0.5 and 1.0 pts
+at draw=0 (printed on the same line), band thin-prior rate
+0.25, overturn rate 0.25, overturns/game 0.5, tuple audit
+OK. Variant timeout_overturn adds a contested row with an
+overturn in the TIMED-OUT game (fxg22003): it must be
+excluded from the band rate (overturns/game stays 0.5)
+and present in the all-rows co-report (overturns/game_all
+1.0) -- review sec.2.2. A stat row with a wrong tuple
+value fails the audit (exit 2); so does a
+tuple-malformation abort row.
 Run: python3 fx_stage2_games_report.py (own temp dirs)."""
 import json
 import os
@@ -33,16 +40,16 @@ T = dict(json.load(open(SETTINGS))["teacher_tuple"])
 T["pinned"] = 1
 
 
-def build(tmp, corrupt=None):
+def build(tmp, corrupt=None, timeout_overturn=False):
     rows = [
         {"seed": 22001, "arm": "teacher", "seat": 1,
-         "winner": 1, "draw": 0},
+         "gamename": "fxg22001", "winner": 1, "draw": 0},
         {"seed": 22002, "arm": "teacher", "seat": 1,
-         "winner": 0, "draw": 1},
+         "gamename": "fxg22002", "winner": 0, "draw": 1},
         {"seed": 22003, "arm": "teacher", "seat": 1,
-         "invalid": "timeout"},
+         "gamename": "fxg22003", "invalid": "timeout"},
         {"seed": 22004, "arm": "teacher", "seat": 1,
-         "invalid": "seat_mismatch"},
+         "gamename": "fxg22004", "invalid": "seat_mismatch"},
     ]
     with open(os.path.join(tmp, "games_s1a.jsonl"), "w") as f:
         for r in rows:
@@ -51,18 +58,27 @@ def build(tmp, corrupt=None):
     os.makedirs(logdir)
     stats = [
         {"teacher": 1, "contested": 1, "setting": T,
+         "game": "fxg22001",
          "fallback": "thin_prior", "pick": 0, "prior_pick": 0,
          "child_fallbacks": 3},
         {"teacher": 1, "contested": 1, "setting": T,
+         "game": "fxg22001",
          "overturn": 1, "pick": 1, "prior_pick": 0},
         {"teacher": 1, "contested": 1, "setting": T,
+         "game": "fxg22002",
          "overturn": 0, "pick": 0, "prior_pick": 0},
         {"teacher": 1, "contested": 1, "setting": T,
+         "game": "fxg22002",
          "overturn": 0, "pick": 2, "prior_pick": 2,
          "abort_reasons": {"abort": 2}},
         {"teacher": 1, "contested": 0, "setting": T,
-         "pick": 0, "prior_pick": 0},
+         "game": "fxg22002", "pick": 0, "prior_pick": 0},
     ]
+    if timeout_overturn:
+        stats.append({"teacher": 1, "contested": 1,
+                      "setting": T, "game": "fxg22003",
+                      "overturn": 1, "pick": 1,
+                      "prior_pick": 0})
     if corrupt == "hooks":
         stats[1] = dict(stats[1])
         stats[1]["setting"] = dict(T)
@@ -111,6 +127,28 @@ def main():
         check("abort tallies carried (abort 2, child fb 3)",
               rep["abort_reasons"].get("abort") == 2
               and rep["child_fallbacks"] == 3)
+        line = next((l for l in r.stdout.splitlines()
+                     if l.startswith("games:")), "")
+        check("outcome line: draw=0.5 and draw=0 points on "
+              "the same line (review sec.4)",
+              "1.5 pts at draw=0.5" in line
+              and "1.0 pts at draw=0" in line, line)
+    r4, rep4 = build(tempfile.mkdtemp(), timeout_overturn=True)
+    check("timeout-overturn variant: report exit 0",
+          r4.returncode == 0,
+          r4.stdout.strip()[-160:] if r4.returncode else "")
+    if rep4:
+        check("timed-out game's overturn EXCLUDED from the "
+              "band rate (overturns 1, contested 4, 0.5/game)",
+              rep4["overturn_rows"] == 1
+              and rep4["contested_rows"] == 4
+              and rep4["overturns_per_game"] == 0.5)
+        check("timed-out game's overturn PRESENT in the "
+              "all-rows co-report (overturns_all 2, "
+              "contested_all 5, 1.0/game)",
+              rep4["overturn_rows_all"] == 2
+              and rep4["contested_rows_all"] == 5
+              and rep4["overturns_per_game_all"] == 1.0)
     r2, _ = build(tempfile.mkdtemp(), corrupt="hooks")
     check("wrong tuple value on a row fails the audit "
           "(exit 2)", r2.returncode == 2)

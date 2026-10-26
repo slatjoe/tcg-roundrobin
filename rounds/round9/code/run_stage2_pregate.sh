@@ -10,7 +10,11 @@
 # package at its committed sha and Joe's explicit go. The
 # games runner (run_stage2_games.sh) must not run before
 # this pre-gate passes: pregate_check.py prints IDENTICAL
-# and this runner exits 0 only then.
+# and this runner exits 0 only then. The manifest below
+# records the verdict, the search_s2.php sha256 and the
+# exact TEACHER_TUPLE_JSON this pre-gate ran under, so the
+# games runner's PREGATE-GATE block can gate on them
+# mechanically (review sec.2.1).
 #
 # Arms (paired_driver_gravy.py, Gravy mirror, instrument
 # 87/62): raw seat 1 (seeds 8501-8510, the round-7 pre-gate
@@ -224,15 +228,31 @@ $PY "$CODE_DIR/merge_registry.py" --registry "$REG" \
   > "$OUT/registry_merge.txt" 2>&1 || exit 1
 
 # --- manifest -------------------------------------------------------
-$PY - "$OUT" <<'PYEOF'
+# Records, beside the check text, the three fields the games
+# runner's PREGATE-GATE block reads (review sec.2.1): the
+# verdict (the checker's own PREGATE line), the search_s2.php
+# sha256 this pre-gate ran under, and the exact
+# TEACHER_TUPLE_JSON pin string it ran under -- the env value
+# verbatim, whose canonical form is the runners' shared
+# builder output (python json.dumps of settings_stage2.json's
+# teacher_tuple, default separators, file key order).
+$PY - "$OUT" "$CODE_DIR/search_s2.php" <<'PYEOF'
 import glob, hashlib, json, os, sys
-out = sys.argv[1]
+out, s2_path = sys.argv[1], sys.argv[2]
 def h(p):
     return hashlib.sha256(open(p, "rb").read()).hexdigest()
 def rows(p):
     return sum(1 for l in open(p) if l.strip()) if os.path.exists(p) else 0
+check_txt = open(out + "/pregate_check.txt").read()
+verdict = None
+for _l in check_txt.splitlines():
+    if _l.startswith("PREGATE: "):
+        verdict = _l.split(":", 1)[1].strip()
 man = {"stage": "round9-stage2-pregate",
-       "check": open(out + "/pregate_check.txt").read(),
+       "verdict": verdict,
+       "search_s2_sha256": h(s2_path),
+       "teacher_tuple_json": os.environ.get("TEACHER_TUPLE_JSON"),
+       "check": check_txt,
        "rows": {os.path.basename(p): rows(p) for p in
                 sorted(glob.glob(out + "/pg_*.jsonl"))},
        "sha256": {os.path.basename(p): h(p) for p in sorted(

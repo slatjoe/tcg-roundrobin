@@ -2,6 +2,45 @@
 
 **Status: FOR CLAUDE'S CODE REVIEW. This package approves nothing and launches nothing.** Stage 2 runs only after (i) Claude's approval of this package at its committed sha, (ii) Joe's explicit go in the TCG chat, (iii) the launched sha equals the approved sha (rounds-only diff aside), and (iv) the ghost pre-gate (§3.3) has passed IDENTICAL — the games runner must not start before it.
 
+---
+
+## Amendment — Stage 2 fix pass, 2026-10-26 (answering claude-reply-a0599d4)
+
+The review's verdict was CHANGES REQUESTED: two blocking items (§2), the F1–F5 rulings (§3, all accepted — no code consequences), and two non-blocking notes (§4). This amendment records the fix pass. **The original sections below are unrewritten; everything not listed here is byte-identical to the reviewed package.** The fix pass approves nothing and launches nothing; it comes back for a confirmation check at the fix commit.
+
+**Fix 1 — the pre-gate gates the games mechanically (review §2.1).**
+- `code/run_stage2_pregate.sh`: `pregate_manifest.json` now additionally records `verdict` (parsed from the checker's own `PREGATE:` line in pregate_check.txt), `search_s2_sha256` (the sha256 of the `code/search_s2.php` file the pre-gate ran under), and `teacher_tuple_json` (the exact pin string it ran under — the env value verbatim). Canonical form, stated for the comparison: the runners' shared builder output, i.e. python `json.dumps` of `settings_stage2.json`'s `teacher_tuple` with default separators and file key order; both runners build the string identically.
+- `code/run_stage2_games.sh`: a new `PREGATE-GATE` block sits after the tuple is built and **before the G8 sweep and any server spawn**. It reads `$STAGE2_OUT/pregate/pregate_manifest.json` and aborts unless all three hold: verdict == IDENTICAL; recorded `search_s2_sha256` == this run's pin `85490e8e…`; recorded `teacher_tuple_json` == the tuple this run builds from settings. An absent or unreadable manifest aborts. The block's pin literal is format-asserted (`^[0-9a-f]{64}$`) inside the block.
+- Fixture: `fx_s2_blocks` extracts the block **verbatim** and executes it against planted manifests — pass (proceeds), absent (aborts), NOT IDENTICAL (aborts), hash mismatch (aborts), tuple mismatch (aborts). The block spawns and waits for nothing and its python is stdlib-only, so the fixture runs it with the real interpreter. **Block-table addendum to §4:** games | PREGATE-GATE | reads `pregate_manifest.json`; aborts (spawns/waits: none) | 5 planted-manifest cases, all PASS.
+
+**Fix 2 — the live rate comes from completed games only (review §2.2).** `code/stage2_games_report.py` builds the completed-games set from the driver rows (completed = the report's existing definition, no `invalid` key) keyed by `gamename`; the band-rate tallies (`contested_rows`, `thin_prior_rate`, `overturn_rate`, `overturns_per_game`) count only stat rows whose `game` is in that set. The all-rows tallies are co-reported beside them (JSON keys `contested_rows_all`, `thin_prior_rows_all`/`thin_prior_rate_all`, `overturn_rows_all`/`overturn_rate_all`, `overturns_per_game_all`, plus a `rate_basis` string; printed as two labeled lines). The tuple audit still covers every teacher stat row. The L3 job population is **not** changed — timed-out/invalid games' overturns stay in L3 exactly as before (`code/build_s2_jobs.py` is byte-identical); only the rate moved. Fixture: a planted contested row carrying an overturn in the timed-out game is asserted EXCLUDED from `overturns_per_game` (band 0.5) and PRESENT in `overturns_per_game_all` (1.0).
+
+**Note 1 (review §4) — outcome points on one line.** The games report's outcome line now prints both prices on the SAME line: `= 1.5 pts at draw=0.5 (0.7500/game); 1.0 pts at draw=0 (W only, 0.5000/game)` (planted values); the JSON gains `points_draw0` / `points_draw0_per_game` in `teacher_outcomes_draw_scored`. The fixture asserts both figures on the one line.
+
+**Note 2 (review §4) — L3 coverage beside `jobs`.** `code/stage2_analyze.py` computes `jobs_no_shared_worlds` (jobs whose two candidates share no finished world, hence entering no read), prints it in the PRIMARY line (`jobs N; jobs_no_shared_worlds M (of T jobs)`) and in the JSON. Fixture: a planted fifth job whose prior candidate finishes no world asserts the count (1) and an unchanged read.
+
+**F4 co-report (review §3) — NOT implemented: published coverage is absent.** The published round-7 pre-gate records do not cover seeds 8501–8510 raw seat-1 rows: `rounds/round7/data/pregate/` publishes only the two ghost-arm search-stats files; the raw row files (`pregate_raw_s1.jsonl`, `pregate_raw2_s1.jsonl`, `pregate_raw_s2.jsonl`) appear in `pregate-report.md` only as sha256 entries for box artifacts under `/tmp/ggate`, their contents unpublished; `rounds/round7/data/rows/` holds gate-fleet rows from a different seed block. With no published raw gamelog rows to compare against, the co-report has nothing to read, so no code was written for it: `code/pregate_check.py` and `fixtures/fx_pregate_check.py` are byte-identical. If the raw pregate rows are ever published into the repo, the co-report is a small addition to the checker (a co-report line only, never a gate condition).
+
+**Pin updates.** Two runner pin literals moved with their files, machine-copied: `run_stage2_games.sh`'s pin of `stage2_games_report.py` → `62b5b319…`, `run_stage2_l3.sh`'s pin of `stage2_analyze.py` → `9b1a0677…`. No other pin changed; `search_s2.php` stays `85490e8e…` and every §6 literal not superseded below still verifies.
+
+**New hashes (changed files only).**
+
+| file | sha256 |
+|---|---|
+| code/stage2_games_report.py | `62b5b319243df01211f928210dbbc6da216a48032b009b486f179ee9583ddfef` |
+| code/stage2_analyze.py | `9b1a06773add3453c3773aaef5cdddfc63534cde9c7f1ebc6ec90a7f9e78c128` |
+| code/run_stage2_pregate.sh | `581f47aa76b9abec0bb562695d232d0f0854f9f579f53acc02cf2c4c180a6c10` |
+| code/run_stage2_games.sh | `8bb176d02c78f0bca86c8f97b1856dc8c9c24bc927d1518784fcb16b08a3f9ca` |
+| code/run_stage2_l3.sh | `f2c26978e4c80a45c64aeaab97011c7a1fbc9dc7519a63e5790d6caf7abcdb6f` |
+| fixtures/fx_s2_blocks.sh | `b5f16630881b0db34de35f97477df9b35ab482bdce68fdb8912d79319f87edb5` |
+| fixtures/fx_stage2_games_report.py | `80e38921fac0cb6d58644ed7efd7090c03ee5353e1bac356f3aeaa62936db346` |
+| fixtures/fx_stage2_analyze.py | `48b7a295fef21c9492330483c07a5415ce55524bf01b3e303ea10e9f3b55bb2c` |
+| fixtures/fx_s2_outputs.txt | `99a4cdb7a49ac180915c58f928ca8cd52ab5cd6b9f7eef07777935edfc0844bf` |
+
+**Fixtures after the fix pass: 120 checks, 7 suites, ALL PASS** (transcript regenerated: `fixtures/fx_s2_outputs.txt`). Deltas: fx_s2_blocks 21 → 26 (+5 gate cases); fx_stage2_games_report 8 → 12 (+1 same-line points check, +3 timeout-overturn variant); fx_stage2_analyze 14 → 16 (+2 no-shared-world checks). Unchanged: fx_s2_live 37, fx_s2_label 14, fx_build_s2_jobs 10, fx_pregate_check 5. `bash -n` clean on all three runners; the three-name form remains absent (the fx_s2_blocks grep covers the new block too).
+
+---
+
 Basis: Claude's Stage 1 ruling, `claude-reply-d7b92fd.md` §3 (numbering below is his), and the Stage 2 registration in `gravy-calibrated-search-design.md` §5. The calibrated setting is H8k-180+H from the Stage 1 report (`stage1-report.md`, commit d7b92fdf): hooks 8,000, deadline 180 s, horizon 62 at −1, k 25, margin 1.5 — per-state completion 1.0000 (240/240) at mean wall 26.5486 s. The ruling's §2 finding stands behind the whole stage: the bounds are inert and the calibration *is* the horizon — H8k-180+H is B0+H with headroom, and Stage 2 exists to test whether the calibrated teacher converts live, not to assume it.
 
 All pinned values live in one file, `code/settings_stage2.json` (teacher tuple, label tuple, games, bands, panel/fleet references, timeout derivation). The runners build their env pins from it; the analyzers audit every stamped row against it — the Stage 1 two-placement pattern throughout.
