@@ -1,0 +1,43 @@
+== prep: select 3 jobs (first B, first P, first ARS; distinct games)
+selected: 359158031_t2 game 359158031 player 1 branch B
+selected: 190554034_t1 game 190554034 player 1 branch P
+selected: 308484385_t1 game 308484385 player 2 branch ARS
+== trees
+8f6b35da23f4e5fc7f5fda2ede2d65ba330f9f3eb463e3377978ded1f5d7fa61  treeA/search.php
+6d63f5c37be840324bc847a454157a2688677354e952886980e4601f023d04a7  treeB/search.php
+3109176bb7137bc89b0645b8185f83c5722268c03028ca692642699cf7730b33  treeA/meas_label_main.php
+2463fc29c5333839971a0b22244b3b642d9ff68994f8942214d15b8eb6ca76a1  treeB/r9_label_main.php
+== servers
+3
+search_server: search model loaded (/home/joe/tcg/tcg-sim/rl_out/gravy_ppo_gravybc3/ckpt_v10.pt) on cuda
+search_server: search model loaded (/home/joe/tcg/tcg-sim/rl_out/gravy_ppo_gravybc3/ckpt_v10.pt) on cuda
+== run A (pristine tree + pristine driver)
+run meas_label_main.php hz=off player=1 rc=0 rows=200
+run meas_label_main.php hz=off player=2 rc=0 rows=100
+== run B-off (horizon tree + r9 driver, pin off)
+run r9_label_main.php hz=off player=1 rc=0 rows=200
+run r9_label_main.php hz=off player=2 rc=0 rows=100
+== run B-on (horizon tree + r9 driver, pin 62)
+run r9_label_main.php hz=62 player=1 rc=0 rows=200
+run r9_label_main.php hz=62 player=2 rc=0 rows=100
+== negative: pin 62 against jobs stamped 0 (must abort, exit 2)
+negative rc=2 (want 2)
+policy: v1 (deck-aware)
+policy: search (seat 1 via /tmp/r9s0_fx7/prod_s1.sock)
+ABORT: job for snap 359158031_t2 carries horizon 0 != LABEL_HORIZON pin 62
+== compare
+rows A / B-off / B-on: 300 300 300
+FX7 OFF-equivalence: mismatches=272 extra=0 -> DIFFERS
+  mismatch ('359158031_t2', 2, 11) A: {"child_state": {"action_points": 0, "arsenal": ["sunken_treasure_blue"], "board": {"1": {"allies": [], "ally_power": [], "auras": [], "banished": [], "characte B: {"child_state": {"action_points": 0, "arsenal": ["sunken_treasure_blue"], "board": {"1": {"allies": [], "ally_power": [], "auras": [], "banished": [], "characte
+  mismatch ('359158031_t2', 2, 19) A: {"child_state": {"action_points": 0, "arsenal": ["sunken_treasure_blue"], "board": {"1": {"allies": [], "ally_power": [], "auras": [], "banished": [], "characte B: {"child_state": {"action_points": 0, "arsenal": ["sunken_treasure_blue"], "board": {"1": {"allies": [], "ally_power": [], "auras": [], "banished": [], "characte
+  mismatch ('359158031_t2', 2, 25) A: {"child_state": {"action_points": 0, "arsenal": ["sunken_treasure_blue"], "board": {"1": {"allies": [], "ally_power": [], "auras": [], "banished": [], "characte B: {"child_state": {"action_points": 0, "arsenal": ["sunken_treasure_blue"], "board": {"1": {"allies": [], "ally_power": [], "auras": [], "banished": [], "characte
+  mismatch ('359158031_t2', 2, 36) A: {"child_state": {"action_points": 0, "arsenal": ["sunken_treasure_blue"], "board": {"1": {"allies": [], "ally_power": [], "auras": [], "banished": [], "characte B: {"child_state": {"action_points": 0, "arsenal": ["sunken_treasure_blue"], "board": {"1": {"allies": [], "ally_power": [], "auras": [], "banished": [], "characte
+  mismatch ('359158031_t2', 2, 38) A: {"child_state": {"action_points": 0, "arsenal": ["sunken_treasure_blue"], "board": {"1": {"allies": [], "ally_power": [], "auras": [], "banished": [], "characte B: {"child_state": {"action_points": 0, "arsenal": ["sunken_treasure_blue"], "board": {"1": {"allies": [], "ally_power": [], "auras": [], "banished": [], "characte
+A    : finished 272 unfinished 0 error 28
+B-off: finished 272 unfinished 0 error 28
+B-on : finished 300 unfinished 0 error 0
+FX7 ON mechanics: horizon-marked worlds=28; marked-but-not-draw-finished=0; all rows stamped 62: True
+FX7 finished share ON >= OFF: True (300 vs 272 finished)
+horizon-marked worlds' exit turns: min 62 max 227
+shm segments after: 62
+FX7 DONE

@@ -1,0 +1,16 @@
+1381a1382,1385
+>     // Round-9 D7: run-pinned rollout horizon (absolute currentTurn);
+>     // 0 = off, the registered label instrument unchanged.
+>     $horizon = intval($cfg["horizon"] ?? 0);
+>     $horizonHit = false;
+1414a1419
+>         if ($horizon > 0 && intval($GLOBALS["currentTurn"] ?? 0) >= $horizon) { $horizonHit = true; break; }
+1422a1428
+>     $horizonApplied = ($horizonHit && !IsGameOver()) ? 1 : 0;
+1426c1432,1433
+<       "finished" => IsGameOver() ? 1 : 0,
+---
+>       "horizon" => $horizonApplied,
+>       "finished" => (IsGameOver() || $horizonApplied) ? 1 : 0,
+1499a1507
+>            "horizon" => intval($cfg["horizon"] ?? 0),

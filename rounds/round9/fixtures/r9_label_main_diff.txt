@@ -1,0 +1,38 @@
+1a2,10
+> // Round-9 horizon labeler: byte-derived from meas_label_main.php
+> // (sha256 3109176b...) with ONLY the D7 horizon pin added (see
+> // fixtures/r9_label_main_diff.txt). Used for the Stage-0 horizon
+> // co-report pass in the horizon tree (code/search_horizon.php).
+> // The pin: env LABEL_HORIZON is "off" (pin 0; the default) or a
+> // non-negative integer turn. Every job must carry "horizon" equal
+> // to the pin — a mismatch or a missing value aborts (exit 2)
+> // before any labeling. Every emitted row is stamped "horizon".
+> //
+15a25,33
+> $hzRaw = getenv("LABEL_HORIZON");
+> if ($hzRaw === false || $hzRaw === "" || $hzRaw === "off") {
+>   $HORIZON = 0;
+> } elseif (preg_match('/^\d+$/', strval($hzRaw))) {
+>   $HORIZON = intval($hzRaw);
+> } else {
+>   fwrite(STDERR, "ABORT: LABEL_HORIZON '$hzRaw' is not 'off' or a non-negative integer\n");
+>   exit(2);
+> }
+21c39,47
+< fwrite(STDERR, "meas jobs=" . count($jobs) . " W=$W\n");
+---
+> foreach ($jobs as $j) {
+>   if (!array_key_exists("horizon", $j) || intval($j["horizon"]) !== $HORIZON) {
+>     fwrite(STDERR, "ABORT: job for snap " . strval($j["snap"] ?? "?") .
+>       " carries horizon " . var_export($j["horizon"] ?? null, true) .
+>       " != LABEL_HORIZON pin $HORIZON\n");
+>     exit(2);
+>   }
+> }
+> fwrite(STDERR, "meas jobs=" . count($jobs) . " W=$W horizon=$HORIZON\n");
+26c52
+<   $cfg = ["W" => $W, "cap" => count($j["cands"]),
+---
+>   $cfg = ["W" => $W, "horizon" => $HORIZON, "cap" => count($j["cands"]),
+36a63
+>     $r["horizon"] = $HORIZON;
