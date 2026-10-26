@@ -1,4 +1,4 @@
-Stage-1 fixture outputs - run locally 2026-10-26 (builder VM, after the claude-reply-edddf5e fix pass).
+Stage-1 fixture outputs - run locally 2026-10-26 (builder VM, rerun in full after the Stage 1 launch fix: run_stage1.sh line 343 stray token removed, new fx_shard_supervision suite added).
 PHP: PHP 8.3.6 (cli) (built: Sep  2 2026 12:56:02) (NTS) (user-space extraction of the php8.3 debs; on the box, system php 8.5).
 
 === fx_s1_eval (code/s1_eval_main.php against the stub tree) ===
@@ -69,6 +69,32 @@ PASS case3 B0-only run: no-op, exit 0, no gate files
 PASS case4 +H iteration: no-op, exit 0, no gate files
 FX-B0-GATE: ALL PASS
 
+=== fx_shard_supervision (code/run_stage1.sh eval shard-supervision block, extracted verbatim) ===
+extracted runner lines 343-386
+PASS extraction starts at the PIDS init line
+PASS extraction ends at the stats cat line
+PASS extraction is the full 44-line region
+PASS extraction carries spawn/wait/FAIL-check/cat verbatim
+PASS extraction excludes tree setup and the B0 gate
+PASS pre-fix block reconstructed (stray token restored)
+planted 8 jobs over 4 games, shards [0, 1, 3]
+PASS case1 exit 0 (all shards supervised)
+PASS case1 concatenated evals == 8 stub rows (4 shards x 2 players)
+PASS case1 concatenated stats == 8 stub rows
+PASS case1 rows from EVERY shard present after the wait
+PASS case1 block waited for the slow shard (elapsed 6s >= 4s)
+PASS case1 jobs split across 3 shards, both players
+planted 8 jobs over 4 games, shards [0, 1, 3]
+PASS case2 exit 1 (shard failure aborts the block)
+PASS case2 ABORT line names the failed setting
+PASS case2 no concatenation after a shard failure
+planted 8 jobs over 4 games, shards [0, 1, 3]
+PASS case3 PRE-FIX block exits non-zero
+PASS case3 PRE-FIX block dies with 'PIDS: unbound variable' (the launch failure)
+PASS case3 PRE-FIX block first reports the phantom 'pid' command
+PASS case3 PRE-FIX block never reaches the concatenation
+FX-SHARD-SUPERVISION: ALL PASS
+
 === fx_build_panel (code/build_panel.py) ===
 PASS case1 exit 0, 12 states over 6 games, cap respected rc=0 states=12
 PASS case1 capture order preserved (g1_t1 first) capA/g1_t1
@@ -80,7 +106,7 @@ FX-BUILD-PANEL: ALL PASS
 === fx_merge_registry (code/merge_registry.py) ===
 PASS clean merge: +3, n_games 4, tag recorded merged: +3 new (tag r9s1_capture), 0 already under this tag; n_games=4
 PASS printed sha256 == merged file's sha256 
-PASS backup written beside the registry ['registry.json.bak-20261026T110734']
+PASS backup written beside the registry ['registry.json.bak-20261026T112835']
 PASS vault copy written 
 PASS same-tag re-merge is a no-op (+0, sha stable) merged: +0 new (tag r9s1_capture), 3 already under this tag; n_games=4
 backup: /

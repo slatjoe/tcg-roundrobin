@@ -197,9 +197,11 @@ explicitly. See stage0-report-fix.md sec.3 for the disclosure.
 
 ## Stage 1 fixtures (claude-reply-16f02e2 sec.4; clause 8)
 
-Five suites, 66 PASS lines, ALL PASS locally 2026-10-26
-(rerun in full after the `claude-reply-edddf5e` fix pass;
-verbatim transcript: `fx_stage1_outputs.txt`). The PHP
+Six suites, 85 PASS lines, ALL PASS locally 2026-10-26
+(rerun in full after the `claude-reply-edddf5e` fix pass,
+and again after the Stage 1 launch fix — see
+`stage1-launch-fix.md`; verbatim transcript:
+`fx_stage1_outputs.txt`). The PHP
 suite ran on a user-space PHP 8.3.6 (deb extraction); the
 box runs PHP 8.5.4 and every Stage 1 PHP file also lints
 clean under 8.3.6.
@@ -250,6 +252,25 @@ clean under 8.3.6.
   block and the block stops the run (exit 1, before the
   +H settings); a B0-only invocation and a +H iteration
   are no-ops.
+- `fx_shard_supervision.sh` — the runner's eval
+  shard-supervision block (`run_stage1.sh` lines
+  343–386: the PIDS spawn / wait / FAIL-check / cat
+  region, extracted verbatim and run under `bash -u`
+  against a stub `php` and planted jobs), 19 checks.
+  The Stage 1 launch of 2026-10-26 died in this block:
+  line 343 carried a stray token (`PIDS="" FAIL=0 pid`)
+  that turned the initialization into environment for a
+  nonexistent command, leaving PIDS unset for the first
+  append under `set -u`. Happy path: all four shards
+  spawn, the wait covers every pid (a slow shard's rows
+  land in the concatenated output; elapsed time proves
+  the wait), both cats complete. Failure path: one
+  shard's php exits 1 → the ABORT line and exit 1
+  before any concatenation. And the before/after: the
+  same fixture against the pre-fix block text (the
+  token re-added to a temp copy) reproduces the launch
+  death — `pid: command not found`, then `PIDS:
+  unbound variable`, no concatenation.
 - `fx_build_panel.py` — `code/build_panel.py`, 5 checks:
   first-N-in-capture-order with the per-game cap respected;
   the cap binding before a shortfall (exit 3, report marked

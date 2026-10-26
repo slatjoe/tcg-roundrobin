@@ -340,7 +340,7 @@ PYEOF
         "eval tree $s featurize.php" || exit 1
       start_sweeper "$tree" "e${s}"
     done
-    PIDS="" FAIL=0 pid
+    PIDS="" FAIL=0
     for s in 0 1 2 3; do
       (
         tree="/tmp/r9s1_tree_e${s}"
