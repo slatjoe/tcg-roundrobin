@@ -1,6 +1,6 @@
 {
  "stage": "round9-stage3",
- "comment": "Single source for Stage 3's pinned parameters (ruling sec.4, claude-reply-d593faf). Stage 3 is the PAIRED fleet read: calibrated teacher vs raw v10, same seed + same seat per pair; Gravy mirror vs heuristic; instrument 87/62. teacher_tuple is byte-identical reuse of the Stage 2 tuple (H8k-180+H): the games runner builds TEACHER_TUPLE_JSON from it and the PREGATE-GATE block compares it against the Stage 2 pre-gate manifest (no new pre-gate run). label_tuple is Stage 2's L3 tuple, unchanged. Life score (games report and games analyzer, same definition): win -> 1; capped AND NOT draw AND own life strictly greater than opponent's -> 1; else 0, computed from the driver rows' p1life/p2life in the arm's seat frame.",
+ "comment": "Single source for Stage 3's pinned parameters (ruling sec.4, claude-reply-d593faf). Stage 3 is the PAIRED fleet read: calibrated teacher vs raw v10, same seed + same seat per pair; Gravy mirror vs heuristic; instrument 87/62. teacher_tuple is byte-identical reuse of the Stage 2 tuple (H8k-180+H): the games runner builds TEACHER_TUPLE_JSON from it and the PREGATE-GATE block compares it against the Stage 2 pre-gate manifest (no new pre-gate run). label_tuple is Stage 2's L3 tuple, unchanged. Life score (ONE definition: stage3_games_report.life_score, imported by the games analyzer): win -> 1; capped (winner 0) AND own life strictly greater than opponent's -> 1; else 0, computed from the driver rows' p1life/p2life in the arm's seat frame. The draw flag plays no part (the driver marks every capped game draw: true).",
  "teacher_tuple": {
   "deadline_s": 180,
   "hooks": 8000,
@@ -51,7 +51,7 @@
   "converts": "seed-clustered CI lower bound > 0",
   "does_not_convert": "CI includes 0",
   "harms": "CI upper bound < 0",
-  "inconclusive": "teacher timeouts > 2% of teacher games (final counts)",
+  "inconclusive": "teacher timeouts > 2% of teacher games (final counts), OR (excluded + dropped) pairs > 2% of attempted pairs (final counts; claude-reply-c924b19 sec.2.2)",
   "impeachment": "primary mean diff > +0.25: impeachment checks print before the read",
   "bootstrap": {
    "B": 10000,
@@ -60,12 +60,12 @@
   }
  },
  "l3": {
-  "label_seed_base": 1055001,
+  "label_seed_base": 50055001,
   "seed_stride_per_shard": 100000000,
   "pair": "va",
   "server": "production (81ef2cdb...)",
   "shards": 4,
-  "seed_family_clearance": "bases used: Stage 0 855001, Stage 2 955001 (each + shard x 10^8, shard in 0..3 -> family spans [base, base + 300000000 + working range]); Stage 3 base 1055001: +100,000,000 above the Stage 2 base at every shard offset, disjoint from both prior families at every shard"
+  "seed_family_clearance": "RANGE-DISJOINT (restated, claude-reply-c924b19 sec.2.4; the earlier 'one hundred million above' claim was false - the offset was +100,000). Seed lattice (s2_label_main.php + search code): seedBase = MEAS_SEED + job x 100,003; worlds at seedBase + w x 31,337; at 120 jobs x 50 worlds a shard family spans [base, base + 119 x 100,003 + 49 x 31,337] = [base, base + 13,435,870] (~13.4M). Stage 3 base 50055001 + shard x 10^8: at every shard its span sits 35,664,130 (~35.7M) above the top of Stage 2's same-shard span (955001 + 13,435,870) and 37,464,130 (~37.5M) below the next shard's Stage 0/2 base - ~36M clear of every Stage 0 (855001) and Stage 2 (955001) span at every shard; the families are range-disjoint, not merely value-disjoint. Registry note: Stage 0 and Stage 2 interleave the same way (offset 100,000) and are value-disjoint by the same lattice - noted, no action."
  },
  "pregate": {
   "source": "Stage 2 IDENTICAL (no new pre-gate run)",

@@ -2,7 +2,7 @@
 # Round-9 Stage 3 L3 (ruling sec.4.6): every overturn the
 # calibrated teacher captured in the Stage 3 games, labeled
 # at LABEL_W=50, CRN, against the PRODUCTION server, seed
-# bases 1055001 + shard x 10^8, horizon 62 pinned -- the
+# bases 50055001 + shard x 10^8, horizon 62 pinned -- the
 # registered label tuple (settings_stage3.json label_tuple:
 # L3-W50+H, carried over from Stage 2 unchanged).
 # stage3_attr_analyze.py renders the ATTRIBUTION read
@@ -34,7 +34,7 @@ GTREE=${GTREE_SRC:-/tmp/gravytree}
 PROD=$SIM/rl/search_server.py
 CKPT=$SIM/rl_out/gravy_ppo_gravybc3/ckpt_v10.pt
 DECK_REL=decks/nats2026_eriksen_gravy_60.txt
-LABEL_BASE=1055001
+LABEL_BASE=50055001
 NSHARD=4
 SRV_WAIT_TRIES=${SRV_WAIT_TRIES:-60}
 mkdir -p "$OUT"
@@ -81,7 +81,7 @@ expect_hash "$CODE_DIR/build_s3_jobs.py" \
   fabecae5087d48c1eb2127e11ee750939d364c22b14e2d6b5d534a863fb2d498 \
   "build_s3_jobs.py"
 expect_hash "$CODE_DIR/stage3_attr_analyze.py" \
-  bc92a2c87c3c0dbf3264c2a949d87bde20ed9d5816ce2f88c6603f0e1cd05453 \
+  788cd28a5018d2786f67cd2b0a17c321598795bed9bc97e4b903dc837537fb21 \
   "stage3_attr_analyze.py"
 expect_hash "$CODE_DIR/stage0_report.py" \
   5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf \
@@ -93,10 +93,10 @@ expect_hash "$CODE_DIR/shm_sweep.py" \
   98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33 \
   "shm_sweep.py ((C) containment)"
 expect_hash "$CODE_DIR/g8_sweep2.sh" \
-  72b18b3402ca5132bcdd4d1c6ea1f9f6c8cc3fc9e3fea76472dc0a09e5293a86 \
+  d49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17 \
   "g8_sweep2.sh (hardened G8 sweep)"
 expect_hash "$CODE_DIR/settings_stage3.json" \
-  b241515588b8152145bed2708432aa377ce4f054131fff150076e8998b5be912 \
+  34337753835aae29e2fb9bf9c090cc2a2f64b7799d487210c093d48a1040ed2e \
   "settings_stage3.json"
 
 {

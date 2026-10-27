@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
 """fx_s3_l3_roundtrip checker: s2_label_main.php (Stage 3
-pins, MEAS_SEED=1055001) against this dir's cand-parity stub
-play_game.php, then the genuine rows through the REAL
-stage3_attr_analyze.py.
+pins, MEAS_SEED=50055001) against this dir's cand-parity
+stub play_game.php, then the genuine rows through the
+REAL stage3_attr_analyze.py.
 
 Hand-computed reads (stub docstring): fxA diff 0.4, fxB
 diff 0 -> primary / draw05 / lifediff mean diffs all 0.2.
 Planted games report: overturns_per_game 1.0 -> per-game
 gain = 0.2 x 1.0 = 0.2. Planted Stage 3 read:
-primary.mean_diff = 0.05 -> ratio_to_delta = 0.2 / 0.05
-= 4.0 exactly. No tripwire (gain 0.2 not > 0.25; mean 0.2
-not > 0.20). Stamp audit over the genuine rows: rows ==
+primary.mean_diff = 0.05, CI [0.01, 0.09] (excludes 0)
+-> ratio_to_delta = 0.2 / 0.05 = 4.0 exactly, printed
+plain. No tripwire (gain 0.2 not > 0.25; mean 0.2 not
+> 0.20). Stamp audit over the genuine rows: rows ==
 200, bad == 0; the JSON carries "attribution" (no
 PROCEED/STOP verdict).
+RATIO GUARD cases (claude-reply-c924b19 sec.4), same
+genuine rows, two more planted Stage 3 reads:
+  delta -0.01, CI [-0.03, 0.01] -> prints "n/a (Δ ≤ 0)"
+    with the CI beside it; ratio_to_delta is null and
+    ratio_note set in the JSON.
+  delta +0.01, CI [-0.02, 0.04] -> prints "unstable
+    (Δ CI includes 0)" with the CI beside it; ratio null.
 Usage: check_fx_s3_l3.py <workdir>"""
 import json
 import os
@@ -77,21 +85,28 @@ def main():
                        "ci": [0.01, 0.09]}}
     sp = os.path.join(tmp, "stage3_read.json")
     json.dump(s3r, open(sp, "w"))
-    out = os.path.join(tmp, "attr_read.json")
-    r = subprocess.run(
-        [sys.executable,
-         os.path.join(code, "stage3_attr_analyze.py"),
-         "--jobs", os.path.join(here, "jobs_ok.jsonl"),
-         "--labels", os.path.join(work, "out.jsonl"),
-         "--games-report", gp, "--stage3-read", sp,
-         "--settings", os.path.join(code, "settings_stage3.json"),
-         "--expect-rows", "50", "--json-out", out],
-        capture_output=True, text=True)
+    def run_attr(s3r_obj, tag):
+        spx = os.path.join(tmp, "stage3_read_%s.json" % tag)
+        json.dump(s3r_obj, open(spx, "w"))
+        outx = os.path.join(tmp, "attr_read_%s.json" % tag)
+        rx = subprocess.run(
+            [sys.executable,
+             os.path.join(code, "stage3_attr_analyze.py"),
+             "--jobs", os.path.join(here, "jobs_ok.jsonl"),
+             "--labels", os.path.join(work, "out.jsonl"),
+             "--games-report", gp, "--stage3-read", spx,
+             "--settings", os.path.join(code,
+                                         "settings_stage3.json"),
+             "--expect-rows", "50", "--json-out", outx],
+            capture_output=True, text=True)
+        rdx = json.load(open(outx)) if rx.returncode == 0 \
+            and os.path.exists(outx) else None
+        return rx, rdx
+    r, read = run_attr(s3r, "plain")
     check("round-trip: attr analyzer exit 0 on genuine rows",
           r.returncode == 0,
           "exit=%r %s" % (r.returncode, r.stdout.strip()[-160:]))
     if r.returncode == 0:
-        read = json.load(open(out))
         check("stamp audit rows == 200, bad == 0",
               read["label_tuple_audit"] == {"rows": 200, "bad": 0},
               "got %r" % read.get("label_tuple_audit"))
@@ -110,6 +125,34 @@ def main():
               and "fleet delta = 4.0000" in r.stdout
               and "VERDICT:" not in r.stdout
               and "verdict" not in read)
+    # ---- RATIO GUARD branches (sec.4) -----------------------
+    r, read = run_attr(
+        {"primary": {"pairs_scored": 400, "mean_diff": -0.01,
+                     "ci": [-0.03, 0.01]}}, "neg")
+    att = (read or {}).get("attribution") or {}
+    check("ratio guard: delta <= 0 -> prints 'n/a (Δ ≤ 0)' "
+          "with delta's CI beside it; JSON ratio null + note",
+          r.returncode == 0 and read
+          and "fleet delta = n/a (Δ ≤ 0), fleet Δ -0.0100 "
+              "CI [-0.0300, 0.0100]" in r.stdout
+          and att.get("ratio_to_delta") is None
+          and att.get("ratio_note") == "n/a (Δ ≤ 0)"
+          and att.get("stage3_primary_ci") == [-0.03, 0.01],
+          "got %r" % att)
+    r, read = run_attr(
+        {"primary": {"pairs_scored": 400, "mean_diff": 0.01,
+                     "ci": [-0.02, 0.04]}}, "unstable")
+    att = (read or {}).get("attribution") or {}
+    check("ratio guard: delta > 0, CI includes 0 -> prints "
+          "'unstable (Δ CI includes 0)' with the CI beside "
+          "it; JSON ratio null + note",
+          r.returncode == 0 and read
+          and "fleet delta = unstable (Δ CI includes 0), "
+              "fleet Δ 0.0100 CI [-0.0200, 0.0400]" in r.stdout
+          and att.get("ratio_to_delta") is None
+          and att.get("ratio_note") == "unstable (Δ CI includes 0)"
+          and att.get("stage3_primary_ci") == [-0.02, 0.04],
+          "got %r" % att)
     print("FX-S3-L3-ROUNDTRIP: %s"
           % ("ALL PASS" if not FAIL else "FAILURES"))
     return FAIL

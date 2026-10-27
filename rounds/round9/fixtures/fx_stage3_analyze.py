@@ -40,6 +40,15 @@ CASE D (dropped pair): Case A population + a 5th pair
 via the REAL report -> status dropped_raw_timeout,
 pairs_scored stays 4, primary unchanged (-0.5), dropped
 listed with reason.
+
+CASE E (excluded-pairs limit, claude-reply-c924b19
+sec.2.2): 400 pairs; N pairs (seat 1, first N seeds) are
+"excluded" (teacher invalid no_result); the rest are
+teacher win / raw loss, so the scored primary is exactly
++1.0 with CI [1.0, 1.0] -- a CI that excludes 0. N = 9:
+rate 0.0225 > 0.02 -> INCONCLUSIVE overrides the CI.
+N = 8: rate 0.0200, not > 0.02 -> the band verdict
+(CONVERTS) stands.
 Run: python3 fx_stage3_analyze.py (own temp dirs)."""
 import importlib.util
 import json
@@ -133,6 +142,26 @@ def case_b(tmp):
                 pairs.append(prow(seed, seat, t,
                                   lossrow(seed, seat, "raw", gn + "r"),
                                   "teacher_timeout"))
+            else:
+                pairs.append(prow(
+                    seed, seat, winrow(seed, seat, "teacher", gn),
+                    lossrow(seed, seat, "raw", gn + "r"), "scored"))
+    plant(tmp, pairs)
+    return run_analyzer(tmp, 400)
+
+
+def case_e(tmp, n_excluded):
+    pairs = []
+    for seed in range(23001, 23201):
+        for seat in (1, 2):
+            gn = "fxe%d_%d" % (seed, seat)
+            if seat == 1 and seed < 23001 + n_excluded:
+                t = {"seed": seed, "arm": "teacher", "seat": 1,
+                     "invalid": "no_result"}
+                pairs.append(prow(
+                    seed, seat, t,
+                    lossrow(seed, seat, "raw", gn + "r"),
+                    "excluded"))
             else:
                 pairs.append(prow(
                     seed, seat, winrow(seed, seat, "teacher", gn),
@@ -236,6 +265,31 @@ def main():
           and len(read["dropped"]) == 1
           and read["dropped"][0]["seed"] == 23003,
           "got %r" % ((read and (read["primary"], read["dropped"])),))
+    # ---- CASE E -------------------------------------------------
+    r, read = case_e(tempfile.mkdtemp(), 9)
+    check("E9: 9 excluded pairs (rate 0.0225 > 0.02) -> "
+          "INCONCLUSIVE overrides a CI that excludes 0",
+          r.returncode == 0 and read
+          and read["verdict"] == "INCONCLUSIVE"
+          and read["primary"]["ci"][0] > 0
+          and read["pairs_out_of_primary"] == 9
+          and approx(read["pairs_out_rate"], 0.0225),
+          "got %r" % ((read and (read["verdict"],
+                                 read["pairs_out_of_primary"])),))
+    check("E9: the out-pairs count and rate print beside the "
+          "timeout rate region",
+          "PAIRS OUT of the primary: dropped_raw_timeout 0, "
+          "excluded 9 (total 9 of 400 attempted, rate 0.0225"
+          in r.stdout)
+    r, read = case_e(tempfile.mkdtemp(), 8)
+    check("E8: 8 excluded pairs (rate 0.0200, not > 0.02) -> "
+          "the band verdict stands (CONVERTS)",
+          r.returncode == 0 and read
+          and read["verdict"] == "CONVERTS"
+          and read["pairs_out_of_primary"] == 8
+          and approx(read["pairs_out_rate"], 0.02),
+          "got %r" % ((read and (read["verdict"],
+                                 read["pairs_out_of_primary"])),))
     print("FX-STAGE3-ANALYZE: %s"
           % ("ALL PASS" if not FAIL else "FAILURES"))
     return FAIL

@@ -45,10 +45,14 @@ same seed + same seat per pair (seeds 23001-23200 x seats
     (validity only, no rates).
   * LIFE-SCORE tallies for capped teacher games
     (ahead/behind/tied from capped rows' p1life/p2life in
-    seat frame). LIFE SCORE definition (also in
-    stage3_analyze.py, same words): win -> 1; capped AND
-    NOT draw AND own life strictly greater than opponent's
-    -> 1; else 0.
+    seat frame). LIFE SCORE definition (SINGLE definition:
+    life_score() below; stage3_analyze.py imports it from
+    this module): win -> 1; capped (winner 0) AND own life
+    strictly greater than opponent's -> 1; else 0. The
+    driver marks every capped game draw: true, so the
+    draw flag plays NO part in the rule (fix pass on
+    claude-reply-c924b19 sec.2.1: the earlier "capped AND
+    NOT draw" form could never fire).
 
 Modes:
   full (default): writes pairing.json + games_report.json.
@@ -79,16 +83,17 @@ OTHER_INVALID = ("seat_mismatch", "connect_failed", "no_result")
 
 def life_score(row):
     """Life score in the row's own seat frame (see module
-    docstring): win -> 1; capped AND NOT draw AND own life
-    strictly greater than opponent's -> 1; else 0."""
+    docstring): win -> 1; capped (winner 0) AND own life
+    strictly greater than opponent's -> 1; else 0. The
+    draw flag plays no part: the paired driver marks
+    every capped game draw: true."""
     if not isinstance(row, dict) or "invalid" in row:
         return 0
     seat = int(row.get("seat") or 0)
     winner = int(row.get("winner") or 0)
     if seat and winner == seat:
         return 1
-    if int(row.get("capped") or 0) == 1 \
-            and int(row.get("draw") or 0) != 1 and winner == 0:
+    if int(row.get("capped") or 0) == 1 and winner == 0:
         own = row.get("p1life") if seat == 1 else row.get("p2life")
         opp = row.get("p2life") if seat == 1 else row.get("p1life")
         if own is not None and opp is not None and int(own) > int(opp):
@@ -115,6 +120,12 @@ def load_rows(out_dir):
             r = json.loads(l)
             key = (int(r["seed"]), int(r["seat"]))
             if mr:
+                if key in rerun_rows:
+                    print("ABORT: duplicate rerun row for "
+                          "(seed, seat) %s: %s and %s - at most "
+                          "one rerun row per key (F-S3-4 ruling)"
+                          % (key, rerun_rows[key][0], base))
+                    sys.exit(2)
                 rerun_rows[key] = (base, r)
             else:
                 arm = BLOCKS[m.group(1)][0]

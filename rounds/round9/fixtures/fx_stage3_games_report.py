@@ -4,10 +4,15 @@ paired games output, with hand-computed expectations.
 
 MAIN population (5 pairs, seeds 23001-23003):
   teacher t1a (seat 1): 23001 W (winner 1), 23002 capped
-    winner 0 draw 0, p1life 30 > p2life 22 (ahead), 23003
-    invalid timeout.
+    winner 0 draw TRUE, p1life 30 > p2life 22 (ahead),
+    23003 invalid timeout.
   teacher t2a (seat 2): 23001 L (winner 1), 23002 capped
-    winner 0, p1life 18 == p2life 18 (tied).
+    winner 0 draw TRUE, p1life 18 == p2life 18 (tied).
+  The capped rows are planted in the paired driver's REAL
+  shape (draw: true, capped: true, cap_reason "turns" --
+  the driver marks EVERY capped game a draw; the pre-fix
+  life rule "capped AND NOT draw" could never fire on
+  this shape, fix pass on claude-reply-c924b19 sec.2.1).
   raw r1a (seat 1): 23001 raw W (winner 1 == seat), 23002
     raw L (winner 2), 23003 invalid timeout.
   raw r2a (seat 2): 23001 raw W (winner 2 == seat), 23002
@@ -32,8 +37,18 @@ chain consistency assert; see fx_s3_registry.py).
 VARIANT rerun_timeout: the r1a 23003 rerun row is ALSO
 invalid timeout (and the teacher 23003 row is a completed
 W) -> pair status dropped_raw_timeout.
+VARIANT dup_rerun: the rerun file carries TWO rows for
+(23003, 1) -> the pairing builder aborts (exit 2, F-S3-4:
+at most one rerun row per (seed, seat)).
 A corrupted tuple stat row aborts (exit 2).
+REAL-ROWS case: the fixed life_score (imported; the
+analyzer's copy is the SAME function object) runs over
+data/stage2/games_*.jsonl -- the real driver output:
+41 capped rows (all draw: true), 25 ahead score 1, 13
+behind + 3 tied score 0, 112 life-wins in total (counted
+independently from the rows at fix time).
 Run: python3 fx_stage3_games_report.py (own temp dirs)."""
+import glob
 import json
 import os
 import subprocess
@@ -67,16 +82,18 @@ def build(tmp, variant="main"):
          "gamename": "fxg23001", "winner": 1, "draw": 0,
          "capped": 0, "p1life": 20, "p2life": 5},
         {"seed": 23002, "arm": "teacher", "seat": 1,
-         "gamename": "fxg23002", "winner": 0, "draw": 0,
-         "capped": 1, "p1life": 30, "p2life": 22},
+         "gamename": "fxg23002", "winner": 0, "draw": True,
+         "capped": True, "cap_reason": "turns",
+         "p1life": 30, "p2life": 22},
     ]
     t2a = [
         {"seed": 23001, "arm": "teacher", "seat": 2,
          "gamename": "fxg33001", "winner": 1, "draw": 0,
          "capped": 0, "p1life": 25, "p2life": -2},
         {"seed": 23002, "arm": "teacher", "seat": 2,
-         "gamename": "fxg33002", "winner": 0, "draw": 0,
-         "capped": 1, "p1life": 18, "p2life": 18},
+         "gamename": "fxg33002", "winner": 0, "draw": True,
+         "capped": True, "cap_reason": "turns",
+         "p1life": 18, "p2life": 18},
     ]
     r1a = [
         {"seed": 23001, "arm": "raw", "seat": 1,
@@ -95,7 +112,7 @@ def build(tmp, variant="main"):
          "capped": 0, "p1life": 3, "p2life": 20},
     ]
     rerun = []
-    if variant == "main":
+    if variant in ("main", "dup_rerun"):
         t1a.append({"seed": 23003, "arm": "teacher", "seat": 1,
                     "invalid": "timeout"})
         r1a.append({"seed": 23003, "arm": "raw", "seat": 1,
@@ -103,6 +120,11 @@ def build(tmp, variant="main"):
         rerun = [{"seed": 23003, "arm": "raw", "seat": 1,
                   "gamename": "fxr23003", "winner": 2, "draw": 0,
                   "capped": 0, "p1life": 0, "p2life": 15}]
+    if variant == "dup_rerun":
+        rerun.append({"seed": 23003, "arm": "raw", "seat": 1,
+                      "gamename": "fxr23003b", "winner": 2,
+                      "draw": 0, "capped": 0,
+                      "p1life": 0, "p2life": 15})
     if variant in ("rerun_timeout", "dropped"):
         t1a.append({"seed": 23003, "arm": "teacher", "seat": 1,
                     "gamename": "fxg23003", "winner": 1,
@@ -200,6 +222,11 @@ def main():
               rep["teacher_capped_life"].get("ahead") == 1
               and rep["teacher_capped_life"].get("tied") == 1
               and rep["teacher_capped_life"].get("behind", 0) == 0)
+        check("capped life_score_sum == 1 (the fixed rule "
+              "credits the ahead capped game on draw:true "
+              "rows; the pre-fix rule scored 0)",
+              rep["teacher_capped_life"].get("life_score_sum")
+              == 1)
         check("band rates (thin 0.25, overturn 0.25, 0.25/game)",
               rep["thin_prior_rate"] == 0.25
               and rep["overturn_rate"] == 0.25
@@ -218,6 +245,53 @@ def main():
     r3, _rep3, _p3 = build(tempfile.mkdtemp(), variant="corrupt")
     check("corrupted tuple row aborts (exit 2)",
           r3.returncode == 2)
+    r4, _rep4, _p4 = build(tempfile.mkdtemp(),
+                           variant="dup_rerun")
+    check("duplicate rerun row for one (seed, seat) aborts "
+          "(exit 2, F-S3-4)",
+          r4.returncode == 2
+          and "duplicate rerun row" in r4.stdout,
+          (r4.stdout.strip()[-120:] if r4.returncode != 2
+           else ""))
+    # ---- REAL-ROWS life score (sec.2.1 fixture) -------------
+    # Load both modules through the normal import system so
+    # the identity assert is real: stage3_analyze's imported
+    # life_score must be stage3_games_report's own function.
+    sys.path.insert(0, CODE)
+    import stage3_analyze as s3an
+    import stage3_games_report as s3gr
+    check("ONE life_score definition: the analyzer's is the "
+          "games report's function object",
+          s3an.life_score is s3gr.life_score)
+    rows = []
+    for p in sorted(glob.glob(os.path.join(
+            HERE, "..", "data", "stage2", "games_*.jsonl"))):
+        for l in open(p):
+            if l.strip():
+                rows.append(json.loads(l))
+    cap = [r for r in rows if int(r.get("capped") or 0) == 1]
+    ahead = [r for r in cap
+             if int(r["p1life"] if int(r["seat"]) == 1
+                    else r["p2life"])
+             > int(r["p2life"] if int(r["seat"]) == 1
+                   else r["p1life"])]
+    behind_tied = [r for r in cap if r not in ahead]
+    check("real rows: 200 Stage 2 rows, 41 capped, ALL "
+          "capped draw:true winner 0",
+          len(rows) == 200 and len(cap) == 41
+          and all(r.get("draw") is True
+                  and int(r.get("winner") or 0) == 0
+                  for r in cap))
+    check("real rows: exactly 25 capped games score 1 "
+          "(the ahead ones)",
+          len(ahead) == 25
+          and sum(s3gr.life_score(r) for r in cap) == 25
+          and all(s3gr.life_score(r) == 1 for r in ahead))
+    check("real rows: 13 behind + 3 tied capped score 0; "
+          "112 life-wins in total",
+          len(behind_tied) == 16
+          and all(s3gr.life_score(r) == 0 for r in behind_tied)
+          and sum(s3gr.life_score(r) for r in rows) == 112)
     print("FX-STAGE3-GAMES-REPORT: %s"
           % ("ALL PASS" if not FAIL else "FAILURES"))
     return FAIL

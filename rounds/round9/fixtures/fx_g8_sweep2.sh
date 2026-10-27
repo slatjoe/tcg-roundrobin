@@ -15,11 +15,15 @@
 #       the Stage 2 L3 attempt-1 vector class.
 #   (c) MENTION-PHP: a cmdline containing play_game.php
 #       inside a longer string -> BOTH guards abort (the
-#       documented residual: the guard fails safe).
+#       documented residual: the guard fails safe). The NEW
+#       guard's trip NAMES ITS MATCH (sec.2.3): the planted
+#       command line appears verbatim in the abort file
+#       (${PREFIX}_abort.txt) and on stderr.
 #   (d) REAL: a genuine play_game.php process -> the NEW
 #       guard ABORTS. (b) vs (d) are the discriminating pair.
-#   (e) DIFF: diff g8_sweep.sh g8_sweep2.sh touches ONLY the
-#       header comment + the guard line.
+#   (e) DIFF: g8_sweep.sh vs g8_sweep2.sh differ ONLY in
+#       comments + the guard BLOCK (the if-pgrep..fi region,
+#       which in the new file carries the trip report).
 set -u
 FX="$(cd "$(dirname "$0")" && pwd)"
 CODE="$FX/../code"
@@ -107,6 +111,20 @@ if run_sweep "$CODE/g8_sweep2.sh" mph_new; then
 else
   note "PASS (c) MENTION-PHP: NEW guard aborts (documented fail-safe residual)"
 fi
+# (c2) TRIP REPORT: the abort names its match -- the planted
+# command line verbatim, in the abort file AND on stderr.
+if [ -f "$WORK/mph_new_abort.txt" ] \
+   && grep -qF "play_game.php.bak" "$WORK/mph_new_abort.txt" \
+   && grep -qF "pgrep -af" "$WORK/mph_new_abort.txt"; then
+  note "PASS (c2) TRIP REPORT: abort file names the planted command line verbatim (play_game.php.bak)"
+else
+  bad "(c2) TRIP REPORT: abort file missing or does not name the match"; cat "$WORK/mph_new_abort.txt" 2>/dev/null
+fi
+if grep -qF "play_game.php.bak" "$WORK/mph_new.out"; then
+  note "PASS (c2) TRIP REPORT: the match is also on stderr"
+else
+  bad "(c2) TRIP REPORT: match not on stderr"; cat "$WORK/mph_new.out"
+fi
 kill_spawned
 
 # (d) REAL: a genuine play_game.php process
@@ -131,16 +149,25 @@ else
 fi
 kill_spawned
 
-# (e) DIFF confinement
-changed=$(diff "$CODE/g8_sweep.sh" "$CODE/g8_sweep2.sh" | grep '^[<>]' | grep -v '^[<>] #' || true)
-nchanged=$(printf '%s\n' "$changed" | grep -c .)
-if [ "$nchanged" = "2" ] \
-   && printf '%s\n' "$changed" | grep -qF "[p]lay_game'" \
-   && printf '%s\n' "$changed" | grep -qF "[p]lay_game\\.php" \
-   && printf '%s\n' "$changed" | grep -qF "[p]aired_driver_gravy"; then
-  note "PASS (e) DIFF: only the guard line differs outside comments (2 changed lines)"
+# (e) DIFF confinement over the guard BLOCK: strip comment
+# lines and the whole if-pgrep..fi guard region from both
+# files; the remainders must be byte-identical. The new
+# guard block must carry the trip report (pgrep -af for
+# both patterns, written to ${PREFIX}_abort.txt).
+strip_guard() {
+  awk '/^if pgrep/ {inblock=1; next}
+       inblock && /^fi$/ {inblock=0; next}
+       inblock {next}
+       /^#/ {next}
+       {print}' "$1"
+}
+if diff <(strip_guard "$CODE/g8_sweep.sh") <(strip_guard "$CODE/g8_sweep2.sh") > /dev/null \
+   && [ "$(grep -c "pgrep -af '\[p\]" "$CODE/g8_sweep2.sh")" = "2" ] \
+   && grep -qF '${PREFIX}_abort.txt' "$CODE/g8_sweep2.sh"; then
+  note "PASS (e) DIFF: outside comments + the guard block the two sweeps are identical; the block carries the trip report"
 else
-  bad "(e) DIFF: non-comment changed lines = $nchanged (want 2)"; printf '%s\n' "$changed"
+  bad "(e) DIFF: difference outside comments + guard block, or trip report missing"
+  diff <(strip_guard "$CODE/g8_sweep.sh") <(strip_guard "$CODE/g8_sweep2.sh") || true
 fi
 
 echo "FX-G8-SWEEP2: $([ $FAIL = 0 ] && echo ALL PASS || echo FAILURES)"

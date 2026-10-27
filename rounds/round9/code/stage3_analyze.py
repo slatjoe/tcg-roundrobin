@@ -28,18 +28,22 @@ means[int(0.975*B)-1]).
 CO-REPORTS: delta05 (draws score 0.5 for both arms; a
 teacher timeout still scores 0 -- a timeout is a loss at
 both prices); delta_lifediff from LIFE SCORES -- life score
-per game (arm's seat frame), computed from p1life/p2life:
-win -> 1; capped AND NOT draw AND own life strictly
-greater than opponent's -> 1; else 0 (same definition as
-stage3_games_report.py); per-seat primary deltas (plain
-means + seed-cluster CIs on each seat's pairs);
+per game (arm's seat frame), computed from p1life/p2life
+by life_score(), IMPORTED from stage3_games_report.py so
+the definition exists exactly once (fix pass on
+claude-reply-c924b19 sec.2.1); per-seat primary deltas
+(plain means + seed-cluster CIs on each seat's pairs);
 sensitivity_primary = the primary over scored-minus-
 teacher_timeout pairs (the drop-the-pair table);
 teacher timeout rate = teacher timeouts / teacher games
-attempted, with the > 2% -> INCONCLUSIVE rule.
+attempted, with the > 2% -> INCONCLUSIVE rule; pairs out
+of the primary (dropped_raw_timeout + excluded) likewise:
+(excluded + dropped) / pairs attempted > 0.02 ->
+INCONCLUSIVE (sec.2.2 of the same review).
 
-BANDS: INCONCLUSIVE if teacher timeout rate > 0.02 (this
-verdict overrides); else CONVERTS iff CI lower > 0; HARMS
+BANDS: INCONCLUSIVE if teacher timeout rate > 0.02 OR
+(excluded + dropped) rate > 0.02 (this verdict overrides);
+else CONVERTS iff CI lower > 0; HARMS
 iff CI upper < 0; else DOES NOT CONVERT. IMPEACHMENT: if
 primary mean > +0.25, print BEFORE the verdict, in order:
 (i) leave-one-seed-out range of the primary mean, (ii) the
@@ -71,28 +75,15 @@ import random
 import sys
 from collections import Counter, defaultdict
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from stage3_games_report import life_score  # noqa: E402
+# ONE life-score definition: stage3_games_report.life_score.
+# (Fix pass, claude-reply-c924b19 sec.2.1: the two identical
+# copies are replaced by this import so they cannot drift.)
+
 
 def pct(x):
     return "%.4f" % x if x is not None else "n/a"
-
-
-def life_score(row):
-    """Life score in the row's own seat frame: win -> 1;
-    capped AND NOT draw AND own life strictly greater than
-    opponent's -> 1; else 0 (from p1life/p2life)."""
-    if not isinstance(row, dict) or "invalid" in row:
-        return 0
-    seat = int(row.get("seat") or 0)
-    winner = int(row.get("winner") or 0)
-    if seat and winner == seat:
-        return 1
-    if int(row.get("capped") or 0) == 1 \
-            and int(row.get("draw") or 0) != 1 and winner == 0:
-        own = row.get("p1life") if seat == 1 else row.get("p2life")
-        opp = row.get("p2life") if seat == 1 else row.get("p1life")
-        if own is not None and opp is not None and int(own) > int(opp):
-            return 1
-    return 0
 
 
 def score_primary(row, is_teacher_timeout=False):
@@ -263,6 +254,8 @@ def main():
     teacher_attempted = sum(1 for p in pairs if p.get("teacher"))
     timeout_rate = (n_timeout_pairs / teacher_attempted
                     if teacher_attempted else None)
+    n_out_pairs = len(dropped) + len(excluded)
+    out_rate = (n_out_pairs / len(pairs)) if pairs else None
 
     # per-block (teacher block) pair table
     per_block = {}
@@ -289,7 +282,8 @@ def main():
 
     # ---- verdict ---------------------------------------------
     verdict = None
-    if timeout_rate is not None and timeout_rate > 0.02:
+    if (timeout_rate is not None and timeout_rate > 0.02) \
+            or (out_rate is not None and out_rate > 0.02):
         verdict = "INCONCLUSIVE"
     elif mean is not None and ci is not None:
         if ci[0] > 0:
@@ -315,6 +309,8 @@ def main():
         "teacher_timeouts": n_timeout_pairs,
         "teacher_games_attempted": teacher_attempted,
         "teacher_timeout_rate": timeout_rate,
+        "pairs_out_of_primary": n_out_pairs,
+        "pairs_out_rate": out_rate,
         "dropped": [{"seed": p["seed"], "seat": p["seat"],
                      "reason": p.get("reason")} for p in dropped],
         "excluded": [{"seed": p["seed"], "seat": p["seat"],
@@ -362,8 +358,10 @@ def main():
                  % (n_timeout_pairs, teacher_attempted,
                     pct(timeout_rate)))
     lines.append("PAIRS OUT of the primary: dropped_raw_timeout "
-                 "%d, excluded %d"
-                 % (len(dropped), len(excluded)))
+                 "%d, excluded %d (total %d of %d attempted, "
+                 "rate %s; > 0.02 -> INCONCLUSIVE)"
+                 % (len(dropped), len(excluded), n_out_pairs,
+                    len(pairs), pct(out_rate)))
     for p in dropped + excluded:
         lines.append("  out: seed %s seat %s status %s (%s)"
                      % (p["seed"], p["seat"], p["status"],
@@ -395,7 +393,8 @@ def main():
             lines.append("    block %s: %d pairs, mean diff %s"
                          % (b, v["pairs"], pct(v["mean_diff"])))
     lines.append("BANDS: INCONCLUSIVE iff teacher timeout rate "
-                 "> 0.02; CONVERTS iff CI lower > 0; HARMS iff CI "
+                 "> 0.02 or (excluded + dropped) rate > 0.02; "
+                 "CONVERTS iff CI lower > 0; HARMS iff CI "
                  "upper < 0; else DOES NOT CONVERT.")
     lines.append("VERDICT: %s" % verdict)
     if a.json_out:

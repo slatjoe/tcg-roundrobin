@@ -98,7 +98,7 @@ run_block() { # name runner blockid extra_env...
   : > "$FX_STUB_MARKERS"
   ( export PY="$WORK/stub/py" OUT="$WORK/out_$blk" CODE_DIR="$CODE" \
       SIM="$WORK/sim" GTREE="$WORK/gtree" CKPT="/x/ckpt_v10.pt" \
-      PROD="$WORK/search_server.py" LABEL_BASE=1055001 NSHARD=4 \
+      PROD="$WORK/search_server.py" LABEL_BASE=50055001 NSHARD=4 \
       GAME_TIMEOUT=3214 SRV_WAIT_TRIES=3 SRV_PIDS="999991 999992" \
       PATH="$WORK/stubbin:$PATH" \
       FX_STUB_MARKERS FX_STUB_TAGFILE="$WORK/tag" FX_STUB_DRAFT "$@"

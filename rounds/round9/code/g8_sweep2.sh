@@ -1,6 +1,6 @@
 #!/bin/bash
 # g8_sweep2.sh - HARDENED G8 pre-launch sweep (round 9, Stage 3).
-# Byte-derived from code/g8_sweep.sh with ONLY the guard line
+# Byte-derived from code/g8_sweep.sh with ONLY the guard BLOCK
 # changed (plus this header). Why: the round-8 copy's bare
 # '[p]lay_game' token matched the substring play_game inside
 # unrelated command lines that merely MENTION a game file/path
@@ -15,6 +15,14 @@
 # guard never matches its own text. Residual (fail-safe): any
 # command line containing the literal play_game.php token --
 # e.g. an editor open on the file -- still trips the guard.
+# On a trip the guard NAMES ITS MATCH before exiting: the
+# pgrep -af output (pid + full command line) for BOTH patterns
+# is written to ${PREFIX}_abort.txt (the sweep's evidence
+# destination) and to stderr, so any future trip -- including
+# the stated residual -- diagnoses itself (fix pass on
+# claude-reply-c924b19 sec.2.3; the attempt-1 trip was
+# unexplainable after the fact because the old guard
+# recorded nothing).
 #
 # g8_sweep.sh - round-8 copy of the round-3 G8 stale SHMOP segment
 # cleanup (rounds/round3/code/gate_ipcs_cleanup.sh, byte-identical
@@ -29,7 +37,14 @@
 set -u
 PREFIX=${1:-/tmp/gate_ipcs}
 if pgrep -f '[p]lay_game\.php' >/dev/null || pgrep -f '[p]aired_driver_gravy' >/dev/null; then
-  echo "ABORT: game processes are running; not cleaning." >&2
+  {
+    echo "ABORT: game processes are running; not cleaning."
+    echo "G8 trip report - matches for '[p]lay_game\\.php' (pgrep -af):"
+    pgrep -af '[p]lay_game\.php' || true
+    echo "G8 trip report - matches for '[p]aired_driver_gravy' (pgrep -af):"
+    pgrep -af '[p]aired_driver_gravy' || true
+  } > "${PREFIX}_abort.txt" 2>/dev/null
+  cat "${PREFIX}_abort.txt" >&2
   exit 1
 fi
 ipcs -m > ${PREFIX}_before.txt

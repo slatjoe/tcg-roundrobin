@@ -42,9 +42,11 @@ PASS (b) MENTION: OLD guard aborts on a bare play_game mention (the attempt-1 ve
 PASS (b) MENTION: NEW guard proceeds past a bare play_game mention
 PASS (c) MENTION-PHP: OLD guard aborts
 PASS (c) MENTION-PHP: NEW guard aborts (documented fail-safe residual)
+PASS (c2) TRIP REPORT: abort file names the planted command line verbatim (play_game.php.bak)
+PASS (c2) TRIP REPORT: the match is also on stderr
 PASS (d) REAL: NEW guard aborts on a real play_game.php process
 PASS (d2) DRIVER: NEW guard aborts on a paired_driver_gravy command line
-PASS (e) DIFF: only the guard line differs outside comments (2 changed lines)
+PASS (e) DIFF: outside comments + the guard block the two sweeps are identical; the block carries the trip report
 FX-G8-SWEEP2: ALL PASS
 SUITE fx_g8_sweep2: PASS
 ===== fx_stage3_games_report =====
@@ -56,10 +58,16 @@ PASS teacher accounting (5 rows, 4 completed, 1 timeout)
 PASS raw accounting (5 rows + 1 rerun, 4 completed, 1 timeout) 
 PASS teacher outcomes W1/D2/L1, per-seat + per-block 
 PASS capped life tallies ahead 1 / tied 1 / behind 0 
+PASS capped life_score_sum == 1 (the fixed rule credits the ahead capped game on draw:true rows; the pre-fix rule scored 0) 
 PASS band rates (thin 0.25, overturn 0.25, 0.25/game) 
 PASS tuple audit OK; teacher_stat_rows 5 excludes the canary line; canary_refusal_rows == 1 
 PASS rerun-also-timeout variant: pair dropped_raw_timeout 
 PASS corrupted tuple row aborts (exit 2) 
+PASS duplicate rerun row for one (seed, seat) aborts (exit 2, F-S3-4) 
+PASS ONE life_score definition: the analyzer's is the games report's function object 
+PASS real rows: 200 Stage 2 rows, 41 capped, ALL capped draw:true winner 0 
+PASS real rows: exactly 25 capped games score 1 (the ahead ones) 
+PASS real rows: 13 behind + 3 tied capped score 0; 112 life-wins in total 
 FX-STAGE3-GAMES-REPORT: ALL PASS
 SUITE fx_stage3_games_report: PASS
 ===== fx_stage3_analyze =====
@@ -77,6 +85,9 @@ PASS B: impeachment LOGO range == [389/398, 390/398] got [0.9773869346733668, 0.
 PASS B: impeachment printed BEFORE the VERDICT line, verdict last 
 PASS C: mean +0.5, CI lower > 0 -> CONVERTS got ({'pairs_scored': 400, 'mean_diff': 0.5, 'ci': [0.43, 0.57]}, 'CONVERTS')
 PASS D: pairs_scored stays 4, dropped listed, primary unchanged (-0.5) got ({'pairs_scored': 4, 'mean_diff': -0.5, 'ci': [-0.5, -0.5]}, [{'seed': 23003, 'seat': 1, 'reason': 'raw invalid timeout after rerun'}])
+PASS E9: 9 excluded pairs (rate 0.0225 > 0.02) -> INCONCLUSIVE overrides a CI that excludes 0 got ('INCONCLUSIVE', 9)
+PASS E9: the out-pairs count and rate print beside the timeout rate region 
+PASS E8: 8 excluded pairs (rate 0.0200, not > 0.02) -> the band verdict stands (CONVERTS) got ('CONVERTS', 8)
 FX-STAGE3-ANALYZE: ALL PASS
 SUITE fx_stage3_analyze: PASS
 ===== fx_s3_registry =====
@@ -88,7 +99,7 @@ PASS conflicting-tag id: exit 1, registry unchanged
 FX-S3-REGISTRY: ALL PASS
 SUITE fx_s3_registry: PASS
 ===== fx_s3_l3_roundtrip =====
-PASS happy path (exit 0, S2-LABEL-DONE, MEAS_SEED=1055001)
+PASS happy path (exit 0, S2-LABEL-DONE, MEAS_SEED=50055001)
 PASS badk abort exit code 2
 PASS nosetting abort exit code 2
 PASS row count = 2 jobs x 2 selected x 50 rows=200
@@ -101,8 +112,10 @@ PASS round-trip: attr analyzer exit 0 on genuine rows exit=0 s (draw-scored): St
 ATTRIBUTION READ COMPLETE (co-report, not a gate: no PROCEED/STOP bands apply)
 PASS stamp audit rows == 200, bad == 0 got {'rows': 200, 'bad': 0}
 PASS primary mean diff == 0.2 (hand-computed) got 0.2
-PASS ATTRIBUTION arithmetic: per-game gain 0.2 = 0.2 x 1.0; ratio 0.2 / 0.05 == 4.0 got {'per_game_gain': 0.2, 'l3_mean_diff': 0.2, 'live_overturns_per_game': 1.0, 'stage3_primary_mean_diff': 0.05, 'ratio_to_delta': 4.0}
+PASS ATTRIBUTION arithmetic: per-game gain 0.2 = 0.2 x 1.0; ratio 0.2 / 0.05 == 4.0 got {'per_game_gain': 0.2, 'l3_mean_diff': 0.2, 'live_overturns_per_game': 1.0, 'stage3_primary_mean_diff': 0.05, 'stage3_primary_ci': [0.01, 0.09], 'ratio_to_delta': 4.0, 'ratio_note': None}
 PASS ATTRIBUTION line printed with the ratio and the Fai references; no verdict bands 
+PASS ratio guard: delta <= 0 -> prints 'n/a (Δ ≤ 0)' with delta's CI beside it; JSON ratio null + note got {'per_game_gain': 0.2, 'l3_mean_diff': 0.2, 'live_overturns_per_game': 1.0, 'stage3_primary_mean_diff': -0.01, 'stage3_primary_ci': [-0.03, 0.01], 'ratio_to_delta': None, 'ratio_note': 'n/a (Δ ≤ 0)'}
+PASS ratio guard: delta > 0, CI includes 0 -> prints 'unstable (Δ CI includes 0)' with the CI beside it; JSON ratio null + note got {'per_game_gain': 0.2, 'l3_mean_diff': 0.2, 'live_overturns_per_game': 1.0, 'stage3_primary_mean_diff': 0.01, 'stage3_primary_ci': [-0.02, 0.04], 'ratio_to_delta': None, 'ratio_note': 'unstable (Δ CI includes 0)'}
 FX-S3-L3-ROUNDTRIP: ALL PASS
 SUITE fx_s3_l3_roundtrip: PASS
 FX-S3 SUITE: ALL PASS

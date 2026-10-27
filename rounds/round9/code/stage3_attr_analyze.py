@@ -18,7 +18,12 @@ What changes is what the read is READ AGAINST:
   * ratio_to_delta = per_game_gain / stage3_read.
     primary.mean_diff (the Stage 3 paired fleet delta, from
     --stage3-read), printed on the ATTRIBUTION line against
-    the Fai gate references (87% and 101%);
+    the Fai gate references (87% and 101%); the numeric
+    ratio prints ONLY when delta > 0 and its CI excludes 0:
+    delta <= 0 prints "n/a (Δ ≤ 0)" and a CI including 0
+    prints "unstable (Δ CI includes 0)", with delta's CI
+    beside the label in both cases (claude-reply-c924b19
+    sec.4);
   * verdict vocabulary: PROCEED-style bands DO NOT APPLY --
     this is a co-report, not a gate. The output header is
     "ATTRIBUTION READ" and the JSON carries an
@@ -249,8 +254,29 @@ def main():
             or mean > 0.20):
         tripwire = {"per_game_gain": per_game, "mean_diff": mean}
     fleet_delta = (s3read.get("primary") or {}).get("mean_diff")
-    ratio = (per_game / fleet_delta
-             if (per_game is not None and fleet_delta) else None)
+    fleet_ci = (s3read.get("primary") or {}).get("ci")
+    # Ratio guard (claude-reply-c924b19 sec.4): a ratio over a
+    # near-zero or negative denominator reads as a number when
+    # it isn't one. The plain numeric ratio prints ONLY when
+    # delta > 0 and its CI excludes 0; delta <= 0 prints
+    # "n/a (delta <= 0)"; delta > 0 with a CI including 0
+    # prints "unstable (delta CI includes 0)" -- delta's CI is
+    # printed beside the label in both guarded cases.
+    ratio = None
+    ratio_note = None
+    if per_game is not None and fleet_delta is not None:
+        if fleet_delta <= 0:
+            ratio_note = "n/a (Δ ≤ 0)"
+        elif fleet_ci is not None and fleet_ci[0] > 0:
+            ratio = per_game / fleet_delta
+        else:
+            ratio_note = "unstable (Δ CI includes 0)"
+    ratio_str = pct(ratio)
+    if ratio_note is not None:
+        ratio_str = "%s, fleet Δ %s CI [%s, %s]" % (
+            ratio_note, pct(fleet_delta),
+            pct(fleet_ci[0]) if fleet_ci else "n/a",
+            pct(fleet_ci[1]) if fleet_ci else "n/a")
     verdict = None  # attribution is a co-report, not a gate
 
     out = {
@@ -268,7 +294,9 @@ def main():
                         "l3_mean_diff": mean,
                         "live_overturns_per_game": live_opg,
                         "stage3_primary_mean_diff": fleet_delta,
-                        "ratio_to_delta": ratio},
+                        "stage3_primary_ci": fleet_ci,
+                        "ratio_to_delta": ratio,
+                        "ratio_note": ratio_note},
         "tripwire": tripwire,
         "unfinished": {
             "teacher": dict(role_counts["teacher"]),
@@ -352,7 +380,7 @@ def main():
                  "fleet delta = %s (Fai gate references: 87%% "
                  "and 101%%)"
                  % (pct(per_game), pct(mean), pct(live_opg),
-                    pct(ratio)))
+                    ratio_str))
     for name in ("coreport_draw05", "coreport_lifediff"):
         r = reads[name]
         lines.append("CO-REPORT %s: mean diff %s; CI [%s, %s] "

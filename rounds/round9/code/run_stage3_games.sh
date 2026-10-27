@@ -87,10 +87,10 @@ expect_hash "$CODE_DIR/paired_driver_gravy.py" \
   3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359 \
   "paired_driver_gravy.py"
 expect_hash "$CODE_DIR/stage3_games_report.py" \
-  4f19306d6ca1000756bccc05867ab6558dd47c3055870a56ff9de5052940fe25 \
+  fe313d0981f0a0be5e55f9877b326af1b7cf8d72adc53558ebc11b29ae532c8b \
   "stage3_games_report.py"
 expect_hash "$CODE_DIR/stage3_analyze.py" \
-  e283a23711221c959aba138a8d9104893cebbcc78bb774b24b6d92bc908ff76e \
+  0e39fee3a47d13b2c5f9c004daaaba15b2d6c41b4692c7e0e1015a96a045f418 \
   "stage3_analyze.py"
 expect_hash "$CODE_DIR/merge_registry.py" \
   13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe \
@@ -99,10 +99,10 @@ expect_hash "$CODE_DIR/shm_sweep.py" \
   98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33 \
   "shm_sweep.py ((C) containment)"
 expect_hash "$CODE_DIR/g8_sweep2.sh" \
-  72b18b3402ca5132bcdd4d1c6ea1f9f6c8cc3fc9e3fea76472dc0a09e5293a86 \
+  d49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17 \
   "g8_sweep2.sh (hardened G8 sweep)"
 expect_hash "$CODE_DIR/settings_stage3.json" \
-  b241515588b8152145bed2708432aa377ce4f054131fff150076e8998b5be912 \
+  34337753835aae29e2fb9bf9c090cc2a2f64b7799d487210c093d48a1040ed2e \
   "settings_stage3.json"
 
 {
