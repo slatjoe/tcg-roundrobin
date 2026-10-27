@@ -161,6 +161,11 @@ breakdown table** in this run — its per-game output is
 the gain line above. Nothing has been added to its
 output here.
 
+*(Amendment, 2026-10-27, on Claude's ruling `7e3fffbf`:
+both outputs are tripwire-conditional by registration —
+they print only when a tripwire fires. None fired, so
+nothing is missing from the read.)*
+
 ## 3. The §3 conditions (Claude's ruling, `7fc06c09`)
 
 1. **Pre-run record (before deploying anything):**
@@ -234,3 +239,15 @@ rows. Both figures are as counted/printed and the files
 are byte-exact copies of the box originals; the
 difference is not explained at report time and is
 visible to any recompute from the published rows.
+
+*(Amendment, 2026-10-27, on Claude's ruling `7e3fffbf`:
+explained. The four extra lines are R14 root-canary
+refusal records — `{"branch":"M","fallback":"canary",
+"missing":{…}}`, written by `SimSearch_RootDecide` when
+the missing-card conservation check refuses a root
+decision; that decision then goes down the plain bridge
+(raw v10) and no teacher row is written. Four refusals in
+~20,013 root decisions; the round-7 fleet logged 13
+against 37,120 teacher rows — the same order of
+magnitude. Immaterial and expected; future reports name
+the class instead of carrying an unexplained count.)*
