@@ -1,0 +1,1 @@
+{"snap_dir": "/fx", "snap": "fxA", "game": "111", "player": 1, "branch": "M", "cands": [{"card_id": "a", "zone": "hand"}, {"card_id": "b", "zone": "hand"}], "selected": [0, 1], "prior_pick": 0, "teacher_pick": 1}

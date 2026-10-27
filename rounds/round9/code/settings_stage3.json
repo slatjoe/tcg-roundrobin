@@ -1,0 +1,86 @@
+{
+ "stage": "round9-stage3",
+ "comment": "Single source for Stage 3's pinned parameters (ruling sec.4, claude-reply-d593faf). Stage 3 is the PAIRED fleet read: calibrated teacher vs raw v10, same seed + same seat per pair; Gravy mirror vs heuristic; instrument 87/62. teacher_tuple is byte-identical reuse of the Stage 2 tuple (H8k-180+H): the games runner builds TEACHER_TUPLE_JSON from it and the PREGATE-GATE block compares it against the Stage 2 pre-gate manifest (no new pre-gate run). label_tuple is Stage 2's L3 tuple, unchanged. Life score (games report and games analyzer, same definition): win -> 1; capped AND NOT draw AND own life strictly greater than opponent's -> 1; else 0, computed from the driver rows' p1life/p2life in the arm's seat frame.",
+ "teacher_tuple": {
+  "deadline_s": 180,
+  "hooks": 8000,
+  "horizon": 62,
+  "horizon_value": -1,
+  "k": 25,
+  "margin": 1.5,
+  "name": "H8k-180+H"
+ },
+ "label_tuple": {
+  "deadline_s": 180,
+  "hooks": 8000,
+  "horizon": 62,
+  "horizon_value": -1,
+  "k": 50,
+  "name": "L3-W50+H"
+ },
+ "games": {
+  "seeds": "23001-23200",
+  "seats": [
+   1,
+   2
+  ],
+  "arms": [
+   "teacher",
+   "raw"
+  ],
+  "pairs": 400,
+  "games_total": 800,
+  "deck": "nats2026_eriksen_gravy_60.txt",
+  "instrument_max_turns": 87,
+  "instrument_draw_trigger": 62,
+  "timeout_s": 3214,
+  "timeout_derivation": {
+   "stage2_game_wall_mean_s": 503,
+   "stage2_game_wall_p95_s": 807,
+   "stage2_game_wall_max_s": 2143,
+   "rule": "timeout = 1.50 x Stage 2 observed max game wall = 1.5 x 2143 = 3214.5 -> 3214 s (the ruling's kept value); the product-of-maxima derivation is RETIRED",
+   "source": "claude-reply-d593faf sec.4.5 (Stage 2 actuals)"
+  },
+  "concurrency": {
+   "teacher_blocks": 4,
+   "servers": 2,
+   "raw_arm_concurrent_with_teacher": false
+  }
+ },
+ "bands": {
+  "converts": "seed-clustered CI lower bound > 0",
+  "does_not_convert": "CI includes 0",
+  "harms": "CI upper bound < 0",
+  "inconclusive": "teacher timeouts > 2% of teacher games (final counts)",
+  "impeachment": "primary mean diff > +0.25: impeachment checks print before the read",
+  "bootstrap": {
+   "B": 10000,
+   "cluster": "seed (both seats)",
+   "rng_seed": 20261027
+  }
+ },
+ "l3": {
+  "label_seed_base": 1055001,
+  "seed_stride_per_shard": 100000000,
+  "pair": "va",
+  "server": "production (81ef2cdb...)",
+  "shards": 4,
+  "seed_family_clearance": "bases used: Stage 0 855001, Stage 2 955001 (each + shard x 10^8, shard in 0..3 -> family spans [base, base + 300000000 + working range]); Stage 3 base 1055001: +100,000,000 above the Stage 2 base at every shard offset, disjoint from both prior families at every shard"
+ },
+ "pregate": {
+  "source": "Stage 2 IDENTICAL (no new pre-gate run)",
+  "manifest": "pregate_manifest.json from the Stage 2 run",
+  "search_s2_sha256": "85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa"
+ },
+ "stage2_reference": {
+  "thin_prior_rate": 0.0,
+  "overturn_rate": 0.0694,
+  "overturns_per_game": 1.765,
+  "primary_mean_diff": 0.0621,
+  "per_game_gain": 0.1096
+ },
+ "fai_attribution_references": {
+  "gate_ratio": 0.87,
+  "o_ratio": 1.01
+ }
+}

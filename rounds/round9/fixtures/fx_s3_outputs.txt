@@ -1,0 +1,108 @@
+===== fx_s3_blocks =====
+PASS run_stage3_games.sh: no three-name assignment form
+PASS run_stage3_games.sh block inventory: FREESPACE PREGATE-GATE RAW-RERUN RS-DRIVERS RS-SRV RS-SWEEP TS-DRIVERS TS-SRV TS-SWEEP 
+PASS run_stage3_games.sh: FREESPACE (line 169) before first tree copy (line 225)
+PASS run_stage3_l3.sh: no three-name assignment form
+PASS run_stage3_l3.sh block inventory: FREESPACE LS-SHARD LS-SRV LS-SWEEP 
+PASS run_stage3_l3.sh: FREESPACE (line 108) before first tree copy (line 197)
+PASS g8_sweep2.sh: no three-name assignment form
+PASS TS-SRV: stub server loads -> block completes
+PASS TS-SRV: silent server -> block aborts
+PASS RS-SRV: stub server loads -> block completes
+PASS RS-SRV: silent server -> block aborts
+PASS LS-SRV: stub server loads -> block completes
+PASS LS-SRV: silent server -> block aborts
+PASS TS-SWEEP: 4 sweepers spawned
+PASS RS-SWEEP: 4 sweepers spawned
+PASS LS-SWEEP: 4 sweepers spawned
+PASS TS-DRIVERS: 4 workers ran, block completes
+PASS TS-DRIVERS: a failing worker fails the block
+PASS RS-DRIVERS: 4 workers ran, block completes
+PASS RS-DRIVERS: a failing worker fails the block
+PASS LS-SHARD: 8 workers ran, block completes
+PASS LS-SHARD: a failing worker fails the block
+PASS RAW-RERUN: one raw timeout in draft -> exactly 1 rerun worker
+PASS RAW-RERUN: no raw timeouts in draft -> 0 rerun workers
+PASS PREGATE-GATE real (want pass, block exit 0)
+PASS PREGATE-GATE verdict (want abort, block exit 1)
+PASS PREGATE-GATE sha (want abort, block exit 1)
+PASS PREGATE-GATE tuple (want abort, block exit 1)
+PASS PREGATE-GATE absent (want abort, block exit 1)
+PASS FREESPACE games-huge (want pass; required_bytes=8000 available_bytes=1000000000 printed)
+PASS FREESPACE games-tiny (want abort; required_bytes=8000 available_bytes=1 printed)
+PASS FREESPACE games-straddle (want abort; required_bytes=8000 available_bytes=9999 printed)
+PASS FREESPACE games-boundary (want pass; required_bytes=8000 available_bytes=10000 printed)
+PASS FREESPACE l3-straddle-proceeds (want pass; required_bytes=4000 available_bytes=9999 printed)
+PASS FREESPACE l3-tiny (want abort; required_bytes=4000 available_bytes=4999 printed)
+FX-S3-BLOCKS: ALL PASS
+SUITE fx_s3_blocks: PASS
+===== fx_g8_sweep2 =====
+PASS (a) CLEAN: sweep proceeds, ipcrm called with stale id 424242 only
+PASS (b) MENTION: OLD guard aborts on a bare play_game mention (the attempt-1 vector)
+PASS (b) MENTION: NEW guard proceeds past a bare play_game mention
+PASS (c) MENTION-PHP: OLD guard aborts
+PASS (c) MENTION-PHP: NEW guard aborts (documented fail-safe residual)
+PASS (d) REAL: NEW guard aborts on a real play_game.php process
+PASS (d2) DRIVER: NEW guard aborts on a paired_driver_gravy command line
+PASS (e) DIFF: only the guard line differs outside comments (2 changed lines)
+FX-G8-SWEEP2: ALL PASS
+SUITE fx_g8_sweep2: PASS
+===== fx_stage3_games_report =====
+PASS report exit 0 
+PASS pairing statuses (4 scored + teacher_timeout) 
+PASS teacher_timeout pair's raw row comes from the rerun file 
+PASS pairs attempted == distinct (seed,seat) in driver files (merge->report chain) 
+PASS teacher accounting (5 rows, 4 completed, 1 timeout) 
+PASS raw accounting (5 rows + 1 rerun, 4 completed, 1 timeout) 
+PASS teacher outcomes W1/D2/L1, per-seat + per-block 
+PASS capped life tallies ahead 1 / tied 1 / behind 0 
+PASS band rates (thin 0.25, overturn 0.25, 0.25/game) 
+PASS tuple audit OK; teacher_stat_rows 5 excludes the canary line; canary_refusal_rows == 1 
+PASS rerun-also-timeout variant: pair dropped_raw_timeout 
+PASS corrupted tuple row aborts (exit 2) 
+FX-STAGE3-GAMES-REPORT: ALL PASS
+SUITE fx_stage3_games_report: PASS
+===== fx_stage3_analyze =====
+PASS A: analyzer exit 0 (real report round-trip) 
+PASS A: primary mean == -0.5, pairs_scored 4, CI exactly [-0.5, -0.5] got {'pairs_scored': 4, 'mean_diff': -0.5, 'ci': [-0.5, -0.5]}
+PASS A: verdict HARMS got 'HARMS'
+PASS A: lifediff == -0.25, delta05 == -0.25 
+PASS A: per-seat seat1 0.0 / seat2 -1.0 
+PASS A: canary reconciliation prints the class by name with count 1 
+PASS B: analyzer exit 0 
+PASS B: primary mean == 391/400 = 0.9775 got 0.9775
+PASS B: timeout rate 9/400 = 0.0225 -> INCONCLUSIVE overrides CI lower > 0 verdict='INCONCLUSIVE' ci=[0.9625, 0.99]
+PASS B: sensitivity (drop 9 timeout pairs) == 1.0 
+PASS B: impeachment LOGO range == [389/398, 390/398] got [0.9773869346733668, 0.9798994974874372]
+PASS B: impeachment printed BEFORE the VERDICT line, verdict last 
+PASS C: mean +0.5, CI lower > 0 -> CONVERTS got ({'pairs_scored': 400, 'mean_diff': 0.5, 'ci': [0.43, 0.57]}, 'CONVERTS')
+PASS D: pairs_scored stays 4, dropped listed, primary unchanged (-0.5) got ({'pairs_scored': 4, 'mean_diff': -0.5, 'ci': [-0.5, -0.5]}, [{'seed': 23003, 'seat': 1, 'reason': 'raw invalid timeout after rerun'}])
+FX-STAGE3-ANALYZE: ALL PASS
+SUITE fx_stage3_analyze: PASS
+===== fx_s3_registry =====
+PASS clean merge incl. rerun ids: +4, n_games 5, tag round9-stage3 merged: +4 new (tag round9-stage3), 0 already under this tag; n_games=5
+PASS printed sha256 == merged file's sha256 
+PASS second merge of same ids: dup_same path, count unchanged merged: +0 new (tag round9-stage3), 4 already under this tag; n_games=5
+backup: 
+PASS conflicting-tag id: exit 1, registry unchanged 
+FX-S3-REGISTRY: ALL PASS
+SUITE fx_s3_registry: PASS
+===== fx_s3_l3_roundtrip =====
+PASS happy path (exit 0, S2-LABEL-DONE, MEAS_SEED=1055001)
+PASS badk abort exit code 2
+PASS nosetting abort exit code 2
+PASS row count = 2 jobs x 2 selected x 50 rows=200
+PASS every row stamped with the Stage 3 label tuple 
+PASS cfg forwarded per job (W=50, horizon 62, hooks 8000, deadline 180, pair va) 
+PASS stat rows carry teacher_pick + setting 
+PASS badk aborted (ABORT logged, no rows) 
+PASS nosetting aborted (ABORT logged, no rows) 
+PASS round-trip: attr analyzer exit 0 on genuine rows exit=0 s (draw-scored): Stage 3 teacher 2W/1D/1L = 2.5000 pts over 4 games (0.6250/game)
+ATTRIBUTION READ COMPLETE (co-report, not a gate: no PROCEED/STOP bands apply)
+PASS stamp audit rows == 200, bad == 0 got {'rows': 200, 'bad': 0}
+PASS primary mean diff == 0.2 (hand-computed) got 0.2
+PASS ATTRIBUTION arithmetic: per-game gain 0.2 = 0.2 x 1.0; ratio 0.2 / 0.05 == 4.0 got {'per_game_gain': 0.2, 'l3_mean_diff': 0.2, 'live_overturns_per_game': 1.0, 'stage3_primary_mean_diff': 0.05, 'ratio_to_delta': 4.0}
+PASS ATTRIBUTION line printed with the ratio and the Fai references; no verdict bands 
+FX-S3-L3-ROUNDTRIP: ALL PASS
+SUITE fx_s3_l3_roundtrip: PASS
+FX-S3 SUITE: ALL PASS
