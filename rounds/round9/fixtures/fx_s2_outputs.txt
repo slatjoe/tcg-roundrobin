@@ -53,6 +53,9 @@ PASS badk aborted (exit 2 recorded by runner, ABORT logged)
 PASS badk wrote no rows 
 PASS nosetting aborted (exit 2 recorded by runner, ABORT logged) 
 PASS nosetting wrote no rows 
+PASS round-trip: analyzer accepts genuine driver rows (exit 0, no stamp abort) exit=0  gain >= +0.05; DOES NOT PROCEED iff mean > 0 with CI including 0 or per-game < +0.05; STOP iff mean <= 0.
+VERDICT: STOP
+PASS round-trip: label_tuple_audit rows 200, bad 0 got {'rows': 200, 'bad': 0}
 FX-S2-LABEL: ALL PASS
 SUITE fx_s2_label: PASS
 ===== fx_s2_blocks =====
@@ -121,7 +124,7 @@ PASS tuple-malformation abort row fails the audit (exit 2)
 FX-STAGE2-GAMES-REPORT: ALL PASS
 SUITE fx_stage2_games_report: PASS
 ===== fx_stage2_analyze =====
-PASS analyzer exit 0 
+PASS analyzer exit 0 on real driver-shape stamps (exactly the 6 registered fields) 
 PASS primary mean == 0.375 got 0.375
 PASS draw05 mean == 0.40625 
 PASS lifediff mean == 0.4375 (ahead wins, behind loses, tied draws at 0) 
@@ -137,6 +140,8 @@ PASS no-shared-world job counted beside jobs (jobs_no_shared_worlds 1, read unch
 PASS PRIMARY line prints jobs_no_shared_worlds 
 PASS wrong tuple stamp on a row aborts (exit 2) 
 PASS dropped row trips the world-count guard (exit 2) 
+PASS extra stamp keys ignored (pinned:1 on every row passes, read unchanged) exit=0
+PASS row missing a stamp field aborts (exit 2) 
 FX-STAGE2-ANALYZE: ALL PASS
 SUITE fx_stage2_analyze: PASS
 FX-S2 SUITE: ALL PASS

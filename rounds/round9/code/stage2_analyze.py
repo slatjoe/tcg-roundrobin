@@ -135,16 +135,19 @@ def main():
     job_by_snap = {str(j["snap"]): j for j in jobs}
 
     # ---- label tuple audit (always, before any read) ------
+    # Project each row's stamp on the registered label_tuple
+    # fields ONLY (the keys of settings["label_tuple"]): the
+    # label driver (s2_label_main.php) stamps exactly those
+    # fields; extra keys in a stamp are ignored, a wrong value
+    # or a missing field fails. (Fix: stage2-analyzer-fix.md --
+    # the audit formerly demanded a seventh key, "pinned",
+    # that only the LIVE path's stamps carry.)
     LT = settings["label_tuple"]
-    LT_full = dict(LT)
-    LT_full["pinned"] = 1
     bad_stamp = 0
     for r in rows:
         s = r.get("setting")
         if not isinstance(s, dict) or {
-                k: s.get(k) for k in
-                ("name", "hooks", "deadline_s", "horizon",
-                 "horizon_value", "k", "pinned")} != LT_full:
+                k: s.get(k) for k in LT} != LT:
             bad_stamp += 1
     if bad_stamp:
         print("ABORT: %d label rows carry a setting stamp != "

@@ -28,6 +28,13 @@ the world-count guard (exit 2). A variant with a fifth job
 whose prior candidate finishes no world (no shared
 finished world) must report jobs_no_shared_worlds == 1
 beside jobs and leave the read unchanged (review sec.4).
+Stamp shape (stage2-analyzer-fix.md): the planted rows
+carry the REAL driver shape -- exactly the six registered
+label_tuple fields, no "pinned" (s2_label_main.php's
+$SETTING). A variant adding "pinned": 1 on every row (the
+shape this fixture planted before the fix) must still
+pass -- extra keys are ignored. A variant with one row
+missing a stamp field aborts (exit 2).
 Run: python3 fx_stage2_analyze.py (own temp dirs)."""
 import json
 import os
@@ -86,7 +93,7 @@ GAME = {"j1": "gA", "j2": "gA", "j3": "gB", "j4": "gB"}
 
 
 def build(tmp, negate=False, bad_stamp=False, drop=False,
-          no_shared=False):
+          no_shared=False, extra_key=False, missing_key=False):
     jobs, labels = [], []
     for snap in ("j1", "j2", "j3", "j4"):
         jobs.append({"snap": snap, "game": GAME[snap],
@@ -102,9 +109,12 @@ def build(tmp, negate=False, bad_stamp=False, drop=False,
                     r["winner"] = (2 if r["outcome"] < 0 else
                                    (1 if r["outcome"] > 0 else 0))
                 st = dict(LT)
-                st["pinned"] = 1
+                if extra_key:
+                    st["pinned"] = 1
                 if bad_stamp and snap == "j1" and cand == 1 and w == 0:
                     st["k"] = 25
+                if missing_key and snap == "j1" and cand == 1 and w == 0:
+                    del st["k"]
                 labels.append({"snap": snap, "cand": cand,
                                "world": w, "result": r,
                                "setting": st,
@@ -122,7 +132,6 @@ def build(tmp, negate=False, bad_stamp=False, drop=False,
                                  (0, [err("abort")] * 4)):
             for w, res in enumerate(world_list):
                 st = dict(LT)
-                st["pinned"] = 1
                 labels.append({"snap": "j5", "cand": cand,
                                "world": w, "result": dict(res),
                                "setting": st,
@@ -157,7 +166,8 @@ def build(tmp, negate=False, bad_stamp=False, drop=False,
 
 def main():
     r, read = build(tempfile.mkdtemp())
-    check("analyzer exit 0", r.returncode == 0,
+    check("analyzer exit 0 on real driver-shape stamps "
+          "(exactly the 6 registered fields)", r.returncode == 0,
           r.stderr.strip()[-200:] if r.returncode else "")
     if read:
         check("primary mean == 0.375",
@@ -224,6 +234,15 @@ def main():
     r4, _ = build(tempfile.mkdtemp(), drop=True)
     check("dropped row trips the world-count guard (exit 2)",
           r4.returncode == 2)
+    r6, read6 = build(tempfile.mkdtemp(), extra_key=True)
+    check("extra stamp keys ignored (pinned:1 on every row "
+          "passes, read unchanged)",
+          r6.returncode == 0 and read6
+          and approx(read6["primary"]["mean_diff"], 0.375),
+          "exit=%r" % r6.returncode)
+    r7, _ = build(tempfile.mkdtemp(), missing_key=True)
+    check("row missing a stamp field aborts (exit 2)",
+          r7.returncode == 2)
     print("FX-STAGE2-ANALYZE: %s"
           % ("ALL PASS" if not FAIL else "FAILURES"))
     return FAIL

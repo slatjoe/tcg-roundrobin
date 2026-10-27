@@ -1,0 +1,29 @@
+Diff: code/stage2_analyze.py BEFORE the stamp-audit fix (sha256 9b1a06773add3453c3773aaef5cdddfc63534cde9c7f1ebc6ec90a7f9e78c128, as confirmed at 2d64302f) -> code/stage2_analyze.py AFTER (sha256 ee4daa887cdec3e11118adb75ddd184aa86dbcc0ede73648ed6154394c32d0ac). Generated with diff -u; the fix changes ONLY what this diff shows (the label-tuple audit block; see stage2-analyzer-fix.md).
+
+--- a/stage2_analyze.py
++++ b/stage2_analyze.py
+@@ -135,16 +135,19 @@
+     job_by_snap = {str(j["snap"]): j for j in jobs}
+ 
+     # ---- label tuple audit (always, before any read) ------
++    # Project each row's stamp on the registered label_tuple
++    # fields ONLY (the keys of settings["label_tuple"]): the
++    # label driver (s2_label_main.php) stamps exactly those
++    # fields; extra keys in a stamp are ignored, a wrong value
++    # or a missing field fails. (Fix: stage2-analyzer-fix.md --
++    # the audit formerly demanded a seventh key, "pinned",
++    # that only the LIVE path's stamps carry.)
+     LT = settings["label_tuple"]
+-    LT_full = dict(LT)
+-    LT_full["pinned"] = 1
+     bad_stamp = 0
+     for r in rows:
+         s = r.get("setting")
+         if not isinstance(s, dict) or {
+-                k: s.get(k) for k in
+-                ("name", "hooks", "deadline_s", "horizon",
+-                 "horizon_value", "k", "pinned")} != LT_full:
++                k: s.get(k) for k in LT} != LT:
+             bad_stamp += 1
+     if bad_stamp:
+         print("ABORT: %d label rows carry a setting stamp != "

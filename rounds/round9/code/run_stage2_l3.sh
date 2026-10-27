@@ -80,7 +80,7 @@ expect_hash "$CODE_DIR/build_s2_jobs.py" \
   b91f3a6c27fcc8abb060ed4efa351f71f112cc971932cfe4ba41623c6d84851d \
   "build_s2_jobs.py"
 expect_hash "$CODE_DIR/stage2_analyze.py" \
-  9b1a06773add3453c3773aaef5cdddfc63534cde9c7f1ebc6ec90a7f9e78c128 \
+  ee4daa887cdec3e11118adb75ddd184aa86dbcc0ede73648ed6154394c32d0ac \
   "stage2_analyze.py"
 expect_hash "$CODE_DIR/stage0_report.py" \
   5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf \

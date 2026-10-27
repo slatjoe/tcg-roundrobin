@@ -9,10 +9,18 @@ play_game.php in this dir. Known answers:
     forwarded per job; stat rows carry teacher_pick.
   * jobs_badk (job k=25 vs pin 50) and jobs_nosetting abort
     with exit 2 before any row is written.
+  * ROUND-TRIP (stage2-analyzer-fix.md): the genuine
+    driver-stamped rows from the happy path are fed through
+    code/stage2_analyze.py unchanged; the analyzer's
+    label-tuple audit must accept them (exit 0, audit rows
+    200, bad 0). The writer/reader stamp contract is proven
+    on the driver's own output, not on a planted shape.
 Usage: check_fx_s2_label.py <workdir>"""
 import json
 import os
+import subprocess
 import sys
+import tempfile
 
 FAIL = 0
 
@@ -67,6 +75,39 @@ def main():
         check("%s wrote no rows" % name,
               not os.path.exists(os.path.join(work,
                                               name + ".out.jsonl")))
+    # ---- round-trip: genuine driver rows -> the analyzer --
+    here = os.path.dirname(os.path.abspath(__file__))
+    code = os.path.join(here, "..", "..", "code")
+    tmp = tempfile.mkdtemp()
+    grep = {"overturn_rows": 4, "games_completed": 4,
+            "overturns_per_game": 1.0, "thin_prior_rate": 0.0,
+            "overturn_rate": 0.25,
+            "teacher_outcomes_draw_scored": {
+                "W": 2, "D": 1, "L": 1, "points": 2.5,
+                "points_per_game": 0.625}}
+    gp = os.path.join(tmp, "games_report.json")
+    json.dump(grep, open(gp, "w"))
+    out = os.path.join(tmp, "read.json")
+    r = subprocess.run(
+        [sys.executable,
+         os.path.join(code, "stage2_analyze.py"),
+         "--jobs", os.path.join(here, "jobs_ok.jsonl"),
+         "--labels", os.path.join(work, "out.jsonl"),
+         "--games-report", gp,
+         "--settings", os.path.join(code, "settings_stage2.json"),
+         "--expect-rows", "50", "--json-out", out],
+        capture_output=True, text=True)
+    check("round-trip: analyzer accepts genuine driver rows "
+          "(exit 0, no stamp abort)",
+          r.returncode == 0
+          and "carry a setting stamp" not in r.stdout,
+          "exit=%r %s" % (r.returncode,
+                          r.stdout.strip()[-120:]))
+    audit = None
+    if r.returncode == 0 and os.path.exists(out):
+        audit = json.load(open(out)).get("label_tuple_audit")
+    check("round-trip: label_tuple_audit rows 200, bad 0",
+          audit == {"rows": 200, "bad": 0}, "got %r" % audit)
     print("FX-S2-LABEL: %s" % ("ALL PASS" if not FAIL else "FAILURES"))
     return FAIL
 
