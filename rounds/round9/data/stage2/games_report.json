@@ -1,0 +1,51 @@
+{
+ "games_rows": 200,
+ "games_completed": 200,
+ "games_invalid": {},
+ "teacher_timeouts": 0,
+ "teacher_outcomes_draw_scored": {
+  "W": 87,
+  "D": 41,
+  "L": 72,
+  "points": 107.5,
+  "points_per_game": 0.5375,
+  "points_draw0": 87.0,
+  "points_draw0_per_game": 0.435
+ },
+ "teacher_stat_rows": 20009,
+ "rate_basis": "band rate (contested_rows, thin_prior_rate, overturn_rate, overturns_per_game) counts stat rows in completed games only (review sec.2.2); *_all keys are the same tallies over every stat row, co-reported",
+ "contested_rows": 5087,
+ "thin_prior_rows": 0,
+ "thin_prior_rate": 0.0,
+ "overturn_rows": 353,
+ "overturn_rate": 0.06939256929427953,
+ "overturns_per_game": 1.765,
+ "contested_rows_all": 5087,
+ "thin_prior_rows_all": 0,
+ "thin_prior_rate_all": 0.0,
+ "overturn_rows_all": 353,
+ "overturn_rate_all": 0.06939256929427953,
+ "overturns_per_game_all": 1.765,
+ "child_fallbacks": 0,
+ "abort_reasons": {
+  "abort": 26
+ },
+ "eval_fail_rows": 0,
+ "exception_rows": 0,
+ "tuple_audit": {
+  "pin": {
+   "deadline_s": 180,
+   "hooks": 8000,
+   "horizon": 62,
+   "horizon_value": -1,
+   "k": 25,
+   "margin": 1.5,
+   "name": "H8k-180+H",
+   "pinned": 1
+  },
+  "rows_checked": 20009,
+  "bad_rows": 0,
+  "malformed_pin_aborts": 0,
+  "ok": true
+ }
+}

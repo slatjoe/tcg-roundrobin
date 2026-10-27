@@ -1,0 +1,27 @@
+{
+ "stage": "round9-stage2-pregate",
+ "verdict": "IDENTICAL",
+ "search_s2_sha256": "85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa",
+ "teacher_tuple_json": "{\"deadline_s\": 180, \"hooks\": 8000, \"horizon\": 62, \"horizon_value\": -1, \"k\": 25, \"margin\": 1.5, \"name\": \"H8k-180+H\"}",
+ "check": "PASS determinism: raw seat-1 rerun identical 10/10 seeds agree\nPASS R16: seat-crossed raw control differs 10/10 seeds differ\nPASS ghost seat 1 action-identical to raw 10/10 seeds identical\nPASS ghost seat 1 manifest checks (other than the K6-read one) {\"pick_eq_prior_all_teacher\": true, \"rollouts_present\": true, \"trace_rules_all_ghost_prior\": true, \"trace_teacher_pick_is_prior_argmax\": true}\nPASS ghost seat 1 K6 line 224 0 0 0 (rollout, unstamped, not-thin, pick-off)\nPASS ghost seat 2 action-identical to raw 10/10 seeds identical\nPASS ghost seat 2 manifest checks (other than the K6-read one) {\"pick_eq_prior_all_teacher\": true, \"rollouts_present\": true, \"trace_rules_all_ghost_prior\": true, \"trace_teacher_pick_is_prior_argmax\": true}\nPASS ghost seat 2 K6 line 272 0 0 0 (rollout, unstamped, not-thin, pick-off)\nPREGATE: IDENTICAL\n",
+ "rows": {
+  "pg_ghost_s1.jsonl": 10,
+  "pg_ghost_s2.jsonl": 10,
+  "pg_raw2_s1.jsonl": 10,
+  "pg_raw_s1.jsonl": 10,
+  "pg_raw_s2.jsonl": 10
+ },
+ "sha256": {
+  "pg_ghost_s1.jsonl": "b08fd3287480d7930a3a42fe6805838fa100df310d1a26d578978ddd9074d6b5",
+  "pg_ghost_s1.jsonl.manifest.json": "3830e8259a2cd851872089cef7b8a06cdef6d704d4bbdf1a0c4d205b71578252",
+  "pg_ghost_s2.jsonl": "d349254d0d61275ab5a383430694334689c222180198135272fab2258c8e00f6",
+  "pg_ghost_s2.jsonl.manifest.json": "5749a61b747d25a077ae007473a273acb36ca285c2551ad28c9ec08e3cacece2",
+  "pg_raw2_s1.jsonl": "3abb956f9d2aaff0761b32ae4a08291e063d442a3aa50cae2e1a34eb70b7b880",
+  "pg_raw2_s1.jsonl.manifest.json": "3171ab91e0adf81d2bbd806a2024f928f723a196724053fc53b893935475dacc",
+  "pg_raw_s1.jsonl": "4259a63286dfdcaaeac0d46e3b2ad3000ca55b3bdae25de468347a2c1f9069f1",
+  "pg_raw_s1.jsonl.manifest.json": "3171ab91e0adf81d2bbd806a2024f928f723a196724053fc53b893935475dacc",
+  "pg_raw_s2.jsonl": "7a389d860c05166940883e3316629a8178854ac94a6665011ab95f631d2d3397",
+  "pg_raw_s2.jsonl.manifest.json": "d870eca0e33594cbf50b4e399ccc3d8954f04f55eeb7607d3a298a1c6be8739a",
+  "pregate_check.txt": "261c6cce4d1eac529a1fa61ae43ef5023bad5582ec001aa821cc25ee85ea1e0f"
+ }
+}

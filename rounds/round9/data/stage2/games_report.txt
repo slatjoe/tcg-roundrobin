@@ -1,0 +1,4 @@
+games: 200 rows, 200 completed, invalid {}; teacher W/D/L 87/41/72 = 107.5 pts at draw=0.5 (0.5375/game); 87.0 pts at draw=0 (W only, 0.4350/game)
+band rates (completed games only): teacher rows 20009, contested 5087, thin-prior 0 (0.0000), overturns 353 (0.0694 of contested, 1.7650/game)
+co-report (all stat rows incl. timed-out/invalid games): contested 5087, thin-prior 0 (0.0000), overturns 353 (0.0694 of contested, 1.7650/game)
+tuple audit: 20009 rows checked, 0 bad, 0 malformed-pin aborts -> OK

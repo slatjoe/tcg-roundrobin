@@ -1,0 +1,73 @@
+{
+ "stage": "round9-stage2-games",
+ "games_report": {
+  "games_rows": 200,
+  "games_completed": 200,
+  "games_invalid": {},
+  "teacher_timeouts": 0,
+  "teacher_outcomes_draw_scored": {
+   "W": 87,
+   "D": 41,
+   "L": 72,
+   "points": 107.5,
+   "points_per_game": 0.5375,
+   "points_draw0": 87.0,
+   "points_draw0_per_game": 0.435
+  },
+  "teacher_stat_rows": 20009,
+  "rate_basis": "band rate (contested_rows, thin_prior_rate, overturn_rate, overturns_per_game) counts stat rows in completed games only (review sec.2.2); *_all keys are the same tallies over every stat row, co-reported",
+  "contested_rows": 5087,
+  "thin_prior_rows": 0,
+  "thin_prior_rate": 0.0,
+  "overturn_rows": 353,
+  "overturn_rate": 0.06939256929427953,
+  "overturns_per_game": 1.765,
+  "contested_rows_all": 5087,
+  "thin_prior_rows_all": 0,
+  "thin_prior_rate_all": 0.0,
+  "overturn_rows_all": 353,
+  "overturn_rate_all": 0.06939256929427953,
+  "overturns_per_game_all": 1.765,
+  "child_fallbacks": 0,
+  "abort_reasons": {
+   "abort": 26
+  },
+  "eval_fail_rows": 0,
+  "exception_rows": 0,
+  "tuple_audit": {
+   "pin": {
+    "deadline_s": 180,
+    "hooks": 8000,
+    "horizon": 62,
+    "horizon_value": -1,
+    "k": 25,
+    "margin": 1.5,
+    "name": "H8k-180+H",
+    "pinned": 1
+   },
+   "rows_checked": 20009,
+   "bad_rows": 0,
+   "malformed_pin_aborts": 0,
+   "ok": true
+  }
+ },
+ "rows": {
+  "games_s1a.jsonl": 50,
+  "games_s1b.jsonl": 50,
+  "games_s2a.jsonl": 50,
+  "games_s2b.jsonl": 50
+ },
+ "sha256": {
+  "games_report.json": "144a33d56850eda3db4d3e6f8aaf7e609cd443f03a203be498e33e75d3facb05",
+  "games_s1a.jsonl": "3e71704c586c79a715c42fbbb0ea1948776e4b97c55306f3c09b93f671a896cc",
+  "games_s1a.jsonl.manifest.json": "d5174a540b19870303bec9118a0b0eaa14e45d98c13b189b32b7b7b2a06edca7",
+  "search_stats.jsonl": "4b82ffa54aa1c430922e55067170615d41c628f11d615516de125e2813e10a88",
+  "teacher_snap_index.jsonl": "f04f664707930998cf35b5c9229156b4e3a0ba6c57db2d17fbdc4fc5786d15ef",
+  "games_s1b.jsonl": "f4933d2a8e8627c9b6f28931d573011e183deb9b06af19b3a8a110d014500521",
+  "games_s1b.jsonl.manifest.json": "aff02f741b33e23fae6070adc12ddb2ad8a1c9c61116b44d601bf72729fde92d",
+  "games_s2a.jsonl": "6e44dfcecde47b108c0f148d67dae46a4ff829c3fd53e0771e0a16ed909f3a62",
+  "games_s2a.jsonl.manifest.json": "9aa6300869d661439e467a5a2a246d763e5482bf625ce65438090fa8a825c6ab",
+  "games_s2b.jsonl": "0df8780e1290c9d98fc172940df8e2f303f90268391ccb1dec19b670c911a973",
+  "games_s2b.jsonl.manifest.json": "a6ebfa5c72ed0def8edee2658f48dd85700ad1415236a6eca8b526d0eaabe8b9"
+ }
+}

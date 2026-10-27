@@ -1,0 +1,101 @@
+{
+ "record": "stage2-l3-pre-run-record",
+ "created": "2026-10-27T06:57:11.474075-04:00",
+ "purpose": "Claude ruling on 40500367 (claude-reply-4050036.md) sec.3.1: the labels proven untouched before the fixed analyzer runs. The aborted runner never wrote l3_manifest.json, so this record is the labels' first hash.",
+ "abort_reference": {
+  "file": "/home/joe/tcg/r9s2_out/l3/stage2_read.txt",
+  "mtime_iso": "2026-10-27T05:37:48.310089-04:00",
+  "note": "stage2_read.txt holds the aborted analyzer's own output; its mtime is the abort moment (the runner's read step wrote it). The runner's stderr line 'ABORT: stage2 analyzer failed' is in l3_launch2.log."
+ },
+ "files": {
+  "labels_shard0_p1.jsonl": {
+   "path": "/home/joe/tcg/r9s2_out/l3/labels_shard0_p1.jsonl",
+   "sha256": "e5a30054dc3377d864ad177a67a768b08380e7fb12046e8d575eb6c9ba7bf057",
+   "lines": 3500,
+   "bytes": 10217895,
+   "mtime_iso": "2026-10-27T05:05:16.305433-04:00"
+  },
+  "labels_shard0_p2.jsonl": {
+   "path": "/home/joe/tcg/r9s2_out/l3/labels_shard0_p2.jsonl",
+   "sha256": "f8d269697049fe1ac1c8114308f30bc17253b7306b42d3d98ff03bd816556ab0",
+   "lines": 3300,
+   "bytes": 10340796,
+   "mtime_iso": "2026-10-27T05:31:54.764832-04:00"
+  },
+  "labels_shard1_p1.jsonl": {
+   "path": "/home/joe/tcg/r9s2_out/l3/labels_shard1_p1.jsonl",
+   "sha256": "47d9dfdc36bd1c325aab8d6d066b5472021c1c613178ad2965a4b464b931dfbe",
+   "lines": 3200,
+   "bytes": 9453390,
+   "mtime_iso": "2026-10-27T05:00:13.008224-04:00"
+  },
+  "labels_shard1_p2.jsonl": {
+   "path": "/home/joe/tcg/r9s2_out/l3/labels_shard1_p2.jsonl",
+   "sha256": "0ddc3b4e54f23993335ac30c03f09f03235101cc4809e0c2347a977a91c9bf70",
+   "lines": 5200,
+   "bytes": 16036782,
+   "mtime_iso": "2026-10-27T05:33:25.226177-04:00"
+  },
+  "labels_shard2_p1.jsonl": {
+   "path": "/home/joe/tcg/r9s2_out/l3/labels_shard2_p1.jsonl",
+   "sha256": "5203e5ea1914016524b8e24d60b0ddb67f4b4ebe8d193e8b287484ff1e9932e9",
+   "lines": 5400,
+   "bytes": 16373431,
+   "mtime_iso": "2026-10-27T05:12:05.254378-04:00"
+  },
+  "labels_shard2_p2.jsonl": {
+   "path": "/home/joe/tcg/r9s2_out/l3/labels_shard2_p2.jsonl",
+   "sha256": "2e7915ffdce157d6b66dea875f778d416071f65ff5457097abb0bef594c4cbf9",
+   "lines": 4400,
+   "bytes": 13820023,
+   "mtime_iso": "2026-10-27T05:37:47.202072-04:00"
+  },
+  "labels_shard3_p1.jsonl": {
+   "path": "/home/joe/tcg/r9s2_out/l3/labels_shard3_p1.jsonl",
+   "sha256": "e3633207015b161d69b2764aa998639be975810df95ef3769d4eb286c1c4427a",
+   "lines": 7200,
+   "bytes": 22336755,
+   "mtime_iso": "2026-10-27T05:18:30.199508-04:00"
+  },
+  "labels_shard3_p2.jsonl": {
+   "path": "/home/joe/tcg/r9s2_out/l3/labels_shard3_p2.jsonl",
+   "sha256": "6be0e4a991a3a1ead7578e307fc0fbd7e201e131be0a624095883a52961cfd06",
+   "lines": 3100,
+   "bytes": 9394931,
+   "mtime_iso": "2026-10-27T05:37:00.681381-04:00"
+  },
+  "labels_all.jsonl": {
+   "path": "/home/joe/tcg/r9s2_out/l3/labels_all.jsonl",
+   "sha256": "f5f1522cddbcf5d9c66d7390d47a5f69400846104d1a3fb37e4952a9c4e2fc90",
+   "lines": 35300,
+   "bytes": 107974003,
+   "mtime_iso": "2026-10-27T05:37:47.255043-04:00"
+  },
+  "jobs_all.jsonl": {
+   "path": "/home/joe/tcg/r9s2_out/l3/jobs_all.jsonl",
+   "sha256": "96b62d0be7bccffbe2b1c4fa403364772f9220df84c044f0eb1f056e596dbb67",
+   "lines": 353,
+   "bytes": 296681,
+   "mtime_iso": "2026-10-27T04:37:18.023959-04:00"
+  },
+  "jobs_report.json": {
+   "path": "/home/joe/tcg/r9s2_out/l3/jobs_report.json",
+   "sha256": "704494d5e009ddb47df7866426e4536e68c1f5f9a6f8b4633f5587cce072a920",
+   "lines": 20,
+   "bytes": 264,
+   "mtime_iso": "2026-10-27T04:37:18.028507-04:00"
+  },
+  "games/games_report.json": {
+   "path": "/home/joe/tcg/r9s2_out/games/games_report.json",
+   "sha256": "144a33d56850eda3db4d3e6f8aaf7e609cd443f03a203be498e33e75d3facb05",
+   "lines": 51,
+   "bytes": 1252,
+   "mtime_iso": "2026-10-27T02:26:02.249372-04:00"
+  }
+ },
+ "expectations": {
+  "labels_all_lines": 35300,
+  "labels_all_lines_eq_35300": true,
+  "all_label_mtimes_predate_abort": true
+ }
+}

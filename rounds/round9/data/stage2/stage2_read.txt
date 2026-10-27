@@ -1,0 +1,11 @@
+=== STAGE 2 L3 READ (primary: horizon 62, draw = 0) ===
+PRIMARY (draw = 0): jobs 353; jobs_no_shared_worlds 0 (of 353 jobs); mean paired diff 0.0621; CI [0.0440, 0.0809]
+  per-game gain 0.1096 (mean diff x LIVE overturns/game 1.7650 from 353 captured overturns over 200 completed games)
+CO-REPORT coreport_draw05: mean diff 0.0494; CI [0.0350, 0.0641] over 353 jobs
+CO-REPORT coreport_lifediff: mean diff 0.0451; CI [0.0294, 0.0620] over 353 jobs
+UNFINISHED (refusals excluded from shares): pooled share 0.0001 (finished 35296, unfinished 4, refusals 0); fallbacks 7
+  abort                       4  [unfinished]
+CO-REPORT live rates vs panel: thin-prior 0.0000 (panel 0.0000); overturn rate 0.0694 of contested (panel 0.0917 at draw = 0)
+CO-REPORT games outcomes (draw-scored): Stage 2 teacher 87W/41D/72L = 107.5000 pts over 200 games (0.5375/game); fleet reference: teacher 216.0 (173W/86D/141L) vs raw 213.0 (163W/100D/137L), round-7 fleet, 400 paired games
+BANDS: PROCEED iff CI lower > 0 AND per-game gain >= +0.05; DOES NOT PROCEED iff mean > 0 with CI including 0 or per-game < +0.05; STOP iff mean <= 0.
+VERDICT: PROCEED

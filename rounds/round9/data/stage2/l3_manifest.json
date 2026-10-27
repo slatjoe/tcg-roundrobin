@@ -1,0 +1,113 @@
+{
+ "stage": "round9-stage2-l3",
+ "read": {
+  "jobs_no_shared_worlds": 0,
+  "primary": {
+   "jobs": 353,
+   "mean_diff": 0.06211481759842748,
+   "ci": [
+    0.043972043611965314,
+    0.080939226519337
+   ]
+  },
+  "coreport_draw05": {
+   "jobs": 353,
+   "mean_diff": 0.04941434930912875,
+   "ci": [
+    0.03497722567287785,
+    0.06414529660260608
+   ]
+  },
+  "coreport_lifediff": {
+   "jobs": 353,
+   "mean_diff": 0.045102618951263225,
+   "ci": [
+    0.029369096209912543,
+    0.061954167141717024
+   ]
+  },
+  "per_game_gain": 0.1096326530612245,
+  "live_overturns_per_game": 1.765,
+  "verdict": "PROCEED",
+  "tripwire": null,
+  "unfinished": {
+   "teacher": {
+    "rows": 17650,
+    "finished": 17648,
+    "unfinished": 2,
+    "refusal": 0
+   },
+   "prior": {
+    "rows": 17650,
+    "finished": 17648,
+    "unfinished": 2,
+    "refusal": 0
+   },
+   "share_teacher": 0.00011331444759206799,
+   "share_prior": 0.00011331444759206799,
+   "share_pooled": 0.00011331444759206799,
+   "error_classes": {
+    "teacher": {
+     "abort": 2
+    },
+    "prior": {
+     "abort": 2
+    },
+    "pooled": {
+     "abort": 4
+    }
+   }
+  },
+  "fallbacks": 7,
+  "label_tuple_audit": {
+   "rows": 35300,
+   "bad": 0
+  }
+ },
+ "jobs": {
+  "jobs": 353,
+  "games": 152,
+  "index_rows_total": 353,
+  "shards": {
+   "0": 68,
+   "1": 84,
+   "2": 98,
+   "3": 103
+  },
+  "nshard": 4,
+  "label_tuple": {
+   "deadline_s": 180,
+   "hooks": 8000,
+   "horizon": 62,
+   "horizon_value": -1,
+   "k": 50,
+   "name": "L3-W50+H"
+  }
+ },
+ "labels_rows": 35300,
+ "sha256": {
+  "jobs_all.jsonl": "96b62d0be7bccffbe2b1c4fa403364772f9220df84c044f0eb1f056e596dbb67",
+  "jobs_shard0.jsonl": "c6c9f8d6e00401f948c558c3132a1cc9332a51cafa60c71c6f2294541968a404",
+  "jobs_shard0_p1.jsonl": "087b2f59c7b845fc3e890a77fbfcb6ac32d9b206fca78d44fa317049f116c5a4",
+  "jobs_shard0_p2.jsonl": "2bf6b8a92d79b742e0c5f2e4fe9f452c9304965d1fd26152595b401de6a2addf",
+  "jobs_shard1.jsonl": "4b1b6f502efc9fdd6c83bdf92e6f8ff3670947ac6f621ab21e3cc1575d156b89",
+  "jobs_shard1_p1.jsonl": "6c26f4be5f9d28590db24d0864c1f97634eb26a4d5f56d3214209790f3e76cf9",
+  "jobs_shard1_p2.jsonl": "1cc9772b120260976837ed16165534d4074fb8947d99970054debb0a57452a01",
+  "jobs_shard2.jsonl": "d436c159e34ce16e7cebcfc7232f815edd1838fc357cac9a6260439290dc4106",
+  "jobs_shard2_p1.jsonl": "eceae029cbfe8cf1f424f38a8f4d61642d01f91ce527455a9e2223fe819805d3",
+  "jobs_shard2_p2.jsonl": "7a052ca7902f8256c6202cf146a5c149402b05e4ee4f430946ac4d5cf6caf39b",
+  "jobs_shard3.jsonl": "c75182d9e68e96a3900742da95ab4eb9a58f308a21c653af388eda73c412223c",
+  "jobs_shard3_p1.jsonl": "7876e7b667a758a8edf02fd4d2d13c97806221222e7e7aceb632a7c012ab7feb",
+  "jobs_shard3_p2.jsonl": "271fa7efda6206d5f1b2072cba44e4c49796070a626e6284d2a2e8a0dcc4a91c",
+  "labels_all.jsonl": "f5f1522cddbcf5d9c66d7390d47a5f69400846104d1a3fb37e4952a9c4e2fc90",
+  "labels_shard0_p1.jsonl": "e5a30054dc3377d864ad177a67a768b08380e7fb12046e8d575eb6c9ba7bf057",
+  "labels_shard0_p2.jsonl": "f8d269697049fe1ac1c8114308f30bc17253b7306b42d3d98ff03bd816556ab0",
+  "labels_shard1_p1.jsonl": "47d9dfdc36bd1c325aab8d6d066b5472021c1c613178ad2965a4b464b931dfbe",
+  "labels_shard1_p2.jsonl": "0ddc3b4e54f23993335ac30c03f09f03235101cc4809e0c2347a977a91c9bf70",
+  "labels_shard2_p1.jsonl": "5203e5ea1914016524b8e24d60b0ddb67f4b4ebe8d193e8b287484ff1e9932e9",
+  "labels_shard2_p2.jsonl": "2e7915ffdce157d6b66dea875f778d416071f65ff5457097abb0bef594c4cbf9",
+  "labels_shard3_p1.jsonl": "e3633207015b161d69b2764aa998639be975810df95ef3769d4eb286c1c4427a",
+  "labels_shard3_p2.jsonl": "6be0e4a991a3a1ead7578e307fc0fbd7e201e131be0a624095883a52961cfd06",
+  "stage2_read.json": "5dadbe493f7f6ab595e3a1180c12580545737b945113aba182e835f68f806264"
+ }
+}

@@ -1,0 +1,1 @@
+ABORT: 35300 label rows carry a setting stamp != the registered label tuple
