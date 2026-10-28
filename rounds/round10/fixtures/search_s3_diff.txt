@@ -1,0 +1,77 @@
+--- search_s2.php
++++ search_s3.php
+@@ -997,6 +997,74 @@
+   $priorPick = SimLabel_PriorArgmax($priors);
+   $bp = $priors[$priorPick] ?? 0.0;
+   if ($ncand <= 1 || $bp >= 0.97) {
++    if (getenv("TEACHER_CAPTURE") && getenv("TEACHER_CAPTURE_UNCONTESTED")
++        && $ncand >= 2 && $bp >= 0.97) {
++      // Round-10 Step 0 probe (search_s3 only; stock
++      // search_s2 has no such block): snapshot SAMPLED
++      // uncontested decisions for offline evaluation.
++      // Stock behavior returns from this branch with
++      // only a stat row -- no snapshot, no priors -- so
++      // an uncontested decision leaves nothing an
++      // offline eval can run on. When both capture
++      // envs are set, this block snapshots the game
++      // dir and appends an index row in the contested
++      // capture arm's exact shape (same snap counter,
++      // same index file), marked "uncontested" => 1
++      // with the top prior recorded and the candidate
++      // set the search would have used (the Decide
++      // selection below: top-3 by prior, then any
++      // prior >= 0.10 up to 4 -- with $bp >= 0.97 the
++      // tail sums to <= 0.03, so the second loop adds
++      // nothing; it is kept so the set is the rule's,
++      // not an approximation of it). Sampling is per
++      // game, systematic: every
++      // TEACHER_CAPTURE_UNCONTESTED_EVERY-th eligible
++      // decision (env, default 2). The played pick is
++      // untouched: the stat row and the return below
++      // are stock, and the capture arm's games are
++      // raw-policy games by construction.
++      $uncEvery = intval(getenv("TEACHER_CAPTURE_UNCONTESTED_EVERY") ?: 2);
++      if ($uncEvery < 1) $uncEvery = 1;
++      $gnameU = strval($GLOBALS["gameName"] ?? "");
++      $GLOBALS["ssTeacherUncCount"][$gnameU] =
++        ($GLOBALS["ssTeacherUncCount"][$gnameU] ?? 0) + 1;
++      if (($GLOBALS["ssTeacherUncCount"][$gnameU] % $uncEvery) === 0) {
++        $snapDirU = getenv("TEACHER_SNAP_DIR");
++        if ($snapDirU !== false && $snapDirU !== "") {
++          $GLOBALS["ssTeacherSnapCount"][$gnameU] =
++            ($GLOBALS["ssTeacherSnapCount"][$gnameU] ?? 0) + 1;
++          $hcU = $GLOBALS["ssTeacherSnapCount"][$gnameU];
++          $dstU = rtrim($snapDirU, "/") . "/" . $gnameU . "_t" . $hcU . "/";
++          if (!is_dir($dstU)) {
++            SimSearch_CopyDir($gameDir, $dstU);
++            $stU = null;
++            try { $stU = SimFeat_BuildState($player, $branch, $candRecs); }
++            catch (Throwable $e) { $stU = null; }
++            $orderU = array_keys($priors);
++            usort($orderU, function ($a, $b) use ($priors) {
++              return $priors[$b] <=> $priors[$a]; });
++            $selU = [];
++            foreach ($orderU as $i) { if (count($selU) < 3) $selU[] = intval($i); }
++            foreach ($orderU as $i) {
++              if (count($selU) >= 4) break;
++              if ($priors[$i] >= 0.10 && !in_array(intval($i), $selU, true)) {
++                $selU[] = intval($i);
++              }
++            }
++            sort($selU);
++            file_put_contents(rtrim($snapDirU, "/")
++              . "/teacher_snap_index.jsonl",
++              json_encode(["snap" => $gnameU . "_t" . $hcU, "game" => $gnameU,
++                "hcount" => $hcU, "branch" => $branch, "player" => $player,
++                "turn" => intval($GLOBALS["currentTurn"] ?? 0),
++                "cands" => $candRecs, "state" => $stU,
++                "priors" => $priors, "prior_pick" => $priorPick,
++                "selected" => $selU, "uncontested" => 1,
++                "top_prior" => $bp]) . "\n", FILE_APPEND);
++          }
++        }
++      }
++    }
+     SimSearch_LogStat(["teacher" => 1, "contested" => 0, "setting" => $T, "branch" => $branch,
+       "player" => $player, "turn" => intval($GLOBALS["currentTurn"] ?? 0),
+       "ncand" => $ncand, "prior_pick" => $priorPick, "pick" => $priorPick,

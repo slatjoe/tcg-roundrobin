@@ -1,0 +1,388 @@
+reproduce_r9_tables: helpers imported from round-9 code (pinned):
+  stage0_report.py sha256 5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf
+  analyze_l3.py sha256 16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9
+
+=== stage2 (teacher games 200; stat rows 20013; canary rows 4; jobs 353) ===
+populations: contested 5087 (with mean_diff 1715), uncontested 14922 (ncand<=1: 0), overturns logged 353
+join: snap-index 353/353 jobs; stat-row unique cross-check 346 (multi-key collisions 4)
+per-job diffs: 353 jobs with shared finished worlds, 0 without; overall edge 0.0621
+fires@1.5 == logged overturns: True
+
+-- sec.1 fires/game (tol 0.005)
+  margin 1.50: mine 1.765  claude 1.765  MATCH
+  margin 1.25: mine 3.200  claude 3.200  MATCH
+  margin 1.00: mine 3.590  claude 3.590  MATCH
+
+-- sec.1 z-band edges, SNAP pairing (job -> teacher_snap_index; the order-aware stat join agrees on every job -- see below)
+   (n exact; edge tol 0.0015; CI tol 0.0025; both CI methods printed)
+  (1.5, 2.0]: n 188 (claude 187); edge 0.020 (claude 0.020); CI claude [0.008, 0.032]; normal [0.008, 0.031]; bootstrap [0.008, 0.031]
+  (2.0, 2.5]: n 94 (claude 94); edge 0.029 (claude 0.029); CI claude [0.012, 0.048]; normal [0.012, 0.046]; bootstrap [0.012, 0.047]
+  (2.5, 3.5]: n 49 (claude 50); edge 0.062 (claude 0.060); CI claude [0.027, 0.097]; normal [0.026, 0.099]; bootstrap [0.029, 0.098]
+  (3.5, inf]: n 22 (claude 22); edge 0.565 (claude 0.566); CI claude [0.445, 0.688]; normal [0.422, 0.709]; bootstrap [0.443, 0.689]
+-- sec.1 z-band edges, FIRST-MATCH stat pairing (job -> first stat row in stream order with the job's key)
+  (1.5, 2.0]: n 187 (claude 187) MATCH; edge 0.020 (claude 0.020) MATCH; CI claude [0.008, 0.032]; normal [0.008, 0.032]; bootstrap [0.008, 0.032]; CI method: normal
+  (2.0, 2.5]: n 94 (claude 94) MATCH; edge 0.029 (claude 0.029) MATCH; CI claude [0.012, 0.048]; normal [0.012, 0.046]; bootstrap [0.012, 0.047]; CI method: normal
+  (2.5, 3.5]: n 50 (claude 50) MATCH; edge 0.060 (claude 0.060) MATCH; CI claude [0.027, 0.097]; normal [0.024, 0.096]; bootstrap [0.026, 0.096]; CI method: cluster-bootstrap
+  (3.5, inf]: n 22 (claude 22) MATCH; edge 0.565 (claude 0.566) MATCH; CI claude [0.445, 0.688]; normal [0.422, 0.709]; bootstrap [0.443, 0.689]; CI method: cluster-bootstrap
+  mis-paired jobs (snap z vs first-match z):
+    272983764_t2: snap z 3.6742, first-match z 5.0990
+    748346653_t2: snap z 1.5492, first-match z 3.3607
+
+-- sec.2 tail decomposition (edge tol 0.0015; share tol 0.01; rate tol 0.002)
+  non-tail edge: mine 0.0287 (n 331)  claude 0.0286  MATCH
+  tail share: mine 0.567  claude 0.57  MATCH
+  tail rate: mine 0.1100/game (n 22)  claude 0.110  MATCH
+
+-- sec.3 prior-band tail rates per contested state (tol 0.0004)
+  [0.00, 0.50): states 1095, tail 6, rate 0.0055
+  [0.50, 0.70): states 2104, tail 7, rate 0.0033
+  [0.70, 0.85): states 889, tail 3, rate 0.0034
+  [0.85, 0.97): states 999, tail 6, rate 0.0060  claude 0.0060  MATCH
+
+=== stage3 (teacher games 400; stat rows 37100; canary rows 8; jobs 622) ===
+populations: contested 9538 (with mean_diff 3166), uncontested 27554 (ncand<=1: 0), overturns logged 622
+join: snap-index 622/622 jobs; stat-row unique cross-check 613 (multi-key collisions 8)
+per-job diffs: 622 jobs with shared finished worlds, 0 without; overall edge 0.0417
+fires@1.5 == logged overturns: True
+
+-- sec.1 fires/game (tol 0.005)
+  margin 1.50: mine 1.555  claude 1.555  MATCH
+  margin 1.25: mine 2.720  claude 2.720  MATCH
+  margin 1.00: mine 3.080  claude 3.080  MATCH
+
+-- sec.1 z-band edges, SNAP pairing (job -> teacher_snap_index; the order-aware stat join agrees on every job -- see below)
+   (n exact; edge tol 0.0015; CI tol 0.0025; both CI methods printed)
+  (1.5, 2.0]: n 326 (claude 328); edge 0.016 (claude 0.016); CI claude [0.006, 0.027]; normal [0.007, 0.026]; bootstrap [0.007, 0.026]
+  (2.0, 2.5]: n 192 (claude 191); edge 0.033 (claude 0.032); CI claude [0.019, 0.047]; normal [0.018, 0.047]; bootstrap [0.019, 0.047]
+  (2.5, 3.5]: n 85 (claude 84); edge 0.072 (claude 0.075); CI claude [0.045, 0.107]; normal [0.043, 0.102]; bootstrap [0.043, 0.103]
+  (3.5, inf]: n 19 (claude 19); edge 0.429 (claude 0.430); CI claude [0.303, 0.553]; normal [0.299, 0.560]; bootstrap [0.306, 0.555]
+-- sec.1 z-band edges, FIRST-MATCH stat pairing (job -> first stat row in stream order with the job's key)
+  (1.5, 2.0]: n 328 (claude 328) MATCH; edge 0.016 (claude 0.016) MATCH; CI claude [0.006, 0.027]; normal [0.007, 0.026]; bootstrap [0.007, 0.026]; CI method: normal
+  (2.0, 2.5]: n 191 (claude 191) MATCH; edge 0.032 (claude 0.032) MATCH; CI claude [0.019, 0.047]; normal [0.018, 0.047]; bootstrap [0.019, 0.047]; CI method: normal
+  (2.5, 3.5]: n 84 (claude 84) MATCH; edge 0.075 (claude 0.075) MATCH; CI claude [0.045, 0.107]; normal [0.045, 0.104]; bootstrap [0.045, 0.106]; CI method: cluster-bootstrap
+  (3.5, inf]: n 19 (claude 19) MATCH; edge 0.429 (claude 0.430) MATCH; CI claude [0.303, 0.553]; normal [0.299, 0.560]; bootstrap [0.306, 0.555]; CI method: NEITHER
+  mis-paired jobs (snap z vs first-match z):
+    505941231_t2: snap z 2.0093, first-match z 1.6928
+    460903542_t3: snap z 2.4495, first-match z 2.1381
+    739674724_t2: snap z 2.7530, first-match z 2.0000
+
+-- sec.2 tail decomposition (edge tol 0.0015; share tol 0.01; rate tol 0.002)
+  non-tail edge: mine 0.0295 (n 603)  claude 0.0295  MATCH
+  tail share: mine 0.314  claude 0.32  MATCH
+  tail rate: mine 0.0475/game (n 19)  claude 0.048  MATCH
+
+-- sec.3 prior-band tail rates per contested state (tol 0.0004)
+  [0.00, 0.50): states 2099, tail 1, rate 0.0005
+  [0.50, 0.70): states 3957, tail 7, rate 0.0018  claude 0.0018  MATCH
+  [0.70, 0.85): states 1631, tail 4, rate 0.0025
+  [0.85, 0.97): states 1851, tail 7, rate 0.0038  claude 0.0038  MATCH
+
+-- sec.3 uncontested per game, stage3 (tol 0.15)
+  mine 68.89 (rows 27554 / 400 games)  claude 68.9  MATCH
+  contested per game, stage3: 23.84
+
+==== SUMMARY: 1 figure(s) NOT REPRODUCED: ['stage3 band (3.5, inf] CI (both pairings)']
+
+JSON {
+ "stage2": {
+  "games": 200,
+  "fires_per_game": {
+   "1.5": 1.765,
+   "1.25": 3.2,
+   "1.0": 3.59
+  },
+  "band_rows": {
+   "(1.5, 2.0)": {
+    "n": 188,
+    "edge": 0.019594007815892316,
+    "ci_norm": [
+     0.008064231087319752,
+     0.031123784544464878
+    ],
+    "ci_boot": [
+     0.007647930680652154,
+     0.03141110989850486
+    ]
+   },
+   "(2.0, 2.5)": {
+    "n": 94,
+    "edge": 0.029179331306990883,
+    "ci_norm": [
+     0.011969680559900723,
+     0.04638898205408104
+    ],
+    "ci_boot": [
+     0.011777777777777774,
+     0.047428571428571445
+    ]
+   },
+   "(2.5, 3.5)": {
+    "n": 49,
+    "edge": 0.062448979591836734,
+    "ci_norm": [
+     0.02625358393621962,
+     0.09864437524745384
+    ],
+    "ci_boot": [
+     0.028936170212765955,
+     0.09829787234042553
+    ]
+   },
+   "(3.5, None)": {
+    "n": 22,
+    "edge": 0.5654545454545454,
+    "ci_norm": [
+     0.42184819032302706,
+     0.7090609005860637
+    ],
+    "ci_boot": [
+     0.4434782608695652,
+     0.6885714285714285
+    ]
+   }
+  },
+  "band_rows_firstmatch": {
+   "(1.5, 2.0)": {
+    "n": 187,
+    "edge": 0.020019644221324892,
+    "ci_norm": [
+     0.008458428199211348,
+     0.03158086024343844
+    ],
+    "ci_boot": [
+     0.007913565426170466,
+     0.03179508538109122
+    ]
+   },
+   "(2.0, 2.5)": {
+    "n": 94,
+    "edge": 0.029179331306990883,
+    "ci_norm": [
+     0.011969680559900723,
+     0.04638898205408104
+    ],
+    "ci_boot": [
+     0.011777777777777774,
+     0.047428571428571445
+    ]
+   },
+   "(2.5, 3.5)": {
+    "n": 50,
+    "edge": 0.06,
+    "ci_norm": [
+     0.02421253850857817,
+     0.09578746149142182
+    ],
+    "ci_boot": [
+     0.026382978723404255,
+     0.09617021276595747
+    ]
+   },
+   "(3.5, None)": {
+    "n": 22,
+    "edge": 0.5654545454545454,
+    "ci_norm": [
+     0.42184819032302706,
+     0.7090609005860637
+    ],
+    "ci_boot": [
+     0.4434782608695652,
+     0.6885714285714285
+    ]
+   }
+  },
+  "mispaired": [
+   {
+    "snap": "272983764_t2",
+    "z_snap": 3.674234614174767,
+    "z_firstmatch": 5.099019513592784
+   },
+   {
+    "snap": "748346653_t2",
+    "z_snap": 1.549193338482967,
+    "z_firstmatch": 3.360672201667224
+   }
+  ],
+  "nontail_edge": 0.02866021333004501,
+  "tail_share": 0.5673492181682799,
+  "tail_rate": 0.11,
+  "uncontested_per_game": 74.61,
+  "prior_bands": {
+   "(0.0, 0.5)": {
+    "states": 1095,
+    "tail": 6,
+    "rate": 0.005479452054794521
+   },
+   "(0.5, 0.7)": {
+    "states": 2104,
+    "tail": 7,
+    "rate": 0.003326996197718631
+   },
+   "(0.7, 0.85)": {
+    "states": 889,
+    "tail": 3,
+    "rate": 0.003374578177727784
+   },
+   "(0.85, 0.97)": {
+    "states": 999,
+    "tail": 6,
+    "rate": 0.006006006006006006
+   }
+  },
+  "join_snap_ok": 353,
+  "overall_edge": 0.06211481759842748
+ },
+ "stage3": {
+  "games": 400,
+  "fires_per_game": {
+   "1.5": 1.555,
+   "1.25": 2.72,
+   "1.0": 3.08
+  },
+  "band_rows": {
+   "(1.5, 2.0)": {
+    "n": 326,
+    "edge": 0.01643796168774258,
+    "ci_norm": [
+     0.006870970236273977,
+     0.02600495313921118
+    ],
+    "ci_boot": [
+     0.006928474859975537,
+     0.026028257456828886
+    ]
+   },
+   "(2.0, 2.5)": {
+    "n": 192,
+    "edge": 0.03264668367346939,
+    "ci_norm": [
+     0.018296702096522118,
+     0.04699666525041665
+    ],
+    "ci_boot": [
+     0.01926530612244898,
+     0.0468874763019962
+    ]
+   },
+   "(2.5, 3.5)": {
+    "n": 85,
+    "edge": 0.0724609843937575,
+    "ci_norm": [
+     0.04297267490049436,
+     0.10194929388702065
+    ],
+    "ci_boot": [
+     0.04333333333333332,
+     0.10317073170731707
+    ]
+   },
+   "(3.5, None)": {
+    "n": 19,
+    "edge": 0.42947368421052634,
+    "ci_norm": [
+     0.2990697007899009,
+     0.5598776676311518
+    ],
+    "ci_boot": [
+     0.30555555555555564,
+     0.555
+    ]
+   }
+  },
+  "band_rows_firstmatch": {
+   "(1.5, 2.0)": {
+    "n": 328,
+    "edge": 0.016398705823792933,
+    "ci_norm": [
+     0.006844514583153402,
+     0.025952897064432462
+    ],
+    "ci_boot": [
+     0.006897959183673471,
+     0.02608150859127846
+    ]
+   },
+   "(2.0, 2.5)": {
+    "n": 191,
+    "edge": 0.03218933646757132,
+    "ci_norm": [
+     0.017792198599023187,
+     0.046586474336119454
+    ],
+    "ci_boot": [
+     0.018535661687355362,
+     0.04664328231292517
+    ]
+   },
+   "(2.5, 3.5)": {
+    "n": 84,
+    "edge": 0.07451409135082605,
+    "ci_norm": [
+     0.04495178152888253,
+     0.10407640117276958
+    ],
+    "ci_boot": [
+     0.04525000000000001,
+     0.10585365853658539
+    ]
+   },
+   "(3.5, None)": {
+    "n": 19,
+    "edge": 0.42947368421052634,
+    "ci_norm": [
+     0.2990697007899009,
+     0.5598776676311518
+    ],
+    "ci_boot": [
+     0.30555555555555564,
+     0.555
+    ]
+   }
+  },
+  "mispaired": [
+   {
+    "snap": "505941231_t2",
+    "z_snap": 2.0093240598694115,
+    "z_firstmatch": 1.6928294780606363
+   },
+   {
+    "snap": "460903542_t3",
+    "z_snap": 2.449489742783178,
+    "z_firstmatch": 2.138089935299396
+   },
+   {
+    "snap": "739674724_t2",
+    "z_snap": 2.7529888064467416,
+    "z_firstmatch": 2.0
+   }
+  ],
+  "nontail_edge": 0.02949605712931939,
+  "tail_share": 0.3144978605587719,
+  "tail_rate": 0.0475,
+  "uncontested_per_game": 68.885,
+  "prior_bands": {
+   "(0.0, 0.5)": {
+    "states": 2099,
+    "tail": 1,
+    "rate": 0.0004764173415912339
+   },
+   "(0.5, 0.7)": {
+    "states": 3957,
+    "tail": 7,
+    "rate": 0.0017690169320192064
+   },
+   "(0.7, 0.85)": {
+    "states": 1631,
+    "tail": 4,
+    "rate": 0.002452483139178418
+   },
+   "(0.85, 0.97)": {
+    "states": 1851,
+    "tail": 7,
+    "rate": 0.0037817396002160996
+   }
+  },
+  "join_snap_ok": 622,
+  "overall_edge": 0.04171402322987073
+ }
+}

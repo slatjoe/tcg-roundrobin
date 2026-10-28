@@ -1,0 +1,65 @@
+===== fx_pin_guards.py =====
+PASS pin sites found [('search_s3.php', '8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', 'c7a76af4fb59e8e6e0b69a6d06157efc44597b04238cdb3b2efe48350cdda888'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa')]
+PASS pin search_s3.php literal 8f7be190044f file 8f7be190044f
+PASS pin s1_eval_main.php literal 73ed24822baa file 73ed24822baa
+PASS pin s2_label_main.php literal c7a76af4fb59 file c7a76af4fb59
+PASS pin paired_driver_gravy.py literal 3389b1b93618 file 3389b1b93618
+PASS pin merge_registry.py literal 13a655e37d2d file 13a655e37d2d
+PASS pin search_s2.php literal 85490e8ed1ef file 85490e8ed1ef
+PASS tree pins: search_s3 at capture+eval installs found 2
+PASS tree pins: search_s2 at label installs found 1
+PASS tree pins: no other literals []
+PASS seed literal 30055001 in runner == settings 30055001 
+PASS seed literal 70055001 in runner == settings 70055001 
+PASS capture seed strings in runner == settings 
+PASS uncontested sampling literal in settings 
+fx_pin_guards: ALL PASS
+
+===== gen_search_s3.py =====
+PASS gen_search_s3: search_s3.php regenerates byte-identically from search_s2.php 85490e8e; diff = one inserted block (77 diff lines)
+
+===== fx_probe_blocks.sh =====
+PASS fx blocks FREESPACE pass case prints the pre-flight line
+PASS fx blocks FREESPACE abort case exits non-zero with ABORT
+PASS fx blocks SRV starts both servers and verifies loads
+PASS fx blocks CAPTURE runs 2 seat drivers, manifest assert passes, 2 streams recorded
+PASS fx blocks EVAL spawns 8 shard processes and waits clean
+PASS fx blocks EVAL block carries the wait discipline verbatim
+PASS fx blocks EVAL failure case aborts via the FAIL flag
+PASS fx blocks LABEL spawns 8 shard processes and waits clean
+PASS fx blocks LABEL failure case aborts via the FAIL flag
+fx_probe_blocks: ALL PASS
+
+===== fx_probe_python.py =====
+PASS eval-jobs build rc 
+PASS eval-jobs count/classes 
+PASS eval-jobs report games 
+PASS eval-jobs poison abort: contested>=0.97 
+PASS eval-jobs poison abort: uncontested<0.97 
+PASS eval-analyze rc 
+PASS A: z inf, fires all margins, pick 1 
+PASS B: z in (1.25, 1.5], matches independent z z=1.4142 expected 1.4142
+PASS C: thin_prior, no statistic 
+PASS D: no_contrast on tie 
+PASS E: drawn worlds priced -1 -> no_contrast 
+PASS summary: uncontested would-fire@1.25 = 1, tail A = 1 
+PASS label-jobs build rc 
+PASS label-jobs: 0 jobs at margin 1.5; alt@1.25 = 1 
+PASS label-jobs @1.25: B is the one uncontested job 
+PASS label-jobs shard-cap abort 
+PASS label-analyze rc 
+PASS label read: edge 1.0, per-game gain 0.25 over 4 games (one zero-job game counted) edge=1.0 gain=0.25
+PASS label world-count guard abort 
+fx_probe_python: ALL PASS
+
+===== fx_seed_clearance.py =====
+prior families: 573300 enumerated values; highest span top 369091039 (r9s3-labels-50055001)
+label family: base 70055001, cap 256 jobs/shard, span top 97091279 (shard 0)
+probe values: eval 330000, labels 51200, disjoint from prior and each other: True
+capture seeds 24001-24090 disjoint from 8 used blocks (incl. reserved 9001-9200)
+PASS fx_seed_clearance: label ranges disjoint from all prior families at planned counts; eval and label values disjoint from prior values and each other; capture seeds clear
+
+===== fx_repro (summary compared with staged output) =====
+PASS fx_repro summary matches the staged output: ==== SUMMARY: 1 figure(s) NOT REPRODUCED: ['stage3 band (3.5, inf] CI (both pairings)']
+
+run_fx_r10: ALL FIXTURES PASS
