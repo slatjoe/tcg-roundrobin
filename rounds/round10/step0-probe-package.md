@@ -10,6 +10,10 @@ committed code, and (B) the Step 0 probe the review's
 as it actually exists in the repo, with its size,
 cost, report shape, and decision rule registered
 below for the review to amend or register as written.
+**Amended in place by the FIX PASS of 2026-10-28
+(§9) on claude-reply-402c92f (CHANGES REQUESTED):
+§3.3 and §5 below were rewritten where the ruling
+changed the text; §8 F2 is marked ruled.**
 
 **Scope, as ruled.** Round 10 prices two levers and
 only two: the fire margin (1.5 → 1.25) and the 0.97
@@ -325,7 +329,7 @@ read: screen at z₁₀ ≥ 1.0, full k = 25 re-eval
 above it, and report the tail rate as a lower bound
 with the Φ-correction printed beside it.
 
-### 3.3 Labeling — two classes, one flagged definition
+### 3.3 Labeling — three classes (F2 ruled; amended in place by the fix pass)
 
 L3 at the registered configuration (W = 50, CRN,
 pair `va`, horizon 62, draw = 0 read) via the
@@ -334,41 +338,61 @@ byte-identical `s2_label_main.php`, on:
 - **(a) uncontested would-fires** — states whose
   eval statistic fires the CURRENT rule (z > 1.5),
   i.e. what a threshold build gains under today's
-  decision rule; and
+  decision rule;
+- **(a-diag) the uncontested SUPERSET below the
+  class-(a) margin** — states with z in (1.0, 1.5]
+  (fix pass, review §3/F2). Labeled and reported
+  (counts, edge) as a DIAGNOSTIC class only:
+  excluded from the threshold per-game gain and
+  from the decision rule (the label analyzer emits
+  no gain for it, so nothing downstream can fold
+  it in); and
 - **(b) contested would-fires in (1.25, 1.5]** —
   the fires margin 1.25 adds.
 
-**FLAG F2 — the review's text does not pin which
-margin defines class (a).** This package PROPOSES
-1.5 (the current rule: are there real current-rule
-fires hiding behind the threshold?). Expected job
-counts under each candidate definition, from the
-Stage 3 z-distribution ratios applied to the
-probe's expected uncontested would-fire counts
-(the probe measures the base rate; the ratios are
-the contested population's: fires@1.25/fires@1.5 =
-1.75, fires@1.0/fires@1.5 = 1.98):
+**F2 — RULED (claude-reply-402c92f §3): class (a)'s
+margin is 1.5**, as this package proposed — a
+threshold build changes one thing, the threshold,
+at the current margin, so its gain is the z > 1.5
+class; the z > 1.0 superset is labeled alongside it
+as the diagnostic above. Expected job counts under
+each definition, from the Stage 3 z-distribution
+ratios applied to the probe's expected uncontested
+would-fire counts (the probe measures the base
+rate; the ratios are the contested population's:
+fires@1.25/fires@1.5 = 1.75, fires@1.0/fires@1.5 =
+1.98):
 
 | class (a) defined at | expected jobs (if @1.5 rate is 0.002/state) | if 0.005/state |
 |---|---|---|
-| z > 1.5 (proposed) | ≈ 6 | ≈ 16 |
+| z > 1.5 (ruled) | ≈ 6 | ≈ 16 |
 | z > 1.25 | ≈ 11 | ≈ 27 |
-| z > 1.0 | ≈ 12 | ≈ 31 |
+| z > 1.0 (the labeled superset) | ≈ 12 | ≈ 31 |
 
 Class (b) is definition-independent: ≈ 1.165
-fires/game (Stage 3) × 90 ≈ **105 jobs**. The jobs
-builder takes the margin from settings
-(`label.uncontested_margin`), prints the realized
-counts under all three definitions in its report,
-and the label phase does not start until the review
-rules — ruling 1.25 or 1.0 costs a settings edit,
-not a rebuild.
+fires/game (Stage 3) × 90 ≈ **105 jobs**; the
+planned label total with the superset is ≤ 160
+jobs (settings `label.planned_jobs_total_max`).
+The jobs builder takes the margins from settings
+(`label.uncontested_margin`,
+`label.uncontested_diag_margin`), prints the
+realized counts under all three definitions in its
+report, and proceeds — with F2 ruled and the
+superset in the job set, the jobs phase needs no
+ruling before labels.
 
 **Label seeds: base 70,055,001 + shard × 10⁸**,
 4 shards, per-shard cap **256 jobs** enforced by an
 abort in `build_probe_jobs.py` (span at the cap:
 27,036,278; family top 97,091,279 < 10⁸; base
 clears the Stage 3 family's span top 69,091,039).
+Fix pass: the planned counts are enlarged for the
+superset (planned total ≤ 160, planned per-shard
+≤ 256 == the cap itself, settings), so the
+enumeration in `fx_seed_clearance.py` — which runs
+at the cap — is the re-proof at the enlarged
+counts: no planned population can exceed the
+enumerated one in any shard (§9).
 **Eval seeds: base 30,055,001 + shard × 10⁸**
 (value-disjoint from every prior family on the
 shared lattice). Both proven by enumeration at the
@@ -425,13 +449,29 @@ built at all, and with which single change.
 ## 5. Report shape and decision rule (registered)
 
 `probe_report.py` emits, from the three analyzer
-outputs:
+outputs (items 1 and 3 amended in place by the fix
+pass — the calibration block is new, the threshold
+gain is now sampling-weighted, and the
+informational Step 2 prints are new):
 
+0. **Calibration (fix pass, review §2.2):** the
+   probe's contested would-fire rate at margin 1.5,
+   per contested state and per game, printed beside
+   Stage 1's panel (22/240 = 0.092 per state) and
+   the live rates (0.069 Stage 2, 0.065 Stage 3 per
+   state). If the per-state rate falls outside
+   [0.04, 0.13], the report prints "offline eval
+   does not reproduce the search's firing behavior"
+   above the recommendation. A print and a flag,
+   not a gate — the decision rule below is
+   unchanged.
 1. **Tail rate per state and labeled edge, by prior
    band** — bands [0, 0.5), [0.5, 0.7), [0.7, 0.85),
    [0.85, 0.97), **[0.97, 1]** (the uncontested
    population), from the eval z's (rates) and the
-   labels (edges).
+   labels (edges). The (1.0, 1.5] uncontested
+   DIAGNOSTIC class is reported here too — counts
+   and edge, never a gain.
 2. **The (1.25, 1.5] band:** fires/game (eval),
    labeled edge and per-game gain (labels).
 3. **Per lever:** predicted per-game gain =
@@ -439,12 +479,28 @@ outputs:
    (summed diffs per capture game over ALL 90
    capture games, zero-fire games included — the
    review §5 Step 2 form, applied at probe scale),
-   with CI and lower bound; predicted teacher-game
-   cost: margin — 503 s (no added searches; fires
-   rise to the probe-measured 1.25 rate);
-   threshold — 503 + (uncontested decisions/game ×
-   19.5 s), with the probe's own offline
-   seconds/state printed as a cross-check.
+   with CI and lower bound; **the uncontested
+   class's diffs are weighted by
+   `capture.uncontested_every` (Horvitz–Thompson)
+   inside the per-game sum** (fix pass, review
+   §2.1 — the unweighted form undercounted the
+   threshold gain by the sampling factor);
+   predicted teacher-game cost: margin — 503 s (no
+   added searches; fires rise to the probe-measured
+   1.25 rate); threshold — 503 + (uncontested
+   decisions/game × 19.5 s), with the probe's own
+   offline seconds/state printed as a cross-check.
+   **Informational, per lever (fix pass, review
+   §3):** the predicted Step 2 power against the
+   registered two-sample bar — PASS iff
+   (gain_new − 0.0649)/√(SE_new² + 0.0090²) ≥ 1.645
+   — computed from the lever's predicted gain with
+   SE_new scaled from Stage 3's 0.0090 form: the
+   probe's gain SE at 90 games (read off its CI)
+   scaled to 400 games by the √n rule; and the
+   Step 2 + fleet teacher-arm prices at the lever's
+   per-game cost. Printed so a "buildable" lever's
+   confirmation price is visible before any go.
 4. **Recommendation** under the registered rule
    (settings `report.decision_rule`): a lever is
    BUILDABLE iff its predicted gain's one-sided 95%
@@ -471,8 +527,10 @@ box time is spent, so this decision is cheap.
 
 ## 6. Fixtures
 
-`fixtures/run_fx_r10.sh` — **ALL PASS (45 checks)**,
-transcript staged at `fixtures/fx_r10_outputs.txt`:
+`fixtures/run_fx_r10.sh` — **ALL PASS (57 checks;
+45 at the original package, +12 in the fix pass,
+§9)**, transcript staged at
+`fixtures/fx_r10_outputs.txt`:
 
 - `fx_pin_guards.py` — every hash literal in
   `run_probe.sh` is 64-hex AND equals the staged
@@ -501,7 +559,15 @@ transcript staged at `fixtures/fx_r10_outputs.txt`:
   shard-cap abort); label rows → the label read
   (per-world scoring, refusal worlds skipped, the
   exactly-50 world-count guard, per-game gain over
-  a population including a zero-job game).
+  a population including a zero-job game). Fix
+  pass additions (§9): the sampling-weight round
+  trip in the hook's real index shape (gain and CI
+  scale by exactly the sampling factor; the
+  contested band unchanged); the uncontested class
+  boundaries (z = 1.0 / (1.0, 1.5] / z > 1.5); and
+  the report prints (calibration in/out of band,
+  the Step 2 power print against an independently
+  computed Φ value, both levers' price lines).
 - `fx_seed_clearance.py` — the §3.3 enumeration.
 - `fx_repro` — the Deliverable A script re-run; its
   summary line compared against the staged output.
@@ -562,11 +628,12 @@ forked in construction from `build_s3_jobs.py`
   C2 is out of round 10 (Joe, 2026-10-28, §scope
   above). No C2 build, no life-priced read, in this
   round.
-- **F2 — RULE NEEDED:** which margin defines the
-  uncontested label class (§3.3). Package proposes
-  **1.5**; expected counts under 1.5 / 1.25 / 1.0
-  are tabulated there. The jobs builder prints
-  realized counts under all three before labels run.
+- **F2 — RULED (claude-reply-402c92f §3):** the
+  uncontested label class is defined at **1.5**, as
+  proposed; the z > 1.0 superset is labeled as the
+  (1.0, 1.5] diagnostic class (§3.3 as amended).
+  The jobs builder prints realized counts under
+  all three margins and proceeds without a ruling.
 - **F3 — pairing (§1.2):** the review's §1 band
   table is computed under a first-match key join;
   under the snapshot pairing of record, two band
@@ -619,3 +686,103 @@ hash into a new box code dir, deployed.sh manifest,
 phase order capture → eval → jobs → label →
 analyze, with the jobs-phase counts read before
 label box time is spent).*
+
+---
+
+## 9. FIX PASS — 2026-10-28 (on claude-reply-402c92f, CHANGES REQUESTED)
+
+The review's verdict: one blocking defect (§2.1),
+one required print (§2.2), and the §3 additions
+(the z > 1.0 superset labels; the per-lever
+informational prints). This section is the dated
+record; **§3.3, §5, §6 and §8 above were amended
+IN PLACE** (rewritten where the ruling changed the
+text), not merely annotated here.
+
+- **§2.1 — SAMPLING WEIGHTS (blocking).**
+  `probe_label_analyze.py`: each uncontested job's
+  diff is weighted by `capture.uncontested_every`
+  (Horvitz–Thompson) inside the per-game sum in
+  `per_game_gain()`, so the bootstrap runs over the
+  weighted per-game totals; contested-band jobs
+  keep weight 1. The weight is printed on the CLASS
+  line and recorded in the JSON gain object. (The
+  report already scaled the cost side by the same
+  factor; the gain side now matches.)
+- **§2.2 — CALIBRATION PRINT (required).**
+  `probe_report.py` prints, before the
+  recommendation, the probe's contested would-fire
+  rate at margin 1.5 per contested state and per
+  game, beside Stage 1's panel (22/240 = 0.092 per
+  state) and the live rates (0.069 Stage 2, 0.065
+  Stage 3 per state); a per-state rate outside
+  [0.04, 0.13] prints "offline eval does not
+  reproduce the search's firing behavior" above the
+  recommendation. Print + flag, not a gate; the
+  recommendation logic is unchanged.
+- **§3/F2 — SUPERSET LABELS.** `build_probe_jobs.py`
+  emits a third class, `uncontested_diag` —
+  uncontested states with z in (1.0, 1.5]
+  (`label.uncontested_diag_margin`) — alongside
+  class (a) at the ruled margin 1.5. The label
+  analyzer reads it for counts and edge only and
+  emits NO per-game gain for it; the report prints
+  it as a diagnostic line. It is excluded from the
+  threshold gain and from the decision rule. The
+  jobs phase prints realized counts under margins
+  1.5 / 1.25 / 1.0 and proceeds without a ruling.
+  Seed clearance + the 256-job shard cap re-proven
+  at the ENLARGED planned counts
+  (`label.planned_jobs_total_max` 160,
+  `planned_jobs_per_shard_max` 256 == the enforced
+  cap): the `fx_seed_clearance.py` enumeration runs
+  at the cap and now asserts the recorded plan sits
+  at or under it, so no planned population exceeds
+  the enumerated one; span top 97,091,279 and all
+  disjointness results are unchanged.
+- **§3 — INFORMATIONAL PRINTS.** `probe_report.py`,
+  per lever: (i) the predicted Step 2 power against
+  the registered two-sample bar (settings
+  `report.step2_bar`: PASS iff (gain_new −
+  0.0649)/√(SE_new² + 0.0090²) ≥ 1.645), computed
+  from the lever's predicted gain with SE_new
+  scaled from the probe's 90-game gain SE (read off
+  its CI) to 400 games by the √n rule — the whole
+  print labeled informational; and (ii) the Step 2
+  (400 games) + fleet (per 100 pairs) teacher-arm
+  prices at the lever's per-game cost (margin
+  503 s; threshold 503 + uncontested/game × 19.5 s
+  from the probe's measured populations).
+- **Fixtures: 45 → 57 checks, ALL PASS**
+  (transcript re-staged at
+  `fixtures/fx_r10_outputs.txt`). New in
+  `fx_probe_python.py`: the §2.1 writer→reader
+  round trip at EVERY = 2 planted in the capture
+  hook's real index shape (index → eval jobs →
+  eval states → label jobs → label rows → the
+  read; the per-game uncontested gain is exactly
+  2× the unweighted sum, the CI scales by the same
+  factor, a contested-band population in the same
+  run is unchanged); class assignment at the z
+  boundaries 1.0 / (1.0, 1.5] / > 1.5; the
+  calibration print in both branches; the power
+  print against an independently computed Φ value
+  and both price lines. Two PRE-EXISTING checks had
+  encoded the pre-fix behavior and were updated to
+  the registered post-fix behavior: the §3 jobs
+  check (a (1.0, 1.5] state is now one diagnostic
+  job, not zero jobs) and the §4 label-read check
+  (the uncontested per-game gain is now the
+  weighted 0.5, not the unweighted 0.25). No other
+  check changed.
+- **Files changed by this pass:** `code/
+  settings_probe.json`, `code/build_probe_jobs.py`,
+  `code/probe_label_analyze.py`, `code/
+  probe_report.py`, `fixtures/fx_probe_python.py`,
+  `fixtures/fx_seed_clearance.py`, `fixtures/
+  fx_r10_outputs.txt` (re-staged transcript), and
+  this doc. Everything else — including the nine
+  byte-identical round-9 reuse files, `search_s3.php`
+  and its generator/diff, the runner, and the
+  reproduction script and its staged output — is
+  untouched.

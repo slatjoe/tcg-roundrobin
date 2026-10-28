@@ -44,15 +44,28 @@ PASS D: no_contrast on tie
 PASS E: drawn worlds priced -1 -> no_contrast 
 PASS summary: uncontested would-fire@1.25 = 1, tail A = 1 
 PASS label-jobs build rc 
-PASS label-jobs: 0 jobs at margin 1.5; alt@1.25 = 1 
+PASS label-jobs: B is one diagnostic job at margin 1.5; alt@1.25 = 1 
 PASS label-jobs @1.25: B is the one uncontested job 
 PASS label-jobs shard-cap abort 
 PASS label-analyze rc 
-PASS label read: edge 1.0, per-game gain 0.25 over 4 games (one zero-job game counted) edge=1.0 gain=0.25
+PASS label read: edge 1.0, per-game gain 0.5 over 4 games (sampling weight 2 on the uncontested job since the fix pass; one zero-job game counted) edge=1.0 gain=0.5
 PASS label world-count guard abort 
+PASS W0: hook-shape index rows build eval jobs 
+PASS W0b: states build one job per class 
+PASS W1: EVERY=2 uncontested gain == 2x unweighted (0.8/4 games, weighted 1.6/4) weighted=0.4 unweighted=0.2
+PASS W2: the CI scales by the same factor w CI [0.0, 1.2000000000000002] vs 2x [0.0, 1.2000000000000002]
+PASS W3: contested-band gain + CI unchanged by the weighting code path contested gain=0.1 both runs
+PASS W4: CLASS lines print the sampling weight (2 uncontested, 1 contested) 
+PASS B1: boundaries -- z=1.0 no job; (1.0,1.5] diagnostic (incl. z=1.5); z>1.5 class (a) {'uncontested_diag': ['u12_t1', 'u15_t1'], 'uncontested': ['u151_t1']}
+PASS B2: report carries the diagnostic class and the realized counts at all three margins 
+PASS P1: calibration inside the band -- line printed at 0.0750/state, NO flag line 
+PASS P2: informational power print matches the independent Phi computation power=0.2087 expected 0.2087
+PASS P3: price prints -- Step 2 + fleet box-hours at both levers' per-game costs margin step2 55.89 h; threshold cost 1846.3 s, step2 205.15 h
+PASS P4: calibration outside the band (0.2500/state) -- flag line printed ABOVE the recommendation, which is still emitted 
 fx_probe_python: ALL PASS
 
 ===== fx_seed_clearance.py =====
+planned label counts (enlarged, superset included): total <= 160, per-shard <= 256, enforced cap 256 -- enumeration at the cap covers the plan: True
 prior families: 573300 enumerated values; highest span top 369091039 (r9s3-labels-50055001)
 label family: base 70055001, cap 256 jobs/shard, span top 97091279 (shard 0)
 probe values: eval 330000, labels 51200, disjoint from prior and each other: True

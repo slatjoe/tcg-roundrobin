@@ -22,6 +22,18 @@ Probe families at the PLANNED counts
 W = 25; labels <= 256 jobs/shard (the builder's
 enforced cap), W = 50.
 
+Fix pass (claude-reply-402c92f sec.3/F2): the label
+plan is ENLARGED by the z > 1.0 uncontested superset
+(class (a) + the (1.0, 1.5] diagnostic class + the
+contested band). settings now records
+planned_jobs_total_max (160) and
+planned_jobs_per_shard_max (256 -- EQUAL to the
+enforced cap). This fixture asserts the recorded
+plan sits at or under the cap, so the enumeration
+below, which runs AT the cap, is the re-proof at
+the enlarged counts: no planned population can
+exceed the enumerated one in any shard.
+
 Assertions:
   1. probe label RANGES [base, span top] are disjoint
      from every prior family's range (interval check)
@@ -89,6 +101,26 @@ def main():
     lab_base = st["label"]["seed_base"]
     lab_cap = st["label"]["shard_cap_jobs"]
     fails = []
+
+    # fix pass: the recorded (enlarged) plan must sit
+    # at or under the enforced cap the enumeration
+    # below runs at -- per shard and in total.
+    plan_shard = st["label"]["planned_jobs_per_shard_max"]
+    plan_total = st["label"]["planned_jobs_total_max"]
+    if plan_shard > lab_cap:
+        fails.append("planned per-shard %d exceeds the "
+                     "enforced cap %d the enumeration "
+                     "proves at" % (plan_shard, lab_cap))
+    if plan_total > 4 * lab_cap:
+        fails.append("planned total %d exceeds 4 x cap "
+                     "%d" % (plan_total, lab_cap))
+    print("planned label counts (enlarged, superset "
+          "included): total <= %d, per-shard <= %d, "
+          "enforced cap %d -- enumeration at the cap "
+          "covers the plan: %s"
+          % (plan_total, plan_shard, lab_cap,
+             plan_shard <= lab_cap
+             and plan_total <= 4 * lab_cap))
 
     prior_vals = set()
     prior_tops = []

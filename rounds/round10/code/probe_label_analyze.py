@@ -12,7 +12,11 @@ is grouped and reported, none in the read itself:
 
   * jobs are grouped by probe_band ("uncontested" /
     "contested_band") and, inside "uncontested", by
-    the z > tail_z tail subset;
+    the z > tail_z tail subset; the third class,
+    "uncontested_diag" (the (1.0, 1.5] superset,
+    fix pass), is read for counts and edge only --
+    it is EXCLUDED from per-game gain and from the
+    decision rule;
   * per-game gain is computed Claude's sec.5 form:
     per capture game, the summed diffs of that game's
     jobs of the class (capture games with no jobs of
@@ -20,6 +24,17 @@ is grouped and reported, none in the read itself:
     capture games, with a game-clustered CI and a
     one-sided 95% lower bound -- the product form
     (edge x rate) is printed as a cross-check only;
+  * SAMPLING WEIGHTS (fix pass, claude-reply-402c92f
+    sec.2.1, BLOCKING): uncontested states were
+    captured by systematic sampling, every
+    capture.uncontested_every-th eligible decision,
+    so each uncontested job's diff is weighted by
+    that factor (Horvitz-Thompson) INSIDE the
+    per-game sum, and the bootstrap runs over the
+    weighted per-game totals. Contested-band jobs
+    are unsampled and keep weight 1. The weight is
+    printed on the CLASS line and recorded in the
+    JSON gain object;
   * no verdict: the reads feed probe_report.py's
     registered decision rule.
 
@@ -74,6 +89,7 @@ def main():
     settings = json.load(open(a.settings))
     LT = settings["label"]["tuple"]
     tail_z = float(settings["report"]["tail_z"])
+    unc_every = int(settings["capture"]["uncontested_every"])
     cap_games = [str(g) for g in
                  json.load(open(a.capture_games))["games_list"]]
     jobs = [json.loads(l) for l in open(a.jobs) if l.strip()]
@@ -170,14 +186,15 @@ def main():
             [{"game": r["game"], "diff": r["diff"]} for r in recs])
         return {"jobs": len(recs), "edge": m, "ci": [lo, hi]}
 
-    def per_game_gain(recs):
+    def per_game_gain(recs, weight=1.0):
         per = defaultdict(float)
         for r in recs:
-            per[r["game"]] += r["diff"]
+            per[r["game"]] += r["diff"] * weight
         grecs = [{"game": g, "diff": per.get(g, 0.0)}
                  for g in cap_games]
         if not grecs:
-            return {"gain": None, "ci": None, "lb95_1sided": None}
+            return {"gain": None, "ci": None,
+                    "lb95_1sided": None, "weight": weight}
         m = sum(r["diff"] for r in grecs) / len(grecs)
         lo, hi = stock.cluster_bootstrap(grecs)
         # one-sided 95% lower bound from the same bootstrap
@@ -185,7 +202,7 @@ def main():
         # registered form uses the two-sided CI's lower
         # bound as the conservative stand-in and says so.
         return {"gain": m, "ci": [lo, hi], "lb95_1sided": lo,
-                "games": len(grecs)}
+                "games": len(grecs), "weight": weight}
 
     recs_all = list(diff_by_snap.values())
     out = {"jobs": len(jobs),
@@ -199,19 +216,23 @@ def main():
     for cls in ("uncontested", "contested_band"):
         recs = [r for r in recs_all if r["probe_band"] == cls]
         rd = read(recs)
-        gain = per_game_gain(recs)
+        # sec.2.1: uncontested jobs carry the sampling
+        # weight; contested-band jobs are unsampled.
+        w = float(unc_every) if cls == "uncontested" else 1.0
+        gain = per_game_gain(recs, w)
         out["by_class"][cls] = rd
         out["per_game_gain"][cls] = gain
         lines.append(
             "CLASS %s: jobs %d; edge %s CI [%s, %s]; "
-            "per-game gain %s CI [%s, %s] over %d capture games"
+            "per-game gain %s CI [%s, %s] over %d capture "
+            "games; sampling weight %s"
             % (cls, rd["jobs"], pct(rd["edge"]),
                pct(rd["ci"][0]) if rd["ci"] else "n/a",
                pct(rd["ci"][1]) if rd["ci"] else "n/a",
                pct(gain["gain"]),
                pct(gain["ci"][0]) if gain["ci"] else "n/a",
                pct(gain["ci"][1]) if gain["ci"] else "n/a",
-               gain.get("games") or 0))
+               gain.get("games") or 0, "%g" % w))
         if cls == "uncontested":
             tail = [r for r in recs if r["z"] > tail_z]
             trd = read(tail)
@@ -227,6 +248,22 @@ def main():
                 pb[str(r["prior_band"])].append(r)
             out["by_class"]["uncontested_by_prior_band"] = {
                 k: read(v) for k, v in sorted(pb.items())}
+    # the diagnostic superset class: counts and edge
+    # only -- NO per-game gain entry, so nothing
+    # downstream can fold it into the threshold gain
+    # or the decision rule (fix pass, sec.3/F2).
+    diag = [r for r in recs_all
+            if r["probe_band"] == "uncontested_diag"]
+    drd = read(diag)
+    out["by_class"]["uncontested_diag"] = drd
+    lines.append(
+        "CLASS uncontested_diag (DIAGNOSTIC ONLY -- the "
+        "(1.0, 1.5] uncontested superset; excluded from "
+        "the threshold gain and the decision rule): "
+        "jobs %d; edge %s CI [%s, %s]"
+        % (drd["jobs"], pct(drd["edge"]),
+           pct(drd["ci"][0]) if drd["ci"] else "n/a",
+           pct(drd["ci"][1]) if drd["ci"] else "n/a"))
     lines.append("jobs_no_shared_worlds %d of %d; label rows "
                  "%d (finished %d, unfinished %d, refusals %d); "
                  "fallbacks %d"

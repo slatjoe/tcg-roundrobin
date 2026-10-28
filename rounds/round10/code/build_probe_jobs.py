@@ -2,15 +2,25 @@
 """Round-10 Step 0 probe: build the L3 label job set
 from the offline eval's per-state statistics.
 
-Two classes (settings label.classes), and ONLY these:
+Three classes (settings label.classes), and ONLY
+these (the third added by the fix pass on
+claude-reply-402c92f sec.3, which RULED F2: class
+(a)'s margin is 1.5):
 
   * "uncontested": uncontested states whose statistic
     would fire at the CURRENT margin
-    (settings label.uncontested_margin -- PROPOSED
-    1.5, flagged for the review in the package doc:
-    the class prices what a threshold build gains
-    under today's decision rule). teacher_pick = the
-    eval's search pick.
+    (settings label.uncontested_margin = 1.5, as
+    ruled: the class prices what a threshold build
+    gains under today's decision rule).
+    teacher_pick = the eval's search pick.
+  * "uncontested_diag": DIAGNOSTIC ONLY --
+    uncontested states with z in
+    (label.uncontested_diag_margin,
+    label.uncontested_margin] = (1.0, 1.5], the
+    uncontested superset below the class-(a) margin.
+    Labeled and reported, but EXCLUDED from the
+    threshold per-game gain and from the decision
+    rule (the label analyzer keeps it out of both).
   * "contested_band": contested states with z in
     (band_lo, band_hi] = (1.25, 1.5] -- the fires a
     margin of 1.25 would add over the current rule.
@@ -33,10 +43,11 @@ family (span at the cap: (cap-1) x 100,003 + 49 x
 span top 69,091,039). If the cap trips, the run
 stops; it does not subsample quietly.
 
-The report also prints the EXPECTED counts under the
-alternative uncontested-margin definitions (1.25 and
-1.0), so the review can rule on the class definition
-with all three counts in front of it.
+The report prints the REALIZED uncontested counts
+under all three margin definitions (1.5, 1.25, 1.0)
+-- the jobs phase prints them and proceeds without
+a ruling (F2 as ruled; the superset jobs are already
+in the job set as the diagnostic class).
 
 Usage: build_probe_jobs.py --states eval_states.jsonl
   --eval-jobs eval_jobs.jsonl --settings
@@ -64,6 +75,7 @@ def main():
     lab = settings["label"]
     label_tuple = lab["tuple"]
     unc_margin = float(lab["uncontested_margin"])
+    diag_margin = float(lab["uncontested_diag_margin"])
     lo, hi = float(lab["band_lo"]), float(lab["band_hi"])
     cap = int(lab["shard_cap_jobs"])
     nshard = int(lab["shards"])
@@ -82,12 +94,15 @@ def main():
         if r["z"] is None:
             continue
         snap = str(r["snap"])
-        for m in (1.25, 1.0):
+        for m in (1.5, 1.25, 1.0):
             if int(r["uncontested"]) == 1 and r["z"] > m:
                 alt_counts["uncontested@%.2f" % m] += 1
         cls = None
         if int(r["uncontested"]) == 1 and r["z"] > unc_margin:
             cls = "uncontested"
+        elif (int(r["uncontested"]) == 1
+              and diag_margin < r["z"] <= unc_margin):
+            cls = "uncontested_diag"
         elif int(r["uncontested"]) == 0 and lo < r["z"] <= hi:
             cls = "contested_band"
         if cls is None:
@@ -145,6 +160,7 @@ def main():
     report = {"jobs": len(jobs),
               "by_class": dict(by_class),
               "uncontested_margin": unc_margin,
+              "uncontested_diag_margin": diag_margin,
               "band": [lo, hi],
               "alt_uncontested_counts": dict(alt_counts),
               "shards": counts, "nshard": nshard,
