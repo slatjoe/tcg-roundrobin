@@ -141,6 +141,34 @@ probe values: eval 330000, labels 51200, disjoint from prior and each other: Tru
 capture seeds 24001-24090 disjoint from 8 used blocks (incl. reserved 9001-9200)
 PASS fx_seed_clearance: label ranges disjoint from all prior families at planned counts; eval and label values disjoint from prior values and each other; capture seeds clear
 
+===== fx_runner_env.py =====
+PASS capture block extracted verbatim from the runner 
+PASS capture block passes --arm capture to the driver 
+PASS capture block executes clean in the stub harness rc=0
+PASS two capture driver invocations recorded found 2
+PASS runner delivers the capture channel vars (GATE_GAME_IDS_FILE, TCG_CLEAN_CHILDREN=1) 
+PASS runner delivers TEACHER_CAPTURE_UNCONTESTED=1 to the capture driver 
+PASS driver seeds the game env from its own environment (env = dict(os.environ)) 
+PASS driver capture arm sets TEACHER_CAPTURE=1 and TEACHER_SNAP_DIR 
+PASS driver spawns the game with the composed env (env=env) 
+PASS composed capture env carries TEACHER_CAPTURE=1 (set by the driver's capture arm) 
+PASS composed capture env carries TEACHER_CAPTURE_UNCONTESTED=1 (runner channel) 
+PASS hook gate consumes exactly TEACHER_CAPTURE + TEACHER_CAPTURE_UNCONTESTED 
+[negative copy] PASS capture block extracted verbatim from the runner 
+[negative copy] PASS capture block passes --arm capture to the driver 
+[negative copy] PASS capture block executes clean in the stub harness rc=0
+[negative copy] PASS two capture driver invocations recorded found 2
+[negative copy] PASS runner delivers the capture channel vars (GATE_GAME_IDS_FILE, TCG_CLEAN_CHILDREN=1) 
+[negative copy] FAIL runner delivers TEACHER_CAPTURE_UNCONTESTED=1 to the capture driver 
+[negative copy] PASS driver seeds the game env from its own environment (env = dict(os.environ)) 
+[negative copy] PASS driver capture arm sets TEACHER_CAPTURE=1 and TEACHER_SNAP_DIR 
+[negative copy] PASS driver spawns the game with the composed env (env=env) 
+[negative copy] PASS composed capture env carries TEACHER_CAPTURE=1 (set by the driver's capture arm) 
+[negative copy] FAIL composed capture env carries TEACHER_CAPTURE_UNCONTESTED=1 (runner channel) 
+[negative copy] PASS hook gate consumes exactly TEACHER_CAPTURE + TEACHER_CAPTURE_UNCONTESTED 
+PASS negative: guard fails on an env-stripped runner copy removed 1 assignment(s); failures on the copy: ['runner delivers TEACHER_CAPTURE_UNCONTESTED=1 to the capture driver', 'composed capture env carries TEACHER_CAPTURE_UNCONTESTED=1 (runner channel)']
+fx_runner_env: ALL PASS
+
 ===== fx_repro (summary compared with staged output) =====
 PASS fx_repro summary matches the staged output: ==== SUMMARY: 1 figure(s) NOT REPRODUCED: ['stage3 band (3.5, inf] CI (both pairings)']
 

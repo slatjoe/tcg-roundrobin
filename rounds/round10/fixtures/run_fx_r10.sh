@@ -32,6 +32,16 @@
 #                            for the probe's Python
 #                            chain.
 #   fx_seed_clearance.py  -- seed-family enumeration.
+#   fx_runner_env.py      -- the capture environment
+#                            contract (third fix pass):
+#                            BLOCK:CAPTURE extracted
+#                            verbatim and EXECUTED in
+#                            the stub harness; the
+#                            composed runner -> driver
+#                            -> game environment must
+#                            carry both env vars the
+#                            search_s3.php uncontested
+#                            hook gates on.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 FAILED=0
@@ -46,6 +56,7 @@ run gen_search_s3.py python3 "$HERE/gen_search_s3.py" --check
 run fx_probe_blocks.sh bash "$HERE/fx_probe_blocks.sh"
 run fx_probe_python.py python3 "$HERE/fx_probe_python.py"
 run fx_seed_clearance.py python3 "$HERE/fx_seed_clearance.py"
+run fx_runner_env.py python3 "$HERE/fx_runner_env.py"
 echo "===== fx_repro (summary compared with staged output) ====="
 SUM_NOW=$(python3 "$HERE/../code/reproduce_r9_tables.py" 2>/dev/null \
           | grep '^==== SUMMARY' || true)

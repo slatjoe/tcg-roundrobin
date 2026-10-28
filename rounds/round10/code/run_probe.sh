@@ -229,6 +229,7 @@ PYEOF
     start_sweeper "$tree" "cap_s${seat}"
     logdir="$OUT/cap_s${seat}_b${BLOCK}_log"
     GATE_GAME_IDS_FILE="$OUT/cap_game_ids.txt" TCG_CLEAN_CHILDREN=1 \
+      TEACHER_CAPTURE_UNCONTESTED=1 \
       $PY "$CODE_DIR/paired_driver_gravy.py" \
         --tree "$tree" --sock "$OUT/prod_s${seat}.sock" \
         --seat "$seat" --arm capture --seeds "$seeds" \

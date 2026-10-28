@@ -534,9 +534,10 @@ box time is spent, so this decision is cheap.
 
 ## 6. Fixtures
 
-`fixtures/run_fx_r10.sh` — **ALL PASS (86 checks;
+`fixtures/run_fx_r10.sh` — **ALL PASS (99 checks;
 45 at the original package, +12 in the fix pass
-(§9), +29 in the second fix pass (§10))**,
+(§9), +29 in the second fix pass (§10), +13 in
+the third fix pass (§11))**,
 transcript staged at
 `fixtures/fx_r10_outputs.txt`:
 
@@ -587,6 +588,20 @@ transcript staged at
   power 0.708 (second fix pass, §10) — and both
   levers' price lines).
 - `fx_seed_clearance.py` — the §3.3 enumeration.
+- `fx_runner_env.py` — the capture environment
+  contract (third fix pass, §11): BLOCK:CAPTURE is
+  extracted verbatim from the runner and EXECUTED
+  in the stub harness with an environment-recording
+  stub driver; the composed runner → driver → game
+  environment is asserted to carry both variables
+  the search_s3.php uncontested hook gates on
+  (the hook's gate line and the driver's arm lines
+  are lifted verbatim from their own files); a
+  negative case runs the same checks against a
+  temporary runner copy with the
+  TEACHER_CAPTURE_UNCONTESTED assignment removed
+  and asserts the guard fails on exactly the two
+  uncontested checks.
 - `fx_repro` — the Deliverable A script re-run; its
   summary line compared against the staged output.
 
@@ -902,3 +917,143 @@ are implemented here; nothing else changed.
   `fixtures/fx_r10_outputs.txt` (re-staged
   transcript), and this doc. Everything else is
   untouched.
+
+---
+
+## 11. THIRD FIX PASS (2026-10-28) — the capture environment defect (found live, attempt 2)
+
+**The defect.** `search_s3.php`'s uncontested
+capture hook gates on `getenv("TEACHER_CAPTURE") &&
+getenv("TEACHER_CAPTURE_UNCONTESTED")` (line 1000).
+The two variables reach the game process by
+different channels: `TEACHER_CAPTURE` is set by
+`paired_driver_gravy.py` itself (its capture arm),
+but `TEACHER_CAPTURE_UNCONTESTED` had to arrive
+through the runner — and `run_probe.sh` never set
+it, anywhere. The hook's uncontested branch could
+therefore never fire under the runner. No fixture
+could see it: the hook fixtures set the env by
+hand, and `fx_probe_blocks.sh` stubbed the driver
+without inspecting the environment it was invoked
+with. **Found live at the first-minutes
+verification of launch attempt 2** (the capture
+index filled with contested rows only); attempt 2
+was killed as void. Attempt 1 never reached
+capture (the free-space pre-flight abort), so the
+defect was latent, not exercised, there.
+
+**The fix (one variable, the identical channel).**
+The runner's capture-phase driver invocation now
+carries `TEACHER_CAPTURE_UNCONTESTED=1` in its env
+prefix, alongside `GATE_GAME_IDS_FILE` /
+`TCG_CLEAN_CHILDREN` — the same channel the runner
+already uses to feed the driver, whose child env
+is seeded `dict(os.environ)` and passed whole to
+the game process (`env=env`). No other runner
+behavior changes.
+
+**The fixture (the gap class, not the instance).**
+New `fixtures/fx_runner_env.py`: BLOCK:CAPTURE is
+extracted VERBATIM from the runner and EXECUTED in
+the stub harness with an environment-recording
+stub driver; the driver's own arm lines
+(`env = dict(os.environ)`; the capture arm's
+`env["TEACHER_CAPTURE"] = "1"` +
+`TEACHER_SNAP_DIR`; the spawn's `env=env`) and the
+hook's gate line are lifted verbatim from their
+own files, and the COMPOSED environment is
+asserted to carry both gated variables. A NEGATIVE
+case runs the same checks against a temporary
+runner copy with the assignment removed: the guard
+fails there, on exactly the two uncontested checks
+(prefixed "[negative copy]" in the transcript).
+
+**Env audit — every `getenv()` in `search_s3.php`
+and in the two mains the runner drives**
+(`s1_eval_main.php` / `s2_label_main.php`, whose
+env sets are identical). "Channel" is how the
+variable reaches the consuming process.
+
+| Variable | Consumer | Set by / channel | State |
+|---|---|---|---|
+| TEACHER_CAPTURE | search_s3.php:1000,1086 (hook gates) | driver, capture arm (`env["TEACHER_CAPTURE"]="1"`) | SET |
+| TEACHER_CAPTURE_UNCONTESTED | search_s3.php:1000 (hook gate) | runner, capture invocation env prefix | **WAS UNSET — the defect; fixed by this pass** |
+| TEACHER_CAPTURE_UNCONTESTED_EVERY | search_s3.php:1026 (sampling) | nobody — code default 2 == settings `capture.uncontested_every` (2) | BY DEFAULT (registered value) |
+| TEACHER_SNAP_DIR | search_s3.php:1032,1089 (snapshot dirs) | driver, capture arm (= logdir/snaps) | SET |
+| TEACHER_MODE | search_s3.php:1371 (Decide entry) | driver, teacher-family arms incl. capture | SET |
+| TEACHER_GHOST | search_s3.php:1250,1408 | driver, ghost arm only | correctly UNSET in capture |
+| TEACHER_SHADOW | search_s3.php:1387 | driver, shadow arm only | correctly UNSET in capture |
+| TEACHER_TUPLE_JSON | search_s3.php:858 (SimTeacher_Tuple) | NOBODY in the probe chain (round-9 games runner set it from settings_stage2.json) | **UNSET — FLAGGED, NOT FIXED by this pass; see below** |
+| TCG_LEARNER_SEAT | search_s3.php:478,507 (eval payload) | driver (= seat) for capture games; runner for the policy servers | SET where consumed live; unset in eval/label processes, where the production server featurizes from `state["player"]` and ignores the field (round-9 identical) |
+| TCG_SEARCH_LOG | search_s3.php:834 (stat writer; silent return if unset) | driver (= logdir) in capture | SET in capture; unset in eval/label, whose mains carry their own EVAL_STATS channel (round-9 identical) |
+| SIM_ARS_DESC | search_s3.php:405 (arsenal desc variant in the checkpoint sync) | nobody, in any round | UNSET = stock behavior (the registered featurization) |
+| LEAF_HARVEST_DIR | search_s3.php:558 (leaf harvest; returns if unset) | nobody | UNSET = harvest off (round-9 identical) |
+| HARVEST_DIR | search_s3.php:1351 (Phase-2b root harvest; skipped if unset) | nobody | UNSET = harvest off (throwaway-tree tool) |
+| ISMCTS_D / ISMCTS_S | search_s3.php:1289,1290 (RootDecide; defaults 10 / 12) | nobody, in any round | BY DEFAULT (registered stock values) |
+| LABEL_DEBUG | search_s3.php:1687 (debug print) | nobody | UNSET = silent |
+| MEAS_JOBS, MEAS_OUT, EVAL_STATS, MEAS_SEED | both mains (inputs/outputs/seed base; the mains ABORT if missing/malformed) | runner, eval AND label invocations (env prefix) | SET |
+| EVAL_SETTING_NAME, EVAL_HOOKS, EVAL_DEADLINE_S, LABEL_HORIZON, EVAL_HORIZON_VALUE, EVAL_K | both mains (the pinned tuple; abort on any mismatch with the jobs' setting objects) | runner, eval invocation: R10-EVAL-K25+H (8000/180/62/−1/25); label invocation: L3-W50+H (8000/180/62/−1/50) | SET |
+| TCG_POLICY_SOCK | both mains via play_game (policy server socket) | runner, eval AND label invocations | SET |
+| LABEL_DRIVER | play_game.php (loaded by both mains) | the mains themselves (`putenv`) | SET (self) |
+
+`search_s2.php` (the label trees' search.php)
+carries the same getenv set minus the uncontested
+trio; TEACHER_CAPTURE is unset there, so its
+contested capture block is inert in label trees —
+by design (labels do not snapshot).
+
+**FLAGGED, NOT FIXED — TEACHER_TUPLE_JSON.**
+`settings_probe.json` registers a capture
+`teacher_tuple` (H8k-180+H: hooks 8000, deadline
+180, horizon 62, value −1, k 25, margin 1.5), but
+nothing in the runner → driver chain delivers it
+as `TEACHER_TUPLE_JSON`, so `SimTeacher_Tuple()`
+takes its absent-pin branch. Why this pass does
+not treat it as a second instance of the defect,
+and does not fix it: under TEACHER_CAPTURE the
+Decide path returns the prior pick BEFORE the
+first tuple-bound quantity is used (the
+uncontested branch returns at the priors; the
+contested capture block snapshots and returns —
+the rollout loop, the only consumer of
+hooks/deadline/horizon/k/margin, is never
+entered; the driver's own capture assertions —
+`capture_no_rollout_fields`, `no_rollouts_anywhere`
+— prove no rollout ran). No trajectory, snapshot,
+index row, or estimand in the probe depends on the
+capture tuple; the eval and label paths pin their
+tuples through the mains' EVAL_* env and the jobs'
+setting objects, not through this variable. The
+one real effect is a stamp: capture stat rows
+carry `"setting": {"name": "unpinned", ...legacy
+constants..., "pinned": 0}` instead of the
+registered H8k-180+H name. No probe consumer reads
+capture stat stamps (the driver assertions do not;
+the analyzers audit the eval/label stamps, which
+the mains stamp from their own pins). Recorded
+here as an open flag for the reviewer: if the
+stamp is wanted true to the settings file, the
+remedy is one more prefix variable carrying the
+settings' capture tuple JSON — a settings →
+runner delivery of exactly the kind this pass
+adds for the hook, but a separate ruling, not
+folded into this one-variable fix.
+
+- **Fixtures: 86 → 99 checks, ALL PASS**
+  (transcript re-staged at
+  `fixtures/fx_r10_outputs.txt`, byte-stable
+  across two consecutive runs): +13 in the new
+  `fx_runner_env.py` (12 contract checks + the
+  negative-case line), and `run_fx_r10.sh` runs
+  it. §6's count and fixture list are corrected
+  in place above; this note records the
+  corrections.
+- **Files changed by this pass:**
+  `code/run_probe.sh` (the one prefix variable),
+  `fixtures/fx_runner_env.py` (new),
+  `fixtures/run_fx_r10.sh` (registers it),
+  `fixtures/fx_r10_outputs.txt` (re-staged
+  transcript), and this doc. Everything else is
+  untouched — in particular `search_s3.php`,
+  the driver, and the nine reuse files are
+  byte-identical.
