@@ -84,6 +84,41 @@ expect_hash "$CODE_DIR/merge_registry.py" \
 expect_hash "$CODE_DIR/search_s2.php" \
   85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa \
   "probe search_s2.php (round-9 byte-identical; label trees)" || exit 1
+# The remaining deployed files (second fix pass,
+# claude-reply-af9e9f8 sec.2.2): every file in the
+# deploy list below carries an expect_hash site --
+# fx_pin_guards.py enumerates the list and asserts
+# the coverage, with a negative case.
+expect_hash "$CODE_DIR/build_probe_eval_jobs.py" \
+  94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3 \
+  "probe build_probe_eval_jobs.py" || exit 1
+expect_hash "$CODE_DIR/probe_eval_analyze.py" \
+  7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90 \
+  "probe probe_eval_analyze.py" || exit 1
+expect_hash "$CODE_DIR/build_probe_jobs.py" \
+  c08d8c8238918e3e65340be85b743d4ce68d0493b3e4c98d206c2e229fe868ae \
+  "probe build_probe_jobs.py" || exit 1
+expect_hash "$CODE_DIR/probe_label_analyze.py" \
+  60935aec0b75873584a73950d5b9921ea3ef93bdac80cc97f857177fdc687bfc \
+  "probe probe_label_analyze.py" || exit 1
+expect_hash "$CODE_DIR/probe_report.py" \
+  82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a \
+  "probe probe_report.py" || exit 1
+expect_hash "$CODE_DIR/settings_probe.json" \
+  5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb \
+  "probe settings_probe.json (decision rule + bar)" || exit 1
+expect_hash "$CODE_DIR/stage0_report.py" \
+  5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf \
+  "probe stage0_report.py (round-9 byte-identical)" || exit 1
+expect_hash "$CODE_DIR/analyze_l3.py" \
+  16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9 \
+  "probe analyze_l3.py (round-9 byte-identical)" || exit 1
+expect_hash "$CODE_DIR/g8_sweep2.sh" \
+  d49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17 \
+  "probe g8_sweep2.sh (round-9 byte-identical)" || exit 1
+expect_hash "$CODE_DIR/shm_sweep.py" \
+  98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33 \
+  "probe shm_sweep.py (round-9 byte-identical)" || exit 1
 # The trees below install search_s3.php (capture/eval)
 # or stock search_s2.php (labels) AS search.php; the
 # per-tree expect_hash calls at install time are the

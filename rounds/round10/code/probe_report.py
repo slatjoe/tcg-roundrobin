@@ -27,13 +27,23 @@ JSON) -- into the report shape the package registers
   4. per lever: predicted per-game gain (the label
      read's per-game gain, game-clustered, with its
      CI) and predicted teacher-game cost; plus the
-     INFORMATIONAL prints (fix pass, sec.3): the
-     predicted Step 2 power against the registered
-     two-sample bar (settings report.step2_bar), the
-     lever's gain SE scaled from the probe's games
-     to 400 by the sqrt(n) rule, and the Step 2 +
-     fleet teacher-arm prices at the lever's
-     per-game cost;
+     INFORMATIONAL prints (fix pass, sec.3; formula
+     corrected in the second fix pass,
+     claude-reply-af9e9f8 sec.2.1): the predicted
+     Step 2 power against the registered two-sample
+     bar (settings report.step2_bar). The lever's
+     gain is an INCREMENT (the added fires only);
+     with SE_new = sqrt(stage3_gain_se^2 +
+     se_inc,400^2) -- the build's total-gain SE at
+     the bar's games: Stage 3's base SE plus the
+     increment's SE (off its CI) scaled from the
+     probe's games by the sqrt(n) rule -- the power
+     is Phi(z - z_one_sided) at z = inc /
+     sqrt(SE_new^2 + stage3_gain_se^2), under the
+     stated approximation that the build's base
+     gain is Stage 3's; and the Step 2 + fleet
+     teacher-arm prices at the lever's per-game
+     cost;
   5. the recommendation under the registered
      decision rule (settings report.decision_rule).
 
@@ -236,25 +246,43 @@ def main():
                     / max(1, ejr["states"])))
 
     def outlook(g, cost_s):
-        """INFORMATIONAL (fix pass, sec.3): predicted
+        """INFORMATIONAL (fix pass, sec.3; formula
+        corrected in the second fix pass,
+        claude-reply-af9e9f8 sec.2.1): predicted
         Step 2 power against the registered two-sample
         bar, and the Step 2 + fleet teacher-arm prices
-        at this lever's per-game cost. The gain SE at
-        the probe's games is read off its CI
-        (width / (2 x 1.96)); the SE at the bar's game
-        count scales by the sqrt(n) rule."""
+        at this lever's per-game cost.
+
+        g's gain is the lever's INCREMENT -- the
+        per-game gain of the ADDED fires only -- while
+        the bar compares the new build's TOTAL gain
+        against Stage 3's. The power therefore uses
+        the increment against the build's total-gain
+        SE: SE_new = sqrt(bar_se^2 + se_inc,400^2),
+        Stage 3's base SE plus the increment's own SE
+        (read off its CI, scaled from the probe's
+        games to the bar's by the sqrt(n) rule),
+        variances adding; then z = inc /
+        sqrt(SE_new^2 + bar_se^2) and power =
+        Phi(z - bar_z). The approximation, stated on
+        the print line: the build's base gain is
+        taken as Stage 3's."""
         if (not g or g.get("gain") is None
                 or not g.get("ci")):
             return None
         n_probe = int(g.get("games") or es["games"])
-        se_probe = (g["ci"][1] - g["ci"][0]) / (2 * 1.96)
-        se_bar = se_probe * math.sqrt(n_probe / bar_games)
-        z = ((g["gain"] - bar_gain)
-             / math.sqrt(se_bar ** 2 + bar_se ** 2))
-        return {"se_probe_games": se_probe,
+        se_inc = (g["ci"][1] - g["ci"][0]) / (2 * 1.96)
+        se_inc_bar = se_inc * math.sqrt(n_probe
+                                        / bar_games)
+        se_new = math.sqrt(bar_se ** 2 + se_inc_bar ** 2)
+        z = (g["gain"]
+             / math.sqrt(se_new ** 2 + bar_se ** 2))
+        return {"increment": g["gain"],
+                "se_inc_probe_games": se_inc,
                 "probe_games": n_probe,
-                "se_at_bar_games": se_bar,
-                "bar_z": z,
+                "se_inc_at_bar_games": se_inc_bar,
+                "se_new_at_bar_games": se_new,
+                "z_stat": z,
                 "power": phi(z - bar_z),
                 "teacher_game_cost_s": cost_s,
                 "step2_teacher_box_hours":
@@ -274,18 +302,24 @@ def main():
         lines.append(
             "  [informational] %s Step 2 outlook: "
             "predicted power %.3f against the registered "
-            "two-sample bar (gain - %.4f) / sqrt(SE_new^2 "
-            "+ %.4f^2) >= %.3f, with SE_new at %d games "
-            "= %.4f (scaled by sqrt(n) from the probe's "
-            "%d-game gain SE %.4f; bar z = %.3f); prices "
-            "at %.0f s/teacher game: Step 2 (%d games) "
-            "%.1f box-h teacher arm; fleet %.1f box-h "
-            "per 100 pairs teacher arm"
-            % (name, o["power"], bar_gain, bar_se, bar_z,
-               bar_games, o["se_at_bar_games"],
-               o["probe_games"], o["se_probe_games"],
-               o["bar_z"], o["teacher_game_cost_s"],
-               bar_games, o["step2_teacher_box_hours"],
+            "two-sample bar -- z = inc / sqrt(SE_new^2 "
+            "+ %.4f^2), inc = %.4f (the added fires' "
+            "per-game gain), SE_new %.4f at %d games "
+            "(= sqrt(%.4f^2 + se_inc,400 %.4f^2); "
+            "se_inc %.4f at the probe's %d games, "
+            "scaled by sqrt(n)); z = %.3f; power = "
+            "Phi(z - %.3f); approximation: the build's "
+            "base gain is taken as Stage 3's (%.4f); "
+            "prices at %.0f s/teacher game: Step 2 "
+            "(%d games) %.1f box-h teacher arm; fleet "
+            "%.1f box-h per 100 pairs teacher arm"
+            % (name, o["power"], bar_se, o["increment"],
+               o["se_new_at_bar_games"], bar_games,
+               bar_se, o["se_inc_at_bar_games"],
+               o["se_inc_probe_games"], o["probe_games"],
+               o["z_stat"], bar_z, bar_gain,
+               o["teacher_game_cost_s"], bar_games,
+               o["step2_teacher_box_hours"],
                o["fleet_teacher_box_hours_per_100_pairs"]))
 
     def buildable(g):

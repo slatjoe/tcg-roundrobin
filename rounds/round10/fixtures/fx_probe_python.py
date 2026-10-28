@@ -605,24 +605,82 @@ def main():
           in p_in.stdout
           and FLAG not in p_in.stdout
           and rep_in["calibration"]["flag"] is False)
-    # hand-computed power for the margin lever:
-    # SE90 = (0.124-0.030)/3.92; SE400 = SE90*sqrt(90/400);
-    # z = (0.077-0.0649)/sqrt(SE400^2 + 0.0090^2);
-    # power = Phi(z - 1.645)
-    se90 = (0.124 - 0.030) / (2 * 1.96)
-    se400 = se90 * math.sqrt(90 / 400)
-    zbar = (0.077 - 0.0649) / math.sqrt(se400 ** 2
-                                        + 0.0090 ** 2)
-    pexp = 0.5 * (1 + math.erf((zbar - 1.645)
-                               / math.sqrt(2)))
     om = rep_in["margin_lever"]["step2_outlook"]
-    check("P2: informational power print matches the "
-          "independent Phi computation",
-          abs(om["power"] - pexp) < 1e-9
-          and abs(om["se_at_bar_games"] - se400) < 1e-12
+
+    # ---- P2 (second fix pass, claude-reply-af9e9f8
+    # sec.2.1): the power formula's two BY-HAND cases,
+    # driven through probe_report.py's outlook() code
+    # path with the contested band's gain object
+    # replaced. (The pre-fix P2 verified Phi of the
+    # WRONG formula -- (gain - 0.0649) against the
+    # increment's own SE -- so it could not catch the
+    # increment/total mix-up; these cases can: they
+    # pin inc, se_inc,400, SE_new, z and the power to
+    # hand values.)
+    def run_report_gain(band_gain, tag):
+        es, ejr, lr = report_inputs(150)
+        lr["per_game_gain"]["contested_band"] = band_gain
+        esf = os.path.join(tmp, "es_%s.json" % tag)
+        ejf = os.path.join(tmp, "ejr_%s.json" % tag)
+        lrf7 = os.path.join(tmp, "lr_%s_in.json" % tag)
+        outf = os.path.join(tmp, "report_%s.json" % tag)
+        json.dump(es, open(esf, "w"))
+        json.dump(ejr, open(ejf, "w"))
+        json.dump(lr, open(lrf7, "w"))
+        pp = run([os.path.join(CODE, "probe_report.py"),
+                  "--eval-summary", esf,
+                  "--eval-jobs-report", ejf,
+                  "--label-read", lrf7,
+                  "--settings", settings,
+                  "--json-out", outf])
+        return pp, json.load(open(outf))
+
+    # case (i): inc = 0 -> z = 0 -> power =
+    # Phi(-1.645) = 0.04997, the bar's own alpha.
+    p2a, rep2a = run_report_gain(
+        {"gain": 0.0, "ci": [-0.02, 0.02],
+         "lb95_1sided": -0.02, "games": 90,
+         "weight": 1.0}, "p2a")
+    o2a = rep2a["margin_lever"]["step2_outlook"]
+    check("P2a: power formula -- inc = 0 gives the "
+          "bar's own alpha (~0.05)",
+          p2a.returncode == 0
+          and abs(o2a["z_stat"]) < 1e-12
+          and abs(o2a["power"] - 0.05) < 0.002
           and "[informational] MARGIN 1.25 Step 2 outlook"
-          in p_in.stdout,
-          "power=%.4f expected %.4f" % (om["power"], pexp))
+          in p2a.stdout,
+          "z=%.4f power=%.5f (Phi(-1.645) = 0.04998)"
+          % (o2a["z_stat"], o2a["power"]))
+    # case (ii): inc = 0.03 with se_inc,400 = 0.005
+    # exactly -- the 90-game increment SE is chosen
+    # as 0.005/sqrt(90/400) and the CI built around
+    # the gain from it (input construction only; the
+    # formula under test runs in probe_report.py).
+    # By hand: SE_new = sqrt(0.009^2 + 0.005^2) =
+    # 0.01030; z = 0.03/sqrt(SE_new^2 + 0.009^2) =
+    # 2.194; power = Phi(0.549) = 0.708.
+    se_inc90 = 0.005 / math.sqrt(90 / 400)
+    half = 1.96 * se_inc90
+    p2b, rep2b = run_report_gain(
+        {"gain": 0.03, "ci": [0.03 - half, 0.03 + half],
+         "lb95_1sided": 0.03 - half, "games": 90,
+         "weight": 1.0}, "p2b")
+    o2b = rep2b["margin_lever"]["step2_outlook"]
+    check("P2b: power formula -- inc 0.03, se_inc,400 "
+          "0.005: SE_new 0.0103, z 2.194, power 0.708",
+          p2b.returncode == 0
+          and abs(o2b["se_inc_at_bar_games"] - 0.005)
+              < 1e-9
+          and round(o2b["se_new_at_bar_games"], 4)
+              == 0.0103
+          and abs(o2b["z_stat"] - 2.194) < 0.002
+          and abs(o2b["power"] - 0.708) < 0.002
+          and "SE_new 0.0103" in p2b.stdout
+          and "base gain is taken as Stage 3's"
+              in p2b.stdout,
+          "SE_new=%.6f z=%.4f power=%.4f"
+          % (o2b["se_new_at_bar_games"], o2b["z_stat"],
+             o2b["power"]))
     ot = rep_in["threshold_lever"]["step2_outlook"]
     unc_pg_exp = (3100 / 90) * 2
     cost_t_exp = 503 + unc_pg_exp * 19.5

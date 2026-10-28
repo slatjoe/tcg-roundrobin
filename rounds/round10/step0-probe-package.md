@@ -491,16 +491,23 @@ informational Step 2 prints are new):
    decisions/game × 19.5 s), with the probe's own
    offline seconds/state printed as a cross-check.
    **Informational, per lever (fix pass, review
-   §3):** the predicted Step 2 power against the
-   registered two-sample bar — PASS iff
-   (gain_new − 0.0649)/√(SE_new² + 0.0090²) ≥ 1.645
-   — computed from the lever's predicted gain with
-   SE_new scaled from Stage 3's 0.0090 form: the
-   probe's gain SE at 90 games (read off its CI)
-   scaled to 400 games by the √n rule; and the
-   Step 2 + fleet teacher-arm prices at the lever's
-   per-game cost. Printed so a "buildable" lever's
-   confirmation price is visible before any go.
+   §3; power formula corrected in the second fix
+   pass, §10):** the predicted Step 2 power
+   against the registered two-sample bar — PASS
+   iff (gain_new − 0.0649)/√(SE_new² + 0.0090²)
+   ≥ 1.645. The lever's predicted gain is an
+   INCREMENT (the added fires only), so the power
+   is Φ(z − 1.645) with z = inc/√(SE_new² +
+   0.0090²) and SE_new = √(0.0090² +
+   se_inc,400²): Stage 3's base SE plus the
+   increment's SE (read off its CI) scaled from
+   the probe's 90 games to 400 by the √n rule,
+   under the stated approximation that the
+   build's base gain is Stage 3's. And the
+   Step 2 + fleet teacher-arm prices at the
+   lever's per-game cost. Printed so a
+   "buildable" lever's confirmation price is
+   visible before any go.
 4. **Recommendation** under the registered rule
    (settings `report.decision_rule`): a lever is
    BUILDABLE iff its predicted gain's one-sided 95%
@@ -527,16 +534,24 @@ box time is spent, so this decision is cheap.
 
 ## 6. Fixtures
 
-`fixtures/run_fx_r10.sh` — **ALL PASS (57 checks;
-45 at the original package, +12 in the fix pass,
-§9)**, transcript staged at
+`fixtures/run_fx_r10.sh` — **ALL PASS (86 checks;
+45 at the original package, +12 in the fix pass
+(§9), +29 in the second fix pass (§10))**,
+transcript staged at
 `fixtures/fx_r10_outputs.txt`:
 
 - `fx_pin_guards.py` — every hash literal in
   `run_probe.sh` is 64-hex AND equals the staged
   file's sha256 (machine-checked); seed literals
   equal settings; capture seed strings equal
-  settings.
+  settings. Second fix pass (§10): the deploy
+  list is parsed from the runner's
+  deployed-hashes recording loop and every
+  deployed file is asserted to carry an
+  expect_hash site equal to its staged sha256; a
+  negative case runs the guard against a
+  temporary pin-stripped copy of the runner and
+  asserts it fails on the coverage check.
 - `gen_search_s3.py --check` — search_s3.php
   regenerates byte-identically from the pinned
   search_s2.php; the diff is the single hook block.
@@ -566,8 +581,11 @@ box time is spent, so this decision is cheap.
   contested band unchanged); the uncontested class
   boundaries (z = 1.0 / (1.0, 1.5] / z > 1.5); and
   the report prints (calibration in/out of band,
-  the Step 2 power print against an independently
-  computed Φ value, both levers' price lines).
+  the Step 2 power print against two by-hand
+  cases — inc = 0 → Φ(−1.645) ≈ 0.05; inc = 0.03
+  at se_inc,400 = 0.005 → SE_new 0.0103, z 2.194,
+  power 0.708 (second fix pass, §10) — and both
+  levers' price lines).
 - `fx_seed_clearance.py` — the §3.3 enumeration.
 - `fx_repro` — the Deliverable A script re-run; its
   summary line compared against the staged output.
@@ -785,4 +803,102 @@ text), not merely annotated here.
   byte-identical round-9 reuse files, `search_s3.php`
   and its generator/diff, the runner, and the
   reproduction script and its staged output — is
+  untouched.
+
+---
+
+## 10. SECOND FIX PASS (2026-10-28) — the confirmation check's two items
+
+Claude's confirmation check on the fix pass
+(`claude-reply-af9e9f8.md`) confirmed §9's §2.1
+(weighting), §2.2 (calibration print) and the F2
+class, and required two mechanical items. Both
+are implemented here; nothing else changed.
+
+- **The power print's formula (his §2.1).** As
+  first implemented (§9's informational prints),
+  `probe_report.py`'s `outlook()` computed
+  z = (gain − 0.0649)/√(SE² + 0.0090²) with the
+  gain the lever's INCREMENT and SE the
+  increment's own scaled SE — it compared an
+  increment to a total, so any realistic lever
+  printed near-zero power. (The P2 fixture
+  matched an independent Φ evaluation of the
+  same wrong formula, so it could not catch
+  this.) Corrected to the registered form:
+  SE_new = √(0.0090² + se_inc,400²) — Stage 3's
+  base SE (`report.step2_bar.stage3_gain_se`)
+  plus the increment's SE (off its CI) scaled
+  from the probe's games to 400 by the √n rule —
+  z = inc/√(SE_new² + 0.0090²), power =
+  Φ(z − 1.645); the print line states the
+  approximation (the build's base gain is taken
+  as Stage 3's), and the settings' `step2_bar`
+  note now spells the formula (no constant
+  changed). §5 item 3's description of the print
+  is corrected IN PLACE (this note records that
+  it was); §9's informational-prints paragraph
+  stands as the first pass's record and is
+  superseded by this section. Fixtures: the old
+  P2 is REPLACED by two by-hand cases driven
+  through the report's `outlook()` code path
+  with the contested band's gain object replaced
+  — **P2a:** inc = 0 → z = 0, power =
+  Φ(−1.645) = 0.04998, asserted ≈ 0.05 within
+  0.002 (the bar's own α); **P2b:** inc = 0.03
+  with the 90-game increment SE chosen so
+  se_inc,400 = 0.005 exactly → SE_new = 0.010296
+  (0.0103 to 4 dp), z = 2.1938 (2.194), power =
+  0.7084 (0.708), each asserted within 0.002,
+  SE_new at 4 dp, and the approximation line
+  asserted present in the printed report.
+- **The runner's pins (his §2.2).** The runner's
+  header claimed expect_hash on every deployed
+  file but asserted six; the other ten were only
+  recorded in `deployed_code_hashes.txt`.
+  `run_probe.sh` now carries machine-copied
+  expect_hash literals for all ten:
+  `build_probe_eval_jobs.py` (94030b48…),
+  `probe_eval_analyze.py` (7c4d9f69…),
+  `build_probe_jobs.py` (c08d8c82…),
+  `probe_label_analyze.py` (60935aec…),
+  `probe_report.py` (82856c6f… — pinned after
+  the formula fix above was final),
+  `settings_probe.json` (5af0c715…),
+  `stage0_report.py` (5c7e5393…), `analyze_l3.py`
+  (16017ffa…), `g8_sweep2.sh` (d49981ca…),
+  `shm_sweep.py` (98027a8b…) — the last four
+  equal their round-9 registered values.
+  `fx_pin_guards.py` is EXTENDED: it parses the
+  deploy list from the runner's own recording
+  loop (the `for f in …; do` that writes
+  `deployed_code_hashes.txt` — the list the
+  runner deploys by, hence the parse source) and
+  asserts every one of the 16 deployed files
+  carries a header pin site whose literal equals
+  the staged sha256; and a NEGATIVE case writes
+  a temporary copy of the runner with the
+  `probe_report.py` pin block removed and
+  asserts the guard fails on exactly that
+  coverage gap (the negative run's lines are
+  prefix-labeled "[negative copy]" in the
+  transcript).
+- **Fixtures: 57 → 86 checks, ALL PASS**
+  (transcript re-staged at
+  `fixtures/fx_r10_outputs.txt`): +28 in
+  `fx_pin_guards.py` (the 10 new per-site pin
+  checks, the deploy-list parse, 16 coverage
+  checks, the negative case) and P2 → P2a + P2b
+  (+1 net) in `fx_probe_python.py`. §6's count
+  and its pin-guard and power-print descriptions
+  are also corrected in place; this note records
+  those corrections.
+- **Files changed by this pass:**
+  `code/probe_report.py`, `code/settings_probe.json`
+  (the `step2_bar` note only — no constant
+  changed), `code/run_probe.sh`,
+  `fixtures/fx_pin_guards.py`,
+  `fixtures/fx_probe_python.py`,
+  `fixtures/fx_r10_outputs.txt` (re-staged
+  transcript), and this doc. Everything else is
   untouched.

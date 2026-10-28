@@ -1,18 +1,86 @@
 ===== fx_pin_guards.py =====
-PASS pin sites found [('search_s3.php', '8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', 'c7a76af4fb59e8e6e0b69a6d06157efc44597b04238cdb3b2efe48350cdda888'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa')]
+PASS pin sites found [('search_s3.php', '8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', 'c7a76af4fb59e8e6e0b69a6d06157efc44597b04238cdb3b2efe48350cdda888'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa'), ('build_probe_eval_jobs.py', '94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3'), ('probe_eval_analyze.py', '7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90'), ('build_probe_jobs.py', 'c08d8c8238918e3e65340be85b743d4ce68d0493b3e4c98d206c2e229fe868ae'), ('probe_label_analyze.py', '60935aec0b75873584a73950d5b9921ea3ef93bdac80cc97f857177fdc687bfc'), ('probe_report.py', '82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a'), ('settings_probe.json', '5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb'), ('stage0_report.py', '5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf'), ('analyze_l3.py', '16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9'), ('g8_sweep2.sh', 'd49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17'), ('shm_sweep.py', '98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33')]
 PASS pin search_s3.php literal 8f7be190044f file 8f7be190044f
 PASS pin s1_eval_main.php literal 73ed24822baa file 73ed24822baa
 PASS pin s2_label_main.php literal c7a76af4fb59 file c7a76af4fb59
 PASS pin paired_driver_gravy.py literal 3389b1b93618 file 3389b1b93618
 PASS pin merge_registry.py literal 13a655e37d2d file 13a655e37d2d
 PASS pin search_s2.php literal 85490e8ed1ef file 85490e8ed1ef
+PASS pin build_probe_eval_jobs.py literal 94030b488d96 file 94030b488d96
+PASS pin probe_eval_analyze.py literal 7c4d9f691af7 file 7c4d9f691af7
+PASS pin build_probe_jobs.py literal c08d8c823891 file c08d8c823891
+PASS pin probe_label_analyze.py literal 60935aec0b75 file 60935aec0b75
+PASS pin probe_report.py literal 82856c6f59cd file 82856c6f59cd
+PASS pin settings_probe.json literal 5af0c715442e file 5af0c715442e
+PASS pin stage0_report.py literal 5c7e5393a312 file 5c7e5393a312
+PASS pin analyze_l3.py literal 16017ffa71df file 16017ffa71df
+PASS pin g8_sweep2.sh literal d49981cab7c6 file d49981cab7c6
+PASS pin shm_sweep.py literal 98027a8b6f58 file 98027a8b6f58
 PASS tree pins: search_s3 at capture+eval installs found 2
 PASS tree pins: search_s2 at label installs found 1
 PASS tree pins: no other literals []
+PASS deploy list parsed from the recording loop 16 files
+PASS deploy coverage: search_s3.php staged 8f7be190044f
+PASS deploy coverage: search_s2.php staged 85490e8ed1ef
+PASS deploy coverage: s1_eval_main.php staged 73ed24822baa
+PASS deploy coverage: s2_label_main.php staged c7a76af4fb59
+PASS deploy coverage: paired_driver_gravy.py staged 3389b1b93618
+PASS deploy coverage: merge_registry.py staged 13a655e37d2d
+PASS deploy coverage: build_probe_eval_jobs.py staged 94030b488d96
+PASS deploy coverage: probe_eval_analyze.py staged 7c4d9f691af7
+PASS deploy coverage: build_probe_jobs.py staged c08d8c823891
+PASS deploy coverage: probe_label_analyze.py staged 60935aec0b75
+PASS deploy coverage: probe_report.py staged 82856c6f59cd
+PASS deploy coverage: settings_probe.json staged 5af0c715442e
+PASS deploy coverage: stage0_report.py staged 5c7e5393a312
+PASS deploy coverage: analyze_l3.py staged 16017ffa71df
+PASS deploy coverage: g8_sweep2.sh staged d49981cab7c6
+PASS deploy coverage: shm_sweep.py staged 98027a8b6f58
 PASS seed literal 30055001 in runner == settings 30055001 
 PASS seed literal 70055001 in runner == settings 70055001 
 PASS capture seed strings in runner == settings 
 PASS uncontested sampling literal in settings 
+[negative copy] PASS pin sites found [('search_s3.php', '8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', 'c7a76af4fb59e8e6e0b69a6d06157efc44597b04238cdb3b2efe48350cdda888'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa'), ('build_probe_eval_jobs.py', '94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3'), ('probe_eval_analyze.py', '7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90'), ('build_probe_jobs.py', 'c08d8c8238918e3e65340be85b743d4ce68d0493b3e4c98d206c2e229fe868ae'), ('probe_label_analyze.py', '60935aec0b75873584a73950d5b9921ea3ef93bdac80cc97f857177fdc687bfc'), ('settings_probe.json', '5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb'), ('stage0_report.py', '5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf'), ('analyze_l3.py', '16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9'), ('g8_sweep2.sh', 'd49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17'), ('shm_sweep.py', '98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33')]
+[negative copy] PASS pin search_s3.php literal 8f7be190044f file 8f7be190044f
+[negative copy] PASS pin s1_eval_main.php literal 73ed24822baa file 73ed24822baa
+[negative copy] PASS pin s2_label_main.php literal c7a76af4fb59 file c7a76af4fb59
+[negative copy] PASS pin paired_driver_gravy.py literal 3389b1b93618 file 3389b1b93618
+[negative copy] PASS pin merge_registry.py literal 13a655e37d2d file 13a655e37d2d
+[negative copy] PASS pin search_s2.php literal 85490e8ed1ef file 85490e8ed1ef
+[negative copy] PASS pin build_probe_eval_jobs.py literal 94030b488d96 file 94030b488d96
+[negative copy] PASS pin probe_eval_analyze.py literal 7c4d9f691af7 file 7c4d9f691af7
+[negative copy] PASS pin build_probe_jobs.py literal c08d8c823891 file c08d8c823891
+[negative copy] PASS pin probe_label_analyze.py literal 60935aec0b75 file 60935aec0b75
+[negative copy] PASS pin settings_probe.json literal 5af0c715442e file 5af0c715442e
+[negative copy] PASS pin stage0_report.py literal 5c7e5393a312 file 5c7e5393a312
+[negative copy] PASS pin analyze_l3.py literal 16017ffa71df file 16017ffa71df
+[negative copy] PASS pin g8_sweep2.sh literal d49981cab7c6 file d49981cab7c6
+[negative copy] PASS pin shm_sweep.py literal 98027a8b6f58 file 98027a8b6f58
+[negative copy] PASS tree pins: search_s3 at capture+eval installs found 2
+[negative copy] PASS tree pins: search_s2 at label installs found 1
+[negative copy] PASS tree pins: no other literals []
+[negative copy] PASS deploy list parsed from the recording loop 16 files
+[negative copy] PASS deploy coverage: search_s3.php staged 8f7be190044f
+[negative copy] PASS deploy coverage: search_s2.php staged 85490e8ed1ef
+[negative copy] PASS deploy coverage: s1_eval_main.php staged 73ed24822baa
+[negative copy] PASS deploy coverage: s2_label_main.php staged c7a76af4fb59
+[negative copy] PASS deploy coverage: paired_driver_gravy.py staged 3389b1b93618
+[negative copy] PASS deploy coverage: merge_registry.py staged 13a655e37d2d
+[negative copy] PASS deploy coverage: build_probe_eval_jobs.py staged 94030b488d96
+[negative copy] PASS deploy coverage: probe_eval_analyze.py staged 7c4d9f691af7
+[negative copy] PASS deploy coverage: build_probe_jobs.py staged c08d8c823891
+[negative copy] PASS deploy coverage: probe_label_analyze.py staged 60935aec0b75
+[negative copy] FAIL deploy coverage: probe_report.py staged 82856c6f59cd
+[negative copy] PASS deploy coverage: settings_probe.json staged 5af0c715442e
+[negative copy] PASS deploy coverage: stage0_report.py staged 5c7e5393a312
+[negative copy] PASS deploy coverage: analyze_l3.py staged 16017ffa71df
+[negative copy] PASS deploy coverage: g8_sweep2.sh staged d49981cab7c6
+[negative copy] PASS deploy coverage: shm_sweep.py staged 98027a8b6f58
+[negative copy] PASS seed literal 30055001 in runner == settings 30055001 
+[negative copy] PASS seed literal 70055001 in runner == settings 70055001 
+[negative copy] PASS capture seed strings in runner == settings 
+[negative copy] PASS uncontested sampling literal in settings 
+PASS negative: guard fails on a pin-stripped runner copy removed 1 block(s); coverage failures on the copy: ['deploy coverage: probe_report.py']
 fx_pin_guards: ALL PASS
 
 ===== gen_search_s3.py =====
@@ -59,7 +127,8 @@ PASS W4: CLASS lines print the sampling weight (2 uncontested, 1 contested)
 PASS B1: boundaries -- z=1.0 no job; (1.0,1.5] diagnostic (incl. z=1.5); z>1.5 class (a) {'uncontested_diag': ['u12_t1', 'u15_t1'], 'uncontested': ['u151_t1']}
 PASS B2: report carries the diagnostic class and the realized counts at all three margins 
 PASS P1: calibration inside the band -- line printed at 0.0750/state, NO flag line 
-PASS P2: informational power print matches the independent Phi computation power=0.2087 expected 0.2087
+PASS P2a: power formula -- inc = 0 gives the bar's own alpha (~0.05) z=0.0000 power=0.04998 (Phi(-1.645) = 0.04998)
+PASS P2b: power formula -- inc 0.03, se_inc,400 0.005: SE_new 0.0103, z 2.194, power 0.708 SE_new=0.010296 z=2.1938 power=0.7084
 PASS P3: price prints -- Step 2 + fleet box-hours at both levers' per-game costs margin step2 55.89 h; threshold cost 1846.3 s, step2 205.15 h
 PASS P4: calibration outside the band (0.2500/state) -- flag line printed ABOVE the recommendation, which is still emitted 
 fx_probe_python: ALL PASS
