@@ -1,0 +1,75 @@
+{
+ "jobs_no_shared_worlds": 0,
+ "primary": {
+  "jobs": 622,
+  "mean_diff": 0.04171402322987073,
+  "ci": [
+   0.031134719710669067,
+   0.0527311914864956
+  ]
+ },
+ "coreport_draw05": {
+  "jobs": 622,
+  "mean_diff": 0.03902815145350745,
+  "ci": [
+   0.029414238978033937,
+   0.04905062194657144
+  ]
+ },
+ "coreport_lifediff": {
+  "jobs": 622,
+  "mean_diff": 0.038111424634162346,
+  "ci": [
+   0.02824063886424135,
+   0.048373449047393054
+  ]
+ },
+ "per_game_gain": 0.06486530612244898,
+ "live_overturns_per_game": 1.555,
+ "attribution": {
+  "per_game_gain": 0.06486530612244898,
+  "l3_mean_diff": 0.04171402322987073,
+  "live_overturns_per_game": 1.555,
+  "stage3_primary_mean_diff": 0.0475,
+  "stage3_primary_ci": [
+   0.0,
+   0.095
+  ],
+  "ratio_to_delta": null,
+  "ratio_note": "unstable (\u0394 CI includes 0)"
+ },
+ "tripwire": null,
+ "unfinished": {
+  "teacher": {
+   "rows": 31100,
+   "finished": 31097,
+   "unfinished": 3,
+   "refusal": 0
+  },
+  "prior": {
+   "rows": 31100,
+   "finished": 31095,
+   "unfinished": 5,
+   "refusal": 0
+  },
+  "share_teacher": 9.646302250803858e-05,
+  "share_prior": 0.0001607717041800643,
+  "share_pooled": 0.00012861736334405144,
+  "error_classes": {
+   "teacher": {
+    "abort": 3
+   },
+   "prior": {
+    "abort": 5
+   },
+   "pooled": {
+    "abort": 8
+   }
+  }
+ },
+ "fallbacks": 14,
+ "label_tuple_audit": {
+  "rows": 62200,
+  "bad": 0
+ }
+}

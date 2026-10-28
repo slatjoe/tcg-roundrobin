@@ -1,0 +1,26 @@
+free-space pre-flight: required_bytes=1874846032 (per-tree 468711508 x 4 trees) available_bytes=5201068032 headroom_factor=1.25
+s3 jobs: 622 overturns over 299 games (index rows 622; shards {'0': 143, '1': 152, '2': 176, '3': 151})
+shard 0 player 1: 83 jobs
+shard 0 player 2: 60 jobs
+shard 1 player 1: 83 jobs
+shard 1 player 2: 69 jobs
+shard 2 player 1: 91 jobs
+shard 2 player 2: 85 jobs
+shard 3 player 1: 91 jobs
+shard 3 player 2: 60 jobs
+segments before: 23 (nattch=0: 23, attached: 0)
+kernel.shmmni: 4096
+segments after: 0
+=== STAGE 3 L3 ATTRIBUTION READ (primary: horizon 62, draw = 0) ===
+PRIMARY (draw = 0): jobs 622; jobs_no_shared_worlds 0 (of 622 jobs); mean paired diff 0.0417; CI [0.0311, 0.0527]
+  per-game gain 0.0649 (mean diff x LIVE overturns/game 1.5550 from 622 captured overturns over 400 completed teacher games)
+ATTRIBUTION: per-game gain 0.0649 = L3 mean diff 0.0417 x live overturns/game 1.5550; per-game gain / fleet delta = unstable (Δ CI includes 0), fleet Δ 0.0475 CI [0.0000, 0.0950] (Fai gate references: 87% and 101%)
+CO-REPORT coreport_draw05: mean diff 0.0390; CI [0.0294, 0.0491] over 622 jobs
+CO-REPORT coreport_lifediff: mean diff 0.0381; CI [0.0282, 0.0484] over 622 jobs
+UNFINISHED (refusals excluded from shares): pooled share 0.0001 (finished 62192, unfinished 8, refusals 0); fallbacks 14
+  abort                       8  [unfinished]
+CO-REPORT live rates vs the Stage 2 record: thin-prior 0.0000 (Stage 2 0.0000); overturn rate 0.0652 of contested (Stage 2 0.0694); overturns/game 1.5550 (Stage 2 1.7650)
+CO-REPORT games outcomes (draw-scored): Stage 3 teacher 174W/82D/144L = 215.0000 pts over 400 games (0.5375/game)
+ATTRIBUTION READ COMPLETE (co-report, not a gate: no PROCEED/STOP bands apply)
+l3 manifest written
+STAGE 3 L3 COMPLETE - /home/joe/tcg/r9s3_out/l3/l3_manifest.json

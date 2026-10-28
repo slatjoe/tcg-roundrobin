@@ -1,0 +1,117 @@
+{
+ "games_rows": 800,
+ "pairing": {
+  "pairs_attempted": 400,
+  "by_status": {
+   "scored": 400
+  }
+ },
+ "teacher_games_rows": 400,
+ "teacher_games_completed": 400,
+ "teacher_games_invalid": {},
+ "teacher_timeouts": 0,
+ "games_completed": 400,
+ "games_invalid": {},
+ "raw_games_rows": 400,
+ "raw_games_completed": 400,
+ "raw_games_invalid": {},
+ "raw_rerun_rows": 0,
+ "teacher_outcomes_draw_scored": {
+  "W": 174,
+  "D": 82,
+  "L": 144,
+  "points": 215.0,
+  "points_draw0": 174.0,
+  "points_per_game": 0.5375,
+  "points_draw0_per_game": 0.435
+ },
+ "teacher_outcomes_per_block": {
+  "t1a": {
+   "W": 44,
+   "D": 26,
+   "L": 30,
+   "points": 57.0,
+   "points_draw0": 44.0
+  },
+  "t1b": {
+   "W": 44,
+   "D": 20,
+   "L": 36,
+   "points": 54.0,
+   "points_draw0": 44.0
+  },
+  "t2a": {
+   "W": 48,
+   "D": 18,
+   "L": 34,
+   "points": 57.0,
+   "points_draw0": 48.0
+  },
+  "t2b": {
+   "W": 38,
+   "D": 18,
+   "L": 44,
+   "points": 47.0,
+   "points_draw0": 38.0
+  }
+ },
+ "teacher_outcomes_per_seat": {
+  "1": {
+   "W": 88,
+   "D": 46,
+   "L": 66,
+   "points": 111.0,
+   "points_draw0": 88.0
+  },
+  "2": {
+   "W": 86,
+   "D": 36,
+   "L": 78,
+   "points": 104.0,
+   "points_draw0": 86.0
+  }
+ },
+ "teacher_capped_life": {
+  "behind": 42,
+  "life_score_sum": 37,
+  "ahead": 37,
+  "tied": 3
+ },
+ "teacher_stat_rows": 37092,
+ "canary_refusal_rows": 8,
+ "rate_basis": "band rate counts stat rows in completed teacher games only (Stage 2 review sec.2.2); *_all keys are the same tallies over every stat row, co-reported",
+ "contested_rows": 9538,
+ "thin_prior_rows": 0,
+ "thin_prior_rate": 0.0,
+ "overturn_rows": 622,
+ "overturn_rate": 0.06521283287901028,
+ "overturns_per_game": 1.555,
+ "contested_rows_all": 9538,
+ "thin_prior_rows_all": 0,
+ "thin_prior_rate_all": 0.0,
+ "overturn_rows_all": 622,
+ "overturn_rate_all": 0.06521283287901028,
+ "overturns_per_game_all": 1.555,
+ "child_fallbacks": 0,
+ "abort_reasons": {
+  "abort": 43
+ },
+ "eval_fail_rows": 0,
+ "exception_rows": 0,
+ "tuple_audit": {
+  "pin": {
+   "deadline_s": 180,
+   "hooks": 8000,
+   "horizon": 62,
+   "horizon_value": -1,
+   "k": 25,
+   "margin": 1.5,
+   "name": "H8k-180+H",
+   "pinned": 1
+  },
+  "rows_checked": 37092,
+  "bad_rows": 0,
+  "malformed_pin_aborts": 0,
+  "ok": true
+ }
+}

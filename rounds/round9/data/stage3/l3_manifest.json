@@ -1,0 +1,124 @@
+{
+ "stage": "round9-stage3-l3",
+ "read": {
+  "jobs_no_shared_worlds": 0,
+  "primary": {
+   "jobs": 622,
+   "mean_diff": 0.04171402322987073,
+   "ci": [
+    0.031134719710669067,
+    0.0527311914864956
+   ]
+  },
+  "coreport_draw05": {
+   "jobs": 622,
+   "mean_diff": 0.03902815145350745,
+   "ci": [
+    0.029414238978033937,
+    0.04905062194657144
+   ]
+  },
+  "coreport_lifediff": {
+   "jobs": 622,
+   "mean_diff": 0.038111424634162346,
+   "ci": [
+    0.02824063886424135,
+    0.048373449047393054
+   ]
+  },
+  "per_game_gain": 0.06486530612244898,
+  "live_overturns_per_game": 1.555,
+  "attribution": {
+   "per_game_gain": 0.06486530612244898,
+   "l3_mean_diff": 0.04171402322987073,
+   "live_overturns_per_game": 1.555,
+   "stage3_primary_mean_diff": 0.0475,
+   "stage3_primary_ci": [
+    0.0,
+    0.095
+   ],
+   "ratio_to_delta": null,
+   "ratio_note": "unstable (\u0394 CI includes 0)"
+  },
+  "tripwire": null,
+  "unfinished": {
+   "teacher": {
+    "rows": 31100,
+    "finished": 31097,
+    "unfinished": 3,
+    "refusal": 0
+   },
+   "prior": {
+    "rows": 31100,
+    "finished": 31095,
+    "unfinished": 5,
+    "refusal": 0
+   },
+   "share_teacher": 9.646302250803858e-05,
+   "share_prior": 0.0001607717041800643,
+   "share_pooled": 0.00012861736334405144,
+   "error_classes": {
+    "teacher": {
+     "abort": 3
+    },
+    "prior": {
+     "abort": 5
+    },
+    "pooled": {
+     "abort": 8
+    }
+   }
+  },
+  "fallbacks": 14,
+  "label_tuple_audit": {
+   "rows": 62200,
+   "bad": 0
+  }
+ },
+ "jobs": {
+  "jobs": 622,
+  "games": 299,
+  "index_rows_total": 622,
+  "shards": {
+   "0": 143,
+   "1": 152,
+   "2": 176,
+   "3": 151
+  },
+  "nshard": 4,
+  "label_tuple": {
+   "deadline_s": 180,
+   "hooks": 8000,
+   "horizon": 62,
+   "horizon_value": -1,
+   "k": 50,
+   "name": "L3-W50+H"
+  }
+ },
+ "labels_rows": 62200,
+ "sha256": {
+  "attr_read.json": "6555c53f1f47a154658090ebb65e63ec96972772dbdfac404daaf23ea0c979cf",
+  "jobs_all.jsonl": "e4c03f682daa5fe46abd53ad0421ef4957ab7f254c3475c5ed6daafe2253f762",
+  "jobs_shard0.jsonl": "de770395ae363d20561f03acd1ca4f590c69711af01b682c39ae86ae884f9c85",
+  "jobs_shard0_p1.jsonl": "5f9377dbf245768f25cead9c5f0c936ff3e5ed8e158622251fb4682555baf3bd",
+  "jobs_shard0_p2.jsonl": "c26bfb74c3d407800d5907613f0897657176acd3141da3630c520bf2c5918148",
+  "jobs_shard1.jsonl": "4a9be934d75334a4a77c2bff31753730b57209fc7820e2e4d68a386464332ca2",
+  "jobs_shard1_p1.jsonl": "fd2424f4cea2e04eb61c8ebc94fc90bcbbf039298ced001c1656c984547fba97",
+  "jobs_shard1_p2.jsonl": "b1ee0168d06a5bcae2626e15e811c835a0d5228ec45cca3a2085adbcedb42d82",
+  "jobs_shard2.jsonl": "cdb1f5bf2b4b5e7c5f81339a8cb2a95ac73e38f5e37a895ada21f9cdf75af81e",
+  "jobs_shard2_p1.jsonl": "041f3703ae7790d176218513aaac03665b6a2835df8016290ca81216c2565205",
+  "jobs_shard2_p2.jsonl": "9c7483bb38b6ec860d1998e71fc22a4ccf0ea221310f6980b439e8006698a423",
+  "jobs_shard3.jsonl": "fea2a6f9f38a061b11c7b587b27847abfdc046fefad73f49ac86f71b33ef205f",
+  "jobs_shard3_p1.jsonl": "de04a35020af660fe0f797349234a5c5c2f5f2bb2e01150ab12f98df073905b9",
+  "jobs_shard3_p2.jsonl": "f7d09c0e5faf54d4f949f0b31d765299e81e1a079772b5851567d41a46693d87",
+  "labels_all.jsonl": "66e16f5115ae069c8808656e6d55a28b6fa5d9a32822d3b2d25ecacbdd3bd432",
+  "labels_shard0_p1.jsonl": "6e001d114b2c225e56af292401af03323c0c0081c3812ae73f1db262e9f869c9",
+  "labels_shard0_p2.jsonl": "f12b8fd4a46242b06a47775dbf60fe9235a35a578338f4e146d1dacaa3fd88fa",
+  "labels_shard1_p1.jsonl": "98e52c9e19e0528ec3e7191dca70b69424ae0e1edaf6da781adbe5594010388a",
+  "labels_shard1_p2.jsonl": "9fab7a7a79ffc33e9e85b18c14f3198ccdfcca30becab014dd4266d9aba17757",
+  "labels_shard2_p1.jsonl": "2d56f7c6339fc9ec3cc98441bc9c3f77dde1f4f77dbcedb511d2f4ffa04bd2aa",
+  "labels_shard2_p2.jsonl": "e1d1e6fe534168c65e7bbe71b81c5ed54f699a7754afaefb4797ffdd8ffc77f8",
+  "labels_shard3_p1.jsonl": "c519a7879e9a9c40613935ba13848504f39dbb8629340e6c649156a7d3eae2c8",
+  "labels_shard3_p2.jsonl": "04c66971b67cadcaf45e74799fb51f28e655b40463cfcdf2a3f9ceee8ba9df8b"
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "approved_sha": "fdd68d64507f2a09ca5195e481f826f759553c1d",
+ "attempts": [
+  {
+   "attempt": 1,
+   "free_space": {
+    "available_bytes": 3215175680,
+    "headroom_factor": 1.25,
+    "per_tree_bytes": 468711508,
+    "required_bytes": 3749692064,
+    "required_with_headroom_bytes": 4687115080,
+    "trees": 8
+   },
+   "log": "/home/joe/tcg/r9s3_out/games_launch.log",
+   "pregate_gate": "passed - Stage 2 manifest IDENTICAL under this run's pin and tuple",
+   "result": "ABORT at free-space pre-flight (runner exited before any spawn; no games, no labels)"
+  },
+  {
+   "cleanup_between_attempts": {
+    "df_tmp_available_after": 9080950784,
+    "df_tmp_available_before": 3215175680,
+    "reclaimed_trees": [
+     {
+      "path": "/tmp/r9s0_fx7",
+      "size_bytes": 940330988
+     },
+     {
+      "path": "/tmp/harvest",
+      "size_bytes": 597703457
+     },
+     {
+      "path": "/tmp/r9s1_cap_s1",
+      "size_bytes": 475490538
+     },
+     {
+      "path": "/tmp/r9s1_cap_s2",
+      "size_bytes": 475408885
+     },
+     {
+      "path": "/tmp/r9s1_tree_e2",
+      "size_bytes": 468633952
+     },
+     {
+      "path": "/tmp/r9s1_tree_e3",
+      "size_bytes": 468633952
+     },
+     {
+      "path": "/tmp/r9s2_l3_tree_0",
+      "size_bytes": 468643474
+     },
+     {
+      "path": "/tmp/r9s2_l3_tree_1",
+      "size_bytes": 468643474
+     },
+     {
+      "path": "/tmp/r9s2_l3_tree_2",
+      "size_bytes": 468643474
+     },
+     {
+      "path": "/tmp/r9s2_l3_tree_3",
+      "size_bytes": 468643474
+     }
+    ],
+    "skipped_trees": [
+     {
+      "path": "/tmp/distill_wcheck",
+      "reason": "property (a) failed - flat run-output directory (raw label jsonl + ipcs/g8 records); contains no vendor/talishar and no play_game.php anywhere; NOT deleted",
+      "size_bytes": 1845812615
+     },
+     {
+      "path": "/tmp/distill_pilot_resume",
+      "reason": "property (a) failed - run-output/log subdirectories only; contains no vendor/talishar and no play_game.php anywhere; NOT deleted",
+      "size_bytes": 740110317
+     }
+    ],
+    "total_reclaimed_du_bytes": 5300775668,
+    "verification": "every deleted tree verified on the box first: exists + Talishar tree copy (vendor/talishar or play_game.php at root or in a contained tree subdir), round/stage closed with data published, no live process cmdline/cwd reference, newest file mtime before 2026-10-27 08:00 EDT"
+   }
+  },
+  {
+   "attempt": 2,
+   "invocation": "setsid bash run_stage3_games.sh, STAGE3_OUT unset, from /home/joe/tcg/round9_code",
+   "launch_time_local": "2026-10-27T08:09:25-0400",
+   "log": "/home/joe/tcg/r9s3_out/games_launch2.log",
+   "note": "a first invocation at 08:08:55 EDT died inside setsid (Permission denied - the deployed runner carries mode -rw-rw----, no execute bit) before the runner started; that output is preserved at /home/joe/tcg/r9s3_out/games_launch2_execfail.log; attempt 2 of the runner was then launched through bash, the interpreter form attempt 1 used",
+   "runner_pid": 1346456
+  }
+ ],
+ "code_dir": "/home/joe/tcg/round9_code",
+ "deployed_code_hashes": {
+  "analyze_l3.py": "16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9",
+  "build_s3_jobs.py": "fabecae5087d48c1eb2127e11ee750939d364c22b14e2d6b5d534a863fb2d498",
+  "g8_sweep2.sh": "d49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17",
+  "merge_registry.py": "13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe",
+  "paired_driver_gravy.py": "3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359",
+  "run_stage3_games.sh": "db89f1070178c017946758010d207369f8ef145391b3d89dd44f79dd5cccf056",
+  "run_stage3_l3.sh": "2588d5958fd6966287526c062f6909e2eb50bdde0db4f60e8f9917e33110d49d",
+  "s2_label_main.php": "c7a76af4fb59e8e6e0b69a6d06157efc44597b04238cdb3b2efe48350cdda888",
+  "search_s2.php": "85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa",
+  "settings_stage3.json": "34337753835aae29e2fb9bf9c090cc2a2f64b7799d487210c093d48a1040ed2e",
+  "shm_sweep.py": "98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33",
+  "stage0_report.py": "5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf",
+  "stage3_analyze.py": "0e39fee3a47d13b2c5f9c004daaaba15b2d6c41b4692c7e0e1015a96a045f418",
+  "stage3_attr_analyze.py": "788cd28a5018d2786f67cd2b0a17c321598795bed9bc97e4b903dc837537fb21",
+  "stage3_games_report.py": "fe313d0981f0a0be5e55f9877b326af1b7cf8d72adc53558ebc11b29ae532c8b"
+ },
+ "games_out": "/home/joe/tcg/r9s3_out/games",
+ "joe_go": "2026-10-27 08:01 EDT",
+ "launch_time_local": "2026-10-27T08:03-04:00",
+ "launched_sha": "3cb827488f2572578d51ea356a36f2ebef74adc7",
+ "launched_vs_approved": "differs only under rounds/ (Claude's confirmation reply claude-reply-fdd68d6.md + this launch record)",
+ "out_dir": "/home/joe/tcg/r9s3_out",
+ "preflight": {
+  "registry": "/home/joe/tcg/registry-vault/do_not_train_registry.json sha256 031b3c5db02cf4595d45811928c44d5e456eaeba3720733158ff565d179f46a5 (6,531 games, post-Stage-2)",
+  "stage2_pregate_manifest": "/home/joe/tcg/r9s2_out/pregate/pregate_manifest.json (present)",
+  "stray_sim_processes": "none (dashboard:8097 standing service only)"
+ },
+ "run": "round9-stage3-games",
+ "tracker": "stage-3 tracker approved by Joe (F-S3-3)"
+}

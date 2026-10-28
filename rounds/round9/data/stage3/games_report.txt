@@ -1,0 +1,7 @@
+pairs: 400 attempted, statuses {'scored': 400}
+teacher games: 400 rows, 400 completed, invalid {}; teacher W/D/L 174/82/144 = 215.0 pts at draw=0.5 (0.5375/game); 174.0 pts at draw=0 (W only, 0.4350/game)
+raw games: 400 rows, 400 completed, invalid {}; rerun rows 0
+band rates (completed teacher games only): teacher rows 37092, contested 9538, thin-prior 0 (0.0000), overturns 622 (0.0652 of contested, 1.5550/game)
+co-report (all stat rows): contested 9538, thin-prior 0 (0.0000), overturns 622 (0.0652 of contested, 1.5550/game)
+capped teacher games life tallies: {'behind': 42, 'life_score_sum': 37, 'ahead': 37, 'tied': 3}; R14 canary refusal rows 8
+tuple audit: 37092 rows checked, 0 bad, 0 malformed-pin aborts -> OK

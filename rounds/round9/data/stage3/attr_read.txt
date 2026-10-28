@@ -1,0 +1,11 @@
+=== STAGE 3 L3 ATTRIBUTION READ (primary: horizon 62, draw = 0) ===
+PRIMARY (draw = 0): jobs 622; jobs_no_shared_worlds 0 (of 622 jobs); mean paired diff 0.0417; CI [0.0311, 0.0527]
+  per-game gain 0.0649 (mean diff x LIVE overturns/game 1.5550 from 622 captured overturns over 400 completed teacher games)
+ATTRIBUTION: per-game gain 0.0649 = L3 mean diff 0.0417 x live overturns/game 1.5550; per-game gain / fleet delta = unstable (Δ CI includes 0), fleet Δ 0.0475 CI [0.0000, 0.0950] (Fai gate references: 87% and 101%)
+CO-REPORT coreport_draw05: mean diff 0.0390; CI [0.0294, 0.0491] over 622 jobs
+CO-REPORT coreport_lifediff: mean diff 0.0381; CI [0.0282, 0.0484] over 622 jobs
+UNFINISHED (refusals excluded from shares): pooled share 0.0001 (finished 62192, unfinished 8, refusals 0); fallbacks 14
+  abort                       8  [unfinished]
+CO-REPORT live rates vs the Stage 2 record: thin-prior 0.0000 (Stage 2 0.0000); overturn rate 0.0652 of contested (Stage 2 0.0694); overturns/game 1.5550 (Stage 2 1.7650)
+CO-REPORT games outcomes (draw-scored): Stage 3 teacher 174W/82D/144L = 215.0000 pts over 400 games (0.5375/game)
+ATTRIBUTION READ COMPLETE (co-report, not a gate: no PROCEED/STOP bands apply)

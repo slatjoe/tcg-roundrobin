@@ -1,0 +1,12 @@
+=== STAGE 3 PAIRED READ (teacher vs raw v10, same seed + seat) ===
+RECONCILIATION: pairs attempted 400; teacher stat rows 37092 == games report; tuple audit ok; gamenames unique over 800 completed rows
+R14 root-canary refusal records (fallback=canary, no teacher stamp): 8 — root decisions refused by the missing-card conservation check and played down the plain bridge; they write no teacher row
+PRIMARY: pairs scored 400 of 400 attempted; mean paired diff 0.0475; seed-clustered CI [0.0000, 0.0950] (B=10000, rng 20261027)
+CO-REPORT delta05 (draws 0.5; teacher timeout still 0): mean 0.0300; CI [-0.0138, 0.0725]
+CO-REPORT delta_lifediff (life scores from p1life/p2life): mean 0.0200; CI [-0.0275, 0.0700]
+CO-REPORT per-seat primary: seat 1 mean 0.0750 CI [0.0000, 0.1500] over 200 pairs; seat 2 mean 0.0200 CI [-0.0400, 0.0800] over 200 pairs
+SENSITIVITY (drop teacher-timeout pairs): 0 pairs dropped; primary over 400 pairs = 0.0475
+TEACHER TIMEOUTS: 0 of 400 teacher games (rate 0.0000; > 0.02 -> INCONCLUSIVE)
+PAIRS OUT of the primary: dropped_raw_timeout 0, excluded 0 (total 0 of 400 attempted, rate 0.0000; > 0.02 -> INCONCLUSIVE)
+BANDS: INCONCLUSIVE iff teacher timeout rate > 0.02 or (excluded + dropped) rate > 0.02; CONVERTS iff CI lower > 0; HARMS iff CI upper < 0; else DOES NOT CONVERT.
+VERDICT: DOES NOT CONVERT

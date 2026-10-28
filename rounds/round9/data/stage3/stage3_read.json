@@ -1,0 +1,82 @@
+{
+ "pairs_attempted": 400,
+ "primary": {
+  "pairs_scored": 400,
+  "mean_diff": 0.0475,
+  "ci": [
+   0.0,
+   0.095
+  ]
+ },
+ "delta05": {
+  "pairs_scored": 400,
+  "mean_diff": 0.03,
+  "ci": [
+   -0.01375,
+   0.0725
+  ]
+ },
+ "delta_lifediff": {
+  "pairs_scored": 400,
+  "mean_diff": 0.02,
+  "ci": [
+   -0.0275,
+   0.07
+  ]
+ },
+ "per_seat": {
+  "1": {
+   "pairs": 200,
+   "mean_diff": 0.075,
+   "ci": [
+    0.0,
+    0.15
+   ]
+  },
+  "2": {
+   "pairs": 200,
+   "mean_diff": 0.02,
+   "ci": [
+    -0.04,
+    0.08
+   ]
+  }
+ },
+ "per_block": {
+  "t1a": {
+   "pairs": 100,
+   "mean_diff": 0.08
+  },
+  "t1b": {
+   "pairs": 100,
+   "mean_diff": 0.07
+  },
+  "t2a": {
+   "pairs": 100,
+   "mean_diff": 0.07
+  },
+  "t2b": {
+   "pairs": 100,
+   "mean_diff": -0.03
+  }
+ },
+ "sensitivity_primary": {
+  "pairs": 400,
+  "mean_diff": 0.0475,
+  "teacher_timeout_pairs_dropped": 0
+ },
+ "teacher_timeouts": 0,
+ "teacher_games_attempted": 400,
+ "teacher_timeout_rate": 0.0,
+ "pairs_out_of_primary": 0,
+ "pairs_out_rate": 0.0,
+ "dropped": [],
+ "excluded": [],
+ "reconciliation": {
+  "teacher_stat_rows": 37092,
+  "canary_refusal_rows": 8,
+  "gamenames_checked": 800
+ },
+ "verdict": "DOES NOT CONVERT",
+ "impeachment": null
+}

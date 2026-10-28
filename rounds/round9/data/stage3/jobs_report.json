@@ -1,0 +1,20 @@
+{
+ "jobs": 622,
+ "games": 299,
+ "index_rows_total": 622,
+ "shards": {
+  "0": 143,
+  "1": 152,
+  "2": 176,
+  "3": 151
+ },
+ "nshard": 4,
+ "label_tuple": {
+  "deadline_s": 180,
+  "hooks": 8000,
+  "horizon": 62,
+  "horizon_value": -1,
+  "k": 50,
+  "name": "L3-W50+H"
+ }
+}

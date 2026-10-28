@@ -1,0 +1,242 @@
+{
+ "stage": "round9-stage3-games",
+ "pairing": {
+  "pairs_attempted": 400,
+  "by_status": {
+   "scored": 400
+  }
+ },
+ "games_report": {
+  "games_rows": 800,
+  "pairing": {
+   "pairs_attempted": 400,
+   "by_status": {
+    "scored": 400
+   }
+  },
+  "teacher_games_rows": 400,
+  "teacher_games_completed": 400,
+  "teacher_games_invalid": {},
+  "teacher_timeouts": 0,
+  "games_completed": 400,
+  "games_invalid": {},
+  "raw_games_rows": 400,
+  "raw_games_completed": 400,
+  "raw_games_invalid": {},
+  "raw_rerun_rows": 0,
+  "teacher_outcomes_draw_scored": {
+   "W": 174,
+   "D": 82,
+   "L": 144,
+   "points": 215.0,
+   "points_draw0": 174.0,
+   "points_per_game": 0.5375,
+   "points_draw0_per_game": 0.435
+  },
+  "teacher_outcomes_per_block": {
+   "t1a": {
+    "W": 44,
+    "D": 26,
+    "L": 30,
+    "points": 57.0,
+    "points_draw0": 44.0
+   },
+   "t1b": {
+    "W": 44,
+    "D": 20,
+    "L": 36,
+    "points": 54.0,
+    "points_draw0": 44.0
+   },
+   "t2a": {
+    "W": 48,
+    "D": 18,
+    "L": 34,
+    "points": 57.0,
+    "points_draw0": 48.0
+   },
+   "t2b": {
+    "W": 38,
+    "D": 18,
+    "L": 44,
+    "points": 47.0,
+    "points_draw0": 38.0
+   }
+  },
+  "teacher_outcomes_per_seat": {
+   "1": {
+    "W": 88,
+    "D": 46,
+    "L": 66,
+    "points": 111.0,
+    "points_draw0": 88.0
+   },
+   "2": {
+    "W": 86,
+    "D": 36,
+    "L": 78,
+    "points": 104.0,
+    "points_draw0": 86.0
+   }
+  },
+  "teacher_capped_life": {
+   "behind": 42,
+   "life_score_sum": 37,
+   "ahead": 37,
+   "tied": 3
+  },
+  "teacher_stat_rows": 37092,
+  "canary_refusal_rows": 8,
+  "rate_basis": "band rate counts stat rows in completed teacher games only (Stage 2 review sec.2.2); *_all keys are the same tallies over every stat row, co-reported",
+  "contested_rows": 9538,
+  "thin_prior_rows": 0,
+  "thin_prior_rate": 0.0,
+  "overturn_rows": 622,
+  "overturn_rate": 0.06521283287901028,
+  "overturns_per_game": 1.555,
+  "contested_rows_all": 9538,
+  "thin_prior_rows_all": 0,
+  "thin_prior_rate_all": 0.0,
+  "overturn_rows_all": 622,
+  "overturn_rate_all": 0.06521283287901028,
+  "overturns_per_game_all": 1.555,
+  "child_fallbacks": 0,
+  "abort_reasons": {
+   "abort": 43
+  },
+  "eval_fail_rows": 0,
+  "exception_rows": 0,
+  "tuple_audit": {
+   "pin": {
+    "deadline_s": 180,
+    "hooks": 8000,
+    "horizon": 62,
+    "horizon_value": -1,
+    "k": 25,
+    "margin": 1.5,
+    "name": "H8k-180+H",
+    "pinned": 1
+   },
+   "rows_checked": 37092,
+   "bad_rows": 0,
+   "malformed_pin_aborts": 0,
+   "ok": true
+  }
+ },
+ "read": {
+  "pairs_attempted": 400,
+  "primary": {
+   "pairs_scored": 400,
+   "mean_diff": 0.0475,
+   "ci": [
+    0.0,
+    0.095
+   ]
+  },
+  "delta05": {
+   "pairs_scored": 400,
+   "mean_diff": 0.03,
+   "ci": [
+    -0.01375,
+    0.0725
+   ]
+  },
+  "delta_lifediff": {
+   "pairs_scored": 400,
+   "mean_diff": 0.02,
+   "ci": [
+    -0.0275,
+    0.07
+   ]
+  },
+  "per_seat": {
+   "1": {
+    "pairs": 200,
+    "mean_diff": 0.075,
+    "ci": [
+     0.0,
+     0.15
+    ]
+   },
+   "2": {
+    "pairs": 200,
+    "mean_diff": 0.02,
+    "ci": [
+     -0.04,
+     0.08
+    ]
+   }
+  },
+  "per_block": {
+   "t1a": {
+    "pairs": 100,
+    "mean_diff": 0.08
+   },
+   "t1b": {
+    "pairs": 100,
+    "mean_diff": 0.07
+   },
+   "t2a": {
+    "pairs": 100,
+    "mean_diff": 0.07
+   },
+   "t2b": {
+    "pairs": 100,
+    "mean_diff": -0.03
+   }
+  },
+  "sensitivity_primary": {
+   "pairs": 400,
+   "mean_diff": 0.0475,
+   "teacher_timeout_pairs_dropped": 0
+  },
+  "teacher_timeouts": 0,
+  "teacher_games_attempted": 400,
+  "teacher_timeout_rate": 0.0,
+  "pairs_out_of_primary": 0,
+  "pairs_out_rate": 0.0,
+  "dropped": [],
+  "excluded": [],
+  "reconciliation": {
+   "teacher_stat_rows": 37092,
+   "canary_refusal_rows": 8,
+   "gamenames_checked": 800
+  },
+  "verdict": "DOES NOT CONVERT",
+  "impeachment": null
+ },
+ "rows": {
+  "games_r1a.jsonl": 100,
+  "games_r1b.jsonl": 100,
+  "games_r2a.jsonl": 100,
+  "games_r2b.jsonl": 100,
+  "games_t1a.jsonl": 100,
+  "games_t1b.jsonl": 100,
+  "games_t2a.jsonl": 100,
+  "games_t2b.jsonl": 100
+ },
+ "sha256": {
+  "games_r1a.jsonl": "f5b9486cca07d97c221f5483a636c92a6be2b85828f475f15376add208c62ba1",
+  "games_r1a.jsonl.manifest.json": "2d5af6450bcb5122e128b65e7c9a9491cda7e67bd71b730e6d92a6460eb3efd0",
+  "games_r1b.jsonl": "9150853ed5c57a8d15b1869936fe50145c6062c9909149ef58892293323a86b9",
+  "games_r1b.jsonl.manifest.json": "999bc3cfecbe6b1b6fd70cb37832d8ec693fd831b3ec1dd1917ca29f418900c1",
+  "games_r2a.jsonl": "e81a47165e20fbb25f165dd6bce0ce8277104aca3762466e3723c78f4d75aabd",
+  "games_r2a.jsonl.manifest.json": "79a0798edf82405b26bad5ce69ee62447f3ab6d9540903500371b749153da152",
+  "games_r2b.jsonl": "54853d0877b70fdd029d142974473d0f473e75d088011287a6e4766241974398",
+  "games_r2b.jsonl.manifest.json": "0dfbf8e9a17b7aa9a1c3b83b2c81c203230d00564e9af134d990c1f7053ee046",
+  "games_report.json": "d56ffda5a1df8d773c6dd8ee98cb4906f3534b35b8008f2c14af169675cbd083",
+  "games_t1a.jsonl": "19ccb4d7daf6168c4218085596383eaa1b662d55914fd7d60b652ac0add6685c",
+  "games_t1a.jsonl.manifest.json": "c575842b5fb5c89aa84373f99393d9d52504363ca148fb65f3e54d0be020ad8a",
+  "search_stats.jsonl": "d902f17a0922c410a0516c85aac7faffa1ed57bf0f1e8df1f734ac0d6390d8ee",
+  "teacher_snap_index.jsonl": "e411f1449543a3c4af250ead7142bdf7795b4a61d8bb37d39ae5d7a0ad744400",
+  "games_t1b.jsonl": "965d6ddd895b612e4393383a3518e66245f28769284ecca3a2242d4286f57e2f",
+  "games_t1b.jsonl.manifest.json": "a204b2c76d83e671e588eb8ef864da9836b71a4cc22b565220cd18939bdd2d67",
+  "games_t2a.jsonl": "e520e6dd1ac0af898b31918e1d7f3122e42b8285b988de6fbe03f25745c30f59",
+  "games_t2a.jsonl.manifest.json": "b852dd8ff230688c17855fd87dddd2e36365d0c3c4c972ef5e5f20fd163c2dac",
+  "games_t2b.jsonl": "c45be2b36fbe35015530aa907021589736d290dcb4102923a2af96a9f3c7df42",
+  "games_t2b.jsonl.manifest.json": "797d260bc30ab2845003cc583befd7b3fbccf20ee2229fa318901c8602ff7d04",
+  "pairing.json": "bbc71b8d099267b79bafebdfdfd9d72447a65f0f54c7dc8e2d6f0a58700e0ed4",
+  "stage3_read.json": "1c97f1dddfc876a665c26e1384d129350e8d65e6f93e0fe23e19da7eb5620c9d",
+  "stage3_read.txt": "0bb140ec7f64c4313350fe54a6521f84de6c35aca91bd4b854cda153e826e680"
+ }
+}
