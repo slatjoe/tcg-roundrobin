@@ -1,0 +1,36 @@
+{
+ "arm": "ghost",
+ "tree": "/tmp/r10pilot_pg_ghostthr_s2",
+ "seat": 2,
+ "seeds": "13001-13010",
+ "search_stats_rows": 761,
+ "trace_files": 10,
+ "server": {
+  "learner_seat": 2,
+  "model": "/home/joe/tcg/tcg-sim/rl_out/gravy_ppo_gravybc3/ckpt_v10.pt"
+ },
+ "assertions": {
+  "stat_rows": 761,
+  "teacher_rows": 761,
+  "contested_rows": 761,
+  "rollout_rows": 761,
+  "trace_rules": {
+   "bridge_pick": 724,
+   "ghost_prior": 761,
+   "dq_pick": 2829,
+   "pass_gate": 2243
+  },
+  "teacher_trace_rows": 761,
+  "teacher_trace_rows_with_priors": 761,
+  "teacher_trace_pick_argmax_agree": 761
+ },
+ "checks": {
+  "pick_eq_prior_all_teacher": true,
+  "ghost_flag_on_all_rollouts": true,
+  "rollouts_present": true,
+  "trace_rules_all_ghost_prior": true,
+  "trace_teacher_pick_is_prior_argmax": true
+ },
+ "assert_ok": true,
+ "assert_no_search_rows": null
+}

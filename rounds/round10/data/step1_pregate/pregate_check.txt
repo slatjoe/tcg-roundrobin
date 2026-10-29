@@ -1,0 +1,17 @@
+PASS determinism: raw seat-1 rerun identical 10/10 seeds agree
+PASS R16: seat-crossed raw control differs 10/10 seeds differ
+FAIL seat 1 played-action identity (ghost sec.14 vs ghost thr) 5/10 seeds identical
+FAIL seat 1 contested-class identity (priors + selected, order-aware pairs) 0 contested pairs, 0 bad, 1697 other divergences
+INFO seat 1 newly-contested divergences (expected shape): 0
+PASS ghost14_s1 manifest checks (other than the K6-read one) {"pick_eq_prior_all_teacher": true, "rollouts_present": true, "trace_rules_all_ghost_prior": true, "trace_teacher_pick_is_prior_argmax": true}
+PASS ghost14_s1 K6 line 215 0 0 0 (rollout, unstamped, not-thin, pick-off)
+PASS ghostthr_s1 manifest checks (other than the K6-read one) {"pick_eq_prior_all_teacher": true, "rollouts_present": true, "trace_rules_all_ghost_prior": true, "trace_teacher_pick_is_prior_argmax": true}
+PASS ghostthr_s1 K6 line 748 0 0 0 (rollout, unstamped, not-thin, pick-off)
+FAIL seat 2 played-action identity (ghost sec.14 vs ghost thr) 7/10 seeds identical
+FAIL seat 2 contested-class identity (priors + selected, order-aware pairs) 0 contested pairs, 0 bad, 1638 other divergences
+INFO seat 2 newly-contested divergences (expected shape): 0
+PASS ghost14_s2 manifest checks (other than the K6-read one) {"pick_eq_prior_all_teacher": true, "rollouts_present": true, "trace_rules_all_ghost_prior": true, "trace_teacher_pick_is_prior_argmax": true}
+PASS ghost14_s2 K6 line 172 0 0 0 (rollout, unstamped, not-thin, pick-off)
+PASS ghostthr_s2 manifest checks (other than the K6-read one) {"pick_eq_prior_all_teacher": true, "rollouts_present": true, "trace_rules_all_ghost_prior": true, "trace_teacher_pick_is_prior_argmax": true}
+PASS ghostthr_s2 K6 line 761 0 0 0 (rollout, unstamped, not-thin, pick-off)
+PREGATE: NOT IDENTICAL

@@ -1,0 +1,23 @@
+# Round 10 — Step 1: PRE-GATE + PILOT LAUNCH RECORD (2026-10-29)
+
+Approved build **557cf033** (Claude's confirmation, `claude-reply-557cf03.md`). Launched sha **4b6cd6f6** — differing from the approved sha only under `rounds/` (the confirmation reply + the non-blocking 21041–21100 used-blocks addition). Joe's go: 2026-10-29 12:39 EDT ("Run the pre-gate, then the pilot if it reads IDENTICAL").
+
+**Deploy:** all 18 `code/step1/` files to `/home/joe/tcg/round10_code/step1/`; box read-backs matched staging on every file (incl. `search_s3_thr.php` 4a1936fe…, `settings_pilot.json` 0571e03a…; recorded in `data/step1_pregate/deployed_code_hashes.txt`). Pre-flight clean; the pre-gate's free-space check passed in-run.
+
+**Pre-gate:** launched 2026-10-29 **12:41:11 EDT**; all arms completed their driver rows; the checker ran at **15:29:20 EDT** and the runner aborted: **PRE-GATE: NOT IDENTICAL**. Wall ≈ 2 h 48 min (the lifted build's ghost arms run 15–30 min/game — a cost fact about the thr build the launch estimate had not priced). `pregate_manifest.json` was never written (the runner exits on the failed check before the manifest step); `pregate_check.txt` is the verdict artifact (in `data/step1_pregate/`).
+
+**Pilot: NOT LAUNCHED** (the launch condition, and `run_pilot.sh`'s mechanical PREGATE-GATE, both refuse without an IDENTICAL manifest).
+
+## The verdict, and what the diagnosis found
+
+`pregate_check.txt` (verbatim in `data/step1_pregate/`): determinism PASS; R16 PASS; all four ghost arms' manifest checks + K6 lines PASS; played-action identity FAIL (seat 1: 5/10 seeds identical; seat 2: 7/10); contested-class identity FAIL with "0 contested pairs, 0 bad, 1697 other divergences" (seat 1) / "1638 other" (seat 2); newly-contested divergences: 0 on both seats.
+
+The diagnosis (2026-10-29, from the fetched outputs — `data/step1_pregate/`, 126 files, SHA256SUMS.txt) found **three independent layers, all instrument-side; no build defect**:
+
+- **Layer A — the played-action failures are driver timeouts, not build behavior.** The non-identical seeds are exactly the seeds whose thr-arm driver row is a timeout (`invalid: "timeout"`): seat 1 → 13001, 13002, 13003, 13005, 13010 (the 5 failures); seat 2 → 13001, 13002, 13005 (the 3). **Every completed thr game is byte-identical to its §14 counterpart** (same gamelog sha, winner, draw, capped, turns; 5/5 seat 1, 7/7 seat 2). The thr build costs ~4.4× per game (seed 13004: 786.0 s vs 177.5 s); the paired driver's per-invocation timeout defaults to 1,200 s — sized for the §14 arm, not for an arm searching ~7–10× more decisions.
+- **Layer B — the contested-class check never paired a single decision.** The checker's pairing key leads with the **arm-local Talishar game-instance id**; the two arms create separate instances, so the key sets are disjoint and key overlap is exactly 0 on both seats. Every row fell into the count-mismatch branch and was counted as "other" (949 + 748 = 1697; 877 + 761 = 1638 — the checker's arithmetic reproduces exactly from the fetched stats). "0 contested pairs" means no decision was ever paired, not that pairs disagreed. The package fixture passed because its synthetic arms reused the same game ids; the real instrument never does.
+- **Layer C — latent: the exact-equality priors test exceeds the instrument's reproducibility.** Aligning the completed games' decisions by sequence order (the intended pairing): 85 contested pairs across the 5 completed seat-1 games — `selected` identical in **85/85**, priors exactly equal in only 12/85; the rest differ at ~1e-7 (GPU-served float noise). Even with pairing repaired, exact equality fails the contested class on noise alone.
+
+**The designed behavior is present and clean:** across the 5 completed seat-1 games, order-aligned: **309 newly-contested pairs, 85 contested pairs with 0 selected differences, 0 off-shape divergences** (no thr-uncontested × §14-searched, no below-boundary skip). First divergence in 3 of the completed seeds is at decision index 0 — a ≥0.97 decision the thr build searches (seed 13004: top prior 0.99994) while ghost forcing still plays the prior pick, so the game comes out byte-identical. The deployed files hash to the approved bytes.
+
+**Status:** the pre-gate verdict stands as recorded (NOT IDENTICAL, on a checker that could not pair decisions and a timeout sized for the cheaper arm). The repair — checker pairing by seed-paired sequence order, a priors tolerance with `selected` kept exact, pre-gate timeout sizing for the thr arm, and fixtures planting the real shapes (disjoint game-id sets, ~1e-7 priors noise, a timeout row) — is a fix package for review before any re-run. The pilot remains unlaunched behind it.

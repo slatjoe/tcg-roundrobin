@@ -1,0 +1,8 @@
+87779e8ec96935776ce35d94ae350647d8f4174c8a17ed572b1bd4887b9a7ba7  /home/joe/tcg/round10_code/step1/search_s3.php
+4a1936fe8e8794af1bbbc94cd982e5b897210d6e100599b9cced1a22448ccb49  /home/joe/tcg/round10_code/step1/search_s3_thr.php
+3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359  /home/joe/tcg/round10_code/step1/paired_driver_gravy.py
+671f2c205c74a1be1f8e664cc3c4b7d9d61708fa11544ca0651aa20730274651  /home/joe/tcg/round10_code/step1/pregate_check_pilot.py
+13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe  /home/joe/tcg/round10_code/step1/merge_registry.py
+98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33  /home/joe/tcg/round10_code/step1/shm_sweep.py
+d49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17  /home/joe/tcg/round10_code/step1/g8_sweep2.sh
+0571e03a31f1d1aa947c3989dba86946bcaf064eff19f523b1b5582d834ca0d7  /home/joe/tcg/round10_code/step1/settings_pilot.json
