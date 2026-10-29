@@ -1,0 +1,72 @@
+=== ROUND-10 STEP 0 PROBE -- INFLUENCE READ (claude-reply-9dae0e2 sec.2.3) ===
+
+-- (a) state inspection: game 540261752 (10 recovered jobs: 540261752_t64, 540261752_t65, 540261752_t66, 540261752_t67, 540261752_t68, 540261752_t69, 540261752_t70, 540261752_t71, 540261752_t72, 540261752_t73)
+  driver row: seat 2, seed 24070, winner 0, draw True, capped True (cap_reason turns), turns 63, p1life 19, p2life 8
+  540261752_t64 turn 45: prior pick 0 (chum_friendly_first_mate_yellow) vs search pick 9 (prismatic_leyline_yellow); top prior 1.0000
+    cand 0: finished 25, unfinished 0, refusal 0, error rows 0 (pick: prior)
+    cand 7: finished 25, unfinished 0, refusal 0, error rows 0
+    cand 9: finished 25, unfinished 0, refusal 0, error rows 0 (pick: search)
+    prior pick's 25 worlds: 25 horizon draws priced -1, 0 outright losses, 0 other; eval cand_diag agrees: yes
+    search pick's 25 worlds: 22 wins by turn 61 (stand cap-aligned), 3 wins after turn 61 (post-cap; horizon draws under the aligned rule)
+  540261752_t65 turn 47: prior pick 0 (chum_friendly_first_mate_yellow) vs search pick 9 (prismatic_leyline_yellow); top prior 1.0000
+    cand 0: finished 25, unfinished 0, refusal 0, error rows 0 (pick: prior)
+    cand 7: finished 25, unfinished 0, refusal 0, error rows 0
+    cand 9: finished 25, unfinished 0, refusal 0, error rows 0 (pick: search)
+    prior pick's 25 worlds: 25 horizon draws priced -1, 0 outright losses, 0 other; eval cand_diag agrees: yes
+    search pick's 25 worlds: 15 wins by turn 61 (stand cap-aligned), 10 wins after turn 61 (post-cap; horizon draws under the aligned rule)
+  540261752_t66 turn 49: prior pick 0 (chum_friendly_first_mate_yellow) vs search pick 9 (prismatic_leyline_yellow); top prior 1.0000
+    cand 0: finished 25, unfinished 0, refusal 0, error rows 0 (pick: prior)
+    cand 7: finished 25, unfinished 0, refusal 0, error rows 0
+    cand 9: finished 25, unfinished 0, refusal 0, error rows 0 (pick: search)
+    prior pick's 25 worlds: 25 horizon draws priced -1, 0 outright losses, 0 other; eval cand_diag agrees: yes
+    search pick's 25 worlds: 1 wins by turn 61 (stand cap-aligned), 24 wins after turn 61 (post-cap; horizon draws under the aligned rule)
+  540261752_t67 turn 51: prior pick 0 (chum_friendly_first_mate_yellow) vs search pick 9 (prismatic_leyline_yellow); top prior 1.0000
+    cand 0: finished 25, unfinished 0, refusal 0, error rows 0 (pick: prior)
+    cand 7: finished 25, unfinished 0, refusal 0, error rows 0
+    cand 9: finished 25, unfinished 0, refusal 0, error rows 0 (pick: search)
+    prior pick's 25 worlds: 25 horizon draws priced -1, 0 outright losses, 0 other; eval cand_diag agrees: yes
+    search pick's 25 worlds: 0 wins by turn 61 (stand cap-aligned), 25 wins after turn 61 (post-cap; horizon draws under the aligned rule)
+  540261752_t68 turn 53: prior pick 0 (chum_friendly_first_mate_yellow) vs search pick 9 (prismatic_leyline_yellow); top prior 1.0000
+    cand 0: finished 25, unfinished 0, refusal 0, error rows 0 (pick: prior)
+    cand 7: finished 25, unfinished 0, refusal 0, error rows 0
+    cand 9: finished 25, unfinished 0, refusal 0, error rows 0 (pick: search)
+    prior pick's 25 worlds: 25 horizon draws priced -1, 0 outright losses, 0 other; eval cand_diag agrees: yes
+    search pick's 25 worlds: 0 wins by turn 61 (stand cap-aligned), 25 wins after turn 61 (post-cap; horizon draws under the aligned rule)
+  540261752_t69 turn 55: prior pick 0 (chum_friendly_first_mate_yellow) vs search pick 9 (prismatic_leyline_yellow); top prior 1.0000
+    cand 0: finished 25, unfinished 0, refusal 0, error rows 0 (pick: prior)
+    cand 7: finished 25, unfinished 0, refusal 0, error rows 0
+    cand 9: finished 25, unfinished 0, refusal 0, error rows 0 (pick: search)
+    prior pick's 25 worlds: 25 horizon draws priced -1, 0 outright losses, 0 other; eval cand_diag agrees: yes
+    search pick's 25 worlds: 0 wins by turn 61 (stand cap-aligned), 25 wins after turn 61 (post-cap; horizon draws under the aligned rule)
+  540261752_t70 turn 57: prior pick 0 (chum_friendly_first_mate_yellow) vs search pick 9 (prismatic_leyline_yellow); top prior 1.0000
+    cand 0: finished 25, unfinished 0, refusal 0, error rows 0 (pick: prior)
+    cand 7: finished 25, unfinished 0, refusal 0, error rows 0
+    cand 9: finished 25, unfinished 0, refusal 0, error rows 0 (pick: search)
+    prior pick's 25 worlds: 25 horizon draws priced -1, 0 outright losses, 0 other; eval cand_diag agrees: yes
+    search pick's 25 worlds: 0 wins by turn 61 (stand cap-aligned), 25 wins after turn 61 (post-cap; horizon draws under the aligned rule)
+  540261752_t71 turn 59: prior pick 0 (chum_friendly_first_mate_yellow) vs search pick 9 (prismatic_leyline_yellow); top prior 1.0000
+    cand 0: finished 25, unfinished 0, refusal 0, error rows 0 (pick: prior)
+    cand 7: finished 25, unfinished 0, refusal 0, error rows 0
+    cand 9: finished 25, unfinished 0, refusal 0, error rows 0 (pick: search)
+    prior pick's 25 worlds: 24 horizon draws priced -1, 1 outright losses, 0 other; eval cand_diag agrees: yes
+    search pick's 25 worlds: 0 wins by turn 61 (stand cap-aligned), 25 wins after turn 61 (post-cap; horizon draws under the aligned rule)
+  540261752_t72 turn 61: prior pick 0 (chum_friendly_first_mate_yellow) vs search pick 9 (prismatic_leyline_yellow); top prior 1.0000
+    cand 0: finished 25, unfinished 0, refusal 0, error rows 0 (pick: prior)
+    cand 7: finished 25, unfinished 0, refusal 0, error rows 0
+    cand 9: finished 25, unfinished 0, refusal 0, error rows 0 (pick: search)
+    prior pick's 25 worlds: 25 horizon draws priced -1, 0 outright losses, 0 other; eval cand_diag agrees: yes
+    search pick's 25 worlds: 0 wins by turn 61 (stand cap-aligned), 25 wins after turn 61 (post-cap; horizon draws under the aligned rule)
+  540261752_t73 turn 63: prior pick 0 (chum_friendly_first_mate_yellow) vs search pick 9 (prismatic_leyline_yellow); top prior 1.0000
+    cand 0: finished 25, unfinished 0, refusal 0, error rows 0 (pick: prior)
+    cand 7: finished 25, unfinished 0, refusal 0, error rows 0
+    cand 9: finished 25, unfinished 0, refusal 0, error rows 0 (pick: search)
+    prior pick's 25 worlds: 24 horizon draws priced -1, 1 outright losses, 0 other; eval cand_diag agrees: yes
+    search pick's 25 worlds: 0 wins by turn 61 (stand cap-aligned), 25 wins after turn 61 (post-cap; horizon draws under the aligned rule)
+
+-- (b) leave-one-game-out, per lever (CAP-ALIGNED scoring and classes, sec.14; 86 drop-out jobs excluded)
+  margin (class contested_band, weight 1): full gain 0.0076 (lower bound -0.0067); LOGO range [0.0052, 0.0103]; largest single-game share 0.3235 (game 221917095); with 221917095 excluded: gain 0.0052, lower bound -0.0083; weakest exclusion: game 221917095 (lower bound -0.0083)
+  threshold (class uncontested, weight 2): full gain 0.4734 (lower bound 0.2080); LOGO range [0.3259, 0.4863]; largest single-game share 0.3192 (game 635852068); with 635852068 excluded: gain 0.3259, lower bound 0.1753; weakest exclusion: game 635852068 (lower bound 0.1753)
+
+-- (c) hold rule (sec.2.3, evaluated on the cap-aligned numbers, sec.14)
+  margin: hold rule not triggered -- not buildable (report lower bound -0.0067)
+  threshold: hold rule not triggered -- lower bound stays > 0 under every single-game exclusion (weakest 0.1753)

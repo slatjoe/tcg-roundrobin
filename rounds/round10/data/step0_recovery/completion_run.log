@@ -1,0 +1,19 @@
+== completion step: influence + manifest only ==
+code dir: /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/code
+outputs:  /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/data/step0_recovery
+hash ok: completion probe_influence.py (fix pass 6: logo_by_lever initialized; doc sec.15) dc79bdaddb30980138c3c72b8321f4fbb7ed23675911c9b835caf7d896e96a9a
+hash ok: completion probe_label_analyze.py (loaded by probe_influence.py) 131661e877bfd67b412b65609e74f69ad8ddfbf1dee50d5aa6fc8b19f896e927
+hash ok: completion analyze_l3.py (loaded by probe_influence.py) 16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9
+hash ok: completion stage0_report.py (loaded by probe_influence.py) 5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf
+hash ok: completion settings_probe.json 5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb
+hash ok: run input probe_report.json (the registered report) f2e6e9666308250a643ec23a9e03c0f891be249ec67b2aab48018f244fdfda44
+hash ok: run input label_read.json 85bcd08de34736c2cb343d67c1e03999cab9b343aa7298969e98af7a5e0af15b
+hash ok: run input jobs_merged.jsonl (715 jobs) 78f2f2e03fba575eedcc0593a03c918bfb194f3ad5c10b031aa471fa23ef1f28
+hash ok: run input labels_merged.jsonl.gz (published file bytes) a5f9a6158cf6f8d03feb775cc913bd81c726c04f366ade9b07b0e5cdbbfb18ba
+hash ok: labels_merged.jsonl (decompressed content) c2688f24c7db2f16f4f4e515280cb24e63a4ee9dd4b699bdfe5f2adf0f0c738c
+rows ok: labels_merged.jsonl 71500
+capture games ok: 90 (from the published driver rows, sorted)
+inspected game ok: 540261752 is a capture game (published driver rows)
+influence step done: probe_influence.txt + probe_influence.json in /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/data/step0_recovery
+manifest written: recovery_manifest.json
+== completion done: the probe's registered read is complete ==
