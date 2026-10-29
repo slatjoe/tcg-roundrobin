@@ -58,15 +58,26 @@ def extract_block(path, name):
 
 
 STUB = """#!/bin/bash
-{
-  echo "ARGV: $*"
-  echo "TEACHER_TUPLE_JSON=${TEACHER_TUPLE_JSON-<UNSET>}"
-  echo "TEACHER_SNAP_DIR=${TEACHER_SNAP_DIR-<UNSET>}"
-  echo "GATE_GAME_IDS_FILE=${GATE_GAME_IDS_FILE-<UNSET>}"
-  echo "TCG_CLEAN_CHILDREN=${TCG_CLEAN_CHILDREN-<UNSET>}"
-  echo "TEACHER_CAPTURE=${TEACHER_CAPTURE-<UNSET>}"
-  echo "---"
-} >> "$RECORD"
+# Fix pass 1 (sec.2.3 determinism): the block runs the
+# four invocations in parallel; the first build's
+# multi-line append to the shared $RECORD interleaved
+# records (corrupting parses) and ordered them by
+# completion. (A single printf append still split at
+# a line boundary under concurrency -- observed in
+# this pass's testing.) Each invocation now writes
+# its own file and renames it into place atomically;
+# run_block parses the per-invocation files and
+# sorts the records by ARGV.
+rec="ARGV: $*
+TEACHER_TUPLE_JSON=${TEACHER_TUPLE_JSON-<UNSET>}
+TEACHER_SNAP_DIR=${TEACHER_SNAP_DIR-<UNSET>}
+GATE_GAME_IDS_FILE=${GATE_GAME_IDS_FILE-<UNSET>}
+TCG_CLEAN_CHILDREN=${TCG_CLEAN_CHILDREN-<UNSET>}
+TEACHER_CAPTURE=${TEACHER_CAPTURE-<UNSET>}
+---
+"
+printf '%s' "$rec" > "$RECORD.$$.tmp"
+mv "$RECORD.$$.tmp" "$RECORD.$$.txt"
 exit 0
 """
 
@@ -95,9 +106,14 @@ def run_block(block, tmp, with_tuple):
     r = subprocess.run(["bash", harness],
                        capture_output=True, text=True)
     recs = []
-    if os.path.exists(record):
+    recdir = os.path.dirname(record)
+    base = os.path.basename(record)
+    for fn in sorted(os.listdir(recdir)):
+        if not (fn.startswith(base + ".")
+                and fn.endswith(".txt")):
+            continue
         cur = {}
-        for l in open(record):
+        for l in open(os.path.join(recdir, fn)):
             l = l.rstrip("\n")
             if l == "---":
                 recs.append(cur)
@@ -107,6 +123,7 @@ def run_block(block, tmp, with_tuple):
             elif "=" in l:
                 k, v = l.split("=", 1)
                 cur[k] = v
+    recs.sort(key=lambda rec: rec.get("ARGV", ""))
     return r, recs, tuple_json, settings
 
 
@@ -155,7 +172,8 @@ def main():
                        % settings["games"]["timeout_s"])
                   in argv)
         check("seed blocks == settings blocks",
-              got_seeds == want_seeds, str(got_seeds))
+              got_seeds == want_seeds,
+              str(sorted(got_seeds)))
     with tempfile.TemporaryDirectory() as tmp:
         r, recs, _, _ = run_block(block, tmp, False)
         bad = [rec for rec in recs

@@ -24,11 +24,21 @@ pilot capture is complete):
     newly_contested} and for the total, per-game total
     = summed diffs of that game's class-C jobs over
     ALL 100 games (zero-job games contribute 0).
-  * gain(C) = mean of per-game totals; CI by cluster
-    bootstrap over games (B=10000, seed 20261020,
-    analyze_l3.cluster_bootstrap on per-game totals).
-    lb = CI lower (the one-sided 95% lower bound, the
-    registered conservative stand-in); ub = CI upper.
+  * gain(C) = mean of per-game totals; bounds by
+    cluster bootstrap over games (B=10000, seed
+    20261020, the SAME replicates for every bound --
+    bootstrap_means() below replicates
+    analyze_l3.cluster_bootstrap's algorithm on the
+    one-record-per-game totals, and the fixture
+    asserts its 2.5th/97.5th percentiles equal
+    cluster_bootstrap's). The printed CI is the
+    two-sided 95% (2.5th/97.5th percentiles, labeled).
+    lb = the ONE-SIDED 95% lower bound (5th
+    percentile); ub = the ONE-SIDED 95% upper bound
+    (95th percentile) -- fix pass 1
+    (claude-reply-acc55a1 sec.2.2): as first built,
+    lb/ub were the two-sided percentiles; for STOP
+    that erred the permissive way.
   * fires/game by class (from the jobs over the 100
     games); edge by class (mean job diff) and by
     z-band ((1.5,2], (2,2.5], (2.5,3.5], >3.5; the
@@ -42,8 +52,10 @@ pilot capture is complete):
     (game total / grand total of job diffs, signed
     form: share of the summed diffs).
   * STOP evaluation: STOP iff ub(total) < 0.0849
-    (= Stage 3 gain 0.0649 + 0.020).
+    (= Stage 3 gain 0.0649 + 0.020), ub the one-sided
+    95% upper bound.
   * STEP 2 SIZING print: Delta_plan = lb(total)
+    (the one-sided 95% lower bound)
     - 0.0649; SE_pilot = sd(per-game totals, ddof=1)
     / sqrt(100); SE_new(n) = SE_pilot * sqrt(100/n);
     the two-sample bar needs
@@ -157,21 +169,60 @@ def per_game_totals(recs, games, cls=None):
     return per
 
 
+BOOT_B = 10000
+BOOT_SEED = 20261020
+
+
+def bootstrap_means(per):
+    """The cluster-bootstrap replicate means over
+    per-game totals: analyze_l3.cluster_bootstrap's
+    algorithm (sorted games, random.Random(20261020),
+    B=10000, each replicate resamples len(games) games
+    with replacement and means their totals -- with
+    one record per game, cluster_bootstrap's tot/n is
+    exactly this). ONE set of replicates feeds every
+    bound below (fix pass 1, sec.2.2)."""
+    import random
+    games = sorted(per)
+    totals = [per[g] for g in games]
+    rng = random.Random(BOOT_SEED)
+    means = []
+    for _ in range(BOOT_B):
+        tot = 0.0
+        for _ in range(len(games)):
+            tot += totals[rng.choice(range(len(games)))]
+        means.append(tot / len(games))
+    means.sort()
+    return means
+
+
 def gain_read(per, stock):
     """per: {game: total}. Returns the registered gain
-    object (bootstrap CI over games)."""
+    object: the two-sided 95% CI (2.5th/97.5th
+    percentiles of the SAME replicates, cross-checked
+    against stock.cluster_bootstrap) and the
+    ONE-SIDED 95% bounds lb (5th) / ub (95th) that
+    STOP and Delta_plan use."""
     grecs = [{"game": g, "diff": per[g]} for g in sorted(per)]
     n = len(grecs)
     gain = sum(r["diff"] for r in grecs) / n if n else None
     lo, hi = stock.cluster_bootstrap(grecs)
+    means = bootstrap_means(per)
+    ci = [means[int(0.025 * BOOT_B)],
+          means[int(0.975 * BOOT_B) - 1]]
+    assert ci == [lo, hi], \
+        "bootstrap replicates diverge from cluster_bootstrap"
+    lb = means[int(0.05 * BOOT_B)]
+    ub = means[int(0.95 * BOOT_B) - 1]
     if n > 1:
         var = sum((r["diff"] - gain) ** 2
                   for r in grecs) / (n - 1)
         se = math.sqrt(var) / math.sqrt(n)
     else:
         se = None
-    return {"gain": gain, "ci": [lo, hi], "lb": lo,
-            "ub": hi, "se_clustered": se, "games": n}
+    return {"gain": gain, "ci": ci, "lb": lb, "ub": ub,
+            "lb_one_sided": lb, "ub_one_sided": ub,
+            "se_clustered": se, "games": n}
 
 
 def logo_read(per):
@@ -307,6 +358,10 @@ def main():
     stop_ub = float(rd["stage3_gain"]) + 0.020
     ub = out["total"]["gain"]["ub"]
     out["stop"] = {"threshold": stop_ub, "total_ub": ub,
+                   "total_ub_basis": "one-sided 95% "
+                   "(bootstrap 95th percentile)",
+                   "total_ub_two_sided":
+                       out["total"]["gain"]["ci"][1],
                    "STOP": ub < stop_ub}
     out["sizing"] = sizing_read(out["total"]["gain"], rd)
     out["wall_s"] = grep.get("wall_s")
@@ -329,13 +384,14 @@ def main():
         g = e["gain"]
         lines.append(
             "class %s: fires/game %.4f (%d jobs); edge %s; "
-            "per-game gain %.4f CI [%.4f, %.4f] (lb %.4f); "
-            "LOGO range [%.4f, %.4f], largest share %.4f "
-            "(game %s)"
+            "per-game gain %.4f, two-sided 95%% CI "
+            "[%.4f, %.4f], one-sided 95%% lb %.4f / "
+            "ub %.4f; LOGO range [%.4f, %.4f], largest "
+            "share %.4f (game %s)"
             % (cls, e["fires_per_game"] or 0.0, e["jobs"],
                ("%.4f" % e["edge"]) if e["edge"] is not None
                else "n/a", g["gain"], g["ci"][0], g["ci"][1],
-               g["lb"], e["logo"]["range"][0],
+               g["lb"], g["ub"], e["logo"]["range"][0],
                e["logo"]["range"][1],
                e["logo"]["largest_share"],
                e["logo"]["largest_share_game"]))
@@ -345,10 +401,12 @@ def main():
     g = out["total"]["gain"]
     w = out["wall_s"] or {}
     lines.append(
-        "TOTAL: per-game gain %.4f CI [%.4f, %.4f]; "
+        "TOTAL: per-game gain %.4f, two-sided 95%% CI "
+        "[%.4f, %.4f], one-sided 95%% lb %.4f / ub %.4f; "
         "LOGO range [%.4f, %.4f], largest share %.4f "
         "(game %s); wall mean %s p95 %s max %s; timeouts %s"
-        % (g["gain"], g["ci"][0], g["ci"][1],
+        % (g["gain"], g["ci"][0], g["ci"][1], g["lb"],
+           g["ub"],
            out["total"]["logo"]["range"][0],
            out["total"]["logo"]["range"][1],
            out["total"]["logo"]["largest_share"],
@@ -356,8 +414,9 @@ def main():
            w.get("mean"), w.get("p95"), w.get("max"),
            out["teacher_timeouts"]))
     lines.append(
-        "STOP rule: STOP iff total upper bound < %.4f; "
-        "total ub %.4f -> %s"
+        "STOP rule: STOP iff total one-sided 95%% upper "
+        "bound < %.4f; total ub (95th percentile) %.4f "
+        "-> %s"
         % (stop_ub, ub,
            "STOP (no Step 2)" if out["stop"]["STOP"]
            else "DO NOT STOP"))
@@ -367,8 +426,9 @@ def main():
                      % (sz["delta_plan"], sz["note"]))
     else:
         lines.append(
-            "Step 2 sizing: Delta_plan %.4f (pilot lb "
-            "%.4f - 0.0649); SE_pilot %.4f; n = %d games "
+            "Step 2 sizing: Delta_plan %.4f (pilot "
+            "one-sided lb %.4f - 0.0649); SE_pilot %.4f; "
+            "n = %d games "
             "at 80%% power%s"
             % (sz["delta_plan"], g["lb"], sz["se_pilot"],
                sz["n"],

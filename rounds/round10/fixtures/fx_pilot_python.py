@@ -32,6 +32,17 @@ by hand.
      and band; the STOP line reads DO NOT STOP.
      A second planted set with all-negative diffs
      reads STOP.
+  T. the STOP gate's ONE-SIDED bound (fix pass 1,
+     claude-reply-acc55a1 sec.2.2): a planted
+     100-game population -- 4 games with per-game
+     total 1.12 (2 jobs x 14/25 winning worlds),
+     96 games at 0 -- whose registered bootstrap
+     (B=10000, seed 20261020) gives, computed here
+     from the replicate distribution's closed form
+     and asserted exactly: 95th percentile 0.0784
+     (< 0.0849) but 97.5th percentile 0.0896
+     (>= 0.0849). Under the two-sided ub the read
+     would NOT stop; the read MUST print STOP.
   S. sizing_read against hand arithmetic:
      lb 0.1649, SE 0.02, n-games 100 ->
      Delta 0.1000; R = (0.1/2.4866)^2 - 0.009^2;
@@ -343,6 +354,67 @@ def test_read(tmp):
           "DO NOT STOP" in r.stdout)
 
 
+def test_stop_onesided(tmp):
+    games = ["s%d" % i for i in range(1, 101)]
+    jobs = []
+    rows = []
+    k = 0
+    for g in games[:4]:
+        for _ in range(2):
+            k += 1
+            snap = "T%d" % k
+            jobs.append({"snap": snap, "game": g,
+                         "player": 1, "branch": "M",
+                         "prior_pick": 0, "teacher_pick": 1,
+                         "class": "contested", "z": 2.0,
+                         "z_nonfinite": False})
+            for w in range(25):
+                rows.append(label_row(
+                    snap, 1, w, 1 if w < 14 else -1, 30))
+                rows.append(label_row(snap, 0, w, -1, 30))
+    jp = os.path.join(tmp, "jobs.jsonl")
+    lp = os.path.join(tmp, "labels.jsonl")
+    with open(jp, "w") as f:
+        for j in jobs:
+            f.write(json.dumps(j) + "\n")
+    with open(lp, "w") as f:
+        for r in rows:
+            f.write(json.dumps(r) + "\n")
+    gp = os.path.join(tmp, "games.jsonl")
+    with open(gp, "w") as f:
+        for i, g in enumerate(games):
+            f.write(json.dumps(
+                {"seed": i + 1, "seat": 1, "winner": 1,
+                 "draw": False, "secs": 10.0,
+                 "gamename": g}) + "\n")
+    gr = os.path.join(tmp, "games_report.json")
+    with open(gr, "w") as f:
+        json.dump({"wall_s": {"n": 100, "mean": 10.0,
+                              "p95": 10.0, "max": 10.0},
+                   "teacher_timeouts": 0}, f)
+    jo = os.path.join(tmp, "read.json")
+    r = run([sys.executable,
+             os.path.join(S1, "pilot_read.py"),
+             "--jobs", jp, "--labels", lp,
+             "--games-rows", gp, "--games-report", gr,
+             "--settings",
+             os.path.join(S1, "settings_pilot.json"),
+             "--json-out", jo])
+    check("T stop-plant read runs", r.returncode == 0,
+          r.stderr[-300:] if r.returncode else "")
+    out = json.load(open(jo))
+    g = out["total"]["gain"]
+    check("T bootstrap 95th percentile 0.0784 < 0.0849 "
+          "while the 97.5th is 0.0896 >= 0.0849",
+          abs(g["ub"] - 0.0784) < 1e-9
+          and abs(g["ci"][1] - 0.0896) < 1e-9,
+          "ub(95th)=%.4f ci_hi(97.5th)=%.4f"
+          % (g["ub"], g["ci"][1]))
+    check("T STOP fires on the one-sided bound",
+          out["stop"]["STOP"] is True
+          and "STOP (no Step 2)" in r.stdout)
+
+
 def main():
     with tempfile.TemporaryDirectory() as tmp:
         test_jobs(tmp)
@@ -350,6 +422,8 @@ def main():
         test_games_report(tmp)
     with tempfile.TemporaryDirectory() as tmp:
         test_read(tmp)
+    with tempfile.TemporaryDirectory() as tmp:
+        test_stop_onesided(tmp)
     print("fx_pilot_python: %d checks, %d failed"
           % (checks, len(fails)))
     return 1 if fails else 0

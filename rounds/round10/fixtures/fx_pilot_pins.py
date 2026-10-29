@@ -132,8 +132,8 @@ def main():
         check("games block %s in runner" % blk["tag"],
               spec in rp, spec)
     check("pregate seeds in pregate runner",
-          "--seeds 8601-8610" in rg
-          and st["pregate"]["seeds"] == "8601-8610")
+          "--seeds 13001-13010" in rg
+          and st["pregate"]["seeds"] == "13001-13010")
 
     # negative case: strip the pilot_read.py pin block
     neg = re.sub(r'expect_hash "\$CODE_DIR/pilot_read\.py"'

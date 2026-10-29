@@ -24,6 +24,7 @@ value can never be serialized in the first place.
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -31,10 +32,30 @@ import tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 R10 = os.path.abspath(os.path.join(HERE, ".."))
 S1 = os.path.join(R10, "code", "step1")
-PHP = os.path.expanduser(
-    "~/workspace/tcg-sim/.tools/php83/usr/bin/php8.3")
 fails = []
 checks = 0
+
+
+def find_php():
+    """Resolve php the way the round-10 suite does
+    (fx_label_loader.py's find_php, verbatim in
+    behavior): $PHP, else the local php8.3 tool path,
+    else php / php8.3 on PATH. Fix pass 1
+    (claude-reply-acc55a1 sec.2.3): the first build
+    hard-coded the local path and crashed with a
+    traceback on any other host."""
+    cands = [os.environ.get("PHP"),
+             os.path.expanduser(
+                 "~/workspace/tcg-sim/.tools/php83/"
+                 "usr/bin/php8.3"),
+             shutil.which("php"), shutil.which("php8.3")]
+    for c in cands:
+        if c and os.path.isfile(c) and os.access(c, os.X_OK):
+            return c
+    return None
+
+
+PHP = find_php()
 
 
 def check(name, good, detail=""):
@@ -58,6 +79,12 @@ def extract_loader(path):
 
 
 def main():
+    if PHP is None:
+        print("FAIL php resolution: no php interpreter "
+              "found ($PHP unset/unusable, no php8.3 "
+              "tool path, no php/php8.3 on PATH) -- "
+              "fx_pilot_loader cannot run on this host")
+        return 1
     check("s2_label_main.php byte-identical to the "
           "round-10 file (fx_label_loader coverage)",
           sha(os.path.join(S1, "s2_label_main.php"))
@@ -112,7 +139,11 @@ def main():
                            capture_output=True, text=True)
         check("bare-Infinity line aborts naming line 2",
               r.returncode == 2 and "line 2" in r.stderr,
-              r.stderr.strip()[:160])
+              # the tempdir path is stripped so the
+              # transcript reproduces across runs/hosts
+              # (fix pass 1, sec.2.3)
+              r.stderr.strip().replace(
+                  os.path.dirname(bad) + "/", "")[:160])
     print("fx_pilot_loader: %d checks, %d failed"
           % (checks, len(fails)))
     return 1 if fails else 0

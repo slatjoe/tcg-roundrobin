@@ -15,17 +15,60 @@ bases are MEAS_SEED = base + shard x 10^8):
   supplementary families (A 970055001, 10 jobs;
   B 470055001, 69 jobs AND at the 256 cap).
 
-  PILOT (planned): labels base 570055001 + shard x
-  10^8, 4 shards, at the ENFORCED cap 512 jobs/shard,
+  PILOT (planned): labels base read from
+  settings_pilot.json (700055001) + shard x 10^8,
+  4 shards, at the ENFORCED cap 512 jobs/shard,
   W = 50 (span per shard 52,637,046 < 10^8).
+
+USED_GAME_BLOCKS -- COMPLETED at fix pass 1
+(claude-reply-acc55a1 sec.2.1: the first list omitted
+the round-7 contention probe 8601-8604 -- which the
+pre-gate's original 8601-8610 block overlapped --
+and ten further D2 blocks). Sources:
+
+  Round 9's D2 record (rounds/round9/
+  gravy-calibrated-search-design.md sec.9, D2),
+  which lists, checked against every range in the
+  record to that date:
+    fleets 1001-1200 / 2001-2200 / 8001-8200;
+    probes 3000-series; controls 4001-4014;
+    smokes 5001-5010 / 7001-7002; census 6001-6040;
+    round-8 corpus 10001-10400; pre-gate control
+    11001-11010; pilot equivalence 12001-12010;
+    Gravy pre-gate 8501-8510; contention probe
+    8601-8604; Gravy census 8801-8820; round-8 gate
+    block 9001-9200 (RESERVED, never run, untouched).
+  The 3000-series is entered as 3001-3022, from:
+    3001/3002 concurrency probe (rounds/round3/
+    builder-response-6a0d7d4.md); 3003-3006 fleet
+    probe (rounds/round7/fleet-alignment.md);
+    3007-3010 extended probe wave 1, run, with
+    waves to 3022 registered (rounds/round7/
+    extended-probe.md); 3011-3014 also played by
+    the round-3 gate-fix test copy (rounds/round3/
+    builder-response-8d13b0f.md).
+  Blocks used SINCE D2 (rounds 9-10 packages):
+    21001-21040 round-9 Stage 0/1 capture (D2
+    proposal, run); 22001-22100 Stage 2 games;
+    23001-23200 Stage 3 fleet; 24001-24090 round-10
+    probe capture (step0-probe-package.md);
+    25001-25050 THIS pilot's capture block
+    (step1-pilot-package.md sec.3 -- listed so the
+    pre-gate check below proves the two pilot
+    blocks also disjoint from each other via the
+    same list mechanics: the capture check excludes
+    its own entry by construction of the loop, see
+    the checks; the pre-gate block 13001-13010 is
+    checked against ALL entries incl. 25001-25050).
 
 Assertions: the pilot family's RANGES are disjoint
 from every prior family's range; the pilot VALUES
 are disjoint from every prior family's values; the
 pilot capture seed block 25001-25050 (x both seats)
-and the pre-gate block 8601-8610 are disjoint from
-every used game-seed block (incl. reserved 9001-9200
-and the probe's 24001-24090).
+and the pre-gate block 13001-13010 (moved at fix
+pass 1 from 8601-8610, which overlapped the
+contention probe 8601-8604) are disjoint from
+every used game-seed block.
 """
 import json
 import os
@@ -59,10 +102,20 @@ PRIOR = [
 ]
 
 USED_GAME_BLOCKS = [
-    (1001, 1200), (2001, 2200), (8001, 8200),
+    # round 9's D2 list (sources in the docstring)
+    (1001, 1200), (2001, 2200), (3001, 3022),
+    (4001, 4014), (5001, 5010), (6001, 6040),
+    (7001, 7002), (8001, 8200), (8501, 8510),
+    (8601, 8604), (8801, 8820),
     (9001, 9200),          # RESERVED -- untouched
-    (10001, 10400), (21001, 21100), (22001, 22100),
-    (23001, 23200), (24001, 24090),
+    (10001, 10400), (11001, 11010), (12001, 12010),
+    # used since D2 (rounds 9-10)
+    (21001, 21040), (22001, 22100), (23001, 23200),
+    (24001, 24090),
+    # this pilot's own capture block (the capture
+    # check below skips its own entry; every other
+    # block is checked against it too)
+    (25001, 25050),
 ]
 
 
@@ -132,9 +185,10 @@ def main():
              pilot_ranges[-1][1], len(pilot_vals)))
 
     for nm, lo, hi in (("capture", 25001, 25050),
-                       ("pregate", 8601, 8610)):
+                       ("pregate", 13001, 13010)):
         bad = [(a, b) for a, b in USED_GAME_BLOCKS
-               if not (hi < a or lo > b)]
+               if not (hi < a or lo > b)
+               and (a, b) != (lo, hi)]
         check("%s seeds %d-%d disjoint from used blocks"
               % (nm, lo, hi), not bad, str(bad))
     print("fx_pilot_seeds: %d checks, %d failed"

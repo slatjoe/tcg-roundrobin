@@ -75,7 +75,7 @@ def main():
           % (sorted(read), sorted(written)))
     check("gate reads the three registered fields",
           read == {"verdict", "search_s3_thr_sha256",
-                   "teacher_tuple_json"}, str(read))
+                   "teacher_tuple_json"}, str(sorted(read)))
 
     def flags(block):
         names = set(re.findall(r"--[a-z][a-z\-]+", block))

@@ -410,3 +410,103 @@ files above; no committed file differs.
   s2_label_main.php only.
 - The pilot's timeout is provisional by the terms;
   its own wall tail sets Step 2's.
+
+## 10. Fix pass 1 (2026-10-29) — claude-reply-acc55a1 §2
+
+Three required items; nothing ran.
+
+**§2.1 — the seed-block list is completed and the
+pre-gate block moves.** `fx_pilot_seeds.py`'s
+USED_GAME_BLOCKS now carries the full record, with
+sources cited in its docstring: round 9's D2 list
+(rounds/round9/gravy-calibrated-search-design.md
+§9 D2) — fleets 1001–1200 / 2001–2200 / 8001–8200,
+the 3000-series probes (entered as 3001–3022:
+3001/3002 concurrency probe, round-3 reply
+6a0d7d4; 3003–3006 fleet probe, round-7
+fleet-alignment; 3007–3010 extended-probe wave 1
+with waves to 3022 registered, round-7
+extended-probe; 3011–3014 also played by the
+round-3 gate-fix test copy, reply 8d13b0f),
+controls 4001–4014, smokes 5001–5010 / 7001–7002,
+census 6001–6040, round-8 corpus 10001–10400,
+pre-gate control 11001–11010, pilot equivalence
+12001–12010, Gravy pre-gate 8501–8510, contention
+probe 8601–8604, Gravy census 8801–8820, and the
+reserved gate block 9001–9200 — plus every block
+used since D2: 21001–21040 (Stage 0/1 capture),
+22001–22100 (Stage 2), 23001–23200 (Stage 3
+fleet), 24001–24090 (round-10 probe capture), and
+this pilot's own capture block 25001–25050.
+The first list omitted eleven of these, including
+8601–8604, which the pre-gate's block overlapped.
+**The pre-gate block moves to 13001–13010**
+(run_pilot_pregate.sh, settings_pilot.json, and
+every fixture reference; the runners' settings
+pins machine-updated). The completed list proves
+it fresh: its neighbors in the list are
+12001–12010 and 21001–21040, and the fixture's
+check runs against the whole completed list.
+**The capture block 25001–25050 was re-verified
+against the completed list and does NOT collide**
+(nearest entries 24001–24090 below and nothing
+above until the label families, which are a
+different lattice) — it stays as registered.
+The §3/§7 mentions of 8601–8610 above stand as
+the as-built record; this note supersedes them.
+
+**§2.2 — one-sided bounds for STOP and Δ_plan.**
+As built, pilot_read.py took lb/ub from
+analyze_l3.cluster_bootstrap's two-sided 95%
+interval (2.5th/97.5th percentiles): conservative
+for Δ_plan, permissive for STOP. The read now
+draws ONE set of bootstrap replicates (B=10000,
+seed 20261020 — bootstrap_means() replicates
+cluster_bootstrap's algorithm on the per-game
+totals and asserts its 2.5th/97.5th percentiles
+equal cluster_bootstrap's on the same data) and
+reports: the two-sided 95% CI (labeled, beside
+them), **lb = the 5th percentile (one-sided 95%
+lower bound), feeding Δ_plan**, and **ub = the
+95th percentile (one-sided 95% upper bound),
+feeding STOP**. The STOP line and JSON name the
+basis. Fixture (fx_pilot_python.py, plant T): a
+100-game population with four games at per-game
+total 1.12 and 96 at 0 gives, under the
+registered bootstrap, **95th percentile 0.0784
+(< 0.0849) and 97.5th percentile 0.0896
+(≥ 0.0849)** — the two-sided ub would not have
+stopped; the read prints STOP, and the fixture
+asserts both percentile values exactly.
+
+**§2.3 — portability and determinism.**
+fx_pilot_loader.py resolves php the way the
+round-10 suite does (fx_label_loader.py's
+find_php: $PHP, else the local php8.3 tool path,
+else php/php8.3 on PATH) and, when none exists,
+prints a one-line FAIL ("no php interpreter
+found…") and exits 1 — no traceback. Set prints
+in PASS lines are sorted: the gate-field set
+(fx_pilot_parity.py) and the seed-block set
+(fx_pilot_env.py). One further determinism defect
+found and fixed in this pass, in fx_pilot_env.py:
+its stub appended multi-line records to a shared
+file from the block's four parallel invocations,
+which interleaved records (corrupting parses,
+intermittently) and ordered PASS lines by
+completion; each invocation now writes its own
+file and renames it into place atomically, and
+the fixture sorts the parsed records by ARGV
+(8/8 clean runs, byte-identical transcripts).
+The loader fixture's abort PASS line also strips
+its tempdir path from the printed excerpt, the
+last run-specific string in the pilot transcript:
+two consecutive full pilot-suite runs now produce
+byte-identical transcripts.
+The §6 table's loader row and §4's lb/ub wording
+stand as the as-built record; this note
+supersedes them where they differ.
+
+Suites after the pass: pilot 134 PASS / 0 FAIL
+(131 + plant T's 3); round-10 197 PASS / 0 FAIL
+with its transcript reproduced byte-identical.

@@ -121,7 +121,7 @@ expect_hash "$CODE_DIR/pilot_games_report.py" \
   30bb888ee12b1c0e0a64ea8466ba44d56979849095ff862a460109f81196229a \
   "pilot_games_report.py"
 expect_hash "$CODE_DIR/pilot_read.py" \
-  6a4c6167a27338df8bc0ceb49b751fa285334a00de338ae13b11f97ae701466d \
+  69cae8601265a1eb87aadea95589f1d1f07bb3c15c5f19d04bf030a1a495b537 \
   "pilot_read.py"
 expect_hash "$CODE_DIR/pregate_check_pilot.py" \
   671f2c205c74a1be1f8e664cc3c4b7d9d61708fa11544ca0651aa20730274651 \
@@ -142,7 +142,7 @@ expect_hash "$CODE_DIR/g8_sweep2.sh" \
   d49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17 \
   "g8_sweep2.sh (G8 containment)"
 expect_hash "$CODE_DIR/settings_pilot.json" \
-  a5895a8421b3f330478a8926721d5494aa4739f086b87dd72b2d12522a996196 \
+  0571e03a31f1d1aa947c3989dba86946bcaf064eff19f523b1b5582d834ca0d7 \
   "settings_pilot.json"
 
 : > "$OUT/deployed_code_hashes.txt"

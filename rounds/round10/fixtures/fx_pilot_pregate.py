@@ -3,7 +3,7 @@
 form on synthetic records (no games run).
 
 Planted populations, per seat (driver rows for seeds
-8601-8610 in all arms; stat rows for one game):
+13001-13010 in all arms; stat rows for one game):
   * identical contested decisions in both ghost arms
     (same priors, same selected) -> identity holds;
   * a newly-contested pair: sec.14 arm an uncontested
@@ -86,7 +86,7 @@ def build(tmp, a_stats, b_stats):
                     "ghost14_s1", "ghost14_s2",
                     "ghostthr_s1", "ghostthr_s2"):
         rows = [drow(s, "h%d" % s) for s in
-                range(8601, 8611)]
+                range(13001, 13011)]
         if tag == "raw_s2":
             rows = [dict(r, gamestate_norm_sha="m%d"
                          % r["seed"]) for r in rows]

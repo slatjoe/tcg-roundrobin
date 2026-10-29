@@ -15,7 +15,7 @@
 # mechanically.
 #
 # Arms (paired_driver_gravy.py, Gravy mirror, 87/62,
-# seeds 8601-8610): raw seat 1, raw seat 1 rerun, raw
+# seeds 13001-13010): raw seat 1, raw seat 1 rerun, raw
 # seat 2 (pristine tree); ghost seat 1 + seat 2 under
 # the sec.14 build (search_s3.php); ghost seat 1 +
 # seat 2 under the threshold-lifted build
@@ -96,7 +96,7 @@ expect_hash "$CODE_DIR/g8_sweep2.sh" \
   d49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17 \
   "g8_sweep2.sh (G8 containment)"
 expect_hash "$CODE_DIR/settings_pilot.json" \
-  a5895a8421b3f330478a8926721d5494aa4739f086b87dd72b2d12522a996196 \
+  0571e03a31f1d1aa947c3989dba86946bcaf064eff19f523b1b5582d834ca0d7 \
   "settings_pilot.json"
 
 : > "$OUT/deployed_code_hashes.txt"
@@ -204,7 +204,7 @@ for run in "raw_s1 1" "raw2_s1 1" "raw_s2 2"; do
   GATE_GAME_IDS_FILE="$OUT/pg_${tag}_ids.txt" \
     $PY "$CODE_DIR/paired_driver_gravy.py" \
       --tree "$RAW_TREE" --sock "$OUT/srv_s${seat}.sock" \
-      --seat "$seat" --arm raw --seeds 8601-8610 \
+      --seat "$seat" --arm raw --seeds 13001-13010 \
       --deck "$RAW_TREE/$DECK_REL" \
       --out "$OUT/pg_${tag}.jsonl" \
       --logdir "$OUT/pg_${tag}_log" \
@@ -222,7 +222,7 @@ for build in 14 thr; do
         TCG_CLEAN_CHILDREN=1 \
         $PY "$CODE_DIR/paired_driver_gravy.py" \
           --tree "$tree" --sock "$OUT/srv_s${seat}.sock" \
-          --seat "$seat" --arm ghost --seeds 8601-8610 \
+          --seat "$seat" --arm ghost --seeds 13001-13010 \
           --deck "$tree/$DECK_REL" \
           --out "$OUT/pg_ghost${build}_s${seat}.jsonl" \
           --logdir "$OUT/pg_ghost${build}_s${seat}_log" \

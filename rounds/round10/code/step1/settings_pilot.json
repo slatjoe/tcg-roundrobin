@@ -70,10 +70,10 @@
  },
  "mirror": "Gravy Bones (both seats, same deck file) vs heuristic",
  "pregate": {
-  "form": "ghost arms (TEACHER_GHOST, prior pick played) under BOTH builds (sec.14 search_s3.php and search_s3_thr.php), seeds 8601-8610 at both seats; played-action identity on driver rows for every seed/seat; decision-level identity on the contested class (top prior < 0.97) over order-aware paired stat rows (priors and selected set exactly equal); divergence expected and counted ONLY on newly-contested rows (top prior >= 0.97: a contested=0 early-return row in the sec.14 build vs a full search row in the lifted build); K6 line per lifted ghost arm",
+  "form": "ghost arms (TEACHER_GHOST, prior pick played) under BOTH builds (sec.14 search_s3.php and search_s3_thr.php), seeds 13001-13010 at both seats; played-action identity on driver rows for every seed/seat; decision-level identity on the contested class (top prior < 0.97) over order-aware paired stat rows (priors and selected set exactly equal); divergence expected and counted ONLY on newly-contested rows (top prior >= 0.97: a contested=0 early-return row in the sec.14 build vs a full search row in the lifted build); K6 line per lifted ghost arm",
   "games_per_arm_seat": 10,
   "registry_tag": "r10_step1_pilot_pregate",
-  "seeds": "8601-8610"
+  "seeds": "13001-13010"
  },
  "read": {
   "bootstrap": {
