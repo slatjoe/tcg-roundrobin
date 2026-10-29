@@ -510,3 +510,133 @@ supersedes them where they differ.
 Suites after the pass: pilot 134 PASS / 0 FAIL
 (131 + plant T's 3); round-10 197 PASS / 0 FAIL
 with its transcript reproduced byte-identical.
+
+## 11. Fix pass 2 (2026-10-29) — the pre-gate repair
+
+Attempt 1 ran (launch record: step1-pilot-launch.md)
+and the pre-gate read NOT IDENTICAL. The diagnosis
+found three independent layers, all instrument-side;
+the build is not touched by this pass. §7 items 2–4
+stand as the as-built record; this note supersedes
+them where it says so.
+
+**Layer A — timeouts misread as identity failures.**
+Attempt 1's played-action failures were exactly the
+seeds whose thr-arm driver row is a timeout: the
+paired driver's 1,200 s default was sized for the
+sec.14 arm. Every completed thr game is
+byte-identical to its sec.14 counterpart. The thr
+arm's max COMPLETED wall in attempt 1 was 1,153.3 s
+(seat 2; seat 1: 980.4 s) — the default was below
+even a completed game. **Repair:** the played-action
+leg judges identity on the seeds both arms
+completed and reports a timeout row as a timeout,
+by seed and arm, never as an identity failure; the
+verdict line names any timeout seeds. **Sizing:**
+both ghost arms now run at **--timeout 7845**, the
+pilot's registered GAME_TIMEOUT (Stage 2 max wall
+2,143.2 s x 3.66), which is 6.8x the thr arm's max
+completed attempt-1 wall and keeps one timeout
+story across pre-gate and pilot; the sec.14 arm
+takes the same value (its games finish far below
+either bound; the bound only bites on a hang). The
+parity fixture's registered relationship changes
+with it: the two driver invocations' flag sets are
+now EQUAL, and the fixture asserts the pregate
+--timeout literal equals the pilot's GAME_TIMEOUT.
+
+**Layer B — the checker paired zero decisions.**
+The v1 pairing key led with the arm-local Talishar
+game-instance id; the two arms create separate
+instances, so the key sets were disjoint and every
+row fell into the count-mismatch branch (1,697 +
+1,638 "other" divergences, reproduced exactly from
+the fetched stats). "0 contested pairs" meant no
+decision was ever paired. **Repair — pairing by
+seed and sequence order:** the driver rows give
+each arm's seed -> gamename mapping for completed
+games; each arm's decision rows for that seed's
+game (under its own instance id) are taken in file
+order and paired index by index. Classification
+per pair: both-uncontested -> skipped (ncand <= 1);
+sec.14-uncontested x thr-searched with thr top
+prior >= 0.97 -> newly-contested (counted, the
+expected shape); both-searched with sec.14 top
+prior < 0.97 -> a contested pair. Any other
+combination is counted BY NAME as its own
+divergence class and fails (sec14-searched x
+thr-uncontested; both-searched at >= 0.97;
+sec14-uncontested x thr-searched below 0.97).
+If a seed's two games' decision counts differ, the
+common prefix is paired and the tail is counted by
+arm as a named divergence, with the reason printed
+(trajectory already diverged, or game-length
+difference in an otherwise identical game — the
+played rows decide). Decision pairing covers only
+seeds both arms completed; a timed-out seed's
+partial stats are never paired.
+
+**Layer C — exact-equality priors exceeded the
+instrument's reproducibility.** Order-aligned, the
+contested pairs' `selected` agreed everywhere, but
+priors were exactly equal in only a minority: the
+rest differ at GPU-served float noise. **Repair:**
+contested pairs compare `selected` EXACTLY and
+priors at a registered max-abs-difference tolerance
+of **1e-6** (PRIORS_TOL). The check prints the
+observed maximum abs diff per seat, so the
+tolerance's adequacy is itself in the record. On
+the fetched attempt-1 data (below) the observed
+maxima are 5.364e-07 (seat 1) and 7.153e-07
+(seat 2) over 219 contested pairs: most pairs sit
+at ~1e-7, but the worst pair is within a factor of
+~1.4 of the tolerance — the printed-evidence rule
+is what keeps that visible at every future run.
+
+**The repaired checker on attempt 1's fetched
+data** (read-only, data/step1_pregate/): **PREGATE:
+IDENTICAL**, with the timeouts named — seat 1: 5/5
+completed seeds identical, timeouts at 13001,
+13002, 13003, 13005, 13010 (all thr); 97 contested
+pairs, 0 bad, 309 newly-contested, 0 named
+divergences, 0 tail rows. Seat 2: 7/7 completed
+identical, timeouts at 13001, 13002, 13005 (thr);
+122 contested pairs, 0 bad, 456 newly-contested.
+The pairing accounts for every decision row of the
+completed games (seat 1: 309 + 97 = 406 = the five
+games' stat-row counts; seat 2: 456 + 122 = 578).
+The launch diagnosis's hand alignment counted 85
+contested pairs on seat 1 where the checker counts
+97; the difference is the alignment's row filter,
+not a pairing disagreement — all 97 pass
+selected-exact and the tolerance. Attempt 1's
+recorded verdict stands (it was produced by the
+v1 checker under the 1,200 s sizing); this run is
+analysis of the published outputs, not a re-run.
+
+**Fixtures (fx_pilot_pregate.py, rewritten)** plant
+the real shapes: DISJOINT game-id sets per arm with
+the seed -> gamename mapping on the driver rows; a
+newly-contested pair at decision index 0; a
+contested pair at ~1e-7 priors noise (passes); a
+pair at 1e-4 (contested_bad); an off-shape pair
+(counted by name); a below-boundary skip (counted
+by name); a timeout driver row (reported as a
+timeout, verdict IDENTICAL on the completed
+games). The same base population run against the
+v1 checker (fixtures/pregate_check_pilot_v1.py,
+the pre-fix bytes, 671f2c20...) FAILS with "0
+contested pairs" and count-mismatch divergences —
+the Layer B failure, reproduced in the suite.
+
+**Re-run mechanics.** Attempt 1's outputs stay in
+the flat layout under $PILOT_OUT/pregate/, untouched
+as the record. The repaired pregate runner resolves
+its attempt at launch: PREGATE_ATTEMPT if set, else
+one more than the highest attempt present (the flat
+attempt-1 layout counts as attempt 1), and runs in
+pregate/attempt<N>/ with the per-attempt single-shot
+guard unchanged; the manifest records the attempt
+number. run_pilot.sh's PREGATE-GATE reads the
+LATEST attempt's manifest (attempt<N> dirs in
+version order; the flat path is the fallback).

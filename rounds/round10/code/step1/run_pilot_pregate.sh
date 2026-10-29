@@ -31,7 +31,30 @@ set -u
 PY=/home/joe/tcg/rl-env/bin/python
 SIM=/home/joe/tcg/tcg-sim
 CODE_DIR=${CODE_DIR:-/home/joe/tcg/round10_code/step1}
-OUT=${PILOT_OUT:-/home/joe/tcg/r10pilot_out}/pregate
+PGROOT=${PILOT_OUT:-/home/joe/tcg/r10pilot_out}/pregate
+# ATTEMPT-RESOLUTION-BEGIN
+# Re-run mechanics (fix pass 2, 2026-10-29): attempt 1
+# ran in the FLAT layout directly under $PGROOT and
+# stays untouched there as the record. Every later
+# attempt runs in $PGROOT/attempt<N>, N = one more
+# than the highest attempt present (the flat attempt-1
+# layout counts as attempt 1 when its check artifact
+# is present). PREGATE_ATTEMPT pins N explicitly.
+if [ -n "${PREGATE_ATTEMPT:-}" ]; then
+  ATTEMPT=$PREGATE_ATTEMPT
+else
+  ATTEMPT=1
+  [ -f "$PGROOT/pregate_check.txt" ] && ATTEMPT=2
+  for d in "$PGROOT"/attempt[0-9]*; do
+    [ -d "$d" ] || continue
+    n=${d##*attempt}
+    case "$n" in *[!0-9]*|"") continue ;; esac
+    [ "$n" -ge "$ATTEMPT" ] && ATTEMPT=$((n + 1))
+  done
+fi
+OUT=$PGROOT/attempt$ATTEMPT
+echo "pre-gate attempt $ATTEMPT -> $OUT"
+# ATTEMPT-RESOLUTION-END
 GTREE=${GTREE_SRC:-/tmp/gravytree}
 CKPT=$SIM/rl_out/gravy_ppo_gravybc3/ckpt_v10.pt
 DECK_REL=decks/nats2026_eriksen_gravy_60.txt
@@ -84,7 +107,7 @@ expect_hash "$CODE_DIR/paired_driver_gravy.py" \
   3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359 \
   "paired_driver_gravy.py"
 expect_hash "$CODE_DIR/pregate_check_pilot.py" \
-  671f2c205c74a1be1f8e664cc3c4b7d9d61708fa11544ca0651aa20730274651 \
+  260e0797560c7a0ad8055069833f044bb5bef8594f79a4517227f007140f4299 \
   "pregate_check_pilot.py"
 expect_hash "$CODE_DIR/merge_registry.py" \
   13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe \
@@ -212,6 +235,16 @@ for run in "raw_s1 1" "raw2_s1 1" "raw_s2 2"; do
 done
 
 # --- ghost arms (concurrent) -------------------------------------
+# Both ghost arms run at --timeout 7845, the pilot's
+# registered GAME_TIMEOUT (fix pass 2): attempt 1's
+# 1,200 s driver default was sized for the sec.14 arm
+# and killed 5 + 3 thr games (the thr arm's max
+# COMPLETED wall in attempt 1 was 1,153.3 s -- the
+# default was below even that). 7,845 s is 6.8x that
+# max, and keeps one timeout story across pre-gate
+# and pilot. The sec.14 arm takes the same value:
+# its games finish far below either bound, so the
+# bound only ever bites on a hang.
 # BLOCK:PG-GHOST-BEGIN
 PIDS="" FAIL=0
 for build in 14 thr; do
@@ -223,7 +256,7 @@ for build in 14 thr; do
         $PY "$CODE_DIR/paired_driver_gravy.py" \
           --tree "$tree" --sock "$OUT/srv_s${seat}.sock" \
           --seat "$seat" --arm ghost --seeds 13001-13010 \
-          --deck "$tree/$DECK_REL" \
+          --deck "$tree/$DECK_REL" --timeout 7845 \
           --out "$OUT/pg_ghost${build}_s${seat}.jsonl" \
           --logdir "$OUT/pg_ghost${build}_s${seat}_log" \
           > "$OUT/pg_ghost${build}_s${seat}.stdout" 2>&1
@@ -270,9 +303,10 @@ $PY "$CODE_DIR/merge_registry.py" --registry "$REG" \
 
 # --- manifest -------------------------------------------------------
 # MANIFEST-WRITE-BEGIN
-$PY - "$OUT" "$CODE_DIR/search_s3_thr.php" <<'PYEOF'
+$PY - "$OUT" "$CODE_DIR/search_s3_thr.php" "$ATTEMPT" <<'PYEOF'
 import glob, hashlib, json, os, sys
 out, thr_path = sys.argv[1], sys.argv[2]
+attempt = int(sys.argv[3])
 def h(p):
     return hashlib.sha256(open(p, "rb").read()).hexdigest()
 def rows(p):
@@ -283,6 +317,7 @@ for _l in check_txt.splitlines():
     if _l.startswith("PREGATE: "):
         verdict = _l.split(":", 1)[1].strip()
 man = {"stage": "round10-step1-pilot-pregate",
+       "attempt": attempt,
        "verdict": verdict,
        "search_s3_thr_sha256": h(thr_path),
        "teacher_tuple_json": os.environ.get("TEACHER_TUPLE_JSON"),

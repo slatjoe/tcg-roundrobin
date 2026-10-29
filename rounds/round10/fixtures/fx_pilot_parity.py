@@ -19,11 +19,14 @@ one script re-invokes or re-reads another's step
      invocation (BLOCK:PG-GHOST) and the pilot's
      teacher driver invocation (BLOCK:PILOT-GAMES)
      are extracted verbatim; their flag NAME sets
-     must differ by exactly {--timeout} (the games
-     add the registered timeout; everything else --
-     tree, sock, seat, arm value aside, seeds,
-     deck, out, logdir -- is the same invocation
-     shape).
+     must be EQUAL, and the pregate's --timeout
+     literal must equal the pilot's GAME_TIMEOUT
+     (fix pass 2: the pre-gate ghost arms take the
+     pilot's registered 7,845 s -- attempt 1's
+     1,200 s driver default, an absent flag, killed
+     5 + 3 thr games; everything else -- tree, sock,
+     seat, arm value aside, seeds, deck, out,
+     logdir -- is the same invocation shape).
 """
 import os
 import re
@@ -85,11 +88,20 @@ def main():
     games = extract(rp, "# BLOCK:PILOT-GAMES-BEGIN",
                     "# BLOCK:PILOT-GAMES-END")
     fg, fp = flags(ghost), flags(games)
-    check("driver flag sets differ exactly by "
-          "--timeout (games-only)",
-          fp - fg == {"--timeout"} and fg - fp == set(),
+    check("driver flag sets equal (both carry "
+          "--timeout since fix pass 2)",
+          fp == fg,
           "ghost %s pilot %s"
           % (sorted(fg), sorted(fp)))
+    mt = re.search(r"--timeout\s+(\d+)", ghost)
+    mg = re.search(r"GAME_TIMEOUT=(\d+)", rp)
+    check("pregate ghost --timeout literal == pilot "
+          "GAME_TIMEOUT",
+          mt is not None and mg is not None
+          and mt.group(1) == mg.group(1),
+          "pregate %s vs pilot %s"
+          % (mt.group(1) if mt else None,
+             mg.group(1) if mg else None))
     print("fx_pilot_parity: %d checks, %d failed"
           % (checks, len(fails)))
     return 1 if fails else 0

@@ -124,7 +124,7 @@ expect_hash "$CODE_DIR/pilot_read.py" \
   69cae8601265a1eb87aadea95589f1d1f07bb3c15c5f19d04bf030a1a495b537 \
   "pilot_read.py"
 expect_hash "$CODE_DIR/pregate_check_pilot.py" \
-  671f2c205c74a1be1f8e664cc3c4b7d9d61708fa11544ca0651aa20730274651 \
+  260e0797560c7a0ad8055069833f044bb5bef8594f79a4517227f007140f4299 \
   "pregate_check_pilot.py"
 expect_hash "$CODE_DIR/merge_registry.py" \
   13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe \
@@ -167,7 +167,12 @@ PYEOF
 export TEACHER_TUPLE_JSON
 # TUPLE-BUILD-END
 
-PREGATE_MANIFEST=$ROOT_OUT/pregate/pregate_manifest.json
+# The pre-gate gate reads the LATEST attempt's
+# manifest (fix pass 2): attempt<N> dirs in version
+# order; the flat attempt-1 layout (which wrote no
+# manifest) is the fallback path.
+PREGATE_MANIFEST=$(ls "$ROOT_OUT"/pregate/attempt[0-9]*/pregate_manifest.json 2>/dev/null | sort -V | tail -n 1)
+PREGATE_MANIFEST=${PREGATE_MANIFEST:-$ROOT_OUT/pregate/pregate_manifest.json}
 PIN_SEARCH_THR_SHA256=4a1936fe8e8794af1bbbc94cd982e5b897210d6e100599b9cced1a22448ccb49
 
 # BLOCK:PREGATE-GATE-BEGIN

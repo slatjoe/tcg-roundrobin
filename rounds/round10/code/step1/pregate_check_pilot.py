@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Round-10 Step 1 pilot GHOST PRE-GATE checker
-(step1-pilot-package.md sec.5; the pre-gate plan is
-registered there before any run).
+(step1-pilot-package.md sec.7; REPAIRED in fix pass 2,
+2026-10-29 -- see the launch record
+step1-pilot-launch.md for the three-layer diagnosis
+this repair answers).
 
 Two ghost arms (TEACHER_GHOST: the full search machinery
 runs, the played pick is forced to the prior's) on the
@@ -19,34 +21,60 @@ differ. The check, exactly:
      per seed.
   2. PLAYED-ACTION IDENTITY: per seat, ghost-sec14 vs
      ghost-thr driver rows agree per seed on (winner,
-     draw, capped, turns, gamelog_sha) -- ALL seeds.
-  3. CONTESTED-CLASS IDENTITY: stat rows paired
-     ORDER-AWARE by key (game, branch, player, turn,
-     prior_pick) between the two ghost arms of a seat.
-     For paired rows whose top prior (max of the
-     sec.14 row's priors) is < 0.97: the priors arrays
-     must be EXACTLY equal and the selected candidate
-     sets must be equal. (The priors and the selection
-     are the deterministic parts of a decision: the
-     server eval is a function of the state, and the
-     selection is a function of the priors. The
-     rollout outcomes are NOT compared -- Decide's
+     draw, capped, turns, gamelog_sha) -- over the
+     seeds where BOTH arms COMPLETED. A seed whose
+     driver row in either arm is a timeout
+     (invalid == "timeout") is reported as a timeout,
+     by seed and arm, never as an identity failure
+     (attempt 1's failures were exactly this: the
+     1,200 s driver default, sized for the sec.14 arm,
+     killed five + three thr games whose completed
+     counterparts are all byte-identical). Under the
+     repaired sizing a timeout should not occur; if
+     one does, the verdict line names it.
+  3. CONTESTED-CLASS IDENTITY: decisions paired BY
+     SEED AND SEQUENCE ORDER. The driver rows give
+     each arm's seed -> gamename mapping for completed
+     games; each arm's decision rows for that seed's
+     game (its arm-local instance id) are taken in
+     file order and paired index by index. (Attempt
+     1's checker paired by a key leading with the
+     arm-local game id; the two arms' id sets are
+     disjoint, so it paired ZERO decisions and counted
+     every row as an "other" divergence.) For a pair
+     where both arms searched and the sec.14 row's top
+     prior is < 0.97 (a contested pair): the SELECTED
+     candidate sets must be EXACTLY equal, and the
+     priors must agree to a max-abs-difference
+     tolerance of 1e-6 (PRIORS_TOL below; the observed
+     instrument noise is ~1e-7 -- GPU-served float
+     noise -- an order of magnitude of headroom; the
+     check prints the observed maximum abs diff so the
+     tolerance's adequacy is itself in the record).
+     The rollout outcomes are NOT compared -- Decide's
      seed base is drawn per call, so two processes
-     cannot reproduce each other's worlds; what the
-     threshold change must not touch is what the
-     contested machinery SEES and SELECTS.)
+     cannot reproduce each other's worlds.
   4. NEWLY-CONTESTED DIVERGENCE, counted not failed:
-     paired keys where the sec.14 arm logged an
-     uncontested early-return row (contested == 0;
-     that row carries no priors array, so boundary
-     membership is read from the thr arm's paired
-     row: its top prior >= 0.97) and the thr arm
-     logged a full search row (contested == 1) --
-     the expected and ONLY expected decision-level
-     divergence. Any
-     OTHER shape of divergence (a key present in one
-     arm only; a contested row paired to an
-     uncontested row below the boundary) fails.
+     a pair where the sec.14 arm logged an uncontested
+     early-return row (contested == 0; boundary
+     membership read from the thr arm's paired row:
+     its top prior >= 0.97) and the thr arm logged a
+     full search row -- the expected and ONLY expected
+     decision-level divergence. Both-uncontested pairs
+     (possible only at ncand <= 1) are skipped. ANY
+     other shape is counted BY NAME as its own
+     divergence class and fails: sec14-searched x
+     thr-uncontested; both-searched at sec.14 top
+     prior >= 0.97; sec14-uncontested x thr-searched
+     with thr top prior < 0.97. If a seed's two games'
+     decision counts differ, the common prefix is
+     paired and the tail is counted by arm as a named
+     divergence, with the reason printed (trajectory
+     already diverged, or game-length difference in
+     an otherwise identical game -- the played rows
+     decide which). Decision pairing covers only
+     seeds where both arms completed; a timed-out
+     seed's partial stats are never paired.
   5. K6 per ghost arm (round-9 form): rollout rows
      without ghost == 1 must all carry
      fallback == "thin_prior" AND pick == prior_pick;
@@ -76,6 +104,15 @@ import sys
 from collections import defaultdict
 
 BOUNDARY = 0.97
+# Registered in step1-pilot-package.md sec.7 (fix
+# pass 2): priors on a contested pair must agree to
+# this max abs difference. Observed instrument noise
+# is ~1e-7 (GPU-served floats); 1e-6 is an order of
+# magnitude of headroom. `selected` stays EXACT.
+PRIORS_TOL = 1e-6
+
+PLAYED_FIELDS = ("winner", "draw", "capped", "turns",
+                 "gamelog_sha")
 
 
 def load_rows(path):
@@ -103,6 +140,31 @@ def top_prior(r):
     return max(vals) if vals else None
 
 
+def priors_map(r):
+    """Priors as {candidate_index: probability}, or
+    None when the row carries no priors array."""
+    pv = r.get("priors")
+    if isinstance(pv, dict):
+        return {int(k): float(v) for k, v in pv.items()}
+    if isinstance(pv, list):
+        return {i: float(v) for i, v in enumerate(pv)}
+    return None
+
+
+def max_abs_diff(pa, pb):
+    """Max |pa - pb| over the union of candidate
+    indices (a candidate present on one side only
+    counts against 0.0). None if either side is
+    missing."""
+    if pa is None or pb is None:
+        return None
+    keys = set(pa) | set(pb)
+    if not keys:
+        return 0.0
+    return max(abs(pa.get(k, 0.0) - pb.get(k, 0.0))
+               for k in keys)
+
+
 def k6_line(stats):
     ro = [r for r in stats if r.get("teacher") == 1
           and ("means" in r or "n_worlds" in r)]
@@ -127,11 +189,16 @@ def decision_rows(stats):
     return out
 
 
-def key_of(r):
-    return (str(r.get("game")), str(r.get("branch")),
-            int(r.get("player") or 0),
-            int(r.get("turn") or 0),
-            int(r.get("prior_pick") or 0))
+def game_decisions(stats, gamename):
+    """One game's decision rows, in file (sequence)
+    order, selected by its arm-local instance id."""
+    return [r for r in decision_rows(stats)
+            if str(r.get("game")) == str(gamename)]
+
+
+def is_timeout(row):
+    return row is not None \
+        and row.get("invalid") == "timeout"
 
 
 def main():
@@ -166,8 +233,7 @@ def main():
     seeds = sorted(set(r1) & set(r2))
     same = sum(1 for s in seeds if all(
         r1[s].get(k) == r2[s].get(k) for k in
-        ("winner", "draw", "capped", "turns",
-         "gamelog_sha")))
+        PLAYED_FIELDS))
     verdict("determinism: raw seat-1 rerun identical",
             len(seeds) == 10 and same == len(seeds),
             "%d/%d seeds agree" % (same, len(seeds)))
@@ -183,78 +249,162 @@ def main():
         g14 = rows.get("ghost14_s%d" % seat, {})
         gth = rows.get("ghostthr_s%d" % seat, {})
         seeds = sorted(set(g14) & set(gth))
-        eq = sum(1 for s in seeds if all(
-            g14[s].get(k) == gth[s].get(k) for k in
-            ("winner", "draw", "capped", "turns",
-             "gamelog_sha")))
-        verdict("seat %d played-action identity "
-                "(ghost sec.14 vs ghost thr)" % seat,
-                len(seeds) == 10 and eq == len(seeds),
-                "%d/%d seeds identical" % (eq, len(seeds)))
 
-        # decision-level pairing, order-aware
-        A = decision_rows(stats.get("ghost14_s%d" % seat, []))
-        B = decision_rows(stats.get("ghostthr_s%d" % seat, []))
-        byA, byB = defaultdict(list), defaultdict(list)
-        for r in A:
-            byA[key_of(r)].append(r)
-        for r in B:
-            byB[key_of(r)].append(r)
-        contested_pairs = contested_bad = 0
-        newly = other_div = 0
-        for k in sorted(set(byA) | set(byB)):
-            la, lb = byA.get(k, []), byB.get(k, [])
-            if len(la) != len(lb):
-                other_div += abs(len(la) - len(lb))
+        # --- leg 2: played-action identity over the
+        # seeds both arms completed; timeouts named.
+        timeout_seeds = []   # (seed, [arms])
+        completed = []
+        eq = 0
+        for s in seeds:
+            arms = []
+            if is_timeout(g14.get(s)):
+                arms.append("sec14")
+            if is_timeout(gth.get(s)):
+                arms.append("thr")
+            if arms:
+                timeout_seeds.append((s, arms))
                 continue
-            for ra, rb in zip(la, lb):
+            completed.append(s)
+            if all(g14[s].get(k) == gth[s].get(k)
+                   for k in PLAYED_FIELDS):
+                eq += 1
+        tdesc = "; ".join(
+            "seed %d (%s)" % (s, "+".join(arms))
+            for s, arms in timeout_seeds) or "none"
+        verdict("seat %d played-action identity "
+                "(ghost sec.14 vs ghost thr, completed "
+                "games)" % seat,
+                len(seeds) == 10 and eq == len(completed),
+                "%d/%d completed seeds identical; "
+                "timeouts: %d seed(s): %s"
+                % (eq, len(completed),
+                   len(timeout_seeds), tdesc))
+
+        # --- legs 3+4: decision pairing by seed and
+        # sequence order, over completed seed pairs.
+        A_all = stats.get("ghost14_s%d" % seat, [])
+        B_all = stats.get("ghostthr_s%d" % seat, [])
+        contested_pairs = contested_bad = 0
+        newly = both_unc = 0
+        div = defaultdict(int)
+        tail_by_arm = {"sec14": 0, "thr": 0}
+        obs_max = 0.0
+        worst = None        # (diff, seed, index)
+        bad_example = None  # (seed, index, diff, sel_eq)
+        pair_errors = 0
+        for s in completed:
+            ga, gb = g14[s].get("gamename"), \
+                gth[s].get("gamename")
+            if ga is None or gb is None:
+                pair_errors += 1
+                print("INFO seat %d seed %d: completed "
+                      "driver row without gamename; "
+                      "decision pairing impossible"
+                      % (seat, s))
+                continue
+            A = game_decisions(A_all, ga)
+            B = game_decisions(B_all, gb)
+            m = min(len(A), len(B))
+            for i in range(m):
+                ra, rb = A[i], B[i]
                 a_unc = ra.get("contested") == 0
                 b_unc = rb.get("contested") == 0
-                # The sec.14 uncontested early-return row
-                # carries NO priors array; the boundary
-                # membership of an uncontested pair is
-                # read from the THR arm's row, which
-                # searched the decision and logged its
-                # priors.
                 if a_unc and b_unc:
                     # both builds returned early: only
                     # possible at ncand <= 1 (the lifted
                     # build searches everything else)
+                    both_unc += 1
                     continue
                 if a_unc and not b_unc:
+                    # The sec.14 uncontested early-return
+                    # row carries NO priors array; the
+                    # boundary membership of the pair is
+                    # read from the THR arm's row, which
+                    # searched the decision and logged
+                    # its priors.
                     tp_b = top_prior(rb)
-                    if tp_b is not None and tp_b >= BOUNDARY:
+                    if tp_b is not None \
+                            and tp_b >= BOUNDARY:
                         newly += 1
                     else:
-                        # the sec.14 build skipped a
-                        # decision below the boundary:
-                        # not the registered divergence
-                        other_div += 1
+                        div["sec14-uncontested_x_thr-"
+                            "searched_below-0.97"] += 1
                     continue
                 if b_unc and not a_unc:
-                    other_div += 1
+                    div["sec14-searched_x_thr-"
+                        "uncontested"] += 1
                     continue
                 tp = top_prior(ra)
                 if tp is not None and tp < BOUNDARY:
                     contested_pairs += 1
-                    if ra.get("priors") != rb.get("priors") \
-                            or ra.get("selected") \
-                            != rb.get("selected"):
+                    sel_eq = ra.get("selected") \
+                        == rb.get("selected")
+                    d = max_abs_diff(priors_map(ra),
+                                     priors_map(rb))
+                    if d is not None and d > obs_max:
+                        obs_max = d
+                        worst = (d, s, i)
+                    if not sel_eq or d is None \
+                            or d > PRIORS_TOL:
                         contested_bad += 1
+                        if bad_example is None:
+                            bad_example = (s, i, d, sel_eq)
                 else:
                     # both searched a >= boundary
                     # decision: impossible for the
                     # sec.14 build
-                    other_div += 1
+                    div["both-searched_at_>=0.97"] += 1
+            if len(A) != len(B):
+                tail = abs(len(A) - len(B))
+                if len(A) > len(B):
+                    tail_by_arm["sec14"] += tail
+                else:
+                    tail_by_arm["thr"] += tail
+                if all(g14[s].get(k) == gth[s].get(k)
+                       for k in PLAYED_FIELDS):
+                    div["tail_game-length-diff_in-"
+                        "identical-game"] += tail
+                else:
+                    div["tail_trajectory-"
+                        "diverged"] += tail
+        for s, arms in timeout_seeds:
+            print("INFO seat %d seed %d: decision "
+                  "pairing skipped (timeout: %s); "
+                  "partial stats never paired"
+                  % (seat, s, "+".join(arms)))
+        div_total = sum(div.values())
         verdict("seat %d contested-class identity "
-                "(priors + selected, order-aware pairs)"
-                % seat,
-                contested_bad == 0 and other_div == 0,
-                "%d contested pairs, %d bad, %d other "
-                "divergences" % (contested_pairs,
-                                 contested_bad, other_div))
+                "(selected exact, priors tol %.0e, "
+                "seed-paired sequence order)" % (seat,
+                                                 PRIORS_TOL),
+                contested_bad == 0 and div_total == 0
+                and pair_errors == 0,
+                "%d contested pairs, %d bad, %d named "
+                "divergences %s, max |dprior| %.3e "
+                "(tol %.0e)"
+                % (contested_pairs, contested_bad,
+                   div_total, dict(div), obs_max,
+                   PRIORS_TOL))
+        if worst is not None:
+            print("INFO seat %d max |dprior| %.3e at "
+                  "seed %d decision %d (tolerance %.0e)"
+                  % ((seat, worst[0], worst[1], worst[2],
+                      PRIORS_TOL)))
+        if bad_example is not None:
+            print("INFO seat %d first contested-bad "
+                  "pair: seed %d decision %d, |dprior| "
+                  "%s, selected equal: %s"
+                  % (seat, bad_example[0], bad_example[1],
+                     ("%.3e" % bad_example[2])
+                     if bad_example[2] is not None
+                     else "n/a (priors missing)",
+                     bad_example[3]))
         print("INFO seat %d newly-contested divergences "
-              "(expected shape): %d" % (seat, newly))
+              "(expected shape): %d; both-uncontested "
+              "pairs skipped: %d; unpaired tail rows "
+              "by arm: sec14 %d, thr %d"
+              % (seat, newly, both_unc,
+                 tail_by_arm["sec14"], tail_by_arm["thr"]))
 
         for tag in ("ghost14_s%d" % seat,
                     "ghostthr_s%d" % seat):

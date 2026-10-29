@@ -16,7 +16,7 @@ PASS run_pilot.sh pin site paired_driver_gravy.py 3389b1b936180909
 PASS run_pilot.sh pin site build_pilot_jobs.py d855c7aa7155f6ab
 PASS run_pilot.sh pin site pilot_games_report.py 30bb888ee12b1c0e
 PASS run_pilot.sh pin site pilot_read.py 69cae8601265a1eb
-PASS run_pilot.sh pin site pregate_check_pilot.py 671f2c205c74a1be
+PASS run_pilot.sh pin site pregate_check_pilot.py 260e0797560c7a0a
 PASS run_pilot.sh pin site merge_registry.py 13a655e37d2d1eb0
 PASS run_pilot.sh pin site stage0_report.py 5c7e5393a3125146
 PASS run_pilot.sh pin site analyze_l3.py 16017ffa71df0b37
@@ -42,7 +42,7 @@ PASS run_pilot_pregate.sh deploy list parses
 PASS run_pilot_pregate.sh pin site search_s3.php 87779e8ec9693577
 PASS run_pilot_pregate.sh pin site search_s3_thr.php 4a1936fe8e8794af
 PASS run_pilot_pregate.sh pin site paired_driver_gravy.py 3389b1b936180909
-PASS run_pilot_pregate.sh pin site pregate_check_pilot.py 671f2c205c74a1be
+PASS run_pilot_pregate.sh pin site pregate_check_pilot.py 260e0797560c7a0a
 PASS run_pilot_pregate.sh pin site merge_registry.py 13a655e37d2d1eb0
 PASS run_pilot_pregate.sh pin site shm_sweep.py 98027a8b6f58bb06
 PASS run_pilot_pregate.sh pin site settings_pilot.json 0571e03a31f1d1aa
@@ -110,11 +110,16 @@ PASS T STOP fires on the one-sided bound
 fx_pilot_python: 26 checks, 0 failed
 
 ===== fx_pilot_pregate.py =====
-PASS P identical + newly-contested divergence -> IDENTICAL 
-PASS P newly-contested divergence counted 
-PASS P contested priors mismatch -> NOT IDENTICAL 
-PASS P sec.14 skip below the boundary -> NOT IDENTICAL 
-fx_pilot_pregate: 4 checks, 0 failed
+PASS P disjoint ids + noise 1e-7 + newly at index 0 -> IDENTICAL 
+PASS P newly-contested counted (expected shape) 
+PASS P contested pair found by seed pairing 
+PASS P observed max |dprior| printed, within tol 
+PASS P v1 checker FAILS the disjoint-ids population (Layer B reproduced) 
+PASS P contested priors off by 1e-4 -> contested_bad -> NOT IDENTICAL 
+PASS P off-shape pair counted by name -> NOT IDENTICAL 
+PASS P sec.14 skip below the boundary counted by name -> NOT IDENTICAL 
+PASS P timeout row reported as a timeout, identity on completed games -> IDENTICAL 
+fx_pilot_pregate: 9 checks, 0 failed
 
 ===== fx_pilot_loader.py =====
 PASS s2_label_main.php byte-identical to the round-10 file (fx_label_loader coverage) 
@@ -155,10 +160,11 @@ fx_pilot_env: 24 checks, 0 failed
 
 ===== fx_pilot_parity.py =====
 PASS tuple-builder blocks identical in both runners 
-PASS gate reads only keys the pregate manifest writes read ['search_s3_thr_sha256', 'teacher_tuple_json', 'verdict'] vs written ['check', 'rows', 'search_s3_thr_sha256', 'sha256', 'stage', 'teacher_tuple_json', 'verdict']
+PASS gate reads only keys the pregate manifest writes read ['search_s3_thr_sha256', 'teacher_tuple_json', 'verdict'] vs written ['attempt', 'check', 'rows', 'search_s3_thr_sha256', 'sha256', 'stage', 'teacher_tuple_json', 'verdict']
 PASS gate reads the three registered fields ['search_s3_thr_sha256', 'teacher_tuple_json', 'verdict']
-PASS driver flag sets differ exactly by --timeout (games-only) ghost ['--arm', '--deck', '--logdir', '--out', '--seat', '--seeds', '--sock', '--tree'] pilot ['--arm', '--deck', '--logdir', '--out', '--seat', '--seeds', '--sock', '--timeout', '--tree']
-fx_pilot_parity: 4 checks, 0 failed
+PASS driver flag sets equal (both carry --timeout since fix pass 2) ghost ['--arm', '--deck', '--logdir', '--out', '--seat', '--seeds', '--sock', '--timeout', '--tree'] pilot ['--arm', '--deck', '--logdir', '--out', '--seat', '--seeds', '--sock', '--timeout', '--tree']
+PASS pregate ghost --timeout literal == pilot GAME_TIMEOUT pregate 7845 vs pilot 7845
+fx_pilot_parity: 5 checks, 0 failed
 
 ===== bash -n (both runners; never run) =====
 PASS bash -n both runners
