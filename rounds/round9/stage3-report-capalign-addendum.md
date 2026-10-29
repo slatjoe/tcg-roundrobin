@@ -81,10 +81,15 @@ worlds ending after turn 61: Stage 2 591 of 15,800
 decisive (3.7%); Stage 3 589 of 26,010 (2.3%).
 Horizon-flagged worlds' end turns: median 93, max 268,
 both stages — Claude's §2 medians and maxima exactly.
-(Claude's §2 counts of decisive worlds ending after
-turn 63 — 532 and 676 — were computed on a counting
-basis his reply does not state; on this addendum's
-basis those counts are 327 and 349. The point
-estimates, which are the registered comparison, agree
-exactly; the tail counts differ by basis, and this
-addendum does not paper over that.)
+(Counting bases, resolved at review 2026-10-29:
+Claude's §2 counts of decisive worlds ending after
+turn 63 — 532 and 676 — count BOTH outcome signs
+(Stage 2: 327 wins + 205 losses; Stage 3: 349 + 327).
+This addendum's after-63 counts, 327 and 349, are
+the WIN-ONLY counts of the same rows; likewise its
+after-61 figures above (591 and 589) are wins only,
+where the both-signs counts are 887 and 1,132. Both
+are right on their own basis; wins are the operative
+count for the rescoring, since cap alignment changes
+only wins. The point estimates, which are the
+registered comparison, agree exactly.)
