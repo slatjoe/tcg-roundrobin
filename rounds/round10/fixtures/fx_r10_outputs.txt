@@ -224,6 +224,16 @@ PASS M12 as-run main() runs end-to-end; no cap-aligned block; hold still fires r
 PASS M13 run_probe_completion.sh is bash -n clean (not executed here) 
 fx_influence_main: ALL PASS
 
+===== fx_invocation_parity.py =====
+PASS P1 recovery influence invocation extracted (/home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/../code/run_probe_recovery.sh)
+PASS P2 completion influence invocation extracted (/home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/../code/run_probe_completion.sh)
+PASS P3 flag parity (names + non-path values, paths normalized) 
+PASS P4 completion passes no --game (the registered default is used) 
+PASS P5 inspected-game assertion block extracted from the completion script 
+PASS P6 assertion trips when the inspected game is absent from the driver rows 
+PASS P7 assertion passes when the inspected game is present 
+fx_invocation_parity: ALL PASS
+
 ===== fx_horizon.py =====
 PASS H0: a php binary is available for the horizon harness -- /home/hatch/workspace/tcg-sim/.tools/php83/usr/bin/php8.3
 PASS H0 as-built file lints under php

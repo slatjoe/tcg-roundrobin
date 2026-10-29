@@ -235,6 +235,32 @@ SELF_HASH=$(sha256sum "$0" | awk '{print $1}')
 # ---- 4. the influence step (the recovery's
 # own invocation, paths adapted to the
 # published tree)
+
+# --- BEGIN inspected-game assertion (fix pass
+# 7, doc sec.15: fixtures/fx_invocation_parity.py
+# extracts this block verbatim and executes it
+# against driver-rows fixtures) ---
+# The influence step inspects ONE game in
+# detail: probe_influence.py's --game default,
+# INSPECTED_GAME below (the recovery's
+# invocation passed no --game and used the
+# default). That game must be one of the
+# capture games in the published driver rows
+# this script already reads, or the registered
+# inspection would print a state inspection of
+# nothing (the fix-pass-6 completion passed
+# --game 440261752, which is not a capture
+# game; claude-reply-416872f sec.2).
+INSPECTED_GAME=540261752
+if ! grep -q "$INSPECTED_GAME" \
+    "$S0/cap_s1_b1.jsonl" "$S0/cap_s2_b1.jsonl"
+then
+  echo "ABORT: inspected game $INSPECTED_GAME (probe_influence.py's --game default) does not appear in the published driver rows ($S0/cap_s1_b1.jsonl, $S0/cap_s2_b1.jsonl) -- the influence step would inspect a game that is not a capture game."
+  exit 1
+fi
+echo "inspected game ok: $INSPECTED_GAME is a capture game (published driver rows)"
+# --- END inspected-game assertion ---
+
 "$PY" "$CODE_DIR/probe_influence.py" \
   --jobs "$REC/jobs_merged.jsonl" \
   --labels "$WORK/labels_merged.jsonl" \
@@ -246,7 +272,6 @@ SELF_HASH=$(sha256sum "$0" | awk '{print $1}')
   --driver-rows "$S0/cap_s1_b1.jsonl" "$S0/cap_s2_b1.jsonl" \
   --report-json "$REC/probe_report.json" \
   --capalign-classes "$REC/capalign/capalign_classes.json" \
-  --game 440261752 \
   --json-out "$REC/probe_influence.json" \
   > "$REC/probe_influence.txt" || {
   echo "ABORT: the influence step failed (probe_influence.py)."

@@ -2215,3 +2215,151 @@ determination exist. If the determination is
 "buildable, single-game dependent", the probe
 report carries it and returns to review
 before any Step 1 package.
+
+### 15.6 AMENDMENT (2026-10-29, on claude-reply-416872f §2–§3) — SEVENTH FIX PASS: the completion inspected the wrong game
+
+Claude's fix-pass-6 review found one blocking
+item (§2 of his reply): the completion
+script's influence invocation passed
+`--game 440261752`. The game the registered
+inspection exists for is **540261752** —
+probe_influence.py's own `--game` default,
+which the recovery's invocation
+(run_probe_recovery.sh lines 451–464) used by
+passing no `--game` at all. 440261752 is not
+a capture game: it appears in neither
+published driver-rows file (verified against
+data/step0/cap_s1_b1.jsonl +
+cap_s2_b1.jsonl; 540261752 appears in
+cap_s2_b1.jsonl). The completion would have
+printed a state inspection of nothing, under
+a registered step, while differing from the
+invocation the recovery registered. The
+builder's error; the review caught it before
+anything ran.
+
+The fix, in this pass:
+
+- **Argument-list parity.**
+  run_probe_completion.sh's probe_influence.py
+  invocation is now the recovery's invocation
+  verbatim modulo paths: the `--game
+  440261752` line is dropped (the default
+  540261752 applies) and nothing else in the
+  flag set changed. The completion's other
+  invocations were diffed against their
+  recovery counterparts: there are no
+  analyzer/report invocations to drift (the
+  only other invocations are the pass-6
+  capture-games rebuild and the manifest
+  heredoc, which have no recovery invocation
+  counterpart; probe_label_analyze.py,
+  analyze_l3.py and stage0_report.py appear
+  only as presence/pin entries — imported
+  modules, never invoked).
+- **Parity fixture (new,
+  fixtures/fx_invocation_parity.py, 7
+  checks).** It extracts both scripts'
+  influence invocations verbatim, parses them
+  into flag → values, normalizes path values
+  (any value containing `/` or `$`) to a
+  placeholder, and asserts equality of flag
+  names + non-path argument values. Run
+  against a saved copy of the pre-fix
+  completion script it FAILS, naming the
+  drift exactly (`--game: recovery=None
+  completion=['440261752']`); against the
+  fixed script it passes.
+- **In-script assertion.** Before the
+  influence invocation, the completion now
+  sets `INSPECTED_GAME=540261752` (with a
+  comment tying it to probe_influence.py's
+  `--game` default) and aborts with a clear
+  message unless that id appears in the
+  published driver-rows files it already
+  reads ($S0/cap_s1_b1.jsonl,
+  $S0/cap_s2_b1.jsonl). The parity fixture
+  extracts the assertion block verbatim
+  (between its BEGIN/END markers) and
+  executes it against driver-rows fixtures:
+  it trips (non-zero exit, ABORT naming the
+  id) when the id is absent and passes when
+  present.
+- **Pin-literal revert (non-blocking, his
+  §2 tail).** Fix pass 6 updated
+  run_probe_recovery.sh's probe_influence.py
+  pin to the repaired file (dc79bdad…). That
+  script is the record of what executed, so
+  its pin is reverted in this pass to the
+  AS-RUN literal,
+  83f4f1d1ed496cb95619e7c960626ca07e2896e15522e5b93a26154ad90275ab
+  — machine-derived two ways that agree:
+  sha256 of the box's deployed file (the
+  artifact that ran; /home/joe/tcg/
+  round10_code/probe_influence.py, untouched
+  since the run), and reversal of the two
+  fix-pass-6 edits on the staged file, which
+  reproduces the same value byte-exactly.
+  The completion script keeps the fixed pin
+  dc79bdad…, the only place it belongs.
+
+**§3 interpretation, recorded (his §3; the
+probe report gains this as a labeled addendum
+when the completion's outputs are
+published).** The registered recommendation
+(threshold 0.97, lower bound +0.2080) stands
+as the rule's output, but **+0.4734 per game
+is the probe's estimand, not a prediction of
+what a threshold teacher would gain in
+games, and it must not be used as one.** It
+is an additive sum over the RAW policy's
+trajectory: 305 uncontested-class jobs,
+cap-aligned diffs, Horvitz–Thompson weight
+2, over 90 games — about 6.8 weighted fires a
+game, each valued as if independent; the
+interval's upper end (0.86) exceeds what the
+base win rate leaves room for, which is the
+giveaway that per-decision edges do not add
+into win probability that way. Repeated
+presentations of one mistake are counted
+every time they recur on the raw trajectory;
+a teacher that fixes the mistake once changes
+the trajectory and the later repeats never
+happen. The 305 jobs are 276 distinct
+(game, prior card, teacher card) choices;
+one game, 635852068, carries 18 jobs summing
+to 6.80 in diff — about a third of the whole
+gain. His bounding illustrations (NOT
+registered reads): counting every fire, as
+registered, 0.4734; each distinct choice
+once, about 0.27; only the best single fix
+per game, about 0.13. All three are still
+above Stage 3's whole-teacher per-game gain
+(0.065), which is why the lever's signal is
+real — but its size is not 0.47. Round 9's
+per-game gain was a different estimand: its
+fires sat on the teacher's OWN trajectory,
+already conditioned on its earlier fixes; the
+Step 2 gate as registered measures exactly
+that again (capture games played by the
+threshold teacher), which is the right
+estimand for the lever's real value.
+Consequences for any Step 1 package: it must
+not size Step 2 or a fleet from +0.47, and
+the report's printed "power 1.000" is not
+credible sizing input — sizing uses
+round-9-style live-trajectory numbers, or a
+conservative bound stated as such. Step 2 is
+priced at 1,840 s per teacher game: about
+205 box-hours for 400 games (roughly 51 h of
+wall time); a smaller live pilot of the
+threshold teacher — to see its realized fire
+rate and on-trajectory gain before the full
+gate — is worth considering in that package;
+the cost call is Joe's.
+
+State after this pass: the completion still
+has not run. It runs once, on Joe's go after
+the confirmation check of this pass. Fixture
+suite: 197 PASS lines, 0 FAIL (190 +
+fx_invocation_parity's 7).

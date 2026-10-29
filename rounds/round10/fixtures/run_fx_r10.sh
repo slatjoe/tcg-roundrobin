@@ -105,6 +105,28 @@
 #                            completion script is
 #                            bash -n checked (never run
 #                            by the suite).
+#   fx_invocation_parity.py
+#                         -- argument-list parity
+#                            (seventh fix pass):
+#                            the recovery's and
+#                            the completion's
+#                            probe_influence.py
+#                            invocations extracted
+#                            verbatim from both
+#                            scripts; flag names +
+#                            non-path values must
+#                            be equal once paths
+#                            are normalized (the
+#                            fix-pass-6 completion
+#                            passed --game
+#                            440261752, not a
+#                            capture game); the
+#                            completion's
+#                            inspected-game
+#                            assertion block is
+#                            extracted and
+#                            executed against
+#                            driver-rows fixtures.
 #   fx_capalign_read.py   -- the sec.14 read: both
 #                            scorings on a synthetic
 #                            label set whose gains are
@@ -133,6 +155,7 @@ run fx_label_loader.py python3 "$HERE/fx_label_loader.py"
 run fx_eval_completeness.py python3 "$HERE/fx_eval_completeness.py"
 run fx_probe_influence.py python3 "$HERE/fx_probe_influence.py"
 run fx_influence_main.py python3 "$HERE/fx_influence_main.py"
+run fx_invocation_parity.py python3 "$HERE/fx_invocation_parity.py"
 run fx_horizon.py python3 "$HERE/fx_horizon.py"
 run fx_capalign.py python3 "$HERE/fx_capalign.py"
 run fx_capalign_read.py python3 "$HERE/fx_capalign_read.py"
