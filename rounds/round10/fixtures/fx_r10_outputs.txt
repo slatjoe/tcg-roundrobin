@@ -1,5 +1,5 @@
 ===== fx_pin_guards.py =====
-PASS pin sites found [('search_s3.php', '8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', '1c1dfd9f9349e8db815f23e31637dee558a9ec36e09179142f71748a6bce72aa'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa'), ('build_probe_eval_jobs.py', '94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3'), ('probe_eval_analyze.py', '7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90'), ('build_probe_jobs.py', 'f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4'), ('probe_label_analyze.py', '60935aec0b75873584a73950d5b9921ea3ef93bdac80cc97f857177fdc687bfc'), ('probe_report.py', '82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a'), ('settings_probe.json', '5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb'), ('stage0_report.py', '5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf'), ('analyze_l3.py', '16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9'), ('g8_sweep2.sh', 'd49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17'), ('shm_sweep.py', '98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33')]
+PASS pin sites found [('search_s3.php', '8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', '1c1dfd9f9349e8db815f23e31637dee558a9ec36e09179142f71748a6bce72aa'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa'), ('build_probe_eval_jobs.py', '94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3'), ('probe_eval_analyze.py', '7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90'), ('build_probe_jobs.py', 'f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4'), ('probe_label_analyze.py', 'd8d93e3fbefb2776717637c4c920b4a0bfacb043ed9b1ac58eeb6b9bf6e8d6ba'), ('probe_report.py', '82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a'), ('settings_probe.json', '5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb'), ('stage0_report.py', '5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf'), ('analyze_l3.py', '16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9'), ('g8_sweep2.sh', 'd49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17'), ('shm_sweep.py', '98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33')]
 PASS pin search_s3.php literal 8f7be190044f file 8f7be190044f
 PASS pin s1_eval_main.php literal 73ed24822baa file 73ed24822baa
 PASS pin s2_label_main.php literal 1c1dfd9f9349 file 1c1dfd9f9349
@@ -9,7 +9,7 @@ PASS pin search_s2.php literal 85490e8ed1ef file 85490e8ed1ef
 PASS pin build_probe_eval_jobs.py literal 94030b488d96 file 94030b488d96
 PASS pin probe_eval_analyze.py literal 7c4d9f691af7 file 7c4d9f691af7
 PASS pin build_probe_jobs.py literal f3882a9deebe file f3882a9deebe
-PASS pin probe_label_analyze.py literal 60935aec0b75 file 60935aec0b75
+PASS pin probe_label_analyze.py literal d8d93e3fbefb file d8d93e3fbefb
 PASS pin probe_report.py literal 82856c6f59cd file 82856c6f59cd
 PASS pin settings_probe.json literal 5af0c715442e file 5af0c715442e
 PASS pin stage0_report.py literal 5c7e5393a312 file 5c7e5393a312
@@ -29,7 +29,7 @@ PASS deploy coverage: merge_registry.py staged 13a655e37d2d
 PASS deploy coverage: build_probe_eval_jobs.py staged 94030b488d96
 PASS deploy coverage: probe_eval_analyze.py staged 7c4d9f691af7
 PASS deploy coverage: build_probe_jobs.py staged f3882a9deebe
-PASS deploy coverage: probe_label_analyze.py staged 60935aec0b75
+PASS deploy coverage: probe_label_analyze.py staged d8d93e3fbefb
 PASS deploy coverage: probe_report.py staged 82856c6f59cd
 PASS deploy coverage: settings_probe.json staged 5af0c715442e
 PASS deploy coverage: stage0_report.py staged 5c7e5393a312
@@ -40,7 +40,7 @@ PASS seed literal 30055001 in runner == settings 30055001
 PASS seed literal 70055001 in runner == settings 70055001 
 PASS capture seed strings in runner == settings 
 PASS uncontested sampling literal in settings 
-[negative copy] PASS pin sites found [('search_s3.php', '8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', '1c1dfd9f9349e8db815f23e31637dee558a9ec36e09179142f71748a6bce72aa'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa'), ('build_probe_eval_jobs.py', '94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3'), ('probe_eval_analyze.py', '7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90'), ('build_probe_jobs.py', 'f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4'), ('probe_label_analyze.py', '60935aec0b75873584a73950d5b9921ea3ef93bdac80cc97f857177fdc687bfc'), ('settings_probe.json', '5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb'), ('stage0_report.py', '5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf'), ('analyze_l3.py', '16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9'), ('g8_sweep2.sh', 'd49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17'), ('shm_sweep.py', '98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33')]
+[negative copy] PASS pin sites found [('search_s3.php', '8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', '1c1dfd9f9349e8db815f23e31637dee558a9ec36e09179142f71748a6bce72aa'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa'), ('build_probe_eval_jobs.py', '94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3'), ('probe_eval_analyze.py', '7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90'), ('build_probe_jobs.py', 'f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4'), ('probe_label_analyze.py', 'd8d93e3fbefb2776717637c4c920b4a0bfacb043ed9b1ac58eeb6b9bf6e8d6ba'), ('settings_probe.json', '5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb'), ('stage0_report.py', '5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf'), ('analyze_l3.py', '16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9'), ('g8_sweep2.sh', 'd49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17'), ('shm_sweep.py', '98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33')]
 [negative copy] PASS pin search_s3.php literal 8f7be190044f file 8f7be190044f
 [negative copy] PASS pin s1_eval_main.php literal 73ed24822baa file 73ed24822baa
 [negative copy] PASS pin s2_label_main.php literal 1c1dfd9f9349 file 1c1dfd9f9349
@@ -50,7 +50,7 @@ PASS uncontested sampling literal in settings
 [negative copy] PASS pin build_probe_eval_jobs.py literal 94030b488d96 file 94030b488d96
 [negative copy] PASS pin probe_eval_analyze.py literal 7c4d9f691af7 file 7c4d9f691af7
 [negative copy] PASS pin build_probe_jobs.py literal f3882a9deebe file f3882a9deebe
-[negative copy] PASS pin probe_label_analyze.py literal 60935aec0b75 file 60935aec0b75
+[negative copy] PASS pin probe_label_analyze.py literal d8d93e3fbefb file d8d93e3fbefb
 [negative copy] PASS pin settings_probe.json literal 5af0c715442e file 5af0c715442e
 [negative copy] PASS pin stage0_report.py literal 5c7e5393a312 file 5c7e5393a312
 [negative copy] PASS pin analyze_l3.py literal 16017ffa71df file 16017ffa71df
@@ -69,7 +69,7 @@ PASS uncontested sampling literal in settings
 [negative copy] PASS deploy coverage: build_probe_eval_jobs.py staged 94030b488d96
 [negative copy] PASS deploy coverage: probe_eval_analyze.py staged 7c4d9f691af7
 [negative copy] PASS deploy coverage: build_probe_jobs.py staged f3882a9deebe
-[negative copy] PASS deploy coverage: probe_label_analyze.py staged 60935aec0b75
+[negative copy] PASS deploy coverage: probe_label_analyze.py staged d8d93e3fbefb
 [negative copy] FAIL deploy coverage: probe_report.py staged 82856c6f59cd
 [negative copy] PASS deploy coverage: settings_probe.json staged 5af0c715442e
 [negative copy] PASS deploy coverage: stage0_report.py staged 5c7e5393a312
@@ -183,6 +183,29 @@ PASS N8: analyzer bands the sentinel job in class (a)'s TAIL (z > 3.5), the fini
 PASS N9: the plant is attempt 3's real line 282 (snap 540261752_t64, bare Infinity) 
 PASS N10: loader ABORTS on the bare-Infinity line, exit 2, naming the line; loads nothing rc=2 err=ABORT: jobs line 2 of <tmp>/jobs_poisoned.jsonl is not valid JSON (Syntax error); a silently dropped job shifts every later job's seed base -- the label run ref
 fx_label_loader: ALL PASS
+
+===== fx_eval_completeness.py =====
+PASS E1 complete pair exits 0 rc=0
+PASS E1 missing = 0, states complete = 2 
+PASS E2 deleted candidate exits 2 rc=2
+PASS E2 the state is named missing with cand 2 
+PASS E2 stdout names the missing state 
+PASS E3 short candidate exits 2 rc=2
+PASS E3 the anomaly is named (cand 2, 2 of 3) 
+fx_eval_completeness: ALL PASS
+
+===== fx_probe_influence.py =====
+PASS L1 full gain = 0.97 got 0.97
+PASS L1 top game is G9 with share 9/9.7 share 0.9278350515463918
+PASS L1 LOGO range = [0.7/9, 1.1] got [0.07777777777777778, 1.1]
+PASS L1 weakest exclusion lower bound <= 0 (game G9) lb -0.08888888888888889 at G9
+PASS L1 G9-excluded gain = 0.7/9 
+PASS L1 hold line prints for the buildable concentrated lever 
+PASS L1 no hold for the non-buildable lever on the same table 
+PASS L2 diffuse: every exclusion leaves gain and lower bound at 0.5 min_lb 0.5
+PASS L2 no hold line for the diffuse table 
+PASS L3 no hold when neither lever is buildable, however concentrated 
+fx_probe_influence: ALL PASS
 
 ===== fx_repro (summary compared with staged output) =====
 PASS fx_repro summary matches the staged output: ==== SUMMARY: 1 figure(s) NOT REPRODUCED: ['stage3 band (3.5, inf] CI (both pairings)']

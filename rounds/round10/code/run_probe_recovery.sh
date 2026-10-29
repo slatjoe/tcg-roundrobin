@@ -14,6 +14,21 @@
 # phase's world-count guard aborted on the first of
 # them. Everything else in the run is intact.
 #
+# Fix pass 5 (package doc sec.13,
+# claude-reply-9dae0e2 sec.2.2-2.3) adds two steps:
+#   0. BEFORE anything else, the eval-completeness
+#      assertion (eval_completeness.py) runs on the
+#      box's eval_jobs.jsonl + evals_all.jsonl: the
+#      eval phase used the same silent loader, and a
+#      nonzero missing count aborts this recovery
+#      before any extraction, merge or analysis;
+#   4b. AFTER the report, the registered influence
+#      read (probe_influence.py) runs over the
+#      merged labels and writes probe_influence.txt
+#      / .json beside the report; the recovery
+#      manifest carries its file hashes and any
+#      "buildable, single-game dependent" hold lines.
+#
 # This script:
 #   1. extracts exactly those 10 jobs from
 #      jobs_all.jsonl (Python's json is the one
@@ -85,8 +100,14 @@ expect_hash "$CODE_DIR/search_s2.php" \
   85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa \
   "recovery search_s2.php (round-9 byte-identical; label tree)" || exit 1
 expect_hash "$CODE_DIR/probe_label_analyze.py" \
-  60935aec0b75873584a73950d5b9921ea3ef93bdac80cc97f857177fdc687bfc \
-  "recovery probe_label_analyze.py" || exit 1
+  d8d93e3fbefb2776717637c4c920b4a0bfacb043ed9b1ac58eeb6b9bf6e8d6ba \
+  "recovery probe_label_analyze.py (fix pass 5: job_diffs/per_game_gain lifted to module level for the influence read; math unchanged)" || exit 1
+expect_hash "$CODE_DIR/eval_completeness.py" \
+  4d7d38b7df523213251b0a37aa96667fe0419688db4733beb18cd1b11e24e0b6 \
+  "recovery eval_completeness.py (fix pass 5)" || exit 1
+expect_hash "$CODE_DIR/probe_influence.py" \
+  45766606955f97464993bafa69f45f49051cb67e4480bd567f5c5980c5fe9e51 \
+  "recovery probe_influence.py (fix pass 5)" || exit 1
 expect_hash "$CODE_DIR/probe_report.py" \
   82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a \
   "recovery probe_report.py" || exit 1
@@ -108,15 +129,34 @@ expect_hash "$CODE_DIR/shm_sweep.py" \
 
 # --- preconditions -----------------------------------------------------
 for f in jobs_all.jsonl labels_all.jsonl \
-         eval_jobs_report.json eval_summary.json; do
+         eval_jobs_report.json eval_summary.json \
+         eval_jobs.jsonl evals_all.jsonl \
+         eval_states.jsonl cap_s1_b1.jsonl \
+         cap_s2_b1.jsonl; do
   [ -f "$OUT/$f" ] || {
     echo "ABORT: recovery input $OUT/$f is missing" >&2; exit 1; }
 done
 for f in jobs_supp.jsonl labels_supp.jsonl \
-         labels_merged.jsonl recovery_manifest.json; do
+         labels_merged.jsonl recovery_manifest.json \
+         eval_completeness.txt eval_completeness.json \
+         probe_influence.txt probe_influence.json; do
   [ ! -e "$OUT/$f" ] || {
     echo "ABORT: recovery output $OUT/$f already exists -- the recovery is single-shot" >&2; exit 1; }
 done
+
+# --- eval completeness assertion (fix pass 5, sec.2.2) ------------------
+# The eval phase ran on the same silent loader as the
+# label phase. Before anything is extracted, merged or
+# analyzed, assert from the run's own files that every
+# eval job produced world rows for every selected
+# candidate. A nonzero missing count stops the
+# recovery here and goes back to review.
+$PY "$CODE_DIR/eval_completeness.py" \
+  --eval-jobs "$OUT/eval_jobs.jsonl" \
+  --evals "$OUT/evals_all.jsonl" \
+  --json-out "$OUT/eval_completeness.json" \
+  > "$OUT/eval_completeness.txt" || {
+  echo "ABORT: eval completeness assertion failed -- the recovery stops before any extraction, merge or analysis (see eval_completeness.txt)" >&2; exit 1; }
 
 # --- free-space pre-flight (one tree) -----------------------------------
 PER_TREE=$(du -sb "$GTREE" | cut -f1)
@@ -264,6 +304,21 @@ $PY "$CODE_DIR/probe_report.py" \
   --json-out "$OUT/probe_report.json" \
   > "$OUT/probe_report.txt" || exit 1
 
+# --- the registered influence read (fix pass 5, sec.2.3) ------------------
+$PY "$CODE_DIR/probe_influence.py" \
+  --jobs "$OUT/jobs_all.jsonl" \
+  --labels "$OUT/labels_merged.jsonl" \
+  --capture-games "$OUT/eval_jobs_report.json" \
+  --settings "$SETTINGS" \
+  --eval-jobs "$OUT/eval_jobs.jsonl" \
+  --evals "$OUT/evals_all.jsonl" \
+  --eval-states "$OUT/eval_states.jsonl" \
+  --driver-rows "$OUT/cap_s1_b1.jsonl" \
+    "$OUT/cap_s2_b1.jsonl" \
+  --report-json "$OUT/probe_report.json" \
+  --json-out "$OUT/probe_influence.json" \
+  > "$OUT/probe_influence.txt" || exit 1
+
 # --- recovery manifest ----------------------------------------------------
 $PY - "$OUT" "$SUPP_SEED" <<'PYEOF' || exit 1
 import hashlib, json, os, sys
@@ -271,7 +326,11 @@ out, seed = sys.argv[1], int(sys.argv[2])
 names = ["jobs_all.jsonl", "labels_all.jsonl",
          "jobs_supp.jsonl", "labels_supp.jsonl",
          "label_stats_supp.jsonl", "labels_merged.jsonl",
-         "label_read.json", "probe_report.json"]
+         "label_read.json", "probe_report.json",
+         "eval_completeness.json",
+         "probe_influence.json", "probe_influence.txt"]
+infl = json.load(open(os.path.join(
+    out, "probe_influence.json")))
 man = {"supplementary_meas_seed": seed,
        "supplementary_jobs": ["540261752_t%d" % t
                               for t in range(64, 74)],
@@ -284,6 +343,14 @@ man = {"supplementary_meas_seed": seed,
            "fresh seed family MEAS_SEED = 970055001. "
            "All other jobs labeled in the original "
            "run. See the package doc sec.12."),
+       "eval_completeness": json.load(open(
+           os.path.join(out,
+                        "eval_completeness.json")))[
+           "missing_states"],
+       "influence_hold_lines": infl["hold_lines"],
+       "single_game_dependent": [
+           lever for lever, h in infl["hold"].items()
+           if h["hold"]],
        "files": {}}
 for fn in names:
     p = os.path.join(out, fn)

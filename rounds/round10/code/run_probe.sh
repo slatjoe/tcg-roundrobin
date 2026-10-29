@@ -100,7 +100,7 @@ expect_hash "$CODE_DIR/build_probe_jobs.py" \
   f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4 \
   "probe build_probe_jobs.py" || exit 1
 expect_hash "$CODE_DIR/probe_label_analyze.py" \
-  60935aec0b75873584a73950d5b9921ea3ef93bdac80cc97f857177fdc687bfc \
+  d8d93e3fbefb2776717637c4c920b4a0bfacb043ed9b1ac58eeb6b9bf6e8d6ba \
   "probe probe_label_analyze.py" || exit 1
 expect_hash "$CODE_DIR/probe_report.py" \
   82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a \

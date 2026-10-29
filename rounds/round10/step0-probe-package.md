@@ -536,11 +536,11 @@ box time is spent, so this decision is cheap.
 
 ## 6. Fixtures
 
-`fixtures/run_fx_r10.sh` — **ALL PASS (109 checks;
+`fixtures/run_fx_r10.sh` — **ALL PASS (126 checks;
 45 at the original package, +12 in the fix pass
 (§9), +29 in the second fix pass (§10), +13 in
 the third fix pass (§11), +10 in the fourth fix
-pass (§12))**,
+pass (§12), +17 in the fifth fix pass (§13))**,
 transcript staged at
 `fixtures/fx_r10_outputs.txt`:
 
@@ -1327,3 +1327,218 @@ loader's hash where they quote it.
   in particular `settings_probe.json`,
   `search_s3.php`, `search_s2.php` and the
   remaining reuse files are byte-identical.
+
+## 13. FIFTH FIX PASS (2026-10-29) — publish the evidence, check the eval, register the influence read
+
+On `claude-reply-9dae0e2.md` (the fourth pass's
+confirmation check: NOT YET — the fixes accepted in
+substance, three items required before the recovery
+runs). Joe approved the recovery execution on
+2026-10-29; this pass is the remaining gate.
+
+### 13.1 Attempt 3's evidence is published (the reply's §2.1)
+
+The fixture suite must pass **from the repo alone** —
+a fixture may read only what's published. At
+9dae0e2c `data/step0/` did not exist, so
+`fx_label_loader.py` N9/N10 (which plant attempt 3's
+real bare-`Infinity` line) failed with
+FileNotFoundError (107 of 109). Now published under
+`data/step0/`, every file fetched from the box and
+verified byte-identical against the box copy by
+sha256, with `data/step0/MANIFEST.md` recording
+sha256 + row counts for each:
+
+- capture: both driver rows (45 + 45), both snap
+  indexes (2,565 + 2,688);
+- eval: `eval_jobs.jsonl` (5,253),
+  `evals_all.jsonl.gz` (381,625 decompressed rows;
+  raw 1,171,452,622 B, sha256 `14cfdd35…`; gz
+  27,333,659 B), `eval_states.jsonl` (5,253),
+  `eval_summary.json`;
+- label jobs as the labeler consumed them:
+  `jobs_all.jsonl` (646) and all eight
+  `jobs_shard*_p*.jsonl` (row counts sum to 646;
+  `jobs_shard0_p2.jsonl` is the 115-line shard the
+  labeler loaded as 105);
+- labels: `labels_all.jsonl.gz` (63,600
+  decompressed rows), the aborted `label_read.txt`,
+  and every `label_shard*_p*.err` (shard0_p2's
+  line 3, `s2 label jobs=105`, is the silent
+  drop's fingerprint);
+- run records: `probe_launch_manifest.json`,
+  `registry_merge_b1.txt`.
+
+With the data in place the full suite passes from
+the repo: **126 checks, ALL PASS** (see §13.4).
+
+### 13.2 Eval completeness (the reply's §2.2)
+
+The eval phase's loader (`s1_eval_main.php`) is the
+same silent pattern, and `probe_eval_analyze.py`
+has no jobs-to-states count guard — a dropped eval
+job line would have vanished from every tail rate's
+denominator. New `code/eval_completeness.py`
+asserts, from the published files, that every eval
+job produced world rows for every one of its
+selected candidates, and prints the counts.
+
+**As run on attempt 3's published data**
+(`eval_jobs.jsonl` + `evals_all.jsonl.gz`):
+
+```
+eval job lines: 5253
+eval rows: 381625
+states with rows: 5253
+states complete (every selected candidate at exactly k rows): 5253
+missing states: 0
+(job, candidate) row counts != k: 0
+row split: finished 381587, unfinished 38, refusal 0 (error rows 38)
+rows for unknown snaps: 0; rows for unselected candidates: 0
+EVAL COMPLETENESS: CLEAN
+```
+
+The 38 unfinished rows are all error rows (none in
+a refusal class). The eval denominators are whole:
+no state vanished. **Recovery wiring:**
+`run_probe_recovery.sh` now runs this assertion on
+the box's `eval_jobs.jsonl` + `evals_all.jsonl`
+immediately after its preconditions — before any
+extraction, merge or analysis — and a nonzero exit
+aborts the recovery and sends it back to review.
+The loud loader for `s1_eval_main.php` itself is,
+per the reply, deferred to the next package that
+runs an eval; it is not needed now because the
+count is clean. Fixtures
+(`fixtures/fx_eval_completeness.py`, E1–E3): a
+complete synthetic pair passes; the same pair with
+one candidate's rows deleted is caught and the
+state named; a candidate short by one row is a
+named count anomaly.
+
+### 13.3 The influence read (the reply's §2.3)
+
+New `code/probe_influence.py`, wired into the
+recovery to run **after** `probe_report.py`; its
+outputs (`probe_influence.txt` / `.json`) land
+beside the report in OUT, and the recovery manifest
+now carries their hashes, the eval-completeness
+missing count, and any hold lines. Three parts:
+
+**(a) State inspection of game 540261752** — from
+the published files: the driver row's outcome;
+for each of the ten snaps (t64–t73): turn, prior
+pick vs search pick (card ids), top prior, the
+eval's per-candidate finished / unfinished / error
+counts (computed from the eval rows in the eval
+read's own taxonomy, cross-checked against its
+published `cand_diag`), and the prior pick's 25
+worlds split into horizon draws priced −1 vs
+outright losses. **Classification rule, from the
+rows' own fields:** a world is a horizon draw
+priced −1 iff `result.horizon == 1` — such rows
+record outcome 0 (a draw) and winner 0, and the
+registered horizon value (−1) is what prices them
+in the eval read (the eval analyzer substitutes
+the horizon value whenever winner == 0); an
+outright loss is a finished world with
+outcome == −1 and `horizon == 0`. The rows
+distinguish the two exactly: every `horizon == 1`
+row in `evals_all` (67,557) carries outcome 0. For
+the record, the inspection's inputs as sampled
+during this pass: the capture game itself was a
+capped draw (`winner 0, draw true, capped true`,
+63 turns, p1life 19 / p2life 8); all ten snaps
+read prior pick `chum_friendly_first_mate_yellow`
+(cand 0) vs search pick
+`prismatic_leyline_yellow` (cand 9) at top prior
+1.0; the eval's per-candidate counts are 25/25
+finished with zero unfinished and zero refusals in
+all ten; and of the prior pick's 250 worlds, 248
+are horizon draws priced −1 and 2 are outright
+losses. The script recomputes all of this from the
+files at recovery time; these sampled values are
+what it will print if the files are as published.
+
+**(b) Leave-one-game-out** for each lever's
+per-game gain, computed with
+`probe_label_analyze.py`'s **own** machinery:
+`job_diffs` and `per_game_gain` were lifted from
+`main()` to module level in this pass — a pure
+refactor, proven equivalent before anything
+depended on it (original vs refactored analyzer on
+a synthetic three-class set: stdout and JSON
+byte-identical) — and `probe_influence.py` imports
+them. The weighting is reused, never reimplemented;
+per-game totals are `per_game_gain`'s own
+aggregation, asserted against its full read
+(gain × n_games, tolerance 1e-9). The read prints,
+per lever: the LOGO range over all 90 exclusions,
+the largest single-game share of the gain and
+which game holds it, and the gain + one-sided 95%
+lower bound with that game excluded (plus the
+weakest exclusion overall).
+
+**(c) The hold rule** (process, not a change to
+the decision rule): if a lever is buildable under
+the registered rule (its `probe_report.json` gain
+lower bound > 0) but its lower bound is ≤ 0 with
+any single game excluded, the influence read
+prints **"buildable, single-game dependent"** for
+that lever — in `probe_influence.txt`, in its
+JSON, and (carried by the recovery manifest)
+alongside the report. Fixtures
+(`fixtures/fx_probe_influence.py`, L1–L3): a
+concentrated synthetic table (one game carrying
+9.0 of a 9.7 total) is identified with share
+9/9.7 ≈ 0.9278, LOGO range [0.7/9, 1.1], the
+carrier's exclusion lower bound ≤ 0, and the hold
+line fires on a buildable report; a diffuse table
+(+0.5 per game, lower bound 0.5 under every
+exclusion) and a non-buildable report both stay
+silent.
+
+The analyzer refactor changed
+`probe_label_analyze.py`'s hash, so its
+`expect_hash` literals in **both** `run_probe.sh`
+and `run_probe_recovery.sh` were updated from
+`sha256sum` of the refactored file (machine-copied,
+as always). The recovery also gains pins for
+`eval_completeness.py` and `probe_influence.py`,
+refusal-list entries for their outputs, and the
+eval-jobs / eval-rows / eval-states / driver-row
+files as required inputs.
+
+### 13.4 Suite state and files
+
+**Fixtures: 109 → 126 checks, ALL PASS** (the two
+new fixture files contribute E1–E3 and L1–L3, 17
+checks), transcript re-staged at
+`fixtures/fx_r10_outputs.txt` and byte-identical
+across two consecutive runs on the finished tree.
+
+**In-place corrections by this pass** (the
+standing practice): §6's check count and
+per-pass arithmetic are corrected above. Nothing
+else in §§1–12 is altered; the recovery's §12
+design stands, with the two steps this pass adds
+(step 0 and step 4b in the script's header).
+
+- **Files changed/added by this pass:**
+  `data/step0/` (new: the published evidence +
+  `MANIFEST.md`), `code/eval_completeness.py`
+  (new), `code/probe_influence.py` (new),
+  `code/probe_label_analyze.py` (the module-level
+  lift; math unchanged, equivalence-proven),
+  `code/run_probe.sh` (the analyzer pin literal),
+  `code/run_probe_recovery.sh` (the completeness
+  gate, the influence step, three new pins, the
+  manifest additions, header + refusal list),
+  `fixtures/fx_eval_completeness.py` (new),
+  `fixtures/fx_probe_influence.py` (new),
+  `fixtures/run_fx_r10.sh` (registers both),
+  `fixtures/fx_r10_outputs.txt` (re-staged
+  transcript), and this doc. `settings_probe.json`,
+  `search_s3.php`, `search_s2.php`,
+  `s2_label_main.php` and the remaining reuse
+  files are byte-identical.

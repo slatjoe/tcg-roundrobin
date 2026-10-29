@@ -1,0 +1,36 @@
+{
+ "jobs": 646,
+ "by_class": {
+  "uncontested": 329,
+  "uncontested_diag": 235,
+  "contested_band": 82
+ },
+ "uncontested_margin": 1.5,
+ "uncontested_diag_margin": 1.0,
+ "band": [
+  1.25,
+  1.5
+ ],
+ "alt_uncontested_counts": {
+  "uncontested@1.50": 329,
+  "uncontested@1.25": 496,
+  "uncontested@1.00": 564
+ },
+ "shards": {
+  "0": 195,
+  "1": 159,
+  "2": 190,
+  "3": 102
+ },
+ "nshard": 4,
+ "shard_cap_jobs": 256,
+ "label_tuple": {
+  "deadline_s": 180,
+  "hooks": 8000,
+  "horizon": 62,
+  "horizon_value": -1,
+  "k": 50,
+  "name": "L3-W50+H"
+ },
+ "games": 87
+}

@@ -53,6 +53,26 @@
 #                            and the loader's loud
 #                            abort on attempt 3's real
 #                            bare-Infinity line.
+#   fx_eval_completeness.py
+#                         -- the eval-completeness
+#                            assertion (fifth fix
+#                            pass): a complete
+#                            synthetic jobs+evals
+#                            pair passes; a deleted
+#                            candidate is caught and
+#                            named; a short candidate
+#                            is a named count anomaly.
+#   fx_probe_influence.py -- the influence read's
+#                            LOGO + hold rule (fifth
+#                            fix pass): a concentrated
+#                            synthetic table is
+#                            identified with the
+#                            correct share and fires
+#                            the hold line on a
+#                            buildable lever; a
+#                            diffuse table and a
+#                            non-buildable lever do
+#                            not.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 FAILED=0
@@ -69,6 +89,8 @@ run fx_probe_python.py python3 "$HERE/fx_probe_python.py"
 run fx_seed_clearance.py python3 "$HERE/fx_seed_clearance.py"
 run fx_runner_env.py python3 "$HERE/fx_runner_env.py"
 run fx_label_loader.py python3 "$HERE/fx_label_loader.py"
+run fx_eval_completeness.py python3 "$HERE/fx_eval_completeness.py"
+run fx_probe_influence.py python3 "$HERE/fx_probe_influence.py"
 echo "===== fx_repro (summary compared with staged output) ====="
 SUM_NOW=$(python3 "$HERE/../code/reproduce_r9_tables.py" 2>/dev/null \
           | grep '^==== SUMMARY' || true)

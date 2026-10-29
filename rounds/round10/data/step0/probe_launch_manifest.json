@@ -1,0 +1,150 @@
+{
+ "approved_sha": "e93a15cded0ddd5909854ae02a08f6922e2e1b08",
+ "attempt2": {
+  "context": "attempt 1 aborted at the runner free-space pre-flight (required 5858893850 B, available 3105521664 B); Joe directed rehoming the lesser-used scratch trees to disk instead of deleting them",
+  "joe_go": "2026-10-28 10:58 CDT",
+  "launch_env": {
+   "GTREE": "/tmp/gravytree",
+   "PROBE_OUT": "(unset; default /home/joe/tcg/r10probe_out)"
+  },
+  "log": "/home/joe/tcg/r10probe_out/probe_launch2.log",
+  "rehome": {
+   "bytes_total": 5883555565,
+   "destination": "/home/joe/tcg/tmp-archive",
+   "trees": [
+    "r9s3_gm_r1a",
+    "r9s3_gm_r1b",
+    "r9s3_gm_r2a",
+    "r9s3_gm_r2b",
+    "r9s3_gm_t1a",
+    "r9s3_gm_t1b",
+    "r9s3_gm_t2a",
+    "r9s3_gm_t2b",
+    "r9s3_l3_tree_0",
+    "r9s3_l3_tree_1",
+    "r9s3_l3_tree_2",
+    "r9s3_l3_tree_3"
+   ],
+   "verified": "destination total equals pre-move total (5883555565 B, 12 trees); /tmp sources gone; /tmp/gravytree, /tmp/distill_wcheck, /tmp/distill_pilot_resume untouched"
+  },
+  "relaunch_time": "2026-10-28T11:59:42-04:00",
+  "runner_pid": 3559247,
+  "tmp_available_bytes_after_rehome": 9680859136
+ },
+ "attempt2_outcome": {
+  "capture_games_completed_at_kill": 50,
+  "capture_rows_by_file": {
+   "cap_s1_b1.jsonl": 45,
+   "cap_s2_b1.jsonl": 5
+  },
+  "files": "all attempt-2 files left in place (probe_launch2.log, cap outputs and logs, deployed_code_hashes.txt, trees) - nothing deleted",
+  "kill_note": "SIGTERM to the explicit pid list (dispatch wrapper, runner, both capture search servers, driver helpers, seat-2 driver, its live play_game child); the whole tree was gone on the first post-TERM check - no SIGKILL needed. The brief's seat-1 driver pid 3559466 was already exited before the kill; seat-1's block had completed (45/45 rows).",
+  "killed_at": "2026-10-28T12:02-04:00",
+  "killed_by": "builder's order (the run is void)",
+  "pids_sigterm": [
+   3559247,
+   3559248,
+   3559392,
+   3559393,
+   3559465,
+   3598887,
+   3598888,
+   3601708
+  ],
+  "processes_verified_gone": "bracket-camouflaged pgrep over play_game / paired_driver / run_probe / search_server patterns returned no matches (exit 1)",
+  "reason": "capture hook inert for uncontested states: run_probe.sh never exports TEACHER_CAPTURE_UNCONTESTED, so the capture cannot serve the registered design; at detection 608 contested snap rows, 0 uncontested",
+  "shm_segments_after_kill": {
+   "gamestate_32768_byte": 0,
+   "sweep": "not run (far below the 3000 threshold)",
+   "total": 51
+  }
+ },
+ "attempt3": {
+  "approved_sha": "5ce1f585d14f11d2a7acbe599124caf6f63a2785",
+  "context": "attempt 1 aborted at the free-space pre-flight; attempt 2 was killed as void (capture hook inert: run_probe.sh never exported TEACHER_CAPTURE_UNCONTESTED; 608 contested snap rows, 0 uncontested). Fix pass 3 (one env-prefix line + verbatim composed-env fixture + getenv audit) confirmed by Claude at 5ce1f585; TEACHER_TUPLE_JSON ruled inert, no remedy.",
+  "dispatch_wrapper_pid": 3604699,
+  "first_minutes_verification": {
+   "abort_scan": "PASS - no ABORT in probe_launch3.log, prod_s1.log, prod_s2.log, cap_s1_b1.stdout",
+   "capture": "RUNNING - cap_s1_b1.jsonl rows appearing (30 at +2 min)",
+   "freespace": "PASS - required_bytes=4687115080, available_bytes=9680855040 (x1.25 gate)",
+   "g8": "PASS - startup sweep segments 51 -> 0; g8_capture_attached_kept.txt empty; sweeper LIVE on the capture tree, unattributed=0",
+   "hook_env_check": "PASS - snap index 1469 rows: 923 uncontested / 546 contested; over 26 completed games per-game averages 34.92 uncontested : 20.69 contested (expected near 34:24 at EVERY=2; attempt-2 failure signature was 0 uncontested); live play_game.php environ (pid 3627245) carries TEACHER_CAPTURE_UNCONTESTED=1 alongside TEACHER_CAPTURE=1",
+   "pins": "PASS - deployed_code_hashes.txt rewritten with exactly 16 entries (written only after all 16 expect_hash assertions pass); no ABORT in probe_launch3.log",
+   "servers": "PASS - prod_s1 and prod_s2 both loaded ckpt_v10.pt on cuda; s1 stats line fallbacks=0"
+  },
+  "joe_go": "2026-10-28 11:30 CDT",
+  "launch_env": {
+   "GTREE": "/tmp/gravytree",
+   "PROBE_OUT": "(unset; default /home/joe/tcg/r10probe_out)"
+  },
+  "launch_time": "2026-10-28T12:32:09-04:00",
+  "launched_sha": "358a5a228140fe376b362914ee736e1e266f4cc1",
+  "launched_sha_note": "differs from approved only under rounds/ (Claude's confirmation reply claude-reply-5ce1f58.md at 358a5a22)",
+  "log": "/home/joe/tcg/r10probe_out/probe_launch3.log",
+  "preflight": "no sim processes (bracket-camouflaged pgrep, clean re-run); /tmp available 9680855040 B >= 5858893850 required",
+  "redeploy": {
+   "run_probe.sh": "7c7b8f80c71a7c3e796a75fe71a483a013f949772e748a283859dfe63da94067 (read back on the box after scp; TEACHER_CAPTURE_UNCONTESTED=1 present at line 232)",
+   "spot_checks": "search_s3.php 8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d and probe_report.py 82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a still match their pins"
+  },
+  "runner_pid": 3604700,
+  "void_archive": {
+   "destination": "/home/joe/tcg/r10probe_out/attempt2_void",
+   "items": "26 attempt-2 outputs moved: probe_launch2.log, cap_s1_b1.jsonl + cap_s2_b1.jsonl (+ .manifest.json for s1; s2 had none), cap stdouts, cap_s1_b1_log/ + cap_s2_b1_log/, deployed_code_hashes.txt, g8_capture_* (4 files), prod_s1.log + prod_s2.log, cap_game_ids.txt, ipcs_cap_s1/s2.txt, prod_s1/s2.sock, shm_start_cap_s1/s2.txt, shm_sweep_cap_s1/s2.log, shm_sweep_cap_s1.stop, streams.txt; extracted void_game_ids.txt added by the merge step",
+   "scratch_trees_deleted": [
+    "/tmp/r10probe_cap_s1",
+    "/tmp/r10probe_cap_s2"
+   ],
+   "untouched": "/tmp/gravytree (468711508 B, verified present after the archive)"
+  },
+  "void_registry_merge": {
+   "ids": "50 gamenames extracted from the archived cap driver rows (45 seat-1 + 5 seat-2); the set equals attempt 2's cap_game_ids.txt exactly",
+   "ids_file": "/home/joe/tcg/r10probe_out/attempt2_void/void_game_ids.txt",
+   "registry_after": "7381 games, sha256 1485ef0a70f298c895cb534e6b287e42d7a72e6e7bcbd3b3627a7f0bd11de7f0",
+   "registry_before": "7331 games, sha256 24156438ec0383aa56a2e0fd1748f1c91e93aa28762b903232347286adf973ed",
+   "tag": "r10_probe_capture_void",
+   "tool": "round10_code/merge_registry.py invoked as the runner invokes it (--registry, --tag, --ids, --vault)"
+  }
+ },
+ "code_dir": "/home/joe/tcg/round10_code",
+ "deployed_hashes_note": "read back on the box after scp; all 18 match the staging tree, and the 16 pinned files match the runner's expect_hash literals",
+ "deployed_hashes_sha256": {
+  "analyze_l3.py": "16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9",
+  "build_probe_eval_jobs.py": "94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3",
+  "build_probe_jobs.py": "c08d8c8238918e3e65340be85b743d4ce68d0493b3e4c98d206c2e229fe868ae",
+  "g8_sweep2.sh": "d49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17",
+  "merge_registry.py": "13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe",
+  "paired_driver_gravy.py": "3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359",
+  "probe_eval_analyze.py": "7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90",
+  "probe_label_analyze.py": "60935aec0b75873584a73950d5b9921ea3ef93bdac80cc97f857177fdc687bfc",
+  "probe_report.py": "82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a",
+  "reproduce_r9_tables.py": "fd9b302b8badfc879e2263d2a0054a7e6f351ed4dc465db78fdcdfe0f9288261",
+  "run_probe.sh": "6fa1f54d3dac08143793b24b295774c244628d15e8c4aad8dbcd61aa08e3977a",
+  "s1_eval_main.php": "73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a",
+  "s2_label_main.php": "c7a76af4fb59e8e6e0b69a6d06157efc44597b04238cdb3b2efe48350cdda888",
+  "search_s2.php": "85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa",
+  "search_s3.php": "8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d",
+  "settings_probe.json": "5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb",
+  "shm_sweep.py": "98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33",
+  "stage0_report.py": "5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf"
+ },
+ "joe_go": "2026-10-28 09:58 CDT",
+ "launch_env": {
+  "BLOCK": "(unset; 1)",
+  "GTREE": "/tmp/gravytree",
+  "GTREE_note": "the runner's built-in default (/home/joe/tcg/gravytree) does not exist on the box; every round-9 runner defaulted to /tmp/gravytree (468711508 B, present, deck + vendor/talishar verified). GTREE is the runner's own env override; set explicitly and recorded here.",
+  "PHASE": "(unset; all)",
+  "PROBE_OUT": "(unset; default /home/joe/tcg/r10probe_out)"
+ },
+ "launch_time": "2026-10-28T11:01:04-04:00",
+ "launched_sha": "1a27a5ae3b3a888649441fd46fcfafda003b5d1e",
+ "launched_sha_note": "differs from approved only under rounds/ (Claude's confirmation reply claude-reply-e93a15c.md at 1a27a5ae + the launch record)",
+ "preflight": {
+  "registry": "/home/joe/tcg/registry-vault/do_not_train_registry.json sha256 24156438ec0383aa56a2e0fd1748f1c91e93aa28762b903232347286adf973ed, 7331 games (post-Stage-3 state)",
+  "stray_sim_processes": "none (bracket-camouflaged pgrep)",
+  "tmp_available_bytes_at_preflight": 3105521664,
+  "tmp_note": "runner FREESPACE requires per-tree 468711508 x 10 trees x 1.25 = 5858893850 B available; pre-flight available is below that - the runner's own gate decides at launch (Stage 3 attempt-1 pattern). Occupants include Stage 3's 12 completed-run trees (5883555565 B) and the two round-8 leftovers skipped in the Stage 3 cleanup (distill_wcheck 1845812615 B, distill_pilot_resume 740110317 B)."
+ },
+ "probe_out": "/home/joe/tcg/r10probe_out",
+ "round": "round10-step0-probe",
+ "tracker": "approved by Joe (with a tracker, 2026-10-28 09:58 CDT)"
+}

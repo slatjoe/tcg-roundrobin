@@ -74,6 +74,106 @@ def pct(x):
     return "%.4f" % x if x is not None else "n/a"
 
 
+def job_diffs(jobs, rows, s0):
+    """The read's per-job paired diffs, computed
+    exactly as this script's main() has always
+    computed them (worlds paired by world index
+    across each job's two candidates, refusal worlds
+    skipped, only worlds finished in BOTH candidates
+    counted). Lifted to module level in fix pass 5
+    (claude-reply-9dae0e2 sec.2.3) so that
+    probe_influence.py reuses THIS machinery for its
+    leave-one-game-out read instead of reimplementing
+    it; the math is unchanged. Returns
+    (diff_by_snap, counts)."""
+    job_by_snap = {str(j["snap"]): j for j in jobs}
+    worlds = defaultdict(dict)
+    fallbacks = 0
+    fin = unf = ref = 0
+    for r in rows:
+        snap = str(r.get("snap"))
+        if snap not in job_by_snap:
+            continue
+        j = job_by_snap[snap]
+        cand = int(r["cand"])
+        if cand not in (int(j["teacher_pick"]),
+                        int(j["prior_pick"])):
+            continue
+        kind, _ = s0.classify(r.get("result"))
+        if kind == "finished":
+            fin += 1
+        elif kind == "refusal":
+            ref += 1
+        else:
+            unf += 1
+        if isinstance(r.get("result"), dict):
+            fallbacks += int(r["result"].get("fallbacks") or 0)
+        if int(r["world"]) not in worlds[(snap, cand)]:
+            worlds[(snap, cand)][int(r["world"])] = (
+                kind, r.get("result"))
+
+    def score(res):
+        return 1.0 if float(res["outcome"]) > 0 else 0.0
+
+    diff_by_snap = {}
+    for snap, j in job_by_snap.items():
+        tp, pp = int(j["teacher_pick"]), int(j["prior_pick"])
+        wt = worlds.get((snap, tp), {})
+        wp = worlds.get((snap, pp), {})
+        diffs = []
+        for w in sorted(set(wt) & set(wp)):
+            kt, rt = wt[w]
+            kp, rp = wp[w]
+            if kt == "refusal" or kp == "refusal":
+                continue
+            if kt != "finished" or kp != "finished":
+                continue
+            diffs.append(score(rt) - score(rp))
+        if diffs:
+            diff_by_snap[snap] = {
+                "diff": sum(diffs) / len(diffs),
+                "game": str(j["game"]),
+                "probe_band": str(j["probe_band"]),
+                "prior_band": j.get("prior_band"),
+                "z": float(j["z"]),
+                "n_worlds": len(diffs)}
+    counts = {"finished": fin, "unfinished": unf,
+              "refusals": ref,
+              "fallbacks": fallbacks,
+              "jobs_no_shared_worlds":
+                  len(jobs) - len(diff_by_snap)}
+    return diff_by_snap, counts
+
+
+def per_game_gain(recs, cap_games, stock, weight=1.0):
+    """Claude's sec.5 per-game gain: per capture game,
+    the summed (weighted) diffs of that game's jobs,
+    averaged over ALL capture games in cap_games
+    (games with no jobs of the class contribute 0),
+    with the game-clustered CI; the one-sided 95%
+    lower bound is the two-sided CI's lower bound,
+    the registered conservative stand-in. Lifted to
+    module level in fix pass 5 for probe_influence.py
+    (its LOGO read calls this on game-excluded record
+    and population sets); the math is unchanged."""
+    per = defaultdict(float)
+    for r in recs:
+        per[r["game"]] += r["diff"] * weight
+    grecs = [{"game": g, "diff": per.get(g, 0.0)}
+             for g in cap_games]
+    if not grecs:
+        return {"gain": None, "ci": None,
+                "lb95_1sided": None, "weight": weight}
+    m = sum(r["diff"] for r in grecs) / len(grecs)
+    lo, hi = stock.cluster_bootstrap(grecs)
+    # one-sided 95% lower bound from the same bootstrap
+    # distribution would need the replicates; the
+    # registered form uses the two-sided CI's lower
+    # bound as the conservative stand-in and says so.
+    return {"gain": m, "ci": [lo, hi], "lb95_1sided": lo,
+            "games": len(grecs), "weight": weight}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--jobs", required=True)
@@ -126,57 +226,11 @@ def main():
                                       a.expect_rows))
                 return 2
 
-    worlds = defaultdict(dict)
-    fallbacks = 0
-    fin = unf = ref = 0
-    for r in rows:
-        snap = str(r.get("snap"))
-        if snap not in job_by_snap:
-            continue
-        j = job_by_snap[snap]
-        cand = int(r["cand"])
-        if cand not in (int(j["teacher_pick"]),
-                        int(j["prior_pick"])):
-            continue
-        kind, _ = s0.classify(r.get("result"))
-        if kind == "finished":
-            fin += 1
-        elif kind == "refusal":
-            ref += 1
-        else:
-            unf += 1
-        if isinstance(r.get("result"), dict):
-            fallbacks += int(r["result"].get("fallbacks") or 0)
-        if int(r["world"]) not in worlds[(snap, cand)]:
-            worlds[(snap, cand)][int(r["world"])] = (
-                kind, r.get("result"))
-
-    def score(res):
-        return 1.0 if float(res["outcome"]) > 0 else 0.0
-
-    diff_by_snap = {}
-    for snap, j in job_by_snap.items():
-        tp, pp = int(j["teacher_pick"]), int(j["prior_pick"])
-        wt = worlds.get((snap, tp), {})
-        wp = worlds.get((snap, pp), {})
-        diffs = []
-        for w in sorted(set(wt) & set(wp)):
-            kt, rt = wt[w]
-            kp, rp = wp[w]
-            if kt == "refusal" or kp == "refusal":
-                continue
-            if kt != "finished" or kp != "finished":
-                continue
-            diffs.append(score(rt) - score(rp))
-        if diffs:
-            diff_by_snap[snap] = {
-                "diff": sum(diffs) / len(diffs),
-                "game": str(j["game"]),
-                "probe_band": str(j["probe_band"]),
-                "prior_band": j.get("prior_band"),
-                "z": float(j["z"]),
-                "n_worlds": len(diffs)}
-    jobs_no_shared = len(jobs) - len(diff_by_snap)
+    diff_by_snap, dc = job_diffs(jobs, rows, s0)
+    fin, unf, ref = dc["finished"], dc["unfinished"], \
+        dc["refusals"]
+    fallbacks = dc["fallbacks"]
+    jobs_no_shared = dc["jobs_no_shared_worlds"]
 
     def read(recs):
         if not recs:
@@ -185,24 +239,6 @@ def main():
         lo, hi = stock.cluster_bootstrap(
             [{"game": r["game"], "diff": r["diff"]} for r in recs])
         return {"jobs": len(recs), "edge": m, "ci": [lo, hi]}
-
-    def per_game_gain(recs, weight=1.0):
-        per = defaultdict(float)
-        for r in recs:
-            per[r["game"]] += r["diff"] * weight
-        grecs = [{"game": g, "diff": per.get(g, 0.0)}
-                 for g in cap_games]
-        if not grecs:
-            return {"gain": None, "ci": None,
-                    "lb95_1sided": None, "weight": weight}
-        m = sum(r["diff"] for r in grecs) / len(grecs)
-        lo, hi = stock.cluster_bootstrap(grecs)
-        # one-sided 95% lower bound from the same bootstrap
-        # distribution would need the replicates; the
-        # registered form uses the two-sided CI's lower
-        # bound as the conservative stand-in and says so.
-        return {"gain": m, "ci": [lo, hi], "lb95_1sided": lo,
-                "games": len(grecs), "weight": weight}
 
     recs_all = list(diff_by_snap.values())
     out = {"jobs": len(jobs),
@@ -219,7 +255,7 @@ def main():
         # sec.2.1: uncontested jobs carry the sampling
         # weight; contested-band jobs are unsampled.
         w = float(unc_every) if cls == "uncontested" else 1.0
-        gain = per_game_gain(recs, w)
+        gain = per_game_gain(recs, cap_games, stock, w)
         out["by_class"][cls] = rd
         out["per_game_gain"][cls] = gain
         lines.append(
