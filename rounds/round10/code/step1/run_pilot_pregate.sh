@@ -107,7 +107,7 @@ expect_hash "$CODE_DIR/paired_driver_gravy.py" \
   3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359 \
   "paired_driver_gravy.py"
 expect_hash "$CODE_DIR/pregate_check_pilot.py" \
-  260e0797560c7a0ad8055069833f044bb5bef8594f79a4517227f007140f4299 \
+  98b3d2ff68e389bf5c76987247329be6233a3230f39391f556b69c66a29d1f46 \
   "pregate_check_pilot.py"
 expect_hash "$CODE_DIR/merge_registry.py" \
   13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe \

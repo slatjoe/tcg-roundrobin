@@ -7,7 +7,11 @@ step1-pilot-launch.md: the v1 fixture reused the SAME
 game ids in both arms, so its pairing key overlapped
 and it passed, while the real instrument's arm-local
 instance ids are disjoint and the v1 checker paired
-zero decisions.
+zero decisions. Gate semantics updated in fix pass 3
+(claude-reply-3955e55.md sec.2): a timeout anywhere
+in the loaded population makes the verdict
+INCONCLUSIVE, and the priors tolerance is 1e-5 with
+prior_pick exact beside selected.
 
 Planted shapes, per seat:
   * DISJOINT game-id sets: the sec.14 arm's games are
@@ -23,7 +27,7 @@ Planted shapes, per seat:
     still IDENTICAL;
   * a contested pair whose priors differ at ~1e-7
     (the observed GPU float noise) with identical
-    selected -> a contested pair, within the 1e-6
+    selected -> a contested pair, within the 1e-5
     tolerance;
   * K6-clean rollout rows in both arms.
 Negative / control cases (separate invocations):
@@ -34,6 +38,14 @@ Negative / control cases (separate invocations):
     the Layer B failure, reproduced;
   * a contested pair's priors differing at 1e-4 ->
     contested_bad -> NOT IDENTICAL;
+  * a contested pair's priors differing at 5e-6 ->
+    within the 1e-5 tolerance -> IDENTICAL;
+  * a contested pair's priors differing at 2e-5 ->
+    beyond the 1e-5 tolerance -> contested_bad ->
+    NOT IDENTICAL;
+  * a contested pair with EQUAL priors (and equal
+    selected) but a different prior_pick on the thr
+    side -> contested_bad -> NOT IDENTICAL;
   * an off-shape pair (sec.14 searched x thr
     uncontested) -> counted by name -> NOT IDENTICAL;
   * the sec.14 arm skipping a decision whose thr-arm
@@ -41,9 +53,12 @@ Negative / control cases (separate invocations):
     by name -> NOT IDENTICAL;
   * a thr driver row that is a TIMEOUT row (the real
     attempt-1 shape: invalid == "timeout", no
-    gamename) -> reported as a named timeout, never
-    an identity failure; identity is judged on the
-    completed games and the verdict stays IDENTICAL.
+    gamename) -> reported as a named timeout in the
+    leg lines; the completed population's identity
+    lines still print (diagnostic), but the VERDICT
+    is "PREGATE: INCONCLUSIVE (timeout: ...)",
+    exit non-zero -- NOT IDENTICAL's sibling, never
+    IDENTICAL (fix pass 3).
 """
 import json
 import os
@@ -89,7 +104,8 @@ def gid(arm, seat, seed):
 
 
 def plant(seat, priors_b_top=0.99994,
-          contested_b=None, off_shape=False):
+          contested_b=None, off_shape=False,
+          pick_b=None):
     """sec.14 arm rows, thr arm rows, for seed 13001's
     game (each arm under its OWN instance id)."""
     ga = gid("g14s", seat, 13001)
@@ -123,7 +139,9 @@ def plant(seat, priors_b_top=0.99994,
                       means=[0.0, 0.1], n_worlds=25))
         b.append(dict(base, game=gb, turn=5, contested=1,
                       priors=pb, selected=[0, 1],
-                      prior_pick=0, pick=0, ghost=1,
+                      prior_pick=0 if pick_b is None
+                      else pick_b,
+                      pick=0, ghost=1,
                       means=[0.0, 0.1], n_worlds=25))
     return a, b
 
@@ -242,15 +260,55 @@ def main():
               and "sec14-uncontested_x_thr-searched_"
               "below-0.97" in r.stdout)
     with tempfile.TemporaryDirectory() as tmp:
-        r = build(tmp, timeout_thr_seed=13002)
-        check("P timeout row reported as a timeout, "
-              "identity on completed games -> "
-              "IDENTICAL",
+        r = build(tmp, plant_kw={
+            "contested_b": {"0": 0.500005,
+                            "1": 0.399995}})
+        check("P contested priors off by 5e-6 pass at "
+              "tol 1e-5 -> IDENTICAL",
               r.returncode == 0
               and "PREGATE: IDENTICAL" in r.stdout
-              and "timeouts: 1 seed(s): seed 13002 "
-              "(thr)" in r.stdout,
+              and "1 contested pairs, 0 bad"
+              in r.stdout
+              and "max |dprior| 5.000e-06" in r.stdout,
               r.stdout[-300:] if r.returncode else "")
+    with tempfile.TemporaryDirectory() as tmp:
+        r = build(tmp, plant_kw={
+            "contested_b": {"0": 0.50002, "1": 0.39998}})
+        check("P contested priors off by 2e-5 -> "
+              "contested_bad at tol 1e-5 -> "
+              "NOT IDENTICAL",
+              r.returncode == 2
+              and "NOT IDENTICAL" in r.stdout
+              and "1 contested pairs, 1 bad"
+              in r.stdout)
+    with tempfile.TemporaryDirectory() as tmp:
+        r = build(tmp, plant_kw={"pick_b": 1})
+        check("P equal priors, different prior_pick "
+              "-> contested_bad -> NOT IDENTICAL",
+              r.returncode == 2
+              and "NOT IDENTICAL" in r.stdout
+              and "1 contested pairs, 1 bad"
+              in r.stdout
+              and "prior_pick equal: False"
+              in r.stdout)
+    with tempfile.TemporaryDirectory() as tmp:
+        r = build(tmp, timeout_thr_seed=13002)
+        check("P one timeout row in an otherwise "
+              "identical population -> INCONCLUSIVE "
+              "naming the arm and seed, exit non-zero",
+              r.returncode == 2
+              and "PREGATE: INCONCLUSIVE (timeout: "
+              "ghostthr_s1 seeds 13002; ghostthr_s2 "
+              "seeds 13002)" in r.stdout
+              and "PREGATE: IDENTICAL" not in r.stdout,
+              r.stdout[-300:] if r.returncode != 2
+              else "")
+        check("P timeout case still prints the "
+              "completed population's identity lines "
+              "(diagnostic)",
+              "1 contested pairs, 0 bad" in r.stdout
+              and "timeouts: 1 seed(s): seed 13002 "
+              "(thr)" in r.stdout)
     print("fx_pilot_pregate: %d checks, %d failed"
           % (checks, len(fails)))
     return 1 if fails else 0

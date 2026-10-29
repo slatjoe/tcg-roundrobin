@@ -3,7 +3,10 @@
 (step1-pilot-package.md sec.7; REPAIRED in fix pass 2,
 2026-10-29 -- see the launch record
 step1-pilot-launch.md for the three-layer diagnosis
-this repair answers).
+this repair answers; GATE SEMANTICS and the priors
+tolerance revised in fix pass 3, 2026-10-29,
+claude-reply-3955e55.md sec.2 -- see sec.12 of the
+package doc).
 
 Two ghost arms (TEACHER_GHOST: the full search machinery
 runs, the played pick is forced to the prior's) on the
@@ -29,9 +32,11 @@ differ. The check, exactly:
      (attempt 1's failures were exactly this: the
      1,200 s driver default, sized for the sec.14 arm,
      killed five + three thr games whose completed
-     counterparts are all byte-identical). Under the
-     repaired sizing a timeout should not occur; if
-     one does, the verdict line names it.
+     counterparts are all byte-identical). This leg's
+     line remains a DIAGNOSTIC over the completed
+     population; the GATE consequence of any timeout
+     is the INCONCLUSIVE verdict (see the verdict
+     paragraph below).
   3. CONTESTED-CLASS IDENTITY: decisions paired BY
      SEED AND SEQUENCE ORDER. The driver rows give
      each arm's seed -> gamename mapping for completed
@@ -44,13 +49,18 @@ differ. The check, exactly:
      every row as an "other" divergence.) For a pair
      where both arms searched and the sec.14 row's top
      prior is < 0.97 (a contested pair): the SELECTED
-     candidate sets must be EXACTLY equal, and the
-     priors must agree to a max-abs-difference
-     tolerance of 1e-6 (PRIORS_TOL below; the observed
-     instrument noise is ~1e-7 -- GPU-served float
-     noise -- an order of magnitude of headroom; the
-     check prints the observed maximum abs diff so the
-     tolerance's adequacy is itself in the record).
+     candidate sets and the PRIOR_PICKS must be
+     EXACTLY equal, and the priors must agree to a
+     max-abs-difference tolerance of 1e-5 (PRIORS_TOL
+     below; basis: the server's float32 arithmetic is
+     ~1.2e-7 relative per ULP and observed cross-
+     process differences run a few ULPs, so 1e-5 --
+     about 80 ULPs at 1.0 -- sits far above serving
+     noise and far below any difference that could
+     move a candidate in or out of the selection; the
+     check prints the observed maximum abs diff per
+     seat so the tolerance's adequacy is itself in
+     the record).
      The rollout outcomes are NOT compared -- Decide's
      seed base is drawn per call, so two processes
      cannot reproduce each other's worlds.
@@ -84,8 +94,21 @@ differ. The check, exactly:
      true except possibly ghost_flag_on_all_rollouts
      (read under K6, as in round 9).
 
-Verdict IDENTICAL iff 1, 2, 3, 5, 6 hold and 4's
-divergences are all of the expected shape. Exit 0 iff
+Verdict (fix pass 3): INCONCLUSIVE if ANY driver
+row in ANY arm this checker loads (raw_s1, raw2_s1,
+raw_s2, ghost14_s1, ghost14_s2, ghostthr_s1,
+ghostthr_s2) is a timeout (invalid == "timeout") --
+the comparison population is incomplete, so identity
+over the completed subset is diagnostic only, never
+a gate result. At the 7,845 s sizing (6.8x the
+slowest completed thr game of attempt 1) a timeout
+is itself an anomaly, and the case returns to
+review. The verdict line then reads exactly
+"PREGATE: INCONCLUSIVE (timeout: <arm> seeds <list>;
+...)", naming every timed-out arm and its seeds,
+and the exit is non-zero. Otherwise IDENTICAL iff
+1, 2, 3, 5, 6 hold and 4's divergences are all of
+the expected shape; else NOT IDENTICAL. Exit 0 iff
 IDENTICAL, else 2.
 
 Usage:
@@ -104,12 +127,29 @@ import sys
 from collections import defaultdict
 
 BOUNDARY = 0.97
-# Registered in step1-pilot-package.md sec.7 (fix
-# pass 2): priors on a contested pair must agree to
-# this max abs difference. Observed instrument noise
-# is ~1e-7 (GPU-served floats); 1e-6 is an order of
-# magnitude of headroom. `selected` stays EXACT.
-PRIORS_TOL = 1e-6
+# Registered in step1-pilot-package.md sec.12 (fix
+# pass 3, claude-reply-3955e55.md sec.2.2): priors on
+# a contested pair must agree to this max abs
+# difference. Basis: the policy server computes in
+# float32 -- about 1.2e-7 relative per ULP at 1.0 --
+# and observed cross-process differences run a few
+# ULPs; 1e-5 absolute is about 80 ULPs at 1.0, far
+# above serving noise and far below any difference
+# that could move a candidate in or out of the
+# selection. NOT fitted to attempt 1's observed
+# maxima (5.4e-07 / 7.2e-07): a bound set from those
+# (the fix-pass-2 1e-6) sat only ~1.4-1.9x above the
+# worst observed pair and could fail a fresh attempt
+# on float noise alone. `selected` AND `prior_pick`
+# stay EXACT.
+PRIORS_TOL = 1e-5
+
+# The arms this checker loads, in canonical order;
+# the fix-pass-3 timeout gate (sec.12) ranges over
+# exactly these row files.
+ROW_TAGS = ("raw_s1", "raw2_s1", "raw_s2",
+            "ghost14_s1", "ghost14_s2",
+            "ghostthr_s1", "ghostthr_s2")
 
 PLAYED_FIELDS = ("winner", "draw", "capped", "turns",
                  "gamelog_sha")
@@ -219,6 +259,17 @@ def main():
         t, p = spec.split("=", 1)
         stats[t] = load_stats(p)
 
+    # Fix pass 3 timeout gate: a timeout anywhere in
+    # the loaded population makes the GATE verdict
+    # INCONCLUSIVE (the legs below still print, as
+    # diagnostics over the completed population).
+    gate_timeouts = []   # (tag, [seeds]) canonical
+    for tag in ROW_TAGS:
+        ts = sorted(s for s, r in rows.get(tag, {})
+                    .items() if is_timeout(r))
+        if ts:
+            gate_timeouts.append((tag, ts))
+
     ok = True
 
     def verdict(name, good, detail=""):
@@ -290,7 +341,8 @@ def main():
         tail_by_arm = {"sec14": 0, "thr": 0}
         obs_max = 0.0
         worst = None        # (diff, seed, index)
-        bad_example = None  # (seed, index, diff, sel_eq)
+        bad_example = None  # (seed, index, diff,
+                            #  sel_eq, pick_eq)
         pair_errors = 0
         for s in completed:
             ga, gb = g14[s].get("gamename"), \
@@ -339,16 +391,21 @@ def main():
                     contested_pairs += 1
                     sel_eq = ra.get("selected") \
                         == rb.get("selected")
+                    pick_eq = ra.get("prior_pick") \
+                        == rb.get("prior_pick")
                     d = max_abs_diff(priors_map(ra),
                                      priors_map(rb))
                     if d is not None and d > obs_max:
                         obs_max = d
                         worst = (d, s, i)
-                    if not sel_eq or d is None \
+                    if not sel_eq or not pick_eq \
+                            or d is None \
                             or d > PRIORS_TOL:
                         contested_bad += 1
                         if bad_example is None:
-                            bad_example = (s, i, d, sel_eq)
+                            bad_example = (s, i, d,
+                                           sel_eq,
+                                           pick_eq)
                 else:
                     # both searched a >= boundary
                     # decision: impossible for the
@@ -374,9 +431,9 @@ def main():
                   % (seat, s, "+".join(arms)))
         div_total = sum(div.values())
         verdict("seat %d contested-class identity "
-                "(selected exact, priors tol %.0e, "
-                "seed-paired sequence order)" % (seat,
-                                                 PRIORS_TOL),
+                "(selected + prior_pick exact, priors "
+                "tol %.0e, seed-paired sequence order)"
+                % (seat, PRIORS_TOL),
                 contested_bad == 0 and div_total == 0
                 and pair_errors == 0,
                 "%d contested pairs, %d bad, %d named "
@@ -393,12 +450,13 @@ def main():
         if bad_example is not None:
             print("INFO seat %d first contested-bad "
                   "pair: seed %d decision %d, |dprior| "
-                  "%s, selected equal: %s"
+                  "%s, selected equal: %s, prior_pick "
+                  "equal: %s"
                   % (seat, bad_example[0], bad_example[1],
                      ("%.3e" % bad_example[2])
                      if bad_example[2] is not None
                      else "n/a (priors missing)",
-                     bad_example[3]))
+                     bad_example[3], bad_example[4]))
         print("INFO seat %d newly-contested divergences "
               "(expected shape): %d; both-uncontested "
               "pairs skipped: %d; unpaired tail rows "
@@ -422,6 +480,14 @@ def main():
                     line[2] == 0 and line[3] == 0,
                     "(rollout, unstamped, not-thin, "
                     "pick-off)")
+    if gate_timeouts:
+        named = "; ".join(
+            "%s seeds %s" % (tag, ", ".join(
+                str(s) for s in ss))
+            for tag, ss in gate_timeouts)
+        print("PREGATE: INCONCLUSIVE (timeout: %s)"
+              % named)
+        return 2
     print("PREGATE: %s" % ("IDENTICAL" if ok
                            else "NOT IDENTICAL"))
     return 0 if ok else 2

@@ -16,7 +16,7 @@ PASS run_pilot.sh pin site paired_driver_gravy.py 3389b1b936180909
 PASS run_pilot.sh pin site build_pilot_jobs.py d855c7aa7155f6ab
 PASS run_pilot.sh pin site pilot_games_report.py 30bb888ee12b1c0e
 PASS run_pilot.sh pin site pilot_read.py 69cae8601265a1eb
-PASS run_pilot.sh pin site pregate_check_pilot.py 260e0797560c7a0a
+PASS run_pilot.sh pin site pregate_check_pilot.py 98b3d2ff68e389bf
 PASS run_pilot.sh pin site merge_registry.py 13a655e37d2d1eb0
 PASS run_pilot.sh pin site stage0_report.py 5c7e5393a3125146
 PASS run_pilot.sh pin site analyze_l3.py 16017ffa71df0b37
@@ -42,7 +42,7 @@ PASS run_pilot_pregate.sh deploy list parses
 PASS run_pilot_pregate.sh pin site search_s3.php 87779e8ec9693577
 PASS run_pilot_pregate.sh pin site search_s3_thr.php 4a1936fe8e8794af
 PASS run_pilot_pregate.sh pin site paired_driver_gravy.py 3389b1b936180909
-PASS run_pilot_pregate.sh pin site pregate_check_pilot.py 260e0797560c7a0a
+PASS run_pilot_pregate.sh pin site pregate_check_pilot.py 98b3d2ff68e389bf
 PASS run_pilot_pregate.sh pin site merge_registry.py 13a655e37d2d1eb0
 PASS run_pilot_pregate.sh pin site shm_sweep.py 98027a8b6f58bb06
 PASS run_pilot_pregate.sh pin site settings_pilot.json 0571e03a31f1d1aa
@@ -118,8 +118,12 @@ PASS P v1 checker FAILS the disjoint-ids population (Layer B reproduced)
 PASS P contested priors off by 1e-4 -> contested_bad -> NOT IDENTICAL 
 PASS P off-shape pair counted by name -> NOT IDENTICAL 
 PASS P sec.14 skip below the boundary counted by name -> NOT IDENTICAL 
-PASS P timeout row reported as a timeout, identity on completed games -> IDENTICAL 
-fx_pilot_pregate: 9 checks, 0 failed
+PASS P contested priors off by 5e-6 pass at tol 1e-5 -> IDENTICAL 
+PASS P contested priors off by 2e-5 -> contested_bad at tol 1e-5 -> NOT IDENTICAL 
+PASS P equal priors, different prior_pick -> contested_bad -> NOT IDENTICAL 
+PASS P one timeout row in an otherwise identical population -> INCONCLUSIVE naming the arm and seed, exit non-zero 
+PASS P timeout case still prints the completed population's identity lines (diagnostic) 
+fx_pilot_pregate: 13 checks, 0 failed
 
 ===== fx_pilot_loader.py =====
 PASS s2_label_main.php byte-identical to the round-10 file (fx_label_loader coverage) 

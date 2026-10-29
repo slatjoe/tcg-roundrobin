@@ -640,3 +640,163 @@ guard unchanged; the manifest records the attempt
 number. run_pilot.sh's PREGATE-GATE reads the
 LATEST attempt's manifest (attempt<N> dirs in
 version order; the flat path is the fallback).
+
+## 12. Fix pass 3 (2026-10-29) — claude-reply-3955e55 §2
+
+Claude reproduced the §11 diagnosis independently
+(his own seed pairing and sequence-order alignment
+of the published rows: 97 / 122 contested pairs, 0
+selected diffs, maxima 5.364e-07 / 7.153e-07, 309 /
+456 newly-contested, every completed thr game
+byte-identical by gamelog to its sec.14 counterpart
+and to the raw game) and accepted the repair's
+shape. Two items were required, one cost note was
+given, and one process ruling was recorded. §11
+stands as the pass-2 record; this note supersedes
+it where it says so.
+
+**The process ruling (in substance).** The pass-2
+checker's read-only IDENTICAL on attempt 1's
+fetched data is a DIAGNOSTIC, not a gate result: a
+checker revised after seeing a failure does not get
+to re-read that same data as the verdict. **The
+gate is attempt 2**, run fresh under the checker as
+approved. Attempt 1's NOT IDENTICAL stands as
+recorded. (Under the pass-3 semantics below, the
+attempt-1 data reads INCONCLUSIVE -- the timeouts
+gate -- which likewise changes nothing about
+attempt 1's recorded verdict; it is the same data
+under a third, stricter reading, quoted below as a
+diagnostic.)
+
+**§2.1 -- timeouts gate.** The pass-2 semantics let
+the played-action leg judge identity over the seeds
+both arms completed, so an attempt in which most
+games timed out would have read IDENTICAL on the
+few that finished -- a fair way to diagnose attempt
+1, not a gate. Now: **IDENTICAL requires all 10
+seeds at both seats to complete in EVERY arm the
+checker loads** -- exactly these row files, as the
+runner invokes it: `raw_s1`, `raw2_s1`, `raw_s2`
+(the determinism / seat-control arms) and
+`ghost14_s1`, `ghost14_s2`, `ghostthr_s1`,
+`ghostthr_s2`. Any driver row with `invalid ==
+"timeout"` in any of them makes the verdict line
+print exactly `PREGATE: INCONCLUSIVE (timeout:
+<arm> seeds <list>; ...)`, naming every timed-out
+arm and its seeds, with exit 2 (non-zero). The
+per-leg lines still print, as diagnostics over the
+completed population; only the verdict changes.
+Mechanically: the pregate runner aborts on the
+non-zero exit before the registry merge and the
+manifest write, so an INCONCLUSIVE attempt leaves
+no manifest, and run_pilot.sh's PREGATE-GATE --
+which requires the latest attempt's manifest to
+read IDENTICAL -- refuses; the case returns to
+review. Attempt-1 behavior of the non-ghost arms,
+verified from the fetched rows: the raw arms
+completed 30/30 rows (walls 1.3-4.5 s, no
+timeouts) and ghost14 completed 20/20; the only
+timeouts in the population were ghostthr's eight.
+The updated checker, run read-only on
+data/step1_pregate/, prints every identity line
+PASS (97 / 122 contested pairs, 0 bad; newly 309 /
+456) and then the verdict:
+
+    PREGATE: INCONCLUSIVE (timeout: ghostthr_s1 seeds 13001, 13002, 13003, 13005, 13010; ghostthr_s2 seeds 13001, 13002, 13005)
+
+**§2.2 -- the tolerance is 1e-5, on a stated basis,
+with prior_pick exact.** PRIORS_TOL is now 1e-5,
+justified on the server's arithmetic, NOT on
+attempt 1's maxima: the policy server computes in
+float32, about 1.2e-7 relative per ULP at 1.0, and
+observed cross-process differences run a few ULPs;
+1e-5 absolute is about 80 ULPs at 1.0 -- far above
+serving noise, far below any difference that could
+move a candidate in or out of the selection. (The
+pass-2 1e-6, set with an eye on the data, sat only
+~1.4-1.9x above the worst observed pair, 5.4e-07 /
+7.2e-07, and could have failed a fresh attempt on
+float noise alone.) Contested pairs additionally
+require `prior_pick` EXACT, beside `selected`
+exact; a prior_pick mismatch counts contested_bad,
+with the pair identified in the first-bad-example
+INFO line. The observed maximum |dprior| per seat
+still prints (the attempt-1 diagnostic reads
+5.364e-07 / 7.153e-07, now ~19x / ~14x inside the
+bound; and prior_pick was exact on all 219 of
+attempt 1's contested pairs). Fixtures
+(fx_pilot_pregate.py, 9 -> 13 checks): a pair at
+5e-6 PASSES; a pair at 2e-5 is counted bad; a pair
+with equal priors and equal selected but a
+different prior_pick is counted bad; the timeout
+case now expects INCONCLUSIVE naming
+ghostthr_s1/ghostthr_s2 seed 13002 with exit
+non-zero, plus a companion check that the completed
+population's identity lines still print.
+
+**Cost re-price (Claude's cost note; computed from
+the fetched attempt-1 driver rows, `secs` field).**
+Completed-game walls: the thr ghost arm (12 games)
+-- pooled mean **855.2 s**, nearest-rank p95
+1,153.3 s, max 1,153.3 s (seat 1, 5 games: mean
+771.2, max 980.4; seat 2, 7 games: mean 915.2, max
+1,153.3). The sec.14 ghost arm (20 games) -- pooled
+mean 319.1 s, p95 494.2 s, max 570.2 s (per-seat
+means 367.6 / 270.7).
+
+(a) *Pre-gate attempt 2.* The runner runs the three
+raw invocations sequentially in the foreground
+(attempt-1 raw total: 78.1 s -- negligible) and the
+four ghost invocations CONCURRENTLY, 10 seeds
+sequential inside each, so the ghost phase is the
+longest single arm total. The sec.14 arm totals are
+observed sums (all 10 games completed): 3,676.0 s
+(seat 1), 2,707.0 s (seat 2). The thr arms at 10 x
+their completed per-seat means: 7,712 s (seat 1),
+9,152 s (seat 2) -- ghost phase ~9,152 s, **~2.5
+h**. That mean is survivor-biased: the eight killed
+games have no completed wall (each was still
+running at 1,200 s when killed). Pricing only those
+eight at their 1,200 s floor: thr arm totals 9,856
+s (3,856.2 observed + 5 x 1,200) and 10,006 s
+(6,406.3 + 3 x 1,200) -- ghost phase ~10,006 s,
+**~2.8 h**. Planning figure for attempt 2: **~2.5-
+2.8 h** plus the raw phase and the checker/merge
+minutes. (Attempt 1's actual wall was 2 h 48 min,
+consistent: its long pole was the same thr arms.)
+
+(b) *The pilot's teacher arm.* 100 live games at
+the pooled thr completed mean, 855.2 s = 85,521 s,
+**~23.8 box-hours**; the pilot runs four concurrent
+25-game blocks, so **~5.9 h wall**. With the eight
+killed games priced at their floor the pooled
+per-game figure is 993.1 s: 99,312 s, **~27.6
+box-hours**, **~6.9 h wall**. Basis and its limits,
+stated plainly: ghost walls are the full search
+cost on RAW-policy trajectories (the played pick is
+forced to the prior's, so the games' lengths are
+the raw policy's -- attempt 1's thr games' turn
+counts match the raw games'), while a live
+teacher's own picks change the trajectory, so live
+game lengths, and hence per-game search counts,
+differ in a direction attempt-1 data cannot sign.
+The 855-993 s/game band replaces the probe's
+1,840 s/game figure for PLANNING (that figure
+priced 19.5 s/search against the probe's search
+counts; the measured pre-gate walls supersede it).
+Nothing registered changes: the pilot's
+GAME_TIMEOUT stays **7,845 s** -- verified against
+the re-priced distribution, it is 6.8x the thr max
+completed wall (1,153.3 s), and the pre-gate's
+ghost arms carry the same value.
+
+**Unchanged by this pass:** the build, the seeds,
+the pilot design / read / sizing rules, the attempt
+mechanics, and §11's repairs (seed pairing,
+sequence order, named off-shape classes, the
+7,845 s ghost timeout). Attempt 2 runs fresh under
+this checker on Joe's go after the confirmation
+check; the pilot stays behind an IDENTICAL verdict
+-- INCONCLUSIVE returns to review, it does not
+launch anything.
