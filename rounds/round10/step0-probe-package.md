@@ -1928,3 +1928,290 @@ for the recovery is otherwise unchanged: it runs
 **once, on Joe's go after this package's review**,
 and the probe report it produces is the first
 document that may quote the probe's gains.
+
+## 15. SIXTH FIX PASS (2026-10-29) — the influence completion: the recovery's NameError, the one-line fix, and the step that finishes the read
+
+### 15.1 What happened
+
+The recovery ran once, on the approved build
+(`step0-probe-recovery-run.md`). Every step
+through the probe report passed: eval
+completeness CLEAN, the cap-aligned rescoring
+reproducing the published
+`data/step0_capalign/` byte-for-byte, both
+supplementary families labeled, the merged set
+at 71,500 rows, and the report written with
+the registered cap-aligned read and its
+recommendation (threshold 0.97). The
+influence step then died:
+
+```
+File "probe_influence.py", line 439, in main
+    logo_by_lever[lever] = logo
+NameError: name 'logo_by_lever' is not defined
+```
+
+`logo_by_lever` is `decide_hold`'s parameter
+name. In `main()` it was subscript-assigned in
+the LOGO loop, passed to `decide_hold` and
+read into the output JSON — and initialized
+nowhere in the file. `probe_influence.txt` is
+the run's 0-byte redirect artifact;
+`probe_influence.json` was never written; the
+manifest step, which sits after the influence
+step in `run_probe_recovery.sh`, never ran;
+and the recovery script is single-shot and
+refuses re-invocation, so the run cannot be
+finished by re-running it.
+
+The cause is a composition gap, not a
+machinery error. The fifth pass's fixtures
+(`fx_probe_influence.py`, L1–L3) exercise
+`compute_logo` / `decide_hold` with hand-built
+inputs — the hold rule itself is verified.
+What no fixture had ever run is `main()`
+itself: the composed path (files in, sections
+(a)/(b)/(c), JSON out) where the accumulator
+lives. The recovery run was its first
+end-to-end execution, and it found the one
+name the unit fixtures could not see.
+
+Until the influence read and its hold
+determination exist, the report's
+recommendation is NOT final: under the
+registered rule, if the threshold lever's
+gain lower bound falls to 0 or below with any
+single game excluded, the report must carry
+"buildable, single-game dependent" and return
+to review before any Step 1 package. §15.4's
+completion step produces exactly those two
+artifacts.
+
+### 15.2 The fix, and the audit of main()
+
+The fix is one line in `main()`, immediately
+before the LOGO loop:
+
+```
+    logo_by_lever = {}
+```
+
+plus a dated header note recording the crash.
+`code/probe_influence.py`: 83f4f1d1… →
+dc79bdad…. The recovery script's pin literal
+for it is updated in place, machine-copied
+from the fixed file (`code/run_probe_recovery.sh`
+→ 301807cc…; the script stays un-runnable —
+the pin is corrected so the staged record
+names the code as repaired, not as run).
+`run_probe.sh` never pinned `probe_influence.py`,
+and `fx_pin_guards.py` parses `run_probe.sh`
+only, so no guard is affected.
+
+The audit the fix was conditioned on: every
+name `main()` assigns or uses was traced
+through the composed flow, and the trace was
+cross-checked mechanically — an AST scan of
+`main()` for names that are loaded but bound
+nowhere in the function (module globals and
+builtins excluded). On the pre-fix file the
+scan flags exactly one name: `logo_by_lever`.
+On the fixed file it flags none. Every other
+subscript-assignment base on the path
+(`eval_jobs`, `eval_states`, `per_cand`,
+`kinds`, `r2`, `out`) is dict-initialized
+before the loop that fills it; every remaining
+local is bound before use, in straight-line
+assignments or in-iteration. **There is no
+sibling use-before-initialization** — the fix
+stays at the one defect.
+
+### 15.3 The end-to-end fixture (fx_influence_main.py)
+
+New fixture, M1–M13, registered in
+`fixtures/run_fx_r10.sh`. It drives the real
+`main()` by subprocess (argv set) on synthetic
+published-form inputs in a temp dir — six
+capture games, ten jobs (the three
+"recovered" ones carrying bare-`Infinity` z,
+which `json.dumps` writes as the merged
+file's literal token), labels, eval jobs /
+states / evals, a driver row, a settings file
+and a report JSON, all in the real files'
+shapes — and runs it twice, cap-aligned and
+as-run:
+
+- M1 is the regression check itself: the
+  cap-aligned composed path exits 0 (the path
+  that NameError'd on the box).
+- M3–M5: the game inspection is computed from
+  the synthetic eval rows — driver row found
+  (capped, 63 turns); per recovered snap, 3
+  horizon draws priced −1 and 1 outright loss
+  for the prior pick, 3 wins by turn 61 and 1
+  after for the search pick; `cand_diag`
+  agreement reported in text and JSON.
+- M6–M9, the concentrated case through
+  `main()`: the threshold lever's labeled gain
+  sits in one game (diff +1.0 at sampling
+  weight 2 → per-game total 2.0 of a 2.0 total
+  over 6 games). Through `main()`: full gain
+  2/6, carrier share 1.0, LOGO range
+  [0, 0.4], weakest-exclusion lower bound
+  exactly 0 — and with a buildable synthetic
+  report the hold line fires:
+  `threshold: buildable, single-game dependent`
+  appears in both the text and `hold_lines`.
+- M10: the margin lever, whose synthetic
+  report bound is ≤ 0, fires no hold.
+- M11: a job whose cap-aligned class is null
+  (a drop-out) is excluded and counted (1).
+- M12: the as-run mode (no
+  `--capalign-classes`) also runs end-to-end,
+  carries no cap-aligned block, and the hold
+  still fires.
+- M13: `run_probe_completion.sh` is
+  `bash -n` clean. The suite never executes
+  it.
+
+Suite: **190 PASS lines, 0 FAIL** (177 of the
+sixth package + 13 new), transcript re-staged
+at `fixtures/fx_r10_outputs.txt`. The
+round-9 addendum fixture still passes
+separately (7 checks). The existing
+L-fixtures are unchanged.
+
+### 15.4 The completion step (code/run_probe_completion.sh) — built, NOT run
+
+A new script runs ONLY the two steps that
+never ran — influence, then manifest —
+offline, from the published outputs. It is
+built and syntax-checked in this pass; it
+runs once, on Joe's go after this pass's
+review, and only then is the probe report
+finalized with the hold determination (and
+the §12 statement that the capture rows'
+`unpinned` stamps are by design).
+
+Single-shot discipline, mirroring the
+recovery's: it refuses if
+`probe_influence.json` or
+`recovery_manifest.json` already exists, or
+if `probe_influence.txt` exists non-empty
+(the run's artifact is 0 bytes; the step's
+redirect overwrites it exactly as the
+recovery's own redirect would have). Every
+input the two steps touch is
+presence-checked before anything computes.
+
+Hash discipline, all verified BEFORE
+computing:
+
+- Code: the fixed `probe_influence.py`
+  (dc79bdad…) and the three modules it loads
+  at run time — `probe_label_analyze.py`
+  (131661e8…), `analyze_l3.py` (16017ffa…),
+  `stage0_report.py` (5c7e5393…) — plus
+  `settings_probe.json` (5af0c715…), the same
+  literals the recovery script pins.
+- The run's inputs, pinned to the run
+  record's stated hashes and the published
+  files: `probe_report.json` (f2e6e966…),
+  `label_read.json` (85bcd08d…),
+  `jobs_merged.jsonl` (78f2f2e0…).
+- `labels_merged.jsonl.gz` is pinned twice:
+  the published file's bytes (a5f9a615…) and
+  its decompressed content against the run
+  record's stated raw sha256 (c2688f24…),
+  with the stated row count (71,500) checked
+  on the same decompression. The influence
+  read opens its labels with a plain
+  `open()`, so it is handed the verified
+  decompression, never the .gz.
+
+One input is not published: the run's
+capture-games file (`eval_jobs_report.json`)
+never left the box. The completion rebuilds
+it from the published driver rows
+(`data/step0/cap_s1_b1.jsonl` +
+`cap_s2_b1.jsonl`) — the 90 capture game ids,
+sorted, the order `build_probe_eval_jobs.py`
+itself wrote (its `games_list` is
+`sorted(games)`) — and aborts unless the
+count is 90. No number in the influence read
+depends on the list's order: the gains are
+means over the set and the cluster bootstrap
+sorts game ids internally.
+
+The influence invocation is the recovery's
+own — same flags, `--game 440261752`, the
+cap-aligned classes from
+`data/step0_recovery/capalign/` — with paths
+adapted to the published tree; outputs land
+in `data/step0_recovery/` beside the run's
+files.
+
+The manifest step mirrors the recovery
+script's manifest field-for-field: the
+supplementary seed and the ten, the §12
+disclosure verbatim, `eval_completeness`,
+`influence_hold_lines`,
+`single_game_dependent`, the sec.14 block
+(its scoring text, family B, the drop-out
+counts, its disclosure — verbatim), and the
+output hashes. Two adaptations, both
+disclosed here and in the manifest itself:
+
+- The `files` map is keyed by published path
+  under `rounds/round10/` and covers the
+  same artifact set (the recovery's 19,
+  with `labels_merged.jsonl.gz` in place of
+  the box's uncompressed `labels_merged.jsonl`,
+  and `labels_all.jsonl.gz` likewise named as
+  published). The decompressed
+  `labels_merged` hash is recorded in the
+  provenance block, so no hash the run
+  record states goes unrecorded.
+- A `completion` block records the
+  provenance: produced by
+  `run_probe_completion.sh` (its own sha256,
+  taken at run time), the fixed
+  `probe_influence.py`'s hash, the reason
+  (the run's NameError, after its report was
+  written; the recovery single-shot and not
+  re-run), the run record and its sha256, the
+  labels' raw hash and row count, the
+  games-list source, and the statement that
+  no eval, label or report row was
+  recomputed.
+
+`bash -n` is clean and both embedded Python
+bodies compile; in this pass the script was
+not executed, against the real outputs or
+any other.
+
+### 15.5 Files, fixtures, state
+
+Changed/new in this pass:
+`code/probe_influence.py` (the one-line fix
++ header note, dc79bdad…),
+`code/run_probe_recovery.sh` (the one pin
+literal, 301807cc…),
+`code/run_probe_completion.sh` (new),
+`fixtures/fx_influence_main.py` (new),
+`fixtures/run_fx_r10.sh` (registers it),
+`fixtures/fx_r10_outputs.txt` (re-staged),
+and this doc. **Fixture suite: 190 PASS
+lines, 0 FAIL** — the 177 of the sixth
+package plus fx_influence_main (13).
+
+State: the recovery's published outputs are
+untouched. The registered read stands as the
+run record states it, with its
+recommendation NOT final until the completion
+step runs (once, on Joe's go after this
+pass's review) and the influence read + hold
+determination exist. If the determination is
+"buildable, single-game dependent", the probe
+report carries it and returns to review
+before any Step 1 package.

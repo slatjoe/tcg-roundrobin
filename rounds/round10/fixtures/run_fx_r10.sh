@@ -94,6 +94,17 @@
 #                            the reclassification
 #                            structure and counts, the
 #                            supplementary job set.
+#   fx_influence_main.py  -- the influence read's
+#                            COMPOSED path (sixth fix
+#                            pass): probe_influence.py's
+#                            main() driven end-to-end on
+#                            synthetic published-form
+#                            inputs, cap-aligned and
+#                            as-run; the hold line fires
+#                            through main(); the
+#                            completion script is
+#                            bash -n checked (never run
+#                            by the suite).
 #   fx_capalign_read.py   -- the sec.14 read: both
 #                            scorings on a synthetic
 #                            label set whose gains are
@@ -121,6 +132,7 @@ run fx_runner_env.py python3 "$HERE/fx_runner_env.py"
 run fx_label_loader.py python3 "$HERE/fx_label_loader.py"
 run fx_eval_completeness.py python3 "$HERE/fx_eval_completeness.py"
 run fx_probe_influence.py python3 "$HERE/fx_probe_influence.py"
+run fx_influence_main.py python3 "$HERE/fx_influence_main.py"
 run fx_horizon.py python3 "$HERE/fx_horizon.py"
 run fx_capalign.py python3 "$HERE/fx_capalign.py"
 run fx_capalign_read.py python3 "$HERE/fx_capalign_read.py"

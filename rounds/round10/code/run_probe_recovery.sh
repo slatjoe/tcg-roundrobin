@@ -161,7 +161,7 @@ expect_hash "$CODE_DIR/capalign_eval.py" \
   7a9d27891e9a2c83bafab5de0f2feb1da59a38c14fb406d726874a2ba1426999 \
   "recovery capalign_eval.py (sec.14: cap-aligned eval rescoring + reclassification + supplementary jobs)" || exit 1
 expect_hash "$CODE_DIR/probe_influence.py" \
-  83f4f1d1ed496cb95619e7c960626ca07e2896e15522e5b93a26154ad90275ab \
+  dc79bdaddb30980138c3c72b8321f4fbb7ed23675911c9b835caf7d896e96a9a \
   "recovery probe_influence.py (sec.14: LOGO + hold on the cap-aligned read; by-61 inspection split)" || exit 1
 expect_hash "$CODE_DIR/probe_report.py" \
   868be99240174e774d114d23283de2eb7c3be135deb854b9ecafa1bb2de4b28e \

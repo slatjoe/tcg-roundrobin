@@ -68,6 +68,22 @@ by turn 61 vs wins after turn 61 (the sec.14
 question for this game). Without the flag the read
 is the fix-pass-5 read, unchanged.
 
+Fix pass 6 (2026-10-29, package doc sec.15):
+the recovery run of 2026-10-29 crashed in
+main() at the LOGO loop -- logo_by_lever was
+subscript-assigned (and later passed to
+decide_hold and read into the output) but
+initialized nowhere, a NameError on the
+composed path. The fix-pass-5 fixtures had
+exercised compute_logo / decide_hold with
+hand-built inputs and never ran main()
+end-to-end. The fix is the one initialization;
+fixtures/fx_influence_main.py now drives
+main() end-to-end on synthetic published-form
+inputs, in both the cap-aligned and as-run
+modes, with the hold line firing through
+main().
+
 Usage: probe_influence.py --jobs jobs_all.jsonl
   --labels labels_merged.jsonl --capture-games
   eval_jobs_report.json --settings settings_probe.json
@@ -430,6 +446,7 @@ def main():
         diff_by_snap, _dc = pla.job_diffs(jobs, rows, s0)
         recs_all = list(diff_by_snap.values())
         lines.append("\n-- (b) leave-one-game-out, per lever")
+    logo_by_lever = {}
     for lever, cls, _rk in LEVERS:
         recs = [r for r in recs_all
                 if r["probe_band"] == cls]

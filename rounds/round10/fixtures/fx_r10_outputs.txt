@@ -208,6 +208,22 @@ PASS L2 no hold line for the diffuse table
 PASS L3 no hold when neither lever is buildable, however concentrated 
 fx_probe_influence: ALL PASS
 
+===== fx_influence_main.py =====
+PASS M1 cap-aligned main() runs end-to-end (exit 0; the 2026-10-29 NameError path) rc=0 stderr=
+PASS M2 influence JSON carries inspection, LOGO, hold and hold_lines 
+PASS M3 inspection finds the driver row (capped, 63 turns) 
+PASS M4 inspection counts for the first recovered snap (3 horizon draws, 1 loss; 3 wins by 61, 1 after) got {'prior_horizon_draws_priced_minus1': 3, 'prior_outright_losses': 1, 'search_wins_by_turn61': 3, 'search_wins_after_turn61': 1}
+PASS M5 text reports cand_diag agreement 
+PASS M6 threshold LOGO through main(): full gain 2/6, carrier B with share 1.0 gain 0.3333333333333333 share 1.0
+PASS M7 threshold LOGO range [0, 0.4] got [0.0, 0.4]
+PASS M8 weakest exclusion lower bound is exactly 0 (carrier excluded) min_lb 0.0
+PASS M9 hold line fires through main() for the buildable concentrated lever 
+PASS M10 no hold for the non-buildable margin lever 
+PASS M11 the drop-out job is excluded and counted (cap-aligned) 
+PASS M12 as-run main() runs end-to-end; no cap-aligned block; hold still fires rc=0
+PASS M13 run_probe_completion.sh is bash -n clean (not executed here) 
+fx_influence_main: ALL PASS
+
 ===== fx_horizon.py =====
 PASS H0: a php binary is available for the horizon harness -- /home/hatch/workspace/tcg-sim/.tools/php83/usr/bin/php8.3
 PASS H0 as-built file lints under php
