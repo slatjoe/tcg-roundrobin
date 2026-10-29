@@ -1,0 +1,1649 @@
+{
+ "scoring_rule": "cap-aligned (sec.14): a finished world is decisive only if it ended by turn 61; every other finished world prices as a horizon draw (-1 in the paired statistic)",
+ "states": 5253,
+ "as_run_verification": "the as-run recomputation reproduced every published eval state (status, search pick, paired count, z) and the attempt-3 job set (snaps and classes) exactly",
+ "transition_matrix": {
+  "None -> None": 4538,
+  "None -> contested_band": 29,
+  "None -> uncontested": 8,
+  "None -> uncontested_diag": 32,
+  "contested_band -> None": 17,
+  "contested_band -> contested_band": 65,
+  "uncontested -> None": 29,
+  "uncontested -> uncontested": 279,
+  "uncontested -> uncontested_diag": 21,
+  "uncontested_diag -> None": 40,
+  "uncontested_diag -> uncontested": 18,
+  "uncontested_diag -> uncontested_diag": 177
+ },
+ "firing_changes": {
+  "1.5": {
+   "as_run": 448,
+   "cap_aligned": 424,
+   "lost": 64,
+   "gained": 40
+  },
+  "1.25": {
+   "as_run": 697,
+   "cap_aligned": 673,
+   "lost": 82,
+   "gained": 58
+  },
+  "1.0": {
+   "as_run": 799,
+   "cap_aligned": 780,
+   "lost": 84,
+   "gained": 65
+  }
+ },
+ "dropouts": [
+  {
+   "snap": "122296386_t32",
+   "game": "122296386",
+   "turn": 26,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "124766555_t35",
+   "game": "124766555",
+   "turn": 18,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "130828047_t34",
+   "game": "130828047",
+   "turn": 27,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "221917095_t20",
+   "game": "221917095",
+   "turn": 22,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.9999999999999998,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "221917095_t52",
+   "game": "221917095",
+   "turn": 46,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.5694947974514994,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "223342152_t11",
+   "game": "223342152",
+   "turn": 6,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.810884854079383,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "232622694_t29",
+   "game": "232622694",
+   "turn": 20,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.6998542122237651,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "232622694_t37",
+   "game": "232622694",
+   "turn": 27,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.5694947974514994,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "238454202_t55",
+   "game": "238454202",
+   "turn": 45,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.281126875692987,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "238454202_t56",
+   "game": "238454202",
+   "turn": 47,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.2952761670280175,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "238454202_t58",
+   "game": "238454202",
+   "turn": 51,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.873684832428398,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "238454202_t61",
+   "game": "238454202",
+   "turn": 57,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.0,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "245007942_t64",
+   "game": "245007942",
+   "turn": 48,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "245007942_t71",
+   "game": "245007942",
+   "turn": 52,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "247921879_t27",
+   "game": "247921879",
+   "turn": 18,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "247921879_t37",
+   "game": "247921879",
+   "turn": 24,
+   "as_run_class": "uncontested",
+   "as_run_z": 1.8090680674665818,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "247921879_t4",
+   "game": "247921879",
+   "turn": 2,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "249949608_t26",
+   "game": "249949608",
+   "turn": 13,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "249949608_t58",
+   "game": "249949608",
+   "turn": 37,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "249949608_t70",
+   "game": "249949608",
+   "turn": 61,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.449489742783178,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "249949608_t71",
+   "game": "249949608",
+   "turn": 63,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "282908430_t15",
+   "game": "282908430",
+   "turn": 8,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.1628037994676221,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.901127113779166,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "282908430_t49",
+   "game": "282908430",
+   "turn": 36,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "282908430_t54",
+   "game": "282908430",
+   "turn": 46,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "349279537_t47",
+   "game": "349279537",
+   "turn": 29,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.138089935299395,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "349279537_t9",
+   "game": "349279537",
+   "turn": 6,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "381162263_t3",
+   "game": "381162263",
+   "turn": 2,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.901127113779166,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "391965325_t3",
+   "game": "391965325",
+   "turn": 1,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.3093073414159544,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.8267673819143256,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "430950625_t16",
+   "game": "430950625",
+   "turn": 9,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.6998542122237651,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "430950625_t20",
+   "game": "430950625",
+   "turn": 11,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.1628037994676221,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.8267673819143256,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "467864640_t2",
+   "game": "467864640",
+   "turn": 2,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.6998542122237651,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "467864640_t42",
+   "game": "467864640",
+   "turn": 35,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 2.138089935299395,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "467864640_t49",
+   "game": "467864640",
+   "turn": 39,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.873684832428398,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.6246950475544243,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "528750641_t29",
+   "game": "528750641",
+   "turn": 21,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "536573918_t22",
+   "game": "536573918",
+   "turn": 11,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "536573918_t3",
+   "game": "536573918",
+   "turn": 1,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.810884854079383,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "536581776_t10",
+   "game": "536581776",
+   "turn": 6,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "536581776_t42",
+   "game": "536581776",
+   "turn": 23,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "540261752_t3",
+   "game": "540261752",
+   "turn": 3,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.3713906763541038,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "540261752_t66",
+   "game": "540261752",
+   "turn": 49,
+   "as_run_class": "uncontested",
+   "as_run_z": 999.0,
+   "z_nonfinite": true,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "540261752_t67",
+   "game": "540261752",
+   "turn": 51,
+   "as_run_class": "uncontested",
+   "as_run_z": 999.0,
+   "z_nonfinite": true,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "540261752_t68",
+   "game": "540261752",
+   "turn": 53,
+   "as_run_class": "uncontested",
+   "as_run_z": 999.0,
+   "z_nonfinite": true,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "540261752_t69",
+   "game": "540261752",
+   "turn": 55,
+   "as_run_class": "uncontested",
+   "as_run_z": 999.0,
+   "z_nonfinite": true,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "540261752_t70",
+   "game": "540261752",
+   "turn": 57,
+   "as_run_class": "uncontested",
+   "as_run_z": 999.0,
+   "z_nonfinite": true,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "540261752_t71",
+   "game": "540261752",
+   "turn": 59,
+   "as_run_class": "uncontested",
+   "as_run_z": 999.0,
+   "z_nonfinite": true,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "540261752_t72",
+   "game": "540261752",
+   "turn": 61,
+   "as_run_class": "uncontested",
+   "as_run_z": 999.0,
+   "z_nonfinite": true,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "540261752_t73",
+   "game": "540261752",
+   "turn": 63,
+   "as_run_class": "uncontested",
+   "as_run_z": 999.0,
+   "z_nonfinite": true,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "547104103_t5",
+   "game": "547104103",
+   "turn": 3,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.810884854079383,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "552200700_t16",
+   "game": "552200700",
+   "turn": 10,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.810884854079383,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "552200700_t31",
+   "game": "552200700",
+   "turn": 25,
+   "as_run_class": "uncontested",
+   "as_run_z": 1.8090680674665818,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.5694947974514994,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "552200700_t33",
+   "game": "552200700",
+   "turn": 29,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.0,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.810884854079383,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "552200700_t44",
+   "game": "552200700",
+   "turn": 51,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "552200700_t46",
+   "game": "552200700",
+   "turn": 55,
+   "as_run_class": "uncontested",
+   "as_run_z": 3.0550504633038935,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "552200700_t49",
+   "game": "552200700",
+   "turn": 61,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "597971770_t45",
+   "game": "597971770",
+   "turn": 24,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.692829478060636,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "597971770_t50",
+   "game": "597971770",
+   "turn": 28,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.8090680674665818,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "607180277_t24",
+   "game": "607180277",
+   "turn": 15,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.9999999999999998,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "607180277_t25",
+   "game": "607180277",
+   "turn": 15,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": 2.138089935299395,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "607180277_t49",
+   "game": "607180277",
+   "turn": 37,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "607180277_t52",
+   "game": "607180277",
+   "turn": 39,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4142135623730951,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.295958174200194,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "607180277_t55",
+   "game": "607180277",
+   "turn": 41,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 2.449489742783178,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "624284797_t6",
+   "game": "624284797",
+   "turn": 2,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.0722409238610489,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.8267673819143256,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "635852068_t55",
+   "game": "635852068",
+   "turn": 56,
+   "as_run_class": "uncontested",
+   "as_run_z": 4.706787243316416,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "635852068_t56",
+   "game": "635852068",
+   "turn": 58,
+   "as_run_class": "uncontested",
+   "as_run_z": 3.6742346141747673,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "635852068_t57",
+   "game": "635852068",
+   "turn": 60,
+   "as_run_class": "uncontested",
+   "as_run_z": 4.0,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "635852068_t58",
+   "game": "635852068",
+   "turn": 62,
+   "as_run_class": "uncontested",
+   "as_run_z": 5.999999999999999,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "667508186_t32",
+   "game": "667508186",
+   "turn": 29,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "706616026_t30",
+   "game": "706616026",
+   "turn": 24,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "759264707_t22",
+   "game": "759264707",
+   "turn": 14,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.1407036509440602,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "759264707_t33",
+   "game": "759264707",
+   "turn": 20,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.6998542122237651,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "759264707_t38",
+   "game": "759264707",
+   "turn": 25,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.1628037994676221,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.5694947974514993,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "759264707_t4",
+   "game": "759264707",
+   "turn": 3,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.6246950475544243,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "763288095_t36",
+   "game": "763288095",
+   "turn": 27,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "780173580_t16",
+   "game": "780173580",
+   "turn": 11,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.8090680674665818,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "780173580_t30",
+   "game": "780173580",
+   "turn": 20,
+   "as_run_class": "uncontested",
+   "as_run_z": 1.692829478060636,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.810884854079383,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "814043027_t30",
+   "game": "814043027",
+   "turn": 27,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.810884854079383,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "814043027_t38",
+   "game": "814043027",
+   "turn": 43,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.138089935299395,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "814043027_t39",
+   "game": "814043027",
+   "turn": 45,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.449489742783178,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "814043027_t41",
+   "game": "814043027",
+   "turn": 49,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.449489742783178,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "814043027_t42",
+   "game": "814043027",
+   "turn": 51,
+   "as_run_class": "uncontested",
+   "as_run_z": 2.873684832428398,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "814043027_t44",
+   "game": "814043027",
+   "turn": 55,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "814043027_t45",
+   "game": "814043027",
+   "turn": 57,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "814043027_t46",
+   "game": "814043027",
+   "turn": 59,
+   "as_run_class": "uncontested",
+   "as_run_z": 1.692829478060636,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "814043027_t48",
+   "game": "814043027",
+   "turn": 63,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "cap_aligned_z": null,
+   "cap_aligned_status": "no_contrast"
+  },
+  {
+   "snap": "931130148_t22",
+   "game": "931130148",
+   "turn": 16,
+   "as_run_class": "contested_band",
+   "as_run_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "cap_aligned_z": 1.0,
+   "cap_aligned_status": "ok"
+  },
+  {
+   "snap": "938993711_t23",
+   "game": "938993711",
+   "turn": 16,
+   "as_run_class": "uncontested_diag",
+   "as_run_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "cap_aligned_z": 0.9999999999999998,
+   "cap_aligned_status": "ok"
+  }
+ ],
+ "dropout_count": 86,
+ "newly_qualifying": [
+  {
+   "snap": "122296386_t13",
+   "game": "122296386",
+   "turn": 10,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "as_run_z": 0.810884854079383,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "122296386_t16",
+   "game": "122296386",
+   "turn": 12,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1628037994676221,
+   "z_nonfinite": false,
+   "as_run_z": 0.5694947974514993,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "122296386_t38",
+   "game": "122296386",
+   "turn": 30,
+   "class": "uncontested",
+   "cap_aligned_z": 1.8090680674665818,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "124766555_t4",
+   "game": "124766555",
+   "turn": 2,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 0.9999999999999998,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "130828047_t18",
+   "game": "130828047",
+   "turn": 11,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "130828047_t30",
+   "game": "130828047",
+   "turn": 24,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 1.692829478060636,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "145639816_t3",
+   "game": "145639816",
+   "turn": 1,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 0.3713906763541038,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "221917095_t38",
+   "game": "221917095",
+   "turn": 35,
+   "class": "uncontested",
+   "cap_aligned_z": 2.138089935299395,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "221917095_t41",
+   "game": "221917095",
+   "turn": 38,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 0.5694947974514994,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "232622694_t8",
+   "game": "232622694",
+   "turn": 5,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "as_run_z": 0.6998542122237651,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "238454202_t34",
+   "game": "238454202",
+   "turn": 18,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "238454202_t42",
+   "game": "238454202",
+   "turn": 25,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "238454202_t52",
+   "game": "238454202",
+   "turn": 39,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 0.3713906763541038,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "245007942_t28",
+   "game": "245007942",
+   "turn": 22,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 0.295958174200194,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "245007942_t49",
+   "game": "245007942",
+   "turn": 36,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "as_run_z": 0.9999999999999998,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "245007942_t55",
+   "game": "245007942",
+   "turn": 42,
+   "class": "uncontested",
+   "cap_aligned_z": 1.7320508075688774,
+   "z_nonfinite": false,
+   "as_run_z": 0.6998542122237651,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "245007942_t66",
+   "game": "245007942",
+   "turn": 49,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "245007942_t74",
+   "game": "245007942",
+   "turn": 54,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "247921879_t39",
+   "game": "247921879",
+   "turn": 24,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "249949608_t1",
+   "game": "249949608",
+   "turn": 1,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4142135623730951,
+   "z_nonfinite": false,
+   "as_run_z": 1.658792439302729,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "249949608_t28",
+   "game": "249949608",
+   "turn": 14,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "as_run_z": 0.6998542122237651,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "277596609_t22",
+   "game": "277596609",
+   "turn": 16,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4142135623730951,
+   "z_nonfinite": false,
+   "as_run_z": 1.658792439302729,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "277596609_t38",
+   "game": "277596609",
+   "turn": 24,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 1.8090680674665818,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "312895641_t5",
+   "game": "312895641",
+   "turn": 2,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3093073414159544,
+   "z_nonfinite": false,
+   "as_run_z": 1.0722409238610489,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "331674254_t10",
+   "game": "331674254",
+   "turn": 5,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 0.810884854079383,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "331674254_t13",
+   "game": "331674254",
+   "turn": 6,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 0.810884854079383,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "349279537_t45",
+   "game": "349279537",
+   "turn": 28,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 1.8090680674665818,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "372231600_t16",
+   "game": "372231600",
+   "turn": 10,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 0.6998542122237651,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "372231600_t5",
+   "game": "372231600",
+   "turn": 3,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "as_run_z": 0.6998542122237651,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "467864640_t4",
+   "game": "467864640",
+   "turn": 3,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1628037994676221,
+   "z_nonfinite": false,
+   "as_run_z": 0.8267673819143256,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "528750641_t18",
+   "game": "528750641",
+   "turn": 10,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 0.810884854079383,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "540261752_t20",
+   "game": "540261752",
+   "turn": 14,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 1.692829478060636,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "540261752_t24",
+   "game": "540261752",
+   "turn": 15,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 1.7320508075688774,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "540261752_t52",
+   "game": "540261752",
+   "turn": 38,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 0.5694947974514994,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "542517119_t12",
+   "game": "542517119",
+   "turn": 11,
+   "class": "contested_band",
+   "cap_aligned_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "as_run_z": 0.901127113779166,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "542517119_t8",
+   "game": "542517119",
+   "turn": 7,
+   "class": "uncontested",
+   "cap_aligned_z": 1.5491933384829666,
+   "z_nonfinite": false,
+   "as_run_z": 0.9999999999999998,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "545068685_t24",
+   "game": "545068685",
+   "turn": 12,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 1.8090680674665818,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "547104103_t8",
+   "game": "547104103",
+   "turn": 6,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "as_run_z": 0.9999999999999998,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "552200700_t28",
+   "game": "552200700",
+   "turn": 19,
+   "class": "uncontested",
+   "cap_aligned_z": 1.8090680674665818,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "552200700_t29",
+   "game": "552200700",
+   "turn": 21,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 0.810884854079383,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "552200700_t30",
+   "game": "552200700",
+   "turn": 23,
+   "class": "uncontested",
+   "cap_aligned_z": 1.8090680674665818,
+   "z_nonfinite": false,
+   "as_run_z": 0.5694947974514994,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "552200700_t34",
+   "game": "552200700",
+   "turn": 31,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "552200700_t40",
+   "game": "552200700",
+   "turn": 43,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 0.3713906763541038,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "582449623_t1",
+   "game": "582449623",
+   "turn": 1,
+   "class": "contested_band",
+   "cap_aligned_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "as_run_z": 0.901127113779166,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "607180277_t39",
+   "game": "607180277",
+   "turn": 25,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "as_run_z": 0.901127113779166,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "607180277_t53",
+   "game": "607180277",
+   "turn": 40,
+   "class": "uncontested",
+   "cap_aligned_z": 1.7320508075688774,
+   "z_nonfinite": false,
+   "as_run_z": 0.6998542122237651,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "607180277_t57",
+   "game": "607180277",
+   "turn": 44,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1628037994676221,
+   "z_nonfinite": false,
+   "as_run_z": 0.901127113779166,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "670316025_t19",
+   "game": "670316025",
+   "turn": 16,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 0.9999999999999998,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "707931237_t27",
+   "game": "707931237",
+   "turn": 21,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "as_run_z": 0.810884854079383,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "721957087_t1",
+   "game": "721957087",
+   "turn": 0,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 1.692829478060636,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "721957087_t32",
+   "game": "721957087",
+   "turn": 17,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1628037994676221,
+   "z_nonfinite": false,
+   "as_run_z": 0.8267673819143256,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "732264228_t16",
+   "game": "732264228",
+   "turn": 12,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.4142135623730951,
+   "z_nonfinite": false,
+   "as_run_z": 0.901127113779166,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "732264228_t23",
+   "game": "732264228",
+   "turn": 24,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "as_run_z": 0.9999999999999998,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "732264228_t3",
+   "game": "732264228",
+   "turn": 2,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3656005509902465,
+   "z_nonfinite": false,
+   "as_run_z": 1.6955824957813166,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "759264707_t20",
+   "game": "759264707",
+   "turn": 13,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 0.810884854079383,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "759264707_t42",
+   "game": "759264707",
+   "turn": 28,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 1.0,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "763288095_t41",
+   "game": "763288095",
+   "turn": 31,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 0.901127113779166,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "846571960_t4",
+   "game": "846571960",
+   "turn": 2,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "as_run_z": 0.6998542122237651,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "881567842_t21",
+   "game": "881567842",
+   "turn": 11,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 0.810884854079383,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "890757537_t8",
+   "game": "890757537",
+   "turn": 4,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 1.1407036509440602,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "912409181_t30",
+   "game": "912409181",
+   "turn": 22,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 0.9999999999999998,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "929055377_t42",
+   "game": "929055377",
+   "turn": 28,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1407036509440602,
+   "z_nonfinite": false,
+   "as_run_z": 0.6998542122237651,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "929055377_t48",
+   "game": "929055377",
+   "turn": 32,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 1.692829478060636,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "929543302_t22",
+   "game": "929543302",
+   "turn": 16,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.281025230440697,
+   "z_nonfinite": false,
+   "as_run_z": 0.5694947974514993,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "938993711_t36",
+   "game": "938993711",
+   "turn": 25,
+   "class": "contested_band",
+   "cap_aligned_z": 1.3645764784420262,
+   "z_nonfinite": false,
+   "as_run_z": 1.1407036509440602,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "938993711_t38",
+   "game": "938993711",
+   "turn": 26,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 2.138089935299395,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "938993711_t39",
+   "game": "938993711",
+   "turn": 26,
+   "class": "uncontested",
+   "cap_aligned_z": 1.8090680674665818,
+   "z_nonfinite": false,
+   "as_run_z": 0.810884854079383,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "938993711_t40",
+   "game": "938993711",
+   "turn": 27,
+   "class": "contested_band",
+   "cap_aligned_z": 1.4446302370292303,
+   "z_nonfinite": false,
+   "as_run_z": 0.4399413450640599,
+   "as_run_status": "ok"
+  },
+  {
+   "snap": "941474158_t26",
+   "game": "941474158",
+   "turn": 14,
+   "class": "uncontested_diag",
+   "cap_aligned_z": 1.1628037994676221,
+   "z_nonfinite": false,
+   "as_run_z": 0.8267673819143256,
+   "as_run_status": "ok"
+  }
+ ],
+ "newly_qualifying_count": 69,
+ "newly_by_class": {
+  "uncontested_diag": 32,
+  "uncontested": 8,
+  "contested_band": 29
+ },
+ "regrouped_jobs": [
+  "119737599_t18",
+  "122296386_t10",
+  "122296386_t42",
+  "233648570_t4",
+  "238454202_t49",
+  "247921879_t14",
+  "247921879_t9",
+  "268723612_t22",
+  "312895641_t41",
+  "312895641_t45",
+  "349045030_t39",
+  "349045030_t7",
+  "430950625_t3",
+  "434457486_t7",
+  "467864640_t38",
+  "528365553_t26",
+  "536581776_t2",
+  "536581776_t44",
+  "540261752_t5",
+  "597971770_t3",
+  "607180277_t28",
+  "607180277_t8",
+  "690284653_t10",
+  "690284653_t8",
+  "746167463_t1",
+  "759264707_t8",
+  "763288095_t24",
+  "780173580_t11",
+  "814043027_t33",
+  "881567842_t31",
+  "881567842_t33",
+  "890757537_t11",
+  "923668770_t5",
+  "929055377_t25",
+  "929543302_t12",
+  "931130148_t11",
+  "934348278_t16",
+  "938993711_t32",
+  "941474158_t3"
+ ],
+ "tail": {
+  "as_run": 44,
+  "cap_aligned": 27,
+  "uncontested_as_run": 36,
+  "uncontested_cap_aligned": 21,
+  "contested_as_run": 8,
+  "contested_cap_aligned": 6
+ }
+}

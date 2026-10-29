@@ -1,0 +1,2 @@
+search_server: search model loaded (/home/joe/tcg/tcg-sim/rl_out/gravy_ppo_gravybc3/ckpt_v10.pt) on cuda
+search_server: listening on /home/joe/tcg/r10probe_out/prod_s1.sock (learner seat 1, opp heuristic)

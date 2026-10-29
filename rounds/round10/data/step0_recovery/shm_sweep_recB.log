@@ -1,0 +1,106 @@
+# shm_sweep start 2026-10-29T08:13:53.622542 mode=LIVE start_shmids=1 games_dir=/tmp/r10probe_rec_tree_0/vendor/talishar/Games
+PASS 1 2026-10-29T08:13:53.625571 total=1 selected=0 unattributed=0
+DELETED pass=1 count=0 failed=0
+PASS 2 2026-10-29T08:14:53.630090 total=53 selected=0 unattributed=0
+DELETED pass=2 count=0 failed=0
+PASS 3 2026-10-29T08:15:53.634783 total=57 selected=0 unattributed=0
+DELETED pass=3 count=0 failed=0
+PASS 4 2026-10-29T08:16:53.640444 total=9 selected=0 unattributed=0
+DELETED pass=4 count=0 failed=0
+PASS 5 2026-10-29T08:17:53.645795 total=60 selected=0 unattributed=0
+DELETED pass=5 count=0 failed=0
+PASS 6 2026-10-29T08:18:53.650218 total=35 selected=0 unattributed=0
+DELETED pass=6 count=0 failed=0
+PASS 7 2026-10-29T08:19:53.654946 total=68 selected=0 unattributed=0
+DELETED pass=7 count=0 failed=0
+PASS 8 2026-10-29T08:20:53.658985 total=36 selected=0 unattributed=0
+DELETED pass=8 count=0 failed=0
+PASS 9 2026-10-29T08:21:53.664395 total=73 selected=0 unattributed=0
+DELETED pass=9 count=0 failed=0
+PASS 10 2026-10-29T08:22:53.671273 total=31 selected=0 unattributed=0
+DELETED pass=10 count=0 failed=0
+PASS 11 2026-10-29T08:23:53.680373 total=78 selected=0 unattributed=0
+DELETED pass=11 count=0 failed=0
+PASS 12 2026-10-29T08:24:53.684701 total=41 selected=0 unattributed=0
+DELETED pass=12 count=0 failed=0
+PASS 13 2026-10-29T08:25:53.689864 total=87 selected=0 unattributed=0
+DELETED pass=13 count=0 failed=0
+PASS 14 2026-10-29T08:26:53.693908 total=38 selected=38 unattributed=0
+SELECT shmid=1999536152 key=123296386 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:14:19" atime="Oct 29 08:14:19" dtime="Oct 29 08:14:19"
+DELETE shmid=1999536152 key=123296386 -> OK
+SELECT shmid=1999601664 key=125766555 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:14:26" atime="Oct 29 08:14:26" dtime="Oct 29 08:14:26"
+DELETE shmid=1999601664 key=125766555 -> OK
+SELECT shmid=1999699985 key=131828047 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:14:58" atime="Oct 29 08:14:58" dtime="Oct 29 08:14:58"
+DELETE shmid=1999699985 key=131828047 -> OK
+SELECT shmid=1999732789 key=146639816 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:15:09" atime="Oct 29 08:15:09" dtime="Oct 29 08:15:09"
+DELETE shmid=1999732789 key=146639816 -> OK
+SELECT shmid=1999863821 key=222917095 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:15:32" atime="Oct 29 08:15:32" dtime="Oct 29 08:15:32"
+DELETE shmid=1999863821 key=222917095 -> OK
+SELECT shmid=1999896631 key=233622694 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:15:39" atime="Oct 29 08:15:39" dtime="Oct 29 08:15:39"
+DELETE shmid=1999896631 key=233622694 -> OK
+SELECT shmid=2000060473 key=239454202 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:16:15" atime="Oct 29 08:16:15" dtime="Oct 29 08:16:15"
+DELETE shmid=2000060473 key=239454202 -> OK
+SELECT shmid=2000355365 key=246007942 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:16:50" atime="Oct 29 08:16:50" dtime="Oct 29 08:16:50"
+DELETE shmid=2000355365 key=246007942 -> OK
+SELECT shmid=2000420889 key=248921879 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:16:53" atime="Oct 29 08:16:53" dtime="Oct 29 08:16:53"
+DELETE shmid=2000420889 key=248921879 -> OK
+SELECT shmid=2000519222 key=250949608 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:17:15" atime="Oct 29 08:17:15" dtime="Oct 29 08:17:15"
+DELETE shmid=2000519222 key=250949608 -> OK
+SELECT shmid=2000650279 key=278596609 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:17:42" atime="Oct 29 08:17:42" dtime="Oct 29 08:17:42"
+DELETE shmid=2000650279 key=278596609 -> OK
+SELECT shmid=2000715808 key=313895641 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:17:50" atime="Oct 29 08:17:50" dtime="Oct 29 08:17:50"
+DELETE shmid=2000715808 key=313895641 -> OK
+SELECT shmid=2000846874 key=332674254 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:18:21" atime="Oct 29 08:18:21" dtime="Oct 29 08:18:21"
+DELETE shmid=2000846874 key=332674254 -> OK
+SELECT shmid=2000912385 key=350279537 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:18:34" atime="Oct 29 08:18:34" dtime="Oct 29 08:18:34"
+DELETE shmid=2000912385 key=350279537 -> OK
+SELECT shmid=2001043458 key=373231600 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:18:54" atime="Oct 29 08:18:54" dtime="Oct 29 08:18:54"
+DELETE shmid=2001043458 key=373231600 -> OK
+SELECT shmid=2001108995 key=468864640 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:19:08" atime="Oct 29 08:19:08" dtime="Oct 29 08:19:08"
+DELETE shmid=2001108995 key=468864640 -> OK
+SELECT shmid=2001174532 key=529750641 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:19:22" atime="Oct 29 08:19:22" dtime="Oct 29 08:19:22"
+DELETE shmid=2001174532 key=529750641 -> OK
+SELECT shmid=2001371141 key=541261752 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:19:58" atime="Oct 29 08:19:58" dtime="Oct 29 08:19:58"
+DELETE shmid=2001371141 key=541261752 -> OK
+SELECT shmid=2001502214 key=543517119 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:20:21" atime="Oct 29 08:20:21" dtime="Oct 29 08:20:21"
+DELETE shmid=2001502214 key=543517119 -> OK
+SELECT shmid=2001567751 key=546068685 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:20:36" atime="Oct 29 08:20:36" dtime="Oct 29 08:20:36"
+DELETE shmid=2001567751 key=546068685 -> OK
+SELECT shmid=2001633288 key=548104103 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:20:46" atime="Oct 29 08:20:46" dtime="Oct 29 08:20:46"
+DELETE shmid=2001633288 key=548104103 -> OK
+SELECT shmid=2001960969 key=553200700 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:21:46" atime="Oct 29 08:21:46" dtime="Oct 29 08:21:46"
+DELETE shmid=2001960969 key=553200700 -> OK
+SELECT shmid=2002026506 key=583449623 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:21:52" atime="Oct 29 08:21:52" dtime="Oct 29 08:21:52"
+DELETE shmid=2002026506 key=583449623 -> OK
+SELECT shmid=2002223115 key=608180277 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:22:25" atime="Oct 29 08:22:25" dtime="Oct 29 08:22:25"
+DELETE shmid=2002223115 key=608180277 -> OK
+SELECT shmid=2002288652 key=671316025 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:22:30" atime="Oct 29 08:22:30" dtime="Oct 29 08:22:30"
+DELETE shmid=2002288652 key=671316025 -> OK
+SELECT shmid=2002354190 key=708931237 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:22:42" atime="Oct 29 08:22:42" dtime="Oct 29 08:22:42"
+DELETE shmid=2002354190 key=708931237 -> OK
+SELECT shmid=2002485263 key=722957087 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:23:09" atime="Oct 29 08:23:09" dtime="Oct 29 08:23:09"
+DELETE shmid=2002485263 key=722957087 -> OK
+SELECT shmid=2002681872 key=733264228 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:23:44" atime="Oct 29 08:23:44" dtime="Oct 29 08:23:44"
+DELETE shmid=2002681872 key=733264228 -> OK
+SELECT shmid=2002812946 key=760264707 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:24:15" atime="Oct 29 08:24:15" dtime="Oct 29 08:24:15"
+DELETE shmid=2002812946 key=760264707 -> OK
+SELECT shmid=2002878483 key=764288095 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:24:26" atime="Oct 29 08:24:26" dtime="Oct 29 08:24:26"
+DELETE shmid=2002878483 key=764288095 -> OK
+SELECT shmid=2002944020 key=847571960 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:24:34" atime="Oct 29 08:24:34" dtime="Oct 29 08:24:34"
+DELETE shmid=2002944020 key=847571960 -> OK
+SELECT shmid=2003009557 key=882567842 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:24:49" atime="Oct 29 08:24:49" dtime="Oct 29 08:24:49"
+DELETE shmid=2003009557 key=882567842 -> OK
+SELECT shmid=2003075094 key=891757537 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:25:00" atime="Oct 29 08:25:00" dtime="Oct 29 08:25:00"
+DELETE shmid=2003075094 key=891757537 -> OK
+SELECT shmid=2003140631 key=913409181 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:25:13" atime="Oct 29 08:25:13" dtime="Oct 29 08:25:13"
+DELETE shmid=2003140631 key=913409181 -> OK
+SELECT shmid=2003271707 key=930055377 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:25:32" atime="Oct 29 08:25:32" dtime="Oct 29 08:25:32"
+DELETE shmid=2003271707 key=930055377 -> OK
+SELECT shmid=2003337244 key=930543302 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:25:40" atime="Oct 29 08:25:40" dtime="Oct 29 08:25:40"
+DELETE shmid=2003337244 key=930543302 -> OK
+SELECT shmid=2003599389 key=939993711 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:26:22" atime="Oct 29 08:26:22" dtime="Oct 29 08:26:22"
+DELETE shmid=2003599389 key=939993711 -> OK
+SELECT shmid=2003664926 key=942474158 cpid=409083 lpid=409083 nattch=0 ctime="Oct 29 08:26:32" atime="Oct 29 08:26:32" dtime="Oct 29 08:26:32"
+DELETE shmid=2003664926 key=942474158 -> OK
+DELETED pass=14 count=38 failed=0
+# shm_sweep stop after pass 14 2026-10-29T08:26:53.713672

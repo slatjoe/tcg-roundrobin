@@ -1,0 +1,259 @@
+{
+ "games": 90,
+ "world_rows": 381625,
+ "all": {
+  "states": 5253,
+  "with_statistic": 1918,
+  "thin_prior": 0,
+  "insufficient": 0,
+  "no_contrast": 3335,
+  "tail": 27,
+  "would_fire": {
+   "1.5": 424,
+   "1.25": 673,
+   "1.0": 780
+  }
+ },
+ "uncontested": {
+  "states": 3086,
+  "with_statistic": 1262,
+  "thin_prior": 0,
+  "insufficient": 0,
+  "no_contrast": 1824,
+  "tail": 21,
+  "would_fire": {
+   "1.5": 305,
+   "1.25": 460,
+   "1.0": 535
+  }
+ },
+ "contested": {
+  "states": 2167,
+  "with_statistic": 656,
+  "thin_prior": 0,
+  "insufficient": 0,
+  "no_contrast": 1511,
+  "tail": 6,
+  "would_fire": {
+   "1.5": 119,
+   "1.25": 213,
+   "1.0": 245
+  }
+ },
+ "by_prior_band": {
+  "0.0-0.5": {
+   "states": 519,
+   "with_statistic": 121,
+   "thin_prior": 0,
+   "insufficient": 0,
+   "no_contrast": 398,
+   "tail": 0,
+   "would_fire": {
+    "1.5": 15,
+    "1.25": 29,
+    "1.0": 35
+   }
+  },
+  "0.5-0.7": {
+   "states": 845,
+   "with_statistic": 286,
+   "thin_prior": 0,
+   "insufficient": 0,
+   "no_contrast": 559,
+   "tail": 0,
+   "would_fire": {
+    "1.5": 54,
+    "1.25": 103,
+    "1.0": 117
+   }
+  },
+  "0.7-0.85": {
+   "states": 366,
+   "with_statistic": 117,
+   "thin_prior": 0,
+   "insufficient": 0,
+   "no_contrast": 249,
+   "tail": 2,
+   "would_fire": {
+    "1.5": 23,
+    "1.25": 36,
+    "1.0": 43
+   }
+  },
+  "0.85-0.97": {
+   "states": 437,
+   "with_statistic": 132,
+   "thin_prior": 0,
+   "insufficient": 0,
+   "no_contrast": 305,
+   "tail": 4,
+   "would_fire": {
+    "1.5": 27,
+    "1.25": 45,
+    "1.0": 50
+   }
+  },
+  "0.97-1.01": {
+   "states": 3086,
+   "with_statistic": 1262,
+   "thin_prior": 0,
+   "insufficient": 0,
+   "no_contrast": 1824,
+   "tail": 21,
+   "would_fire": {
+    "1.5": 305,
+    "1.25": 460,
+    "1.0": 535
+   }
+  }
+ },
+ "contested_band_125_150": {
+  "states": 94,
+  "per_game": 1.0444444444444445
+ },
+ "per_game": {
+  "uncontested_states": 34.28888888888889,
+  "contested_states": 24.07777777777778,
+  "uncontested_would_fire": {
+   "1.5": 3.388888888888889,
+   "1.25": 5.111111111111111,
+   "1.0": 5.944444444444445
+  },
+  "contested_would_fire": {
+   "1.5": 1.3222222222222222,
+   "1.25": 2.3666666666666667,
+   "1.0": 2.7222222222222223
+  }
+ },
+ "scoring": "cap_aligned",
+ "as_run": {
+  "games": 90,
+  "world_rows": 381625,
+  "all": {
+   "states": 5253,
+   "with_statistic": 1990,
+   "thin_prior": 0,
+   "insufficient": 0,
+   "no_contrast": 3263,
+   "tail": 44,
+   "would_fire": {
+    "1.5": 448,
+    "1.25": 697,
+    "1.0": 799
+   }
+  },
+  "uncontested": {
+   "states": 3086,
+   "with_statistic": 1320,
+   "thin_prior": 0,
+   "insufficient": 0,
+   "no_contrast": 1766,
+   "tail": 36,
+   "would_fire": {
+    "1.5": 329,
+    "1.25": 496,
+    "1.0": 564
+   }
+  },
+  "contested": {
+   "states": 2167,
+   "with_statistic": 670,
+   "thin_prior": 0,
+   "insufficient": 0,
+   "no_contrast": 1497,
+   "tail": 8,
+   "would_fire": {
+    "1.5": 119,
+    "1.25": 201,
+    "1.0": 235
+   }
+  },
+  "by_prior_band": {
+   "0.0-0.5": {
+    "states": 519,
+    "with_statistic": 122,
+    "thin_prior": 0,
+    "insufficient": 0,
+    "no_contrast": 397,
+    "tail": 1,
+    "would_fire": {
+     "1.5": 14,
+     "1.25": 28,
+     "1.0": 36
+    }
+   },
+   "0.5-0.7": {
+    "states": 845,
+    "with_statistic": 295,
+    "thin_prior": 0,
+    "insufficient": 0,
+    "no_contrast": 550,
+    "tail": 1,
+    "would_fire": {
+     "1.5": 52,
+     "1.25": 97,
+     "1.0": 111
+    }
+   },
+   "0.7-0.85": {
+    "states": 366,
+    "with_statistic": 119,
+    "thin_prior": 0,
+    "insufficient": 0,
+    "no_contrast": 247,
+    "tail": 2,
+    "would_fire": {
+     "1.5": 24,
+     "1.25": 37,
+     "1.0": 43
+    }
+   },
+   "0.85-0.97": {
+    "states": 437,
+    "with_statistic": 134,
+    "thin_prior": 0,
+    "insufficient": 0,
+    "no_contrast": 303,
+    "tail": 4,
+    "would_fire": {
+     "1.5": 29,
+     "1.25": 39,
+     "1.0": 45
+    }
+   },
+   "0.97-1.01": {
+    "states": 3086,
+    "with_statistic": 1320,
+    "thin_prior": 0,
+    "insufficient": 0,
+    "no_contrast": 1766,
+    "tail": 36,
+    "would_fire": {
+     "1.5": 329,
+     "1.25": 496,
+     "1.0": 564
+    }
+   }
+  },
+  "contested_band_125_150": {
+   "states": 82,
+   "per_game": 0.9111111111111111
+  },
+  "per_game": {
+   "uncontested_states": 34.28888888888889,
+   "contested_states": 24.07777777777778,
+   "uncontested_would_fire": {
+    "1.5": 3.6555555555555554,
+    "1.25": 5.511111111111111,
+    "1.0": 6.266666666666667
+   },
+   "contested_would_fire": {
+    "1.5": 1.3222222222222222,
+    "1.25": 2.2333333333333334,
+    "1.0": 2.611111111111111
+   }
+  },
+  "eval_wall_ms_total": 111150534
+ },
+ "eval_wall_ms_total": 111150534
+}

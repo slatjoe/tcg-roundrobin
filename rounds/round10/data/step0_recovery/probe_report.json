@@ -1,0 +1,157 @@
+{
+ "band_tail_rates": {
+  "0.0-0.5": {
+   "states": 519,
+   "would_fire_1.5": 15,
+   "tail": 0,
+   "tail_rate": 0.0
+  },
+  "0.5-0.7": {
+   "states": 845,
+   "would_fire_1.5": 54,
+   "tail": 0,
+   "tail_rate": 0.0
+  },
+  "0.7-0.85": {
+   "states": 366,
+   "would_fire_1.5": 23,
+   "tail": 2,
+   "tail_rate": 0.00546448087431694
+  },
+  "0.85-0.97": {
+   "states": 437,
+   "would_fire_1.5": 27,
+   "tail": 4,
+   "tail_rate": 0.009153318077803204
+  },
+  "0.97-1.01": {
+   "states": 3086,
+   "would_fire_1.5": 305,
+   "tail": 21,
+   "tail_rate": 0.006804925469863901
+  }
+ },
+ "calibration": {
+  "contested_would_fire_rate_1.5_per_state": 0.05491462851868943,
+  "contested_would_fire_rate_1.5_per_game": 1.3222222222222222,
+  "fires": 119,
+  "contested_states": 2167,
+  "flag_band": [
+   0.04,
+   0.13
+  ],
+  "flag": false
+ },
+ "uncontested_diag": {
+  "jobs": 230,
+  "edge": 0.017210292812777285,
+  "ci": [
+   0.0035170367706553996,
+   0.0323145371892833
+  ]
+ },
+ "margin_lever": {
+  "gain": {
+   "gain": 0.007555555555555555,
+   "ci": [
+    -0.006666666666666665,
+    0.021111111111111115
+   ],
+   "lb95_1sided": -0.006666666666666665,
+   "games": 90,
+   "weight": 1.0
+  },
+  "edge": {
+   "jobs": 94,
+   "edge": 0.00723404255319149,
+   "ci": [
+    -0.006250000000000001,
+    0.020481927710843378
+   ]
+  },
+  "teacher_game_cost_s": 503.0,
+  "step2_outlook": {
+   "increment": 0.007555555555555555,
+   "se_inc_probe_games": 0.007086167800453515,
+   "probe_games": 90,
+   "se_inc_at_bar_games": 0.003361264519736798,
+   "se_new_at_bar_games": 0.009607189972704893,
+   "z_stat": 0.5739439782590756,
+   "power": 0.14207212044062506,
+   "teacher_game_cost_s": 503.0,
+   "step2_teacher_box_hours": 55.888888888888886,
+   "fleet_teacher_box_hours_per_100_pairs": 13.972222222222221
+  }
+ },
+ "threshold_lever": {
+  "gain": {
+   "gain": 0.4733696145124716,
+   "ci": [
+    0.20800000000000002,
+    0.8599999999999994
+   ],
+   "lb95_1sided": 0.20800000000000002,
+   "games": 90,
+   "weight": 2.0
+  },
+  "uncontested_decisions_per_game": 68.57777777777778,
+  "added_search_s_per_game": 1337.2666666666669,
+  "teacher_game_cost_s": 1840.2666666666669,
+  "step2_outlook": {
+   "increment": 0.4733696145124716,
+   "se_inc_probe_games": 0.16632653061224476,
+   "probe_games": 90,
+   "se_inc_at_bar_games": 0.07889560080726205,
+   "se_new_at_bar_games": 0.07940727817233662,
+   "z_stat": 5.9233634449839805,
+   "power": 0.9999905863782841,
+   "teacher_game_cost_s": 1840.2666666666669,
+   "step2_teacher_box_hours": 204.47407407407408,
+   "fleet_teacher_box_hours_per_100_pairs": 51.11851851851852
+  }
+ },
+ "recommendation": "threshold 0.97",
+ "recommendation_why": "only the threshold's gain lower bound exceeds 0",
+ "scoring": "cap_aligned",
+ "as_run": {
+  "margin_lever": {
+   "gain": {
+    "gain": 0.006222222222222222,
+    "ci": [
+     -0.008888888888888889,
+     0.02111111111111112
+    ],
+    "lb95_1sided": -0.008888888888888889,
+    "games": 90,
+    "weight": 1.0
+   },
+   "edge": {
+    "jobs": 111,
+    "edge": 0.0050450450450450456,
+    "ci": [
+     -0.007407407407407407,
+     0.01714285714285714
+    ]
+   }
+  },
+  "threshold_lever": {
+   "gain": {
+    "gain": 0.5418321995464852,
+    "ci": [
+     0.22311111111111118,
+     1.042666666666667
+    ],
+    "lb95_1sided": 0.22311111111111118,
+    "games": 90,
+    "weight": 2.0
+   }
+  },
+  "calibration": {
+   "contested_would_fire_rate_1.5_per_state": 0.05491462851868943,
+   "fires": 119,
+   "contested_states": 2167
+  },
+  "recommendation": "threshold 0.97",
+  "recommendation_why": "only the threshold's gain lower bound exceeds 0"
+ }
+}

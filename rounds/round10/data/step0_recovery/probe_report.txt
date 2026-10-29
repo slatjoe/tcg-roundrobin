@@ -1,0 +1,35 @@
+=== ROUND-10 STEP 0 PROBE -- REPORT ===
+scoring: CAP-ALIGNED (sec.14) is the registered primary -- a finished world is decisive only if it ended by turn 61; the as-run scoring is co-reported below, labeled, and is not the decision basis
+capture: 90 games; eval states 5253 (uncontested 3086 sampled 1-in-2, contested 2167)
+
+-- tail rate per state and edge, by prior band (eval z > 3.5 = tail)
+  prior [0.0-0.5): states 519, would-fire@1.5 15, tail 0, tail rate 0.0000
+  prior [0.5-0.7): states 845, would-fire@1.5 54, tail 0, tail rate 0.0000
+  prior [0.7-0.85): states 366, would-fire@1.5 23, tail 2, tail rate 0.0055
+  prior [0.85-0.97): states 437, would-fire@1.5 27, tail 4, tail rate 0.0092
+  prior [0.97-1.01): states 3086, would-fire@1.5 305, tail 21, tail rate 0.0068
+  uncontested tail edge (labeled): 0.4838 CI [0.3260, 0.6050] over 21 jobs
+  uncontested labeled edge, prior band [0.97, 1.01]: 0.0698 CI [0.0342, 0.1136] over 305 jobs
+  uncontested DIAGNOSTIC class (1.0, 1.5] (labeled; excluded from the threshold gain and the decision rule): edge 0.0172 CI [0.0035, 0.0323] over 230 jobs
+
+-- the (1.25, 1.5] contested band
+  fires/game (eval): 1.0444; labeled edge 0.0072 CI [-0.0063, 0.0205] over 94 jobs; per-game gain 0.0076 CI [-0.0067, 0.0211]
+
+-- calibration (offline eval vs known firing behavior)
+  probe contested would-fire rate @1.5: 0.0549 per state (1.3222 per game; 119 fires / 2167 contested states)
+  references: Stage 1 panel 0.0917 per state (22/240, raw-policy capture states); live rates 0.069 (Stage 2), 0.065 (Stage 3) per state; flag band [0.04, 0.13]
+
+-- per-lever predictions
+  MARGIN 1.25: predicted per-game gain 0.0076 (lower bound -0.0067); fires/game 1.3222 -> 2.3667; predicted teacher-game cost 503 s (no added searches)
+  THRESHOLD 0.97: predicted per-game gain 0.4734 (lower bound 0.2080); uncontested decisions/game 68.5778 (x2.0 sampled); added search cost 1337.2667 s/game at 19.5 s/search -> teacher game 1840 s (3.66x)
+  (cross-check: probe offline eval wall total 111150534 ms over 5253 states = 21.2 s/state at k=25, fleet-contention-free)
+  [informational] MARGIN 1.25 Step 2 outlook: predicted power 0.142 against the registered two-sample bar -- z = inc / sqrt(SE_new^2 + 0.0090^2), inc = 0.0076 (the added fires' per-game gain), SE_new 0.0096 at 400 games (= sqrt(0.0090^2 + se_inc,400 0.0034^2); se_inc 0.0071 at the probe's 90 games, scaled by sqrt(n)); z = 0.574; power = Phi(z - 1.645); approximation: the build's base gain is taken as Stage 3's (0.0649); prices at 503 s/teacher game: Step 2 (400 games) 55.9 box-h teacher arm; fleet 14.0 box-h per 100 pairs teacher arm
+  [informational] THRESHOLD 0.97 Step 2 outlook: predicted power 1.000 against the registered two-sample bar -- z = inc / sqrt(SE_new^2 + 0.0090^2), inc = 0.4734 (the added fires' per-game gain), SE_new 0.0794 at 400 games (= sqrt(0.0090^2 + se_inc,400 0.0789^2); se_inc 0.1663 at the probe's 90 games, scaled by sqrt(n)); z = 5.923; power = Phi(z - 1.645); approximation: the build's base gain is taken as Stage 3's (0.0649); prices at 1840 s/teacher game: Step 2 (400 games) 204.5 box-h teacher arm; fleet 51.1 box-h per 100 pairs teacher arm
+
+-- AS-RUN co-report (pre-alignment scoring of the same eval rows and label rows; shown beside the primary, NOT the decision basis)
+  margin 1.25: per-game gain 0.0062 (lower bound -0.0089), labeled edge 0.0050; threshold 0.97: per-game gain 0.5418 (lower bound 0.2231)
+  as-run recommendation under the rule: threshold 0.97 -- only the threshold's gain lower bound exceeds 0
+  as-run calibration: contested would-fire rate @1.5 0.0549 per state (119 fires / 2167 contested states)
+
+RECOMMENDATION (registered rule): threshold 0.97 -- only the threshold's gain lower bound exceeds 0
+rule: A lever is BUILDABLE iff its predicted per-game gain's one-sided 95% lower bound (game-clustered, from the label reads) exceeds 0. If exactly one lever is buildable, recommend it. If both are, recommend the one with the higher lower bound; if the lower bounds are within each other's two-sided 95% CI, recommend the cheaper (the margin: it adds no searches). If neither is buildable, recommend NO Step 1 build.

@@ -1,0 +1,10 @@
+=== EVAL COMPLETENESS (fix pass 5, claude-reply-9dae0e2 sec.2.2) ===
+eval job lines: 5253
+eval rows: 381625
+states with rows: 5253
+states complete (every selected candidate at exactly k rows): 5253
+missing states: 0
+(job, candidate) row counts != k: 0
+row split: finished 381587, unfinished 38, refusal 0 (error rows 38)
+rows for unknown snaps: 0; rows for unselected candidates: 0
+EVAL COMPLETENESS: CLEAN

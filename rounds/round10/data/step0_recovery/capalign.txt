@@ -1,0 +1,1 @@
+capalign: 5253 states verified as-run; drop-outs 86; newly qualifying 69 {'uncontested_diag': 32, 'uncontested': 8, 'contested_band': 29}; regrouped 39

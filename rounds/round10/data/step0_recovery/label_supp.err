@@ -1,0 +1,14 @@
+policy: v1 (deck-aware)
+policy: search (seat 1 via /home/joe/tcg/r10probe_out/prod_s2.sock)
+s2 label jobs=10 setting={"name":"L3-W50+H","hooks":8000,"deadline_s":180,"horizon":62,"horizon_value":-1,"k":50}
+done 540261752_t64 rows=100 wall_ms=4827
+done 540261752_t65 rows=100 wall_ms=4574
+done 540261752_t66 rows=100 wall_ms=4203
+done 540261752_t67 rows=100 wall_ms=3698
+done 540261752_t68 rows=100 wall_ms=3083
+done 540261752_t69 rows=100 wall_ms=2584
+done 540261752_t70 rows=100 wall_ms=2162
+done 540261752_t71 rows=100 wall_ms=1525
+done 540261752_t72 rows=100 wall_ms=969
+done 540261752_t73 rows=100 wall_ms=926
+S2-LABEL-DONE setting=L3-W50+H

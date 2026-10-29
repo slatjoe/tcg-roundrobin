@@ -1,0 +1,15 @@
+free-space pre-flight: required_bytes=468711508 (per-tree x 1 tree) available_bytes=5182820352 headroom_factor=1.25
+recovery extraction: 10 jobs -> jobs_supp.jsonl
+segments before: 21 (nattch=0: 21, attached: 0)
+kernel.shmmni: 4096
+segments after: 0
+recovery world-count pre-check OK: 10 jobs x 2 candidates x 50 worlds = 1000 rows
+recovery-B world-count pre-check OK: 69 jobs x 2 candidates x 50 worlds = 6900 rows
+Traceback (most recent call last):
+  File "/home/joe/tcg/round10_code/probe_influence.py", line 500, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/joe/tcg/round10_code/probe_influence.py", line 439, in main
+    logo_by_lever[lever] = logo
+    ^^^^^^^^^^^^^
+NameError: name 'logo_by_lever' is not defined

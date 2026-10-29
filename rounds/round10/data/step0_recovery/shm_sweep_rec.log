@@ -1,0 +1,8 @@
+# shm_sweep start 2026-10-29T08:13:24.894353 mode=LIVE start_shmids=0 games_dir=/tmp/r10probe_rec_tree_0/vendor/talishar/Games
+PASS 1 2026-10-29T08:13:24.897033 total=0 selected=0 unattributed=0
+DELETED pass=1 count=0 failed=0
+PASS 2 2026-10-29T08:14:24.905669 total=44 selected=1 unattributed=0
+SELECT shmid=1999372323 key=541261752 cpid=407067 lpid=407067 nattch=0 ctime="Oct 29 08:13:52" atime="Oct 29 08:13:52" dtime="Oct 29 08:13:52"
+DELETE shmid=1999372323 key=541261752 -> OK
+DELETED pass=2 count=1 failed=0
+# shm_sweep stop after pass 2 2026-10-29T08:14:24.906546

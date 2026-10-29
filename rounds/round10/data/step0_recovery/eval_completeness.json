@@ -1,0 +1,17 @@
+{
+ "eval_job_lines": 5253,
+ "eval_rows": 381625,
+ "states_with_rows": 5253,
+ "states_complete": 5253,
+ "missing_states": 0,
+ "missing": [],
+ "count_anomalies": [],
+ "split": {
+  "finished": 381587,
+  "unfinished": 38,
+  "refusal": 0,
+  "error_rows": 38
+ },
+ "unknown_snap_rows": 0,
+ "unselected_candidate_rows": 0
+}

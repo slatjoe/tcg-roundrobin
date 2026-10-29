@@ -1,0 +1,14 @@
+=== ROUND-10 STEP 0 PROBE -- L3 LABEL READ (sec.14: CAP-ALIGNED is the registered primary; decisive only by turn 61, draw = 0) ===
+--- CAP-ALIGNED (registered primary) ---
+CLASS uncontested: jobs 305; edge 0.0698 CI [0.0342, 0.1136]; per-game gain 0.4734 CI [0.2080, 0.8600] over 90 capture games; sampling weight 2
+CLASS uncontested TAIL (z > 3.5): jobs 21; edge 0.4838 CI [0.3260, 0.6050]
+CLASS contested_band: jobs 94; edge 0.0072 CI [-0.0063, 0.0205]; per-game gain 0.0076 CI [-0.0067, 0.0211] over 90 capture games; sampling weight 1
+CLASS uncontested_diag (DIAGNOSTIC ONLY -- the (1.0, 1.5] uncontested superset; excluded from the threshold gain and the decision rule): jobs 230; edge 0.0172 CI [0.0035, 0.0323]
+cap-aligned grouping excluded 86 jobs (drop-outs: their states no longer qualify)
+--- AS-RUN (pre-alignment scoring of the same rows; co-report only) ---
+CLASS uncontested: jobs 337; edge 0.0724 CI [0.0334, 0.1228]; per-game gain 0.5418 CI [0.2231, 1.0427] over 90 capture games; sampling weight 2
+CLASS uncontested TAIL (z > 3.5): jobs 36; edge 0.3556 CI [0.1686, 0.4827]
+CLASS contested_band: jobs 111; edge 0.0050 CI [-0.0074, 0.0171]; per-game gain 0.0062 CI [-0.0089, 0.0211] over 90 capture games; sampling weight 1
+CLASS uncontested_diag (DIAGNOSTIC ONLY -- the (1.0, 1.5] uncontested superset; excluded from the threshold gain and the decision rule): jobs 267; edge 0.0189 CI [0.0051, 0.0331]
+jobs_no_shared_worlds 0 of 715; label rows 71500 (finished 71497, unfinished 3, refusals 0); fallbacks 0
+
