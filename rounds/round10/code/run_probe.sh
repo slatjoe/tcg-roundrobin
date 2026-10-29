@@ -31,7 +31,7 @@
 #     the label seed family's range bound).
 #   label: s2_label_main.php (round-9 driver + the
 #     r10 fix-pass-4 loud jobs loader) in 4
-#     shard trees carrying STOCK search_s2.php --
+#     shard trees carrying search_s2.php (sec.14 horizon-aligned; attempt 3 ran the round-9 bytes) --
 #     the labels run the registered round-9 machinery
 #     byte for byte. MEAS_SEED = label base 70055001
 #     + shard x 10^8.
@@ -68,7 +68,7 @@ expect_hash() {
 
 # --- pins ------------------------------------------------------------
 expect_hash "$CODE_DIR/search_s3.php" \
-  8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d \
+  87779e8ec96935776ce35d94ae350647d8f4174c8a17ed572b1bd4887b9a7ba7 \
   "probe search_s3.php" || exit 1
 expect_hash "$CODE_DIR/s1_eval_main.php" \
   73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a \
@@ -83,8 +83,8 @@ expect_hash "$CODE_DIR/merge_registry.py" \
   13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe \
   "probe merge_registry.py (round-9 byte-identical)" || exit 1
 expect_hash "$CODE_DIR/search_s2.php" \
-  85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa \
-  "probe search_s2.php (round-9 byte-identical; label trees)" || exit 1
+  1c9641606144ec91bd63c19cfa6831f511d829064626a888ee366daff94767f8 \
+  "probe search_s2.php (sec.14 horizon-aligned; label trees)" || exit 1
 # The remaining deployed files (second fix pass,
 # claude-reply-af9e9f8 sec.2.2): every file in the
 # deploy list below carries an expect_hash site --
@@ -100,10 +100,10 @@ expect_hash "$CODE_DIR/build_probe_jobs.py" \
   f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4 \
   "probe build_probe_jobs.py" || exit 1
 expect_hash "$CODE_DIR/probe_label_analyze.py" \
-  d8d93e3fbefb2776717637c4c920b4a0bfacb043ed9b1ac58eeb6b9bf6e8d6ba \
+  131661e877bfd67b412b65609e74f69ad8ddfbf1dee50d5aa6fc8b19f896e927 \
   "probe probe_label_analyze.py" || exit 1
 expect_hash "$CODE_DIR/probe_report.py" \
-  82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a \
+  868be99240174e774d114d23283de2eb7c3be135deb854b9ecafa1bb2de4b28e \
   "probe probe_report.py" || exit 1
 expect_hash "$CODE_DIR/settings_probe.json" \
   5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb \
@@ -121,7 +121,7 @@ expect_hash "$CODE_DIR/shm_sweep.py" \
   98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33 \
   "probe shm_sweep.py (round-9 byte-identical)" || exit 1
 # The trees below install search_s3.php (capture/eval)
-# or stock search_s2.php (labels) AS search.php; the
+# or sec.14 search_s2.php (labels) AS search.php; the
 # per-tree expect_hash calls at install time are the
 # operative assertions (the round-9 form).
 
@@ -225,7 +225,7 @@ PYEOF
     find "$tree" -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null
     cp "$CODE_DIR/search_s3.php" "$tree/search.php"
     expect_hash "$tree/search.php" \
-      8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d \
+      87779e8ec96935776ce35d94ae350647d8f4174c8a17ed572b1bd4887b9a7ba7 \
       "capture tree $seat search.php (search_s3)" || exit 1
     start_sweeper "$tree" "cap_s${seat}"
     logdir="$OUT/cap_s${seat}_b${BLOCK}_log"
@@ -276,7 +276,7 @@ if [ "$PHASE" = "eval" ] || [ "$PHASE" = "all" ]; then
     cp "$CODE_DIR/search_s3.php" "$tree/search.php"
     cp "$CODE_DIR/s1_eval_main.php" "$tree/"
     expect_hash "$tree/search.php" \
-      8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d \
+      87779e8ec96935776ce35d94ae350647d8f4174c8a17ed572b1bd4887b9a7ba7 \
       "eval tree $s search.php (search_s3, hook inert)" || exit 1
     start_sweeper "$tree" "eval_e$s"
   done
@@ -369,8 +369,8 @@ PYEOF
     cp "$CODE_DIR/search_s2.php" "$tree/search.php"
     cp "$CODE_DIR/s2_label_main.php" "$tree/"
     expect_hash "$tree/search.php" \
-      85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa \
-      "label tree $s search.php (stock search_s2)" || exit 1
+      1c9641606144ec91bd63c19cfa6831f511d829064626a888ee366daff94767f8 \
+      "label tree $s search.php (sec.14 search_s2)" || exit 1
     start_sweeper "$tree" "l3_$s"
   done
 # BLOCK:LABEL-BEGIN

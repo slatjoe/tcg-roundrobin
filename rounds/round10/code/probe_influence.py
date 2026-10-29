@@ -52,6 +52,22 @@ registered number:
       that lever, in the text output and in the JSON
       (the recovery manifest carries it forward).
 
+Sec.14 (2026-10-29, claude-reply-28c2065 sec.3.3):
+with --capalign-classes <capalign_classes.json>,
+the LOGO and the hold rule run on the CAP-ALIGNED
+read: job_diffs scores cap-aligned (a world wins
+only if outcome > 0 and it ended by turn 61), jobs
+are grouped by their cap-aligned class, drop-outs
+(class null) are excluded and counted, and the
+report passed in --report-json is the cap-aligned
+primary report -- so the hold rule evaluates the
+cap-aligned numbers, as registered. The (a)
+inspection is unchanged except one added line per
+snap: the search pick's eval worlds split into wins
+by turn 61 vs wins after turn 61 (the sec.14
+question for this game). Without the flag the read
+is the fix-pass-5 read, unchanged.
+
 Usage: probe_influence.py --jobs jobs_all.jsonl
   --labels labels_merged.jsonl --capture-games
   eval_jobs_report.json --settings settings_probe.json
@@ -60,6 +76,7 @@ Usage: probe_influence.py --jobs jobs_all.jsonl
   --driver-rows cap_s1_b1.jsonl cap_s2_b1.jsonl
   --report-json probe_report.json
   [--game 540261752] [--json-out probe_influence.json]
+  [--capalign-classes capalign_classes.json]
   (text to stdout; the recovery saves it)
 """
 import argparse
@@ -194,6 +211,7 @@ def main():
     ap.add_argument("--report-json", required=True)
     ap.add_argument("--game", default="540261752")
     ap.add_argument("--json-out")
+    ap.add_argument("--capalign-classes")
     a = ap.parse_args()
 
     settings = json.load(open(a.settings))
@@ -305,6 +323,24 @@ def main():
                      and float(res.get("outcome")) == -1.0
                      and int(res.get("horizon") or 0) == 0)
         other = len(pw) - hor - losses
+        # sec.14: the search pick's worlds split at
+        # the cap -- wins recorded by turn 61 (they
+        # stand under the aligned rule) vs wins
+        # recorded after turn 61 (post-cap: the live
+        # game would have been a draw at 62).
+        tw = worlds.get((snap, tp), {})
+        wins_by61 = sum(
+            1 for res in tw.values()
+            if isinstance(res, dict)
+            and int(res.get("finished") or 0) == 1
+            and float(res.get("outcome")) == 1.0
+            and int(res.get("turns") or 0) <= 61)
+        wins_after61 = sum(
+            1 for res in tw.values()
+            if isinstance(res, dict)
+            and int(res.get("finished") or 0) == 1
+            and float(res.get("outcome")) == 1.0
+            and int(res.get("turns") or 0) > 61)
         diag = (eval_states.get(snap) or {}).get(
             "cand_diag") or {}
         diag_ok = all(
@@ -327,7 +363,10 @@ def main():
                "prior_worlds": len(pw),
                "prior_horizon_draws_priced_minus1": hor,
                "prior_outright_losses": losses,
-               "prior_other_worlds": other}
+               "prior_other_worlds": other,
+               "search_worlds": len(tw),
+               "search_wins_by_turn61": wins_by61,
+               "search_wins_after_turn61": wins_after61}
         snap_recs.append(rec)
         lines.append(
             "  %s turn %d: prior pick %d (%s) vs search "
@@ -350,6 +389,12 @@ def main():
             "other; eval cand_diag agrees: %s"
             % (len(pw), hor, losses, other,
                "yes" if diag_ok else "NO"))
+        lines.append(
+            "    search pick's %d worlds: %d wins by "
+            "turn 61 (stand cap-aligned), %d wins after "
+            "turn 61 (post-cap; horizon draws under "
+            "the aligned rule)"
+            % (len(tw), wins_by61, wins_after61))
 
     # ---------- (b) LOGO ----------
     rows = []
@@ -357,10 +402,34 @@ def main():
         for l in open(path):
             if l.strip():
                 rows.append(json.loads(l))
-    diff_by_snap, _dc = pla.job_diffs(jobs, rows, s0)
-    recs_all = list(diff_by_snap.values())
-    logo_by_lever = {}
-    lines.append("\n-- (b) leave-one-game-out, per lever")
+    cap_excluded = 0
+    if a.capalign_classes:
+        cmap = json.load(open(a.capalign_classes))
+        missing = [s for s in job_by_snap if s not in cmap]
+        if missing:
+            print("ABORT: %d label jobs have no entry in "
+                  "the cap-aligned class map (first: %s)"
+                  % (len(missing), missing[0]))
+            return 2
+        diff_by_snap, _dc = pla.job_diffs(
+            jobs, rows, s0, cap_aligned=True)
+        recs_all = []
+        for snap, rec in diff_by_snap.items():
+            cls = cmap[snap]
+            if cls is None:
+                cap_excluded += 1
+                continue
+            r2 = dict(rec)
+            r2["probe_band"] = cls
+            recs_all.append(r2)
+        lines.append("\n-- (b) leave-one-game-out, per "
+                     "lever (CAP-ALIGNED scoring and "
+                     "classes, sec.14; %d drop-out jobs "
+                     "excluded)" % cap_excluded)
+    else:
+        diff_by_snap, _dc = pla.job_diffs(jobs, rows, s0)
+        recs_all = list(diff_by_snap.values())
+        lines.append("\n-- (b) leave-one-game-out, per lever")
     for lever, cls, _rk in LEVERS:
         recs = [r for r in recs_all
                 if r["probe_band"] == cls]
@@ -386,7 +455,10 @@ def main():
 
     # ---------- (c) hold rule ----------
     hold = decide_hold(report, logo_by_lever)
-    lines.append("\n-- (c) hold rule (sec.2.3)")
+    lines.append("\n-- (c) hold rule (sec.2.3%s)"
+                 % (", evaluated on the cap-aligned "
+                    "numbers, sec.14"
+                    if a.capalign_classes else ""))
     hold_lines = []
     for lever, _cls, _rk in LEVERS:
         h = hold[lever]
@@ -411,6 +483,12 @@ def main():
            "logo": logo_by_lever,
            "hold": hold,
            "hold_lines": hold_lines}
+    if a.capalign_classes:
+        out["scoring"] = "cap_aligned (sec.14): LOGO " \
+                         "and hold on the cap-aligned " \
+                         "read; classes from " \
+                         "capalign_eval.py"
+        out["capaligned_excluded_jobs"] = cap_excluded
     print("\n".join(lines))
     if a.json_out:
         with open(a.json_out, "w") as f:

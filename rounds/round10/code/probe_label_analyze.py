@@ -45,12 +45,32 @@ guard demands exactly --expect-rows rows per
 (snap, candidate); the refusal taxonomy and
 jobs_no_shared_worlds are reported as in Stage 3.
 
+Sec.14 (2026-10-29, claude-reply-28c2065 sec.3.3):
+with --capalign-classes <capalign_classes.json>
+(and --capalign-states <capalign_states.jsonl> for
+the cap-aligned z), the read computes BOTH scorings
+from the same label rows. CAP-ALIGNED is the
+registered primary: a world scores 1.0 only if its
+outcome > 0 AND it ended by turn 61 (a decisive
+world ending after turn 61 is a horizon draw under
+the live instrument and scores 0, as a flagged
+horizon world already does), and jobs are grouped
+by their CAP-ALIGNED class from capalign_eval.py --
+jobs whose cap-aligned class is null (the drop-outs)
+are excluded and counted. The as-run read (the job
+file's own classes, the original scoring) is
+computed exactly as before and printed beside it,
+labeled, as a co-report. Without the flag the
+output is the pre-sec.14 read, unchanged.
+
 Usage: probe_label_analyze.py --jobs jobs_all.jsonl
   --labels labels_all.jsonl --capture-games
   capture_games.json (the eval jobs report, whose
   games_list is the capture population)
   --settings settings_probe.json
   [--expect-rows 50] [--json-out label_read.json]
+  [--capalign-classes capalign_classes.json
+   --capalign-states capalign_states.jsonl]
 """
 import argparse
 import importlib.util
@@ -60,6 +80,11 @@ import sys
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+# sec.14 registered rule: the live instrument's cap
+# trigger is currentTurn 62 (play_game.php), so a
+# decisive world is one that ended by turn 61.
+CAP_LAST_DECISIVE_TURN = 61
 
 
 def load_mod(name):
@@ -74,7 +99,7 @@ def pct(x):
     return "%.4f" % x if x is not None else "n/a"
 
 
-def job_diffs(jobs, rows, s0):
+def job_diffs(jobs, rows, s0, cap_aligned=False):
     """The read's per-job paired diffs, computed
     exactly as this script's main() has always
     computed them (worlds paired by world index
@@ -85,7 +110,15 @@ def job_diffs(jobs, rows, s0):
     probe_influence.py reuses THIS machinery for its
     leave-one-game-out read instead of reimplementing
     it; the math is unchanged. Returns
-    (diff_by_snap, counts)."""
+    (diff_by_snap, counts).
+
+    Sec.14: with cap_aligned=True the world score
+    applies the registered cap-aligned rule -- a
+    world counts as a win only if outcome > 0 AND
+    it ended by turn 61 (CAP_LAST_DECISIVE_TURN);
+    a decisive world ending later is a horizon draw
+    and scores 0, exactly as winner == 0 worlds
+    already score. Nothing else changes."""
     job_by_snap = {str(j["snap"]): j for j in jobs}
     worlds = defaultdict(dict)
     fallbacks = 0
@@ -113,7 +146,12 @@ def job_diffs(jobs, rows, s0):
                 kind, r.get("result"))
 
     def score(res):
-        return 1.0 if float(res["outcome"]) > 0 else 0.0
+        if float(res["outcome"]) > 0:
+            if cap_aligned and int(res.get("turns") or 0) \
+                    > CAP_LAST_DECISIVE_TURN:
+                return 0.0
+            return 1.0
+        return 0.0
 
     diff_by_snap = {}
     for snap, j in job_by_snap.items():
@@ -182,6 +220,8 @@ def main():
     ap.add_argument("--settings", required=True)
     ap.add_argument("--expect-rows", type=int, default=50)
     ap.add_argument("--json-out")
+    ap.add_argument("--capalign-classes")
+    ap.add_argument("--capalign-states")
     a = ap.parse_args()
 
     s0 = load_mod("stage0_report")
@@ -240,66 +280,141 @@ def main():
             [{"game": r["game"], "diff": r["diff"]} for r in recs])
         return {"jobs": len(recs), "edge": m, "ci": [lo, hi]}
 
+    def class_reads(recs_all):
+        """The per-class reads and their text lines for
+        ONE scoring of the rows (grouping by each
+        record's probe_band, tail by its z). Used for
+        the as-run read and, under sec.14, for the
+        cap-aligned read on regrouped records."""
+        by_class = {}
+        gains = {}
+        blines = []
+        for cls in ("uncontested", "contested_band"):
+            recs = [r for r in recs_all
+                    if r["probe_band"] == cls]
+            rd = read(recs)
+            # sec.2.1: uncontested jobs carry the
+            # sampling weight; contested-band jobs are
+            # unsampled.
+            w = float(unc_every) if cls == "uncontested" \
+                else 1.0
+            gain = per_game_gain(recs, cap_games, stock, w)
+            by_class[cls] = rd
+            gains[cls] = gain
+            blines.append(
+                "CLASS %s: jobs %d; edge %s CI [%s, %s]; "
+                "per-game gain %s CI [%s, %s] over %d "
+                "capture games; sampling weight %s"
+                % (cls, rd["jobs"], pct(rd["edge"]),
+                   pct(rd["ci"][0]) if rd["ci"] else "n/a",
+                   pct(rd["ci"][1]) if rd["ci"] else "n/a",
+                   pct(gain["gain"]),
+                   pct(gain["ci"][0]) if gain["ci"]
+                   else "n/a",
+                   pct(gain["ci"][1]) if gain["ci"]
+                   else "n/a",
+                   gain.get("games") or 0, "%g" % w))
+            if cls == "uncontested":
+                tail = [r for r in recs if r["z"] > tail_z]
+                trd = read(tail)
+                by_class["uncontested_tail"] = trd
+                blines.append(
+                    "CLASS uncontested TAIL (z > %.1f): "
+                    "jobs %d; edge %s CI [%s, %s]"
+                    % (tail_z, trd["jobs"], pct(trd["edge"]),
+                       pct(trd["ci"][0]) if trd["ci"]
+                       else "n/a",
+                       pct(trd["ci"][1]) if trd["ci"]
+                       else "n/a"))
+                pb = defaultdict(list)
+                for r in recs:
+                    pb[str(r["prior_band"])].append(r)
+                by_class["uncontested_by_prior_band"] = {
+                    k: read(v) for k, v in sorted(pb.items())}
+        # the diagnostic superset class: counts and
+        # edge only -- NO per-game gain entry, so
+        # nothing downstream can fold it into the
+        # threshold gain or the decision rule
+        # (fix pass, sec.3/F2).
+        diag = [r for r in recs_all
+                if r["probe_band"] == "uncontested_diag"]
+        drd = read(diag)
+        by_class["uncontested_diag"] = drd
+        blines.append(
+            "CLASS uncontested_diag (DIAGNOSTIC ONLY -- "
+            "the (1.0, 1.5] uncontested superset; "
+            "excluded from the threshold gain and the "
+            "decision rule): jobs %d; edge %s CI [%s, %s]"
+            % (drd["jobs"], pct(drd["edge"]),
+               pct(drd["ci"][0]) if drd["ci"] else "n/a",
+               pct(drd["ci"][1]) if drd["ci"] else "n/a"))
+        return by_class, gains, blines
+
     recs_all = list(diff_by_snap.values())
+    by_class, gains, block_lines = class_reads(recs_all)
     out = {"jobs": len(jobs),
            "jobs_no_shared_worlds": jobs_no_shared,
            "label_rows": len(rows),
            "finished": fin, "unfinished": unf, "refusals": ref,
            "fallbacks": fallbacks,
-           "by_class": {}, "per_game_gain": {}}
+           "by_class": by_class, "per_game_gain": gains}
     lines = ["=== ROUND-10 STEP 0 PROBE -- L3 LABEL READ "
              "(primary: horizon 62, draw = 0) ==="]
-    for cls in ("uncontested", "contested_band"):
-        recs = [r for r in recs_all if r["probe_band"] == cls]
-        rd = read(recs)
-        # sec.2.1: uncontested jobs carry the sampling
-        # weight; contested-band jobs are unsampled.
-        w = float(unc_every) if cls == "uncontested" else 1.0
-        gain = per_game_gain(recs, cap_games, stock, w)
-        out["by_class"][cls] = rd
-        out["per_game_gain"][cls] = gain
-        lines.append(
-            "CLASS %s: jobs %d; edge %s CI [%s, %s]; "
-            "per-game gain %s CI [%s, %s] over %d capture "
-            "games; sampling weight %s"
-            % (cls, rd["jobs"], pct(rd["edge"]),
-               pct(rd["ci"][0]) if rd["ci"] else "n/a",
-               pct(rd["ci"][1]) if rd["ci"] else "n/a",
-               pct(gain["gain"]),
-               pct(gain["ci"][0]) if gain["ci"] else "n/a",
-               pct(gain["ci"][1]) if gain["ci"] else "n/a",
-               gain.get("games") or 0, "%g" % w))
-        if cls == "uncontested":
-            tail = [r for r in recs if r["z"] > tail_z]
-            trd = read(tail)
-            out["by_class"]["uncontested_tail"] = trd
-            lines.append(
-                "CLASS uncontested TAIL (z > %.1f): jobs %d; "
-                "edge %s CI [%s, %s]"
-                % (tail_z, trd["jobs"], pct(trd["edge"]),
-                   pct(trd["ci"][0]) if trd["ci"] else "n/a",
-                   pct(trd["ci"][1]) if trd["ci"] else "n/a"))
-            pb = defaultdict(list)
-            for r in recs:
-                pb[str(r["prior_band"])].append(r)
-            out["by_class"]["uncontested_by_prior_band"] = {
-                k: read(v) for k, v in sorted(pb.items())}
-    # the diagnostic superset class: counts and edge
-    # only -- NO per-game gain entry, so nothing
-    # downstream can fold it into the threshold gain
-    # or the decision rule (fix pass, sec.3/F2).
-    diag = [r for r in recs_all
-            if r["probe_band"] == "uncontested_diag"]
-    drd = read(diag)
-    out["by_class"]["uncontested_diag"] = drd
-    lines.append(
-        "CLASS uncontested_diag (DIAGNOSTIC ONLY -- the "
-        "(1.0, 1.5] uncontested superset; excluded from "
-        "the threshold gain and the decision rule): "
-        "jobs %d; edge %s CI [%s, %s]"
-        % (drd["jobs"], pct(drd["edge"]),
-           pct(drd["ci"][0]) if drd["ci"] else "n/a",
-           pct(drd["ci"][1]) if drd["ci"] else "n/a"))
+    lines += block_lines
+    if a.capalign_classes:
+        cmap = json.load(open(a.capalign_classes))
+        capz = {}
+        if a.capalign_states:
+            for l in open(a.capalign_states):
+                if l.strip():
+                    r = json.loads(l)
+                    capz[str(r["snap"])] = float(
+                        r["cap_aligned"]["z"]) \
+                        if r["cap_aligned"]["z"] is not None \
+                        else 0.0
+        missing = [s for s in job_by_snap if s not in cmap]
+        if missing:
+            print("ABORT: %d label jobs have no entry in "
+                  "the cap-aligned class map (first: %s) -- "
+                  "the map must cover every eval state"
+                  % (len(missing), missing[0]))
+            return 2
+        diff_cap, _dc = job_diffs(jobs, rows, s0,
+                                  cap_aligned=True)
+        cap_recs = []
+        excluded = 0
+        for snap, rec in diff_cap.items():
+            cls = cmap[snap]
+            if cls is None:
+                excluded += 1
+                continue
+            r2 = dict(rec)
+            r2["probe_band"] = cls
+            if snap in capz:
+                r2["z"] = capz[snap]
+            cap_recs.append(r2)
+        cb, cg, clines = class_reads(cap_recs)
+        out["capaligned"] = {
+            "by_class": cb, "per_game_gain": cg,
+            "excluded_jobs": excluded,
+            "jobs_with_diffs": len(diff_cap),
+            "scoring": "cap_aligned: a world scores 1.0 "
+                       "only if outcome > 0 and it ended "
+                       "by turn 61; classes from "
+                       "capalign_eval.py"}
+        lines = ["=== ROUND-10 STEP 0 PROBE -- L3 LABEL "
+                 "READ (sec.14: CAP-ALIGNED is the "
+                 "registered primary; decisive only by "
+                 "turn 61, draw = 0) ===",
+                 "--- CAP-ALIGNED (registered primary) ---"]
+        lines += clines
+        lines.append("cap-aligned grouping excluded %d "
+                     "jobs (drop-outs: their states no "
+                     "longer qualify)" % excluded)
+        lines.append("--- AS-RUN (pre-alignment scoring "
+                     "of the same rows; co-report only) "
+                     "---")
+        lines += block_lines
     lines.append("jobs_no_shared_worlds %d of %d; label rows "
                  "%d (finished %d, unfinished %d, refusals %d); "
                  "fallbacks %d"

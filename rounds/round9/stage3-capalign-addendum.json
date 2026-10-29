@@ -1,0 +1,90 @@
+{
+ "addendum": "round-9 L3 primaries, cap-aligned co-report (round-10 sec.14)",
+ "date": "2026-10-29",
+ "generated_by": "rounds/round9/code/capalign_l3.py, run on the published data/stage2 and data/stage3 files",
+ "rule": "cap-aligned (sec.14): a world scores 1.0 only if outcome > 0 and it ended by turn 61; every other finished world scores 0 (draw = 0 primary). The live instrument's cap trigger is currentTurn 62.",
+ "stage2": {
+  "jobs": 353,
+  "label_rows": 35300,
+  "as_run": {
+   "jobs": 353,
+   "mean_diff": 0.06211481759842748,
+   "ci": [
+    0.043972043611965314,
+    0.080939226519337
+   ],
+   "per_game_gain": 0.1096326530612245,
+   "published_ci": [
+    0.043972043611965314,
+    0.080939226519337
+   ],
+   "verification": "point estimate and job count reproduce the published read exactly"
+  },
+  "cap_aligned": {
+   "jobs": 353,
+   "mean_diff": 0.056505752442620114,
+   "ci": [
+    0.03996642358742984,
+    0.07388346643005031
+   ],
+   "per_game_gain": 0.09973265306122449
+  },
+  "live_overturns_per_game": 1.765,
+  "bootstrap": {
+   "reps": 10000,
+   "seed": 20261020,
+   "note": "analyze_l3.cluster_bootstrap defaults; CIs differ across recomputations in the third decimal by bootstrap draw"
+  },
+  "overshoot": {
+   "finished_worlds": 35296,
+   "decisive_worlds": 15800,
+   "decisive_after_turn61": 591,
+   "decisive_after_turn63": 327,
+   "horizon_worlds": 7996,
+   "horizon_turns_median": 93.0,
+   "horizon_turns_max": 268
+  }
+ },
+ "stage3": {
+  "jobs": 622,
+  "label_rows": 62200,
+  "as_run": {
+   "jobs": 622,
+   "mean_diff": 0.04171402322987073,
+   "ci": [
+    0.031134719710669067,
+    0.0527311914864956
+   ],
+   "per_game_gain": 0.06486530612244898,
+   "published_ci": [
+    0.031134719710669067,
+    0.0527311914864956
+   ],
+   "verification": "point estimate and job count reproduce the published read exactly"
+  },
+  "cap_aligned": {
+   "jobs": 622,
+   "mean_diff": 0.04174748999278168,
+   "ci": [
+    0.031373652451013624,
+    0.0526615919679769
+   ],
+   "per_game_gain": 0.06491734693877552
+  },
+  "live_overturns_per_game": 1.555,
+  "bootstrap": {
+   "reps": 10000,
+   "seed": 20261020,
+   "note": "analyze_l3.cluster_bootstrap defaults; CIs differ across recomputations in the third decimal by bootstrap draw"
+  },
+  "overshoot": {
+   "finished_worlds": 62192,
+   "decisive_worlds": 26010,
+   "decisive_after_turn61": 589,
+   "decisive_after_turn63": 349,
+   "horizon_worlds": 14173,
+   "horizon_turns_median": 93,
+   "horizon_turns_max": 268
+  }
+ }
+}

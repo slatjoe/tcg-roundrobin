@@ -8,8 +8,8 @@ block and the per-tree install assertions), assert:
   * it EQUALS the sha256 of the corresponding staged
     file in rounds/round10/code/ (machine-checked --
     a composed or stale literal fails here);
-  * the two 8f7be190... sites for search_s3.php and
-    the 85490e8e... sites for search_s2.php agree
+  * the two 87779e8e... sites for search_s3.php and
+    the 1c964160... sites for search_s2.php agree
     with each other.
 Also assert the runner's seed literals equal
 settings_probe.json (eval base 30055001, label base

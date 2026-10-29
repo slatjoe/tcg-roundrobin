@@ -29,6 +29,57 @@
 #      manifest carries its file hashes and any
 #      "buildable, single-game dependent" hold lines.
 #
+# Sec.14 amendment (package doc sec.14,
+# claude-reply-28c2065 sec.3.1-3.4), which SUPERSEDES
+# step 4 / 4b below where they conflict:
+#   0b. After the completeness gate, the CAP-ALIGNED
+#       eval rescoring (capalign_eval.py) runs on
+#       the box's eval files and writes
+#       $OUT/capalign/: per-state cap-aligned
+#       classes, the reclassification (drop-outs /
+#       newly qualifying), and the supplementary
+#       job set for the newly qualifying states.
+#       (The same outputs are published in the repo
+#       at data/step0_capalign/, computed there from
+#       the published rows; the recovery recomputes
+#       them from the run's own files and the read
+#       consumes the in-run copies.)
+#   2b. The newly qualifying states (69 in the
+#       published rescoring) are labeled in a second
+#       invocation in the same tree under a FRESH
+#       seed family: MEAS_SEED = 470055001 (the
+#       label lattice at shard index 4; span at 69
+#       jobs tops at 478,390,718 -- disjoint from
+#       every family incl. the 970,055,001 family's
+#       500 values; fx_seed_clearance enumerates).
+#   4'. The analyze phase is the sec.14 read:
+#       probe_label_analyze.py computes BOTH
+#       scorings over the merged set (jobs_merged =
+#       the 646 attempt-3 jobs + the supplementary
+#       set; labels_merged = attempt-3 labels + the
+#       10 + the newly qualifying), CAP-ALIGNED as
+#       the registered primary with jobs grouped by
+#       their cap-aligned classes -- dropped-out
+#       jobs are excluded from the cap-aligned read
+#       and listed in the manifest; probe_report.py
+#       decides on the cap-aligned summary and
+#       prints the as-run report as a labeled
+#       co-report; probe_influence.py runs its LOGO
+#       and hold rule on the cap-aligned read.
+#       The 10-job extraction, supplementary
+#       labeling and merge stay as ONE step
+#       (sec.3.4): all labels merge before any read.
+#   Disclosure (also in the manifest): the
+#   supplementary labels (the 10 + the newly
+#   qualifying) run under the sec.14-FIXED search
+#   file (1c964160...) installed in the label tree,
+#   while attempt 3's 636 jobs ran the as-built
+#   bytes. Under cap-aligned scoring the two are
+#   commensurable -- the fixed engine's worlds are
+#   cap-aligned by construction (decisive only by
+#   turn 61, horizon flagged at the trigger) -- and
+#   the as-run co-report is labeled accordingly.
+#
 # This script:
 #   1. extracts exactly those 10 jobs from
 #      jobs_all.jsonl (Python's json is the one
@@ -81,6 +132,7 @@ PROD=${PROD:-/home/joe/tcg/tcg-sim/rl/search_server.py}
 SETTINGS="$CODE_DIR/settings_probe.json"
 SRV_WAIT_TRIES=${SRV_WAIT_TRIES:-120}
 SUPP_SEED=970055001
+SUPP_SEED_B=470055001
 mkdir -p "$OUT"
 
 expect_hash() {
@@ -97,20 +149,23 @@ expect_hash "$CODE_DIR/s2_label_main.php" \
   1c1dfd9f9349e8db815f23e31637dee558a9ec36e09179142f71748a6bce72aa \
   "recovery s2_label_main.php (round-9 + r10 fix-pass-4 loud loader)" || exit 1
 expect_hash "$CODE_DIR/search_s2.php" \
-  85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa \
-  "recovery search_s2.php (round-9 byte-identical; label tree)" || exit 1
+  1c9641606144ec91bd63c19cfa6831f511d829064626a888ee366daff94767f8 \
+  "recovery search_s2.php (sec.14 horizon-aligned; label tree)" || exit 1
 expect_hash "$CODE_DIR/probe_label_analyze.py" \
-  d8d93e3fbefb2776717637c4c920b4a0bfacb043ed9b1ac58eeb6b9bf6e8d6ba \
-  "recovery probe_label_analyze.py (fix pass 5: job_diffs/per_game_gain lifted to module level for the influence read; math unchanged)" || exit 1
+  131661e877bfd67b412b65609e74f69ad8ddfbf1dee50d5aa6fc8b19f896e927 \
+  "recovery probe_label_analyze.py (sec.14: dual read -- cap-aligned primary via --capalign-classes, as-run co-report; fix-pass-5 module-level job_diffs/per_game_gain)" || exit 1
 expect_hash "$CODE_DIR/eval_completeness.py" \
   4d7d38b7df523213251b0a37aa96667fe0419688db4733beb18cd1b11e24e0b6 \
   "recovery eval_completeness.py (fix pass 5)" || exit 1
+expect_hash "$CODE_DIR/capalign_eval.py" \
+  7a9d27891e9a2c83bafab5de0f2feb1da59a38c14fb406d726874a2ba1426999 \
+  "recovery capalign_eval.py (sec.14: cap-aligned eval rescoring + reclassification + supplementary jobs)" || exit 1
 expect_hash "$CODE_DIR/probe_influence.py" \
-  45766606955f97464993bafa69f45f49051cb67e4480bd567f5c5980c5fe9e51 \
-  "recovery probe_influence.py (fix pass 5)" || exit 1
+  83f4f1d1ed496cb95619e7c960626ca07e2896e15522e5b93a26154ad90275ab \
+  "recovery probe_influence.py (sec.14: LOGO + hold on the cap-aligned read; by-61 inspection split)" || exit 1
 expect_hash "$CODE_DIR/probe_report.py" \
-  82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a \
-  "recovery probe_report.py" || exit 1
+  868be99240174e774d114d23283de2eb7c3be135deb854b9ecafa1bb2de4b28e \
+  "recovery probe_report.py (sec.14: cap-aligned primary via --capalign-summary, as-run co-report)" || exit 1
 expect_hash "$CODE_DIR/settings_probe.json" \
   5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb \
   "recovery settings_probe.json (decision rule + bar)" || exit 1
@@ -139,7 +194,10 @@ done
 for f in jobs_supp.jsonl labels_supp.jsonl \
          labels_merged.jsonl recovery_manifest.json \
          eval_completeness.txt eval_completeness.json \
-         probe_influence.txt probe_influence.json; do
+         probe_influence.txt probe_influence.json \
+         jobs_suppB.jsonl labels_suppB.jsonl \
+         label_stats_suppB.jsonl jobs_merged.jsonl \
+         capalign; do
   [ ! -e "$OUT/$f" ] || {
     echo "ABORT: recovery output $OUT/$f already exists -- the recovery is single-shot" >&2; exit 1; }
 done
@@ -157,6 +215,30 @@ $PY "$CODE_DIR/eval_completeness.py" \
   --json-out "$OUT/eval_completeness.json" \
   > "$OUT/eval_completeness.txt" || {
   echo "ABORT: eval completeness assertion failed -- the recovery stops before any extraction, merge or analysis (see eval_completeness.txt)" >&2; exit 1; }
+
+# --- cap-aligned rescoring (sec.14, step 0b) -----------------------------
+# Recompute the cap-aligned eval rescoring from the
+# run's own files (the repo carries the same outputs
+# at data/step0_capalign/, computed from the
+# published rows; capalign_eval.py verifies its
+# as-run mirror against the published states before
+# emitting anything and aborts on a mismatch). The
+# read below consumes THESE in-run copies: the class
+# map, the states (cap-aligned z), the summary, and
+# the supplementary job set for the newly qualifying
+# states.
+$PY "$CODE_DIR/capalign_eval.py" \
+  --jobs "$OUT/eval_jobs.jsonl" \
+  --rows "$OUT/evals_all.jsonl" \
+  --states-published "$OUT/eval_states.jsonl" \
+  --summary-published "$OUT/eval_summary.json" \
+  --label-jobs "$OUT/jobs_all.jsonl" \
+  --settings "$SETTINGS" \
+  --out-dir "$OUT/capalign" \
+  > "$OUT/capalign.txt" || {
+  echo "ABORT: cap-aligned rescoring failed (see capalign.txt)" >&2; exit 1; }
+cp "$OUT/capalign/supplementary_jobs.jsonl" \
+   "$OUT/jobs_suppB.jsonl"
 
 # --- free-space pre-flight (one tree) -----------------------------------
 PER_TREE=$(du -sb "$GTREE" | cut -f1)
@@ -240,8 +322,8 @@ find "$tree" -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null
 cp "$CODE_DIR/search_s2.php" "$tree/search.php"
 cp "$CODE_DIR/s2_label_main.php" "$tree/"
 expect_hash "$tree/search.php" \
-  85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa \
-  "recovery tree search.php (stock search_s2)" || exit 1
+  1c9641606144ec91bd63c19cfa6831f511d829064626a888ee366daff94767f8 \
+  "recovery tree search.php (sec.14 search_s2)" || exit 1
 start_sweeper "$tree" "rec"
 
 # --- label ONLY the 10, under the fresh seed family ---------------------
@@ -287,13 +369,72 @@ print("recovery world-count pre-check OK: %d jobs x 2 "
       % (len(jobs), len(rows)))
 PYEOF
 
-# --- merge + the registered analyze phase -------------------------------
+# --- label the newly qualifying states (sec.14, step 2b) ------------------
+# Same tree, same tuple, second invocation, fresh
+# seed family (470,055,001). The job set is
+# capalign_eval.py's supplementary_jobs.jsonl
+# (copied to jobs_suppB.jsonl above); its count is
+# read from the file, never assumed.
+SUPPB_N=$($PY -c "import sys; print(sum(1 for l in open(sys.argv[1]) if l.strip()))" "$OUT/jobs_suppB.jsonl")
+start_sweeper "$tree" "recB"
+: > "$OUT/labels_suppB.jsonl"
+: > "$OUT/label_stats_suppB.jsonl"
+(cd "$tree" && MEAS_JOBS="$OUT/jobs_suppB.jsonl" \
+   MEAS_OUT="$OUT/labels_suppB.jsonl" \
+   EVAL_STATS="$OUT/label_stats_suppB.jsonl" \
+   MEAS_SEED=$SUPP_SEED_B \
+   TCG_POLICY_SOCK="$OUT/prod_s2.sock" \
+   EVAL_SETTING_NAME=L3-W50+H EVAL_HOOKS=8000 \
+   EVAL_DEADLINE_S=180 LABEL_HORIZON=62 \
+   EVAL_HORIZON_VALUE=-1 EVAL_K=50 \
+   $PHP s2_label_main.php \
+     "$tree/$DECK_REL" "$tree/$DECK_REL" \
+     --policy-search --games 1 \
+     > "$OUT/label_suppB.err" 2>&1) || exit 1
+touch "$OUT/shm_sweep_recB.stop"
+grep -q "s2 label jobs=$SUPPB_N " "$OUT/label_suppB.err" || {
+  echo "ABORT: the supplementary-B loader did not load exactly $SUPPB_N jobs (see label_suppB.err)" >&2; exit 1; }
+grep -q "S2-LABEL-DONE" "$OUT/label_suppB.err" || {
+  echo "ABORT: supplementary-B labeling did not complete (see label_suppB.err)" >&2; exit 1; }
+$PY - "$OUT" <<'PYEOF' || exit 1
+import json, sys
+from collections import Counter
+out = sys.argv[1]
+jobs = [json.loads(l) for l in open(out + "/jobs_suppB.jsonl")
+        if l.strip()]
+rows = [json.loads(l) for l in open(out + "/labels_suppB.jsonl")
+        if l.strip()]
+cnt = Counter((str(r["snap"]), int(r["cand"])) for r in rows)
+for j in jobs:
+    for cand in (int(j["teacher_pick"]), int(j["prior_pick"])):
+        n = cnt.get((str(j["snap"]), cand), 0)
+        assert n == 50, \
+            "job %s candidate %d has %d rows, expected 50" \
+            % (j["snap"], cand, n)
+print("recovery-B world-count pre-check OK: %d jobs x 2 "
+      "candidates x 50 worlds = %d rows"
+      % (len(jobs), len(rows)))
+PYEOF
+
+# --- merge + the sec.14 read ----------------------------------------------
+# jobs_merged: the 646 attempt-3 jobs VERBATIM (the
+# ten keep their original bare-Infinity lines --
+# Python readers accept them, probe_influence.py's
+# inspection selects the ten by exactly that
+# non-finite z, and the PHP loader never sees this
+# file) + the supplementary set appended.
+cat "$OUT/jobs_all.jsonl" "$OUT/jobs_suppB.jsonl" \
+  > "$OUT/jobs_merged.jsonl"
 cat "$OUT/labels_all.jsonl" "$OUT/labels_supp.jsonl" \
+    "$OUT/labels_suppB.jsonl" \
   > "$OUT/labels_merged.jsonl"
 $PY "$CODE_DIR/probe_label_analyze.py" \
-  --jobs "$OUT/jobs_all.jsonl" --labels "$OUT/labels_merged.jsonl" \
+  --jobs "$OUT/jobs_merged.jsonl" \
+  --labels "$OUT/labels_merged.jsonl" \
   --capture-games "$OUT/eval_jobs_report.json" \
   --settings "$SETTINGS" \
+  --capalign-classes "$OUT/capalign/capalign_classes.json" \
+  --capalign-states "$OUT/capalign/capalign_states.jsonl" \
   --json-out "$OUT/label_read.json" \
   > "$OUT/label_read.txt" || exit 1
 $PY "$CODE_DIR/probe_report.py" \
@@ -301,12 +442,14 @@ $PY "$CODE_DIR/probe_report.py" \
   --eval-jobs-report "$OUT/eval_jobs_report.json" \
   --label-read "$OUT/label_read.json" \
   --settings "$SETTINGS" \
+  --capalign-summary "$OUT/capalign/capalign_summary.json" \
   --json-out "$OUT/probe_report.json" \
   > "$OUT/probe_report.txt" || exit 1
 
-# --- the registered influence read (fix pass 5, sec.2.3) ------------------
+# --- the registered influence read (fix pass 5, sec.2.3; sec.14: on the
+# --- cap-aligned read) -----------------------------------------------------
 $PY "$CODE_DIR/probe_influence.py" \
-  --jobs "$OUT/jobs_all.jsonl" \
+  --jobs "$OUT/jobs_merged.jsonl" \
   --labels "$OUT/labels_merged.jsonl" \
   --capture-games "$OUT/eval_jobs_report.json" \
   --settings "$SETTINGS" \
@@ -316,21 +459,37 @@ $PY "$CODE_DIR/probe_influence.py" \
   --driver-rows "$OUT/cap_s1_b1.jsonl" \
     "$OUT/cap_s2_b1.jsonl" \
   --report-json "$OUT/probe_report.json" \
+  --capalign-classes "$OUT/capalign/capalign_classes.json" \
   --json-out "$OUT/probe_influence.json" \
   > "$OUT/probe_influence.txt" || exit 1
 
 # --- recovery manifest ----------------------------------------------------
-$PY - "$OUT" "$SUPP_SEED" <<'PYEOF' || exit 1
+$PY - "$OUT" "$SUPP_SEED" "$SUPP_SEED_B" <<'PYEOF' || exit 1
 import hashlib, json, os, sys
 out, seed = sys.argv[1], int(sys.argv[2])
+seed_b = int(sys.argv[3])
 names = ["jobs_all.jsonl", "labels_all.jsonl",
          "jobs_supp.jsonl", "labels_supp.jsonl",
          "label_stats_supp.jsonl", "labels_merged.jsonl",
          "label_read.json", "probe_report.json",
          "eval_completeness.json",
-         "probe_influence.json", "probe_influence.txt"]
+         "probe_influence.json", "probe_influence.txt",
+         "jobs_suppB.jsonl", "labels_suppB.jsonl",
+         "label_stats_suppB.jsonl", "jobs_merged.jsonl",
+         "capalign/capalign_states.jsonl",
+         "capalign/capalign_summary.json",
+         "capalign/capalign_classes.json",
+         "capalign/capalign_reclassification.json",
+         "capalign/supplementary_jobs_report.json"]
 infl = json.load(open(os.path.join(
     out, "probe_influence.json")))
+recl = json.load(open(os.path.join(
+    out, "capalign",
+    "capalign_reclassification.json")))
+lread = json.load(open(os.path.join(
+    out, "label_read.json")))
+supp_b = [json.loads(l)["snap"] for l in open(
+    os.path.join(out, "jobs_suppB.jsonl")) if l.strip()]
 man = {"supplementary_meas_seed": seed,
        "supplementary_jobs": ["540261752_t%d" % t
                               for t in range(64, 74)],
@@ -351,6 +510,44 @@ man = {"supplementary_meas_seed": seed,
        "single_game_dependent": [
            lever for lever, h in infl["hold"].items()
            if h["hold"]],
+       "sec14": {
+           "scoring": (
+               "CAP-ALIGNED is the registered primary "
+               "(package doc sec.14): a finished world "
+               "is decisive only if it ended by turn "
+               "61; the probe report's decision rule, "
+               "the label read's primary gains and "
+               "the influence read's LOGO and hold "
+               "rule all run on the cap-aligned "
+               "scoring. The as-run scoring is "
+               "co-reported, labeled, in label_read "
+               "and probe_report."),
+           "supplementary_meas_seed_b": seed_b,
+           "supplementary_jobs_b": supp_b,
+           "supplementary_jobs_b_count": len(supp_b),
+           "dropped_jobs": recl["dropouts"],
+           "dropped_jobs_count":
+               recl["dropout_count"],
+           "capaligned_excluded_jobs":
+               lread["capaligned"]["excluded_jobs"],
+           "disclosure": (
+               "The supplementary labels (the 10 "
+               "recovered jobs and the newly "
+               "qualifying set) ran under the sec.14-"
+               "fixed search file (search_s2.php "
+               "1c964160...) installed in the label "
+               "tree; attempt 3's 636 jobs ran the "
+               "as-built bytes. Under cap-aligned "
+               "scoring the two are commensurable -- "
+               "the fixed engine's worlds are "
+               "cap-aligned by construction. The "
+               "dropped-out jobs above were labeled "
+               "(or recovered) and merged like every "
+               "other job, then excluded from the "
+               "cap-aligned read because their states "
+               "no longer qualify under the aligned "
+               "scoring; they remain in the as-run "
+               "co-report's job set.")},
        "files": {}}
 for fn in names:
     p = os.path.join(out, fn)

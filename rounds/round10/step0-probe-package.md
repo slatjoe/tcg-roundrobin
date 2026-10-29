@@ -1542,3 +1542,389 @@ design stands, with the two steps this pass adds
   `search_s3.php`, `search_s2.php`,
   `s2_label_main.php` and the remaining reuse
   files are byte-identical.
+
+## 14. SIXTH PACKAGE (2026-10-29) — horizon alignment (on claude-reply-28c2065 §2–§3)
+
+Claude's §2 finding stands, and this package confirms
+its mechanism from the code, fixes the engine, rescoring
+everything the probe and round 9 published. **The
+recovery stays ON HOLD**: it runs once, after this
+package's review, on Joe's go, under §12/§13 as amended
+here. Nothing in this section was run on the box.
+
+### 14.1 The mechanism, confirmed from the code
+
+The horizon check exists in exactly one function,
+`SimLabel_RunRollout`, in exactly the two files that
+carry it (`rounds/round10/code/search_s2.php` line
+1573 as staged pre-fix; `search_s3.php` line 1641 —
+the hook copy). Every eval world, label world and
+live-search candidate world runs through it (call
+sites: `DecideInner`'s candidate pair, and
+`SimLabel_RunForSnapshot`). Its structure:
+
+```
+while (!IsGameOver() && $guard < 400) {
+  ++$guard;
+  PuzzleBeginStep($pl);
+  for ($k = 0; $k < 20 && !IsGameOver(); ++$k)
+    PuzzleFinishStep();
+  [hash / stuck bookkeeping]
+  if ($horizon > 0 && currentTurn >= $horizon)
+    { $horizonHit = true; break; }
+}
+```
+
+The check runs **once per outer iteration, after up
+to 20 finish steps**. A finish step is a full
+Talishar drive step and can span many turns — that
+is the whole defect: the parameter was 62 and the
+check existed, but a world could run a full
+20-step block past the trigger before anyone
+looked. The exit classification compounded it:
+`horizonApplied = horizonHit && !IsGameOver()`, so
+a step that crossed the trigger *and* ended the
+game recorded the world decisive at turns ≥ 62 —
+an outcome the live game cannot produce.
+
+The only other `PuzzleFinishStep` loop in the file
+(`SimSearch_RunChild`, the ISMCTS child sim)
+carries no horizon check at all; it is not the
+eval/label path and is out of this fix's scope,
+named here so the survey is complete.
+
+Demonstration (`fixtures/fx_horizon.py`, new): the
+loop and the exit classification are extracted
+**verbatim** from both files — the as-built
+round-9 `search_s2.php` (85490e8e…, untouched) and
+the fixed round-10 file — and executed under stub
+engine functions driven from a late snapshot
+(currentTurn 58, horizon 62). As-built: a stalling
+world exits at turn **78** (16 finish steps began
+at or past the trigger); with a 12-turn jump step
+it exits at **89**; a win landing in the step that
+reaches turn 65 is recorded **decisive at 65**
+(winner = root, outcome +1, horizon flag 0). The
+fixture's limit, stated in its header: it drives
+the extracted loop with stubs, proving check
+placement and exit classification — the mechanism —
+not stall frequency in real snapshots (the
+published rows carry that: median exit ~95).
+
+### 14.2 Trigger semantics — the boundary is turn 61
+
+From the deployed driver
+(`rounds/round3/deps/play_game.php`, sha256
+4ac2d62d…, verified byte-identical to the box's
+`/tmp/gravytree/play_game.php`): `TCG_MAX_TURNS=87`
+is the driver's parameter, `$capTrigger = $maxTurns
+- 25 = 62`, and the cap check runs **after each
+PuzzleFinishStep()** — the file's own comment says
+why: "a drive step can span dozens of turns, so
+checking only per drive step overshoots the cap."
+The moment a step leaves `currentTurn >= 62`, the
+game is scored a draw (`$winner = $draw ? 0 :
+...`). **A decisive result is therefore recorded
+only at final turns ≤ 61; turn 61 is the last
+decisive turn.** Live capped games record final
+turns 62–71 — the cap fires at the first step
+boundary at or past 62, and a step can carry the
+recorded turn past it — which is why the aligned
+rule keys on the *classification* (decisive vs
+draw), not on the recorded exit turn: a horizon
+world's recorded turn may exceed 62 in both
+engines, identically.
+
+### 14.3 The registered cap-aligned rule and the eval rescoring
+
+The rule (Claude §3.2, registered here): **a
+finished world is decisive only if it ended by
+turn 61; every other finished world is a horizon
+draw** — priced −1 in the search statistic (as a
+flagged horizon world already is), scored 0 in the
+draw = 0 label read. It applies to the probe read,
+to any Step 1 build's read, and as a co-report to
+round 9 (§14.7).
+
+`code/capalign_eval.py` (new, 7a9d2789…) recomputes
+every probe state's statistic from the **published
+rows only** (`data/step0/evals_all.jsonl.gz` +
+`eval_jobs.jsonl`), mirroring `probe_eval_analyze`
+exactly with the one pricing change. Before any
+cap-aligned number is emitted, its as-run mirror
+must reproduce every published eval state (status,
+search pick, paired count, z) and the attempt-3
+job set (snaps and classes) exactly — it does, all
+5,253 states; a mismatch aborts. Outputs are
+published at `data/step0_capalign/` (MANIFEST.md
+there carries hashes): per-state dual statistics,
+the cap-aligned summary (with the published as-run
+summary embedded verbatim), the class map the read
+consumes, the reclassification, and the
+supplementary job set. All strict JSON (sentinel
+discipline; the published jobs file's own ten
+bare-`Infinity` lines are the standing
+counterexample the outputs avoid).
+
+Reclassification (full lists in
+`capalign_reclassification.txt`/`.json`):
+
+- Would-fire: @1.5, 448 → **424** (lost 64, gained
+  40); @1.25, 697 → 673; @1.0, 799 → 780.
+- Classes: uncontested 329 → **305** (279 stay, 21
+  fall to diag, 29 drop out; 18 rise from diag, 8
+  are new); uncontested_diag 235 → **230**;
+  contested_band 82 → **94** (65 stay, 17 drop, 29
+  new). 39 jobs keep a class but change it.
+- **Drop-outs: 86** attempt-3 label jobs whose
+  states no longer qualify — excluded from the
+  cap-aligned read, listed in the recovery
+  manifest. Game 540261752's ten: **t64 (cap-aligned
+  z 13.27) and t65 (z 6.0) stay uncontested**;
+  t66 falls to z = 1.0 exactly; **t67–t73 lose
+  their contrast entirely** (no_contrast: once the
+  post-cap wins price as draws, the search pick's
+  mean no longer beats the prior's). Eight of the
+  ten are drop-outs; the other two remain, at
+  finite z, in the class the threshold lever reads.
+  (Claude's §2 counts of leyline wins by turn 61 —
+  22 / 15 / 1 / 0 — reproduce in the fixture's
+  independent rescoring of t64 / t66 / t73:
+  `fx_capalign.py` case C2.)
+- **Newly qualifying: 69** states (8 uncontested,
+  32 diag, 29 band) over 38 games need
+  supplementary labeling — `supplementary_jobs.jsonl`,
+  built exactly as `build_probe_jobs` builds jobs
+  (same shape, sentinel discipline, shard rule).
+
+### 14.4 The read computes both scorings
+
+`probe_label_analyze.py` (131661e8…):
+`job_diffs(..., cap_aligned=True)` applies the
+rule to the world score (a world counts only if
+outcome > 0 **and** it ended by turn 61). With
+`--capalign-classes` (+ `--capalign-states` for the
+cap-aligned z), the read emits both scorings from
+the same rows: cap-aligned — jobs grouped by their
+cap-aligned class, drop-outs excluded and counted —
+as the registered primary, and the as-run read
+exactly as before it, labeled as co-report. Without
+the flags the output is the pre-§14 read,
+byte-shaped as today. `probe_report.py`
+(868be992…): with `--capalign-summary`, the
+decision rule, the calibration print and both
+levers' outlooks run on the **cap-aligned**
+summary + the read's capaligned block; the as-run
+recommendation appears only in a labeled AS-RUN
+co-report section (and under `"as_run"` in the
+JSON). `probe_influence.py` (83f4f1d1…): with
+`--capalign-classes`, LOGO and the hold rule run
+on the cap-aligned read, and the §13 inspection
+gains one line per snap — the search pick's eval
+worlds split into wins by turn 61 vs wins after
+turn 61. Fixture `fx_capalign_read.py`: a synthetic
+label set whose per-game gains are hand-computed
+under both scorings (1.25/0.25 as-run → 0.50/0.125
+cap-aligned, one drop-out excluded exactly once),
+a report case where the two scorings recommend
+*different levers* (the flag decides which one the
+rule follows), and the hold rule firing on
+cap-aligned numbers. A smoke run of the amended
+read over the published 636-job subset (the ten
+unlabeled jobs excluded) also ran clean end-to-end;
+its structural cross-check agrees with the
+rescoring (78 exclusions among the labeled 636 =
+86 drop-outs − the 8 among the unlabeled ten). Its
+partial gains are not the probe read and are not
+quoted here — the probe read runs in the recovery,
+over the merged set.
+
+### 14.5 The engine fix (for future builds/evals)
+
+`rounds/round10/code/search_s2.php` (85490e8e… →
+**1c964160…**): inside `SimLabel_RunRollout` only —
+(a) the horizon check now also runs **after each
+PuzzleFinishStep()**, breaking the inner loop the
+moment the trigger is reached (the once-per-
+iteration check remains after the loop); (b) the
+exit classification mirrors the live instrument:
+`horizonApplied = horizonHit ? 1 : 0` and the
+winner is forced to 0 when it applies, so a step
+that carries currentTurn to the trigger scores the
+world a horizon draw even when the same step also
+ended the game. `search_s3.php` is regenerated from
+the fixed file (**87779e8e…**; `gen_search_s3.py`
+now sources the round-10 file — its source-history
+note records that the round-9 file stays 85490e8e…
+as the closed rounds' record; the s2→s3 diff is
+still exactly the one hook block). The round-9
+`search_s2.php` is NOT touched: round 9 is closed,
+and its reads are handled by rescoring (§14.7),
+not by rewriting its engine. Every live pin is
+updated with machine-copied literals (run_probe.sh:
+search_s2 + search_s3 header pins and the three
+per-tree install assertions; run_probe_recovery.sh:
+header + tree pins; the two runners' probe_label_
+analyze / probe_report pins follow §14.4).
+`fx_horizon.py` on the fixed loop: a stalling
+world stops at exactly **62** with no step begun at
+≥ 62; the jump-step world flags horizon at the
+first boundary past the trigger (recorded exit 73
+— the within-step overshoot the live instrument
+also records — but flagged a draw, never decisive,
+and no further step runs); the win-crossing world
+exits a horizon draw at 62 before its winning step
+runs; a win at 61 stands decisive. One sentence of
+care: the fix aligns classification and stopping,
+which is what every read consumes; it does not
+make a horizon world's recorded exit turn ≤ 62,
+and neither does the live engine's.
+
+### 14.6 Recovery amendments (§12/§13 as amended)
+
+`run_probe_recovery.sh` (e9eea58c…) keeps its
+shape — completeness gate first, the ten's
+extraction / labeling / merge as **one** step,
+single-shot refusals — and gains:
+
+- **Step 0b**: `capalign_eval.py` runs on the box's
+  eval files (its as-run mirror verified against
+  the run's own published states) and writes
+  `$OUT/capalign/`; `supplementary_jobs.jsonl` is
+  copied to `jobs_suppB.jsonl`.
+- **Step 2b**: the newly qualifying set is labeled
+  in a second invocation in the same tree under
+  the fresh family **MEAS_SEED = 470,055,001** —
+  the label lattice at shard index 4: seedBase =
+  base + job × 100,003, worlds at + w × 31,337;
+  span at the realized 69 jobs tops at
+  **478,390,718**, and at the 256-job cap at
+  497,091,279 — strictly between shard 3's span top
+  (397,091,279) and the 970,055,001 family's base;
+  `fx_seed_clearance.py` now enumerates both
+  supplementary families (the 970,055,001 family's
+  500 values included) against every prior family
+  and each other, at the realized counts and at
+  the cap. The loader's jobs-loaded line is
+  asserted against the file's own count.
+- **The read** (§14.4): jobs_merged = the 646
+  verbatim (the ten keep their original
+  bare-`Infinity` lines — Python readers accept
+  them, the influence inspection selects the ten by
+  exactly that, and the PHP loader never sees this
+  file) + the supplementary set; labels_merged =
+  attempt-3 + the ten + the newly qualifying. The
+  analyze / report / influence steps run the
+  cap-aligned forms above.
+- **The manifest** gains a `sec14` block: the
+  seed-B base and job list, the **dropped-jobs
+  list** (from the reclassification, with classes
+  and both z's), the read's excluded count, and
+  the disclosure below.
+- **Disclosure (also in the manifest)**: the
+  supplementary labels — the ten and the newly
+  qualifying — run under the §14-FIXED search file
+  installed in the label tree, while attempt 3's
+  636 ran the as-built bytes. Under cap-aligned
+  scoring the two are commensurable (the fixed
+  engine's worlds are cap-aligned by construction);
+  the as-run co-report is labeled with that
+  heterogeneity noted. The alternative — labeling
+  new rows with the known-defective engine for
+  homogeneity's sake — was not taken: §3.4 requires
+  the fix before any future eval, and the
+  supplementary labeling is one.
+- Pins: capalign_eval.py added; the three read
+  files' pins follow §14.4; the search pins follow
+  §14.5. `run_probe.sh` (64c78957…) changes only in
+  pin literals + descriptions (search pair, the
+  two read files).
+
+### 14.7 Round-9 co-report
+
+`rounds/round9/code/capalign_l3.py` (new,
+c572f877…) recomputes both stages' L3 primaries
+from the published labels, read construction
+mirroring `stage3_attr_analyze.run_read`, bootstrap
+at the repo defaults (10,000 reps, seed 20261020).
+Its as-run leg first reproduces both published
+primaries **exactly** — point estimates, job
+counts, and CIs bit-for-bit under those defaults —
+and aborts otherwise. Addendum doc:
+`rounds/round9/stage3-report-capalign-addendum.md`
+(new, e352c9ca…; the original reports are
+untouched); output
+`rounds/round9/stage3-capalign-addendum.json`
+(3db4987c…); fixture
+`rounds/round9/fixtures/fx_capalign_l3.py`.
+
+| read | as-run | cap-aligned (§14) | Claude §2 |
+|---|---|---|---|
+| Stage 2 L3 primary | +0.0621 [0.0440, 0.0809] | **+0.0565 [0.0400, 0.0739]** | +0.0565 [0.0406, 0.0737] |
+| Stage 2 per-game gain | +0.1096 | +0.0997 | — |
+| Stage 3 L3 primary | +0.0417 [0.0311, 0.0527] | **+0.0417 [0.0314, 0.0527]** | +0.0417 [0.0320, 0.0527] |
+| Stage 3 per-game gain | +0.0649 | +0.0649 | — |
+
+Point estimates match Claude's at his precision
+(Stage 2 cap-aligned mean 0.056506; Stage 3
+0.041747 — 0.00003 above its as-run value at full
+precision; the repricing cut both candidates and
+nearly cancels at Stage 3). The CI differences
+against his figures (≤ 0.0006 on one bound each)
+are bootstrap draw — his recomputation drew its
+own, this one uses the repo's seeded defaults, the
+same defaults that reproduce the published CIs
+bit-for-bit; the addendum states the basis rather
+than hiding it. His §2 tail counts (decisive worlds
+ending after turn 63: 532 / 676) were computed on a
+counting basis the reply does not state; on the
+addendum's stated basis (every finished world in
+both candidates, analyzer dedup) they are 327 /
+349, the after-61 counts are 591 / 589, and the
+horizon medians/maxima reproduce his exactly
+(93 / 268, both stages). No verdict moves: the
+per-decision edge stands at both stages at
+nine-tenths (Stage 2) and full (Stage 3) of its
+as-run size; Stage 3's DOES NOT CONVERT was read
+from real games and is untouched.
+
+### 14.8 Files, fixtures, state
+
+Changed/new in this package: `code/search_s2.php`
+(1c964160…), `code/search_s3.php` (87779e8e…,
+regenerated), `code/capalign_eval.py` (new,
+7a9d2789…), `code/probe_label_analyze.py`
+(131661e8…), `code/probe_report.py` (868be992…),
+`code/probe_influence.py` (83f4f1d1…),
+`code/run_probe.sh` (pins only), `code/
+run_probe_recovery.sh` (§14.6),
+`data/step0_capalign/` (new, 8 files + MANIFEST),
+`fixtures/fx_horizon.py`, `fixtures/fx_capalign.py`,
+`fixtures/fx_capalign_read.py` (new),
+`fixtures/fx_seed_clearance.py` (supplementary
+families), `fixtures/gen_search_s3.py` (source
+repointed), `fixtures/search_s3_diff.txt`
+(regenerated, still the single hook block),
+`fixtures/fx_pin_guards.py` (prose),
+`fixtures/run_fx_r10.sh` (registers the three new
+fixtures), `fixtures/fx_r10_outputs.txt`
+(re-staged), `rounds/round9/code/capalign_l3.py`,
+`rounds/round9/stage3-capalign-addendum.json`,
+`rounds/round9/stage3-report-capalign-addendum.md`,
+`rounds/round9/fixtures/fx_capalign_l3.py` (new),
+and this doc. Round 9's `search_s2.php`, its
+reports and its data are byte-identical; the probe
+settings and every other round-10 file are
+unchanged.
+
+**Fixture suite: 177 PASS lines, 0 FAIL**
+(`fixtures/fx_r10_outputs.txt`, bd2760ab…) — the
+126 of the fifth pass plus fx_horizon (23),
+fx_capalign (16) and fx_capalign_read (12); the
+extended seed clearance asserts inside its
+existing case. The round-9 addendum fixture passes
+separately (7 checks). Registration
+for the recovery is otherwise unchanged: it runs
+**once, on Joe's go after this package's review**,
+and the probe report it produces is the first
+document that may quote the probe's gains.

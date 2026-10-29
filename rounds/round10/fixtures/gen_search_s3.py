@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
 """Round-10 Step 0: generate code/search_s3.php from the
-round-9 code/search_s2.php (sha256 85490e8e...) by
-inserting ONE block -- the uncontested capture hook --
-into SimTeacher_DecideInner's uncontested branch,
+round-10 code/search_s2.php by inserting ONE block --
+the uncontested capture hook -- into
+SimTeacher_DecideInner's uncontested branch,
 immediately before its stat-row write.
+
+Source history: through fix pass 5 the source was the
+round-9 code/search_s2.php (sha256 85490e8e...), of
+which the round-10 file was a byte-identical copy.
+The sec.14 horizon-alignment fix patches the ROUND-10
+copy only (the round-9 file stays 85490e8e... as the
+closed rounds' record), so from sec.14 the generator
+sources the round-10 file (sha256 1c964160...) and
+search_s3.php = the sec.14-patched search_s2.php +
+the hook -- the s2/s3 confinement property is
+unchanged.
 
 The hook is inert unless BOTH TEACHER_CAPTURE and
 TEACHER_CAPTURE_UNCONTESTED are set (the probe runner
@@ -32,10 +43,10 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 R10 = os.path.abspath(os.path.join(HERE, ".."))
-SRC = os.path.join(R10, "..", "round9", "code", "search_s2.php")
+SRC = os.path.join(R10, "code", "search_s2.php")
 DST = os.path.join(R10, "code", "search_s3.php")
 DIFF = os.path.join(HERE, "search_s3_diff.txt")
-SRC_SHA = "85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa"
+SRC_SHA = "1c9641606144ec91bd63c19cfa6831f511d829064626a888ee366daff94767f8"
 
 ANCHOR = """  if ($ncand <= 1 || $bp >= 0.97) {
     SimSearch_LogStat(["teacher" => 1, "contested" => 0, "setting" => $T, "branch" => $branch,"""

@@ -35,6 +35,24 @@
 // The (b) featurizer correction stays OUT (not in this lineage).
 // Nothing else changes.
 //
+// Round-10 sec.14 addendum (THIS round-10 copy only; the
+// round-9 file of the same name is untouched and stays
+// 85490e8e...): SimLabel_RunRollout's horizon handling
+// is aligned to the live instrument. As built through
+// round 9, the horizon check ran once per outer rollout
+// iteration -- after up to 20 PuzzleFinishStep() calls --
+// so horizon worlds exited at a median ~30 turns past
+// the turn-62 trigger and decisive worlds could be
+// recorded after it. The fix: the check runs after EACH
+// PuzzleFinishStep() (the live play_game.php checks its
+// cap per finish step, for exactly this reason), and a
+// step that carries currentTurn to the trigger scores
+// the world a horizon draw even when the same step also
+// ended the game (the live cap overrides the winner the
+// same way). No other behavior changes; the sec.14
+// package doc carries the mechanism evidence and the
+// fixture (fixtures/fx_horizon.py).
+//
 // Round-9 Stage 1 evaluator build: byte-derived from
 // code/search_horizon.php (sha256 6d63f5c3...) with ONLY the
 // clause-8 parameterization of the LABEL path (see
@@ -1566,7 +1584,19 @@ function SimLabel_RunRollout($snapDir, $resFile, $assignment, $cfg) {
         ++$guard;
         $pl = $GLOBALS["currentPlayer"] ?? 1;
         PuzzleBeginStep($pl);
-        for ($k = 0; $k < 20 && !IsGameOver(); ++$k) PuzzleFinishStep();
+        for ($k = 0; $k < 20 && !IsGameOver(); ++$k) {
+          PuzzleFinishStep();
+          // Sec.14 horizon alignment: check after EACH
+          // finish step, as the live instrument checks
+          // its cap (play_game.php: "a drive step can
+          // span dozens of turns, so checking only per
+          // drive step overshoots the cap"). The
+          // once-per-iteration check that stood here
+          // (and remains after the loop below) let a
+          // world run up to 20 finish steps past the
+          // trigger between checks.
+          if ($horizon > 0 && intval($GLOBALS["currentTurn"] ?? 0) >= $horizon) { $horizonHit = true; break; }
+        }
         $key = SimStateHash($GLOBALS["lastWrittenGamestate"] ?? "", $GLOBALS["p1Key"] ?? "");
         if ($key === $lastKey) { if (++$stuck > 60) break; }
         else { $stuck = 0; $lastKey = $key; }
@@ -1577,9 +1607,21 @@ function SimLabel_RunRollout($snapDir, $resFile, $assignment, $cfg) {
       SimSearch_WipeDir($workDir);
       if (function_exists("posix_kill")) posix_kill(posix_getpid(), 9); exit(0);
     }
-    $winner = IsGameOver() ? intval($GLOBALS["winner"] ?? 0) : 0;
+    // Sec.14: horizonHit overrides a same-step win. If
+    // the step that first carried currentTurn to the
+    // trigger also ended the game, the live instrument
+    // scores that game a draw (its per-step cap check
+    // sets $draw and $winner = $draw ? 0 : ...), so a
+    // decisive result is recorded only when the game
+    // ended at currentTurn < horizon. The pre-fix form
+    // (horizonApplied = horizonHit && !IsGameOver())
+    // recorded such a world as decisive at turns >=
+    // horizon -- an outcome the real game cannot
+    // produce.
+    $horizonApplied = $horizonHit ? 1 : 0;
+    $winner = ($horizonApplied === 1) ? 0
+      : (IsGameOver() ? intval($GLOBALS["winner"] ?? 0) : 0);
     $outcome = $winner === 0 ? 0.0 : ($winner === $root ? 1.0 : -1.0);
-    $horizonApplied = ($horizonHit && !IsGameOver()) ? 1 : 0;
     $resOut = [
       "det_persisted" => 1,
       "winner" => $winner, "outcome" => $outcome,

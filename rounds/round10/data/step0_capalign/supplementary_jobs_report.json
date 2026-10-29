@@ -1,0 +1,31 @@
+{
+ "jobs": 69,
+ "z_nonfinite_jobs": 0,
+ "by_class": {
+  "uncontested_diag": 32,
+  "uncontested": 8,
+  "contested_band": 29
+ },
+ "shards": {
+  "0": 26,
+  "1": 16,
+  "2": 12,
+  "3": 15
+ },
+ "seed_family": {
+  "base": 470055001,
+  "lattice_shard": 4,
+  "rule": "seedBase = 470055001 + job_index x 100,003; worlds at + w x 31,337 (s2_label_main, unchanged)",
+  "span_at_n_jobs": 478390718
+ },
+ "label_tuple": {
+  "deadline_s": 180,
+  "hooks": 8000,
+  "horizon": 62,
+  "horizon_value": -1,
+  "k": 50,
+  "name": "L3-W50+H"
+ },
+ "games": 38,
+ "scoring": "cap_aligned (sec.14): classes and z from the cap-aligned rescoring"
+}

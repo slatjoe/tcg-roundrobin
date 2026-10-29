@@ -70,10 +70,27 @@ also zero, and its gain is the labeled band edges by
 prior band; the report prints those reads and lets
 the Step 1 design draw the conclusion).
 
+Sec.14 (2026-10-29, claude-reply-28c2065 sec.3.3):
+with --capalign-summary <capalign_summary.json>
+(and a label read that carries the capaligned block
+-- probe_label_analyze.py --capalign-classes), the
+report is assembled on the CAP-ALIGNED scoring,
+which is the registered primary: the eval summary
+is capalign_eval.py's, the label gains are the
+read's capaligned block, the calibration print and
+the decision rule run on those numbers. The as-run
+pieces (the published eval summary, the read's
+top-level blocks) are printed beside them in a
+labeled AS-RUN co-report section and carried in
+the JSON under "as_run" -- shown, never the
+decision basis. Without the flag the report is the
+pre-sec.14 report, unchanged.
+
 Usage: probe_report.py --eval-summary eval_summary.json
   --eval-jobs-report eval_jobs_report.json
   --label-read label_read.json --settings
   settings_probe.json --json-out probe_report.json
+  [--capalign-summary capalign_summary.json]
   (text to stdout; the runner saves it)
 """
 import argparse
@@ -99,12 +116,31 @@ def main():
     ap.add_argument("--label-read", required=True)
     ap.add_argument("--settings", required=True)
     ap.add_argument("--json-out")
+    ap.add_argument("--capalign-summary")
     a = ap.parse_args()
 
-    es = json.load(open(a.eval_summary))
+    es_pub = json.load(open(a.eval_summary))
     ejr = json.load(open(a.eval_jobs_report))
-    lr = json.load(open(a.label_read))
+    lr_full = json.load(open(a.label_read))
     settings = json.load(open(a.settings))
+    cap_mode = a.capalign_summary is not None
+    if cap_mode:
+        cap_es = json.load(open(a.capalign_summary))
+        if "capaligned" not in lr_full:
+            print("ABORT: --capalign-summary given but "
+                  "the label read carries no capaligned "
+                  "block (run probe_label_analyze.py "
+                  "with --capalign-classes)")
+            return 2
+        es = {k: v for k, v in cap_es.items()
+              if k not in ("as_run", "scoring")}
+        lr = {"by_class": lr_full["capaligned"]
+              ["by_class"],
+              "per_game_gain": lr_full["capaligned"]
+              ["per_game_gain"]}
+        es_asrun, lr_asrun = es_pub, lr_full
+    else:
+        es, lr = es_pub, lr_full
     rep = settings["report"]
     base_wall = float(rep["stage3_teacher_game_wall_s"])
     search_wall = float(rep["live_search_wall_s"])
@@ -115,6 +151,14 @@ def main():
     bar_z = float(bar["z_one_sided"])
 
     lines = ["=== ROUND-10 STEP 0 PROBE -- REPORT ==="]
+    if cap_mode:
+        lines.append("scoring: CAP-ALIGNED (sec.14) is "
+                     "the registered primary -- a "
+                     "finished world is decisive only "
+                     "if it ended by turn 61; the "
+                     "as-run scoring is co-reported "
+                     "below, labeled, and is not the "
+                     "decision basis")
     lines.append("capture: %d games; eval states %d "
                  "(uncontested %d sampled 1-in-%d, contested %d)"
                  % (es["games"], ejr["states"],
@@ -326,33 +370,76 @@ def main():
         lb = g.get("lb95_1sided")
         return lb is not None and lb > 0
 
-    bm, bt = buildable(gain_m), buildable(gain_t)
-    if bm and bt:
-        lm = gain_m["lb95_1sided"]
-        lt = gain_t["lb95_1sided"]
-        overlap = (
-            gain_m["ci"] and gain_t["ci"]
-            and gain_m["ci"][0] <= gain_t["ci"][1]
-            and gain_t["ci"][0] <= gain_m["ci"][1])
-        if lm > lt and not overlap:
+    def decide(gm, gt):
+        """The registered decision rule on one
+        scoring's two lever gains."""
+        bm, bt = buildable(gm), buildable(gt)
+        if bm and bt:
+            lm = gm["lb95_1sided"]
+            lt = gt["lb95_1sided"]
+            overlap = (
+                gm["ci"] and gt["ci"]
+                and gm["ci"][0] <= gt["ci"][1]
+                and gt["ci"][0] <= gm["ci"][1])
+            if lm > lt and not overlap:
+                rec = "margin 1.25"
+            elif lt > lm and not overlap:
+                rec = "threshold 0.97"
+            else:
+                rec = ("margin 1.25 (tie-break: lower "
+                       "bounds within each other's CI, "
+                       "cheaper lever)")
+            why = ("both buildable; lower bounds margin "
+                   "%s, threshold %s" % (pct(lm), pct(lt)))
+        elif bm:
             rec = "margin 1.25"
-        elif lt > lm and not overlap:
+            why = ("only the margin's gain lower bound "
+                   "exceeds 0")
+        elif bt:
             rec = "threshold 0.97"
+            why = ("only the threshold's gain lower "
+                   "bound exceeds 0")
         else:
-            rec = ("margin 1.25 (tie-break: lower bounds "
-                   "within each other's CI, cheaper lever)")
-        why = ("both buildable; lower bounds margin %s, "
-               "threshold %s" % (pct(lm), pct(lt)))
-    elif bm:
-        rec = "margin 1.25"
-        why = "only the margin's gain lower bound exceeds 0"
-    elif bt:
-        rec = "threshold 0.97"
-        why = "only the threshold's gain lower bound exceeds 0"
-    else:
-        rec = "NO Step 1 build"
-        why = ("neither lever's predicted gain lower bound "
-               "exceeds 0")
+            rec = "NO Step 1 build"
+            why = ("neither lever's predicted gain lower "
+                   "bound exceeds 0")
+        return rec, why
+
+    rec, why = decide(gain_m, gain_t)
+    if cap_mode:
+        gain_m_a = lr_asrun["per_game_gain"].get(
+            "contested_band", {})
+        gain_t_a = lr_asrun["per_game_gain"].get(
+            "uncontested", {})
+        edge_m_a = lr_asrun["by_class"].get(
+            "contested_band", {})
+        rec_a, why_a = decide(gain_m_a, gain_t_a)
+        con_states_a = es_asrun["contested"]["states"]
+        con_fires_a = es_asrun["contested"][
+            "would_fire"]["1.5"]
+        cal_ps_a = (con_fires_a / con_states_a) \
+            if con_states_a else None
+        lines.append("\n-- AS-RUN co-report "
+                     "(pre-alignment scoring of the same "
+                     "eval rows and label rows; shown "
+                     "beside the primary, NOT the "
+                     "decision basis)")
+        lines.append("  margin 1.25: per-game gain %s "
+                     "(lower bound %s), labeled edge %s; "
+                     "threshold 0.97: per-game gain %s "
+                     "(lower bound %s)"
+                     % (pct(gain_m_a.get("gain")),
+                        pct(gain_m_a.get("lb95_1sided")),
+                        pct(edge_m_a.get("edge")),
+                        pct(gain_t_a.get("gain")),
+                        pct(gain_t_a.get("lb95_1sided"))))
+        lines.append("  as-run recommendation under "
+                     "the rule: %s -- %s" % (rec_a, why_a))
+        lines.append("  as-run calibration: contested "
+                     "would-fire rate @1.5 %s per state "
+                     "(%d fires / %d contested states)"
+                     % (pct(cal_ps_a), con_fires_a,
+                        con_states_a))
     if cal_flag:
         lines.append("\noffline eval does not reproduce "
                      "the search's firing behavior")
@@ -380,6 +467,19 @@ def main():
                    base_wall + (thr_cost or 0),
                "step2_outlook": outl_t},
            "recommendation": rec, "recommendation_why": why}
+    if cap_mode:
+        out["scoring"] = "cap_aligned"
+        out["as_run"] = {
+            "margin_lever": {"gain": gain_m_a,
+                             "edge": edge_m_a},
+            "threshold_lever": {"gain": gain_t_a},
+            "calibration": {
+                "contested_would_fire_rate_1.5_per_state":
+                    cal_ps_a,
+                "fires": con_fires_a,
+                "contested_states": con_states_a},
+            "recommendation": rec_a,
+            "recommendation_why": why_a}
     print("\n".join(lines))
     if a.json_out:
         with open(a.json_out, "w") as f:

@@ -1,16 +1,16 @@
 ===== fx_pin_guards.py =====
-PASS pin sites found [('search_s3.php', '8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', '1c1dfd9f9349e8db815f23e31637dee558a9ec36e09179142f71748a6bce72aa'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa'), ('build_probe_eval_jobs.py', '94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3'), ('probe_eval_analyze.py', '7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90'), ('build_probe_jobs.py', 'f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4'), ('probe_label_analyze.py', 'd8d93e3fbefb2776717637c4c920b4a0bfacb043ed9b1ac58eeb6b9bf6e8d6ba'), ('probe_report.py', '82856c6f59cdd910f9d2f771b43da4a8b865f72c326499b2a6eb7c6603d1a81a'), ('settings_probe.json', '5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb'), ('stage0_report.py', '5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf'), ('analyze_l3.py', '16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9'), ('g8_sweep2.sh', 'd49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17'), ('shm_sweep.py', '98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33')]
-PASS pin search_s3.php literal 8f7be190044f file 8f7be190044f
+PASS pin sites found [('search_s3.php', '87779e8ec96935776ce35d94ae350647d8f4174c8a17ed572b1bd4887b9a7ba7'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', '1c1dfd9f9349e8db815f23e31637dee558a9ec36e09179142f71748a6bce72aa'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '1c9641606144ec91bd63c19cfa6831f511d829064626a888ee366daff94767f8'), ('build_probe_eval_jobs.py', '94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3'), ('probe_eval_analyze.py', '7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90'), ('build_probe_jobs.py', 'f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4'), ('probe_label_analyze.py', '131661e877bfd67b412b65609e74f69ad8ddfbf1dee50d5aa6fc8b19f896e927'), ('probe_report.py', '868be99240174e774d114d23283de2eb7c3be135deb854b9ecafa1bb2de4b28e'), ('settings_probe.json', '5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb'), ('stage0_report.py', '5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf'), ('analyze_l3.py', '16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9'), ('g8_sweep2.sh', 'd49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17'), ('shm_sweep.py', '98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33')]
+PASS pin search_s3.php literal 87779e8ec969 file 87779e8ec969
 PASS pin s1_eval_main.php literal 73ed24822baa file 73ed24822baa
 PASS pin s2_label_main.php literal 1c1dfd9f9349 file 1c1dfd9f9349
 PASS pin paired_driver_gravy.py literal 3389b1b93618 file 3389b1b93618
 PASS pin merge_registry.py literal 13a655e37d2d file 13a655e37d2d
-PASS pin search_s2.php literal 85490e8ed1ef file 85490e8ed1ef
+PASS pin search_s2.php literal 1c9641606144 file 1c9641606144
 PASS pin build_probe_eval_jobs.py literal 94030b488d96 file 94030b488d96
 PASS pin probe_eval_analyze.py literal 7c4d9f691af7 file 7c4d9f691af7
 PASS pin build_probe_jobs.py literal f3882a9deebe file f3882a9deebe
-PASS pin probe_label_analyze.py literal d8d93e3fbefb file d8d93e3fbefb
-PASS pin probe_report.py literal 82856c6f59cd file 82856c6f59cd
+PASS pin probe_label_analyze.py literal 131661e877bf file 131661e877bf
+PASS pin probe_report.py literal 868be9924017 file 868be9924017
 PASS pin settings_probe.json literal 5af0c715442e file 5af0c715442e
 PASS pin stage0_report.py literal 5c7e5393a312 file 5c7e5393a312
 PASS pin analyze_l3.py literal 16017ffa71df file 16017ffa71df
@@ -20,8 +20,8 @@ PASS tree pins: search_s3 at capture+eval installs found 2
 PASS tree pins: search_s2 at label installs found 1
 PASS tree pins: no other literals []
 PASS deploy list parsed from the recording loop 16 files
-PASS deploy coverage: search_s3.php staged 8f7be190044f
-PASS deploy coverage: search_s2.php staged 85490e8ed1ef
+PASS deploy coverage: search_s3.php staged 87779e8ec969
+PASS deploy coverage: search_s2.php staged 1c9641606144
 PASS deploy coverage: s1_eval_main.php staged 73ed24822baa
 PASS deploy coverage: s2_label_main.php staged 1c1dfd9f9349
 PASS deploy coverage: paired_driver_gravy.py staged 3389b1b93618
@@ -29,8 +29,8 @@ PASS deploy coverage: merge_registry.py staged 13a655e37d2d
 PASS deploy coverage: build_probe_eval_jobs.py staged 94030b488d96
 PASS deploy coverage: probe_eval_analyze.py staged 7c4d9f691af7
 PASS deploy coverage: build_probe_jobs.py staged f3882a9deebe
-PASS deploy coverage: probe_label_analyze.py staged d8d93e3fbefb
-PASS deploy coverage: probe_report.py staged 82856c6f59cd
+PASS deploy coverage: probe_label_analyze.py staged 131661e877bf
+PASS deploy coverage: probe_report.py staged 868be9924017
 PASS deploy coverage: settings_probe.json staged 5af0c715442e
 PASS deploy coverage: stage0_report.py staged 5c7e5393a312
 PASS deploy coverage: analyze_l3.py staged 16017ffa71df
@@ -40,17 +40,17 @@ PASS seed literal 30055001 in runner == settings 30055001
 PASS seed literal 70055001 in runner == settings 70055001 
 PASS capture seed strings in runner == settings 
 PASS uncontested sampling literal in settings 
-[negative copy] PASS pin sites found [('search_s3.php', '8f7be190044f4c9eee192ca206d60215b98d0bd4029febdb8da0d9cb8b0a213d'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', '1c1dfd9f9349e8db815f23e31637dee558a9ec36e09179142f71748a6bce72aa'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '85490e8ed1ef1587b31112c572a55bc1f521202f2068415e1ce285e838f0d8fa'), ('build_probe_eval_jobs.py', '94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3'), ('probe_eval_analyze.py', '7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90'), ('build_probe_jobs.py', 'f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4'), ('probe_label_analyze.py', 'd8d93e3fbefb2776717637c4c920b4a0bfacb043ed9b1ac58eeb6b9bf6e8d6ba'), ('settings_probe.json', '5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb'), ('stage0_report.py', '5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf'), ('analyze_l3.py', '16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9'), ('g8_sweep2.sh', 'd49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17'), ('shm_sweep.py', '98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33')]
-[negative copy] PASS pin search_s3.php literal 8f7be190044f file 8f7be190044f
+[negative copy] PASS pin sites found [('search_s3.php', '87779e8ec96935776ce35d94ae350647d8f4174c8a17ed572b1bd4887b9a7ba7'), ('s1_eval_main.php', '73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a'), ('s2_label_main.php', '1c1dfd9f9349e8db815f23e31637dee558a9ec36e09179142f71748a6bce72aa'), ('paired_driver_gravy.py', '3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359'), ('merge_registry.py', '13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe'), ('search_s2.php', '1c9641606144ec91bd63c19cfa6831f511d829064626a888ee366daff94767f8'), ('build_probe_eval_jobs.py', '94030b488d96ef137bdf215e78974714c9054f1550225a302aa6d5976f3891c3'), ('probe_eval_analyze.py', '7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90'), ('build_probe_jobs.py', 'f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4'), ('probe_label_analyze.py', '131661e877bfd67b412b65609e74f69ad8ddfbf1dee50d5aa6fc8b19f896e927'), ('settings_probe.json', '5af0c715442e8d7208e89da9f197dfc458a55aef22182b551f64d7f3eedca2bb'), ('stage0_report.py', '5c7e5393a3125146788626ba6293f42dd926dafad7a4c8d44e6d0b1de4bb59bf'), ('analyze_l3.py', '16017ffa71df0b37904a999a37fe1a8cc73a1e404b744ef9ac6c8312d66769b9'), ('g8_sweep2.sh', 'd49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17'), ('shm_sweep.py', '98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33')]
+[negative copy] PASS pin search_s3.php literal 87779e8ec969 file 87779e8ec969
 [negative copy] PASS pin s1_eval_main.php literal 73ed24822baa file 73ed24822baa
 [negative copy] PASS pin s2_label_main.php literal 1c1dfd9f9349 file 1c1dfd9f9349
 [negative copy] PASS pin paired_driver_gravy.py literal 3389b1b93618 file 3389b1b93618
 [negative copy] PASS pin merge_registry.py literal 13a655e37d2d file 13a655e37d2d
-[negative copy] PASS pin search_s2.php literal 85490e8ed1ef file 85490e8ed1ef
+[negative copy] PASS pin search_s2.php literal 1c9641606144 file 1c9641606144
 [negative copy] PASS pin build_probe_eval_jobs.py literal 94030b488d96 file 94030b488d96
 [negative copy] PASS pin probe_eval_analyze.py literal 7c4d9f691af7 file 7c4d9f691af7
 [negative copy] PASS pin build_probe_jobs.py literal f3882a9deebe file f3882a9deebe
-[negative copy] PASS pin probe_label_analyze.py literal d8d93e3fbefb file d8d93e3fbefb
+[negative copy] PASS pin probe_label_analyze.py literal 131661e877bf file 131661e877bf
 [negative copy] PASS pin settings_probe.json literal 5af0c715442e file 5af0c715442e
 [negative copy] PASS pin stage0_report.py literal 5c7e5393a312 file 5c7e5393a312
 [negative copy] PASS pin analyze_l3.py literal 16017ffa71df file 16017ffa71df
@@ -60,8 +60,8 @@ PASS uncontested sampling literal in settings
 [negative copy] PASS tree pins: search_s2 at label installs found 1
 [negative copy] PASS tree pins: no other literals []
 [negative copy] PASS deploy list parsed from the recording loop 16 files
-[negative copy] PASS deploy coverage: search_s3.php staged 8f7be190044f
-[negative copy] PASS deploy coverage: search_s2.php staged 85490e8ed1ef
+[negative copy] PASS deploy coverage: search_s3.php staged 87779e8ec969
+[negative copy] PASS deploy coverage: search_s2.php staged 1c9641606144
 [negative copy] PASS deploy coverage: s1_eval_main.php staged 73ed24822baa
 [negative copy] PASS deploy coverage: s2_label_main.php staged 1c1dfd9f9349
 [negative copy] PASS deploy coverage: paired_driver_gravy.py staged 3389b1b93618
@@ -69,8 +69,8 @@ PASS uncontested sampling literal in settings
 [negative copy] PASS deploy coverage: build_probe_eval_jobs.py staged 94030b488d96
 [negative copy] PASS deploy coverage: probe_eval_analyze.py staged 7c4d9f691af7
 [negative copy] PASS deploy coverage: build_probe_jobs.py staged f3882a9deebe
-[negative copy] PASS deploy coverage: probe_label_analyze.py staged d8d93e3fbefb
-[negative copy] FAIL deploy coverage: probe_report.py staged 82856c6f59cd
+[negative copy] PASS deploy coverage: probe_label_analyze.py staged 131661e877bf
+[negative copy] FAIL deploy coverage: probe_report.py staged 868be9924017
 [negative copy] PASS deploy coverage: settings_probe.json staged 5af0c715442e
 [negative copy] PASS deploy coverage: stage0_report.py staged 5c7e5393a312
 [negative copy] PASS deploy coverage: analyze_l3.py staged 16017ffa71df
@@ -84,7 +84,7 @@ PASS negative: guard fails on a pin-stripped runner copy removed 1 block(s); cov
 fx_pin_guards: ALL PASS
 
 ===== gen_search_s3.py =====
-PASS gen_search_s3: search_s3.php regenerates byte-identically from search_s2.php 85490e8e; diff = one inserted block (77 diff lines)
+PASS gen_search_s3: search_s3.php regenerates byte-identically from search_s2.php 1c964160; diff = one inserted block (77 diff lines)
 
 ===== fx_probe_blocks.sh =====
 PASS fx blocks FREESPACE pass case prints the pre-flight line
@@ -138,6 +138,7 @@ planned label counts (enlarged, superset included): total <= 160, per-shard <= 2
 prior families: 573300 enumerated values; highest span top 369091039 (r9s3-labels-50055001)
 label family: base 70055001, cap 256 jobs/shard, span top 97091279 (shard 0)
 probe values: eval 330000, labels 51200, disjoint from prior and each other: True
+supplementary families (sec.14): A base 970055001 (10 jobs, 500 values); B base 470055001 (69 jobs from the published supplementary set, span top 478390718; at the cap 256, top 497091279, between shard-3 top 397091279 and A's base): disjoint from all families and each other: True
 capture seeds 24001-24090 disjoint from 8 used blocks (incl. reserved 9001-9200)
 PASS fx_seed_clearance: label ranges disjoint from all prior families at planned counts; eval and label values disjoint from prior values and each other; capture seeds clear
 
@@ -206,6 +207,71 @@ PASS L2 diffuse: every exclusion leaves gain and lower bound at 0.5 min_lb 0.5
 PASS L2 no hold line for the diffuse table 
 PASS L3 no hold when neither lever is buildable, however concentrated 
 fx_probe_influence: ALL PASS
+
+===== fx_horizon.py =====
+PASS H0: a php binary is available for the horizon harness -- /home/hatch/workspace/tcg-sim/.tools/php83/usr/bin/php8.3
+PASS H0 as-built file lints under php
+PASS H0 fixed file lints under php
+PASS H1: the as-built loop carries the horizon check only AFTER the inner finish-step loop
+PASS H1: fixed loop = as-built loop + the per-step check inside the finish-step loop, nothing else -- as-built 10 core lines, fixed 13
+PASS H1: the added check sits INSIDE the PuzzleFinishStep loop body
+PASS H2: exit classification -- as-built gates the flag on !IsGameOver(); fixed overrides
+PASS H3: harness ran ab/stall1
+PASS H3: harness ran ab/stalljump
+PASS H3: harness ran ab/win61
+PASS H3: harness ran ab/wincross
+PASS H3: harness ran fx/stall1
+PASS H3: harness ran fx/stalljump
+PASS H3: harness ran fx/win61
+PASS H3: harness ran fx/wincross
+PASS H4 AS-BUILT stall: world passes the trigger -- exits at turn 78 after a full 20-step block; 16 steps began at >= 62 -- turns 78 steps 20
+PASS H5 AS-BUILT jump: exits at turn 89 -- turns 89
+PASS H6 AS-BUILT win-crossing: a DECISIVE win is recorded at turn 65 (winner root, outcome +1, horizon flag 0) -- an outcome the live game cannot produce -- turns 65 winner 1 horizon 0
+PASS H7 FIXED stall: stops at exactly 62, horizon draw, no step began at >= 62 -- turns 62 begun max 61
+PASS H8 FIXED jump: horizon flag at the first step boundary past the trigger (exit 73, the within-step overshoot), draw, no step began at >= 62, never decisive -- turns 73
+PASS H9 FIXED win-crossing: the check fires at 62 before the winning step runs -- horizon draw at 62 in 4 steps -- turns 62 steps 4
+PASS H10 FIXED win at 61: turn 61 is the last decisive turn -- the win stands, flag 0 -- turns 61
+PASS H10 as-built agrees on a turn-61 win (pre-trigger behavior unchanged)
+fx_horizon: ALL PASS
+
+===== fx_capalign.py =====
+PASS C1: every capalign output is strict JSON (no bare Infinity / NaN tokens)
+PASS C2: t64 recomputed cap-aligned z = 13.2665 (search pick still wins on its by-61 worlds) -- z 13.2664991614216
+PASS C2: t66 recomputed cap-aligned z = 1.0 exactly (one by-61 win of 25 cannot hold any class) -- z 1.0
+PASS C2: t73 recomputed: no contrast cap-aligned (its wins were all post-cap) -- status no_contrast
+PASS C2: the pipeline's states file agrees on all three
+PASS C3: of the ten recovered-game jobs, t66-t73 drop out and t64/t65 stay uncontested
+PASS C4: transition matrix sums to 5,253 states
+PASS C4: cap-aligned class totals: uncontested 305, diag 230, contested_band 94, none 4624 -- {None: 4624, 'uncontested': 305, 'uncontested_diag': 230, 'contested_band': 94}
+PASS C4: would-fire @1.5 as-run 448 -> cap-aligned 424, recounted from the states file
+PASS C4: would-fire @1.25 as-run 697 -> cap-aligned 673, recounted from the states file
+PASS C4: would-fire @1.0 as-run 799 -> cap-aligned 780, recounted from the states file
+PASS C4: the summary's embedded as-run block is the published eval summary, and its cap-aligned would-fire counts match the states recount
+PASS C4: the classes map agrees with the states file on every snap
+PASS C4: drop-outs 86, newly qualifying 69 (8 uncontested / 32 diag / 29 band), regrouped 39
+PASS C5: 69 supplementary jobs, disjoint from the attempt-3 job set, each carrying its state's cap-aligned class + search pick
+PASS C5: seed span at 69 jobs tops at 478,390,718
+fx_capalign: ALL PASS
+
+===== fx_capalign_read.py =====
+PASS R1: cap-mode analyze runs -- games; sampling weight 1
+CLASS uncontested_diag (DIAGNOSTIC ONLY -- the (1.0, 1.5] uncontested superset; excluded from the threshold gain and the decision rule): jobs 1; edge 0.2500 CI [0.2500, 0.2500]
+jobs_no_shared_worlds 0 of 4; label rows 32 (finished 32, unfinished 0, refusals 0); fallbacks 0
+
+
+PASS R2: as-run gains are the hand-computed 1.25 (uncontested) / 0.25 (contested) -- unc 1.25 con 0.25
+PASS R3: cap-aligned gains are the hand-computed 0.50 / 0.125 -- the post-61 wins reprice to draws -- unc 0.5 con 0.125
+PASS R4: drop-out S4 excluded exactly once; cap edges: uncontested 0.50 (S1 alone), contested 0.25, diag 0.00
+PASS R5: cap tail subset follows the cap-aligned z (S1, edge 0.50 cap vs 0.75 as-run)
+PASS R6: text labels both scorings, cap-aligned as the registered primary
+PASS R7: legacy mode (no flag) carries no capaligned block and the as-run gains
+PASS R8: cap-mode report runs and RECOMMENDS ON THE CAP-ALIGNED GAINS (margin 1.25, the only cap-buildable lever) -- with the higher lower bound; if the lower bounds are within each other's two-sided 95% CI, recommend the cheaper (the margin: it adds no searches). If neither is buildable, recommend NO Step 1 build.
+
+PASS R9: the as-run recommendation (threshold 0.97) appears only as the labeled co-report, in text and JSON
+PASS R10: without the flag the same files recommend on the as-run gains (threshold 0.97) -- legacy path intact
+PASS R11: hold fires for the threshold lever on its CAP-ALIGNED numbers (buildable at LB +0.01, cap LOGO min LB -0.03) and not for the margin (cap LOGO min LB +0.001)
+PASS R12: the same report with as-run LOGO numbers fires no hold -- the rule follows the numbers it is fed, and sec.14 feeds it the cap-aligned ones
+fx_capalign_read: ALL PASS
 
 ===== fx_repro (summary compared with staged output) =====
 PASS fx_repro summary matches the staged output: ==== SUMMARY: 1 figure(s) NOT REPRODUCED: ['stage3 band (3.5, inf] CI (both pairings)']

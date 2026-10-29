@@ -73,6 +73,36 @@
 #                            diffuse table and a
 #                            non-buildable lever do
 #                            not.
+#   fx_horizon.py         -- the sec.14 horizon
+#                            mechanism on the REAL
+#                            extracted rollout loop
+#                            (as-built round-9 file vs
+#                            sec.14-fixed round-10
+#                            file) under stub-driven
+#                            php: the as-built check
+#                            lets a world exit at 78 /
+#                            89 and records a decisive
+#                            win at 65; the fixed check
+#                            stops worlds at the
+#                            trigger and keeps turn 61
+#                            the last decisive turn.
+#   fx_capalign.py        -- the sec.14 cap-aligned
+#                            eval rescoring: strict
+#                            JSON, three states
+#                            recomputed independently
+#                            from the published rows,
+#                            the reclassification
+#                            structure and counts, the
+#                            supplementary job set.
+#   fx_capalign_read.py   -- the sec.14 read: both
+#                            scorings on a synthetic
+#                            label set whose gains are
+#                            hand-computed; the report
+#                            deciding on the
+#                            cap-aligned gains with
+#                            the as-run co-report
+#                            beside it; the hold rule
+#                            on cap-aligned numbers.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 FAILED=0
@@ -91,6 +121,9 @@ run fx_runner_env.py python3 "$HERE/fx_runner_env.py"
 run fx_label_loader.py python3 "$HERE/fx_label_loader.py"
 run fx_eval_completeness.py python3 "$HERE/fx_eval_completeness.py"
 run fx_probe_influence.py python3 "$HERE/fx_probe_influence.py"
+run fx_horizon.py python3 "$HERE/fx_horizon.py"
+run fx_capalign.py python3 "$HERE/fx_capalign.py"
+run fx_capalign_read.py python3 "$HERE/fx_capalign_read.py"
 echo "===== fx_repro (summary compared with staged output) ====="
 SUM_NOW=$(python3 "$HERE/../code/reproduce_r9_tables.py" 2>/dev/null \
           | grep '^==== SUMMARY' || true)

@@ -46,6 +46,28 @@ Assertions:
   4. capture game seeds 24001-24090 are disjoint from
      every used game-seed block (incl. the reserved
      9001-9200, which stays untouched).
+
+Sec.14 (2026-10-29): the recovery's TWO supplementary
+families are enumerated too --
+  A. 970,055,001 (fix pass 4): the 10 recovered jobs,
+     W = 50, 500 values;
+  B. 470,055,001 (sec.14): the newly qualifying
+     states' supplementary labels. The job count is
+     read from the published
+     data/step0_capalign/supplementary_jobs.jsonl
+     (69 jobs; span top at the count 478,390,718),
+     and the family is ALSO cleared at the label
+     shard cap (256 jobs; span top 497,091,279) --
+     its lattice position (shard index 4) sits
+     between shard 3's span top (397,091,279) and
+     family A's base, value-disjoint from the
+     shard-3 family on the shared lattice by the
+     same offset argument as the round-9 families.
+Both families' VALUES must be disjoint from every
+prior family, from the probe eval and label families
+(at their enumerated counts), and from each other;
+family B's RANGE at the cap must clear shard 3's
+span top and stay below family A's base.
 """
 import json
 import os
@@ -175,6 +197,54 @@ def main():
     print("probe values: eval %d, labels %d, disjoint from "
           "prior and each other: %s"
           % (len(eval_vals), len(lab_vals), not fails))
+
+    # ---- sec.14: the two supplementary families --------------
+    supp_a_base = 970055001
+    supp_a_vals = values(supp_a_base, 10, 50)
+    supp_b_base = 470055001
+    supp_b_path = os.path.join(
+        R10, "data", "step0_capalign",
+        "supplementary_jobs.jsonl")
+    supp_b_n = sum(1 for l in open(supp_b_path)
+                   if l.strip())
+    supp_b_vals = values(supp_b_base, supp_b_n, 50)
+    supp_b_cap_vals = values(supp_b_base, lab_cap, 50)
+    shard3_top = span_top(lab_base + 3 * SHARD, lab_cap, 50)
+    supp_b_top_n = span_top(supp_b_base, supp_b_n, 50)
+    supp_b_top_cap = span_top(supp_b_base, lab_cap, 50)
+    for nm, vs in (("supp-A 970055001 (10 jobs)", supp_a_vals),
+                   ("supp-B 470055001 (%d jobs)" % supp_b_n,
+                    supp_b_vals),
+                   ("supp-B at the 256 cap", supp_b_cap_vals)):
+        for other_nm, other in (
+                ("prior", prior_vals), ("probe labels",
+                                         lab_vals),
+                ("probe eval", eval_vals)):
+            inter = vs & other
+            if inter:
+                fails.append("%s values collide with %s: "
+                             "%d values" % (nm, other_nm,
+                                            len(inter)))
+    if supp_a_vals & supp_b_cap_vals:
+        fails.append("supp-A values collide with supp-B "
+                     "values at the cap")
+    if not (shard3_top < supp_b_base
+            and supp_b_top_cap < supp_a_base):
+        fails.append("supp-B range at the cap [%d, %d] "
+                     "does not sit strictly between "
+                     "shard 3's span top %d and supp-A's "
+                     "base %d"
+                     % (supp_b_base, supp_b_top_cap,
+                        shard3_top, supp_a_base))
+    print("supplementary families (sec.14): A base %d "
+          "(10 jobs, %d values); B base %d (%d jobs "
+          "from the published supplementary set, span "
+          "top %d; at the cap %d, top %d, between "
+          "shard-3 top %d and A's base): disjoint "
+          "from all families and each other: %s"
+          % (supp_a_base, len(supp_a_vals), supp_b_base,
+             supp_b_n, supp_b_top_n, lab_cap,
+             supp_b_top_cap, shard3_top, not fails))
 
     cap = st["capture"]
     lo = int(cap["seeds_seat1"].split("-")[0])
