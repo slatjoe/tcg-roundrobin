@@ -1,0 +1,11 @@
+--- search_s3.php (sec.14, 87779e8e)
++++ search_s3_thr.php (step1 build)
+@@ -1014,7 +1014,7 @@
+   $priors = array_map("floatval", $evRoot[0]);
+   $priorPick = SimLabel_PriorArgmax($priors);
+   $bp = $priors[$priorPick] ?? 0.0;
+-  if ($ncand <= 1 || $bp >= 0.97) {
++  if ($ncand <= 1 || $bp >= 1.01) {
+     if (getenv("TEACHER_CAPTURE") && getenv("TEACHER_CAPTURE_UNCONTESTED")
+         && $ncand >= 2 && $bp >= 0.97) {
+       // Round-10 Step 0 probe (search_s3 only; stock

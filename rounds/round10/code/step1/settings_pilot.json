@@ -1,0 +1,126 @@
+{
+ "build": {
+  "base_file": "search_s3.php",
+  "base_sha256": "87779e8ec96935776ce35d94ae350647d8f4174c8a17ed572b1bd4887b9a7ba7",
+  "change": "line 1017: 'if ($ncand <= 1 || $bp >= 0.97)' -> 'if ($ncand <= 1 || $bp >= 1.01)' (one token: the uncontested threshold literal)",
+  "file": "search_s3_thr.php",
+  "threshold_class_boundary": 0.97
+ },
+ "comment": "Single source for the Step 1 pilot's pinned parameters (claude-reply-243b9d8 sec.3 terms; step1-pilot-package.md). The build is search_s3_thr.php = the sec.14-fixed search_s3.php (87779e8e...) with ONE token changed: the DecideInner uncontested branch's top-prior literal 0.97 -> 1.01 (line 1017), so the branch never triggers for a decision with >= 2 candidates (priors are probabilities, top prior <= 1.0); ncand <= 1 still returns the only candidate. Margin 1.5, k 25, hooks 8000, deadline 180, horizon 62 at -1 (per-step check, horizon-forces-draw), candidate rule: all unchanged, carried by the teacher tuple pin. Capture seeds 25001-25100 (four blocks of 25 seeds x 2 seats = 100 games) are disjoint from every used block (1001-1200, 2001-2200, 8001-8200, 9001-9200 RESERVED, 10001-10400, 21001-21100, 22001-22100, 23001-23200, 24001-24090) -- asserted in fixtures/fx_pilot_seeds.py. Label seed family: base 570055001 + shard x 10^8, 4 shards, W = 50, enforced cap 512 jobs/shard (span at the cap 52,637,046 < 10^8; range [570055001, 922692047] across shards clears every prior family's range, incl. probe labels top 397,091,279, supp-B top 497,091,279 at the cap, and supp-A base 970,055,001) -- proven by enumeration in fixtures/fx_pilot_seeds.py against all registered families at recorded/planned counts.",
+ "deck": "nats2026_eriksen_gravy_60.txt",
+ "games": {
+  "blocks": [
+   {
+    "seat": 1,
+    "seeds": "25001-25025",
+    "tag": "s1a"
+   },
+   {
+    "seat": 1,
+    "seeds": "25026-25050",
+    "tag": "s1b"
+   },
+   {
+    "seat": 2,
+    "seeds": "25001-25025",
+    "tag": "s2a"
+   },
+   {
+    "seat": 2,
+    "seeds": "25026-25050",
+    "tag": "s2b"
+   }
+  ],
+  "capture_seed_block": "25001-25050 (each seed played at both seats)",
+  "games": 100,
+  "registry_tag": "r10_step1_pilot",
+  "timeout_derivation": {
+   "cost_factor": 3.66,
+   "cost_factor_source": "the probe's measured threshold-teacher cost factor (step0-probe-report.md: 1840 s vs 503 s per teacher game = 3.66x)",
+   "formula": "ceil(2143.2 x 3.66) = ceil(7844.112) = 7845 s; provisional and generous (claude-reply-243b9d8 sec.3.2); the pilot's own wall tail sets Step 2's timeout",
+   "source": "rounds/round9/data/stage2/games_*.jsonl driver rows, field 'secs' (200 published rows)",
+   "stage2_max_file": "games_s2b.jsonl",
+   "stage2_max_game": "888015991",
+   "stage2_max_wall_s": 2143.2,
+   "stage2_mean_wall_s": 503.118
+  },
+  "timeout_s": 7845
+ },
+ "instrument_draw_trigger": 62,
+ "instrument_max_turns": 87,
+ "label": {
+  "classes": {
+   "contested": "overturns whose live stat row's top prior is < 0.97 (the class Stage 3's teacher also searched)",
+   "newly_contested": "overturns whose live stat row's top prior is >= 0.97 (the class the lifted threshold newly searches; the lever)"
+  },
+  "pair": "va",
+  "seed_base": 700055001,
+  "seed_stride_per_shard": 100000000,
+  "server": "production (81ef2cdb...)",
+  "shard_cap_jobs": 512,
+  "shards": 4,
+  "tuple": {
+   "deadline_s": 180,
+   "hooks": 8000,
+   "horizon": 62,
+   "horizon_value": -1,
+   "k": 50,
+   "name": "L3-W50+H"
+  }
+ },
+ "mirror": "Gravy Bones (both seats, same deck file) vs heuristic",
+ "pregate": {
+  "form": "ghost arms (TEACHER_GHOST, prior pick played) under BOTH builds (sec.14 search_s3.php and search_s3_thr.php), seeds 8601-8610 at both seats; played-action identity on driver rows for every seed/seat; decision-level identity on the contested class (top prior < 0.97) over order-aware paired stat rows (priors and selected set exactly equal); divergence expected and counted ONLY on newly-contested rows (top prior >= 0.97: a contested=0 early-return row in the sec.14 build vs a full search row in the lifted build); K6 line per lifted ghost arm",
+  "games_per_arm_seat": 10,
+  "registry_tag": "r10_step1_pilot_pregate",
+  "seeds": "8601-8610"
+ },
+ "read": {
+  "bootstrap": {
+   "form": "cluster bootstrap over games of the per-game summed job diffs (analyze_l3.cluster_bootstrap on per-game totals)",
+   "reps": 10000,
+   "seed": 20261020
+  },
+  "games_population": "all 100 pilot games from the driver rows (games with no overturns of a class contribute 0 to that class's per-game total); NO sampling weights (pilot capture is complete)",
+  "lb_form": "the two-sided bootstrap CI's lower bound is the one-sided 95% lower bound (the project's registered conservative stand-in); ub_form likewise the CI's upper bound",
+  "scoring": "cap-aligned (sec.14): a label world scores 1.0 iff outcome > 0 AND it ended by turn 61, else 0; paired over worlds finished in both candidates, refusal worlds skipped (probe_label_analyze.job_diffs construction, cap_aligned=True)",
+  "sizing": {
+   "flag_above_games": 400,
+   "form": "two-sample bar vs Stage 3: PASS iff (gain_new - 0.0649)/sqrt(SE_new^2 + 0.0090^2) >= 1.645. Plan at 80% power for Delta_plan = pilot_lb - 0.0649 (never the point estimate): require Delta_plan / sqrt(SE_new(n)^2 + 0.0090^2) = 1.645 + 0.8416 = 2.4866 with SE_new(n) = SE_pilot * sqrt(100/n), SE_pilot the pilot's analytic game-clustered SE (sd of per-game totals / sqrt(100)). Solve SE_new(n)^2 = (Delta_plan/2.4866)^2 - 0.0090^2 =: R. If Delta_plan <= 0 or R <= 0: no finite n (print n = inf). Else n = ceil(100 * SE_pilot^2 / R). If n > 400: print the JOE-COST-DECISION flag (the size goes to Joe).",
+   "z_one_sided": 1.645,
+   "z_power_80": 0.8416
+  },
+  "stage3_gain": 0.0649,
+  "stage3_gain_se": 0.009,
+  "stop_rule": "STOP (no Step 2) iff the total per-game gain's one-sided 95% UPPER bound (the bootstrap CI's upper bound) < stage3_gain + 0.020 = 0.0849",
+  "z_bands": [
+   [
+    1.5,
+    2.0
+   ],
+   [
+    2.0,
+    2.5
+   ],
+   [
+    2.5,
+    3.5
+   ],
+   [
+    3.5,
+    null
+   ]
+  ],
+  "z_sentinel": "se_diff = 0 with mean_diff > 0: z = 999.0 + z_nonfinite true (strict JSON everywhere; the live rule fires at any margin, the banding treats the sentinel as > 3.5)"
+ },
+ "stage": "round10-step1-pilot",
+ "teacher_tuple": {
+  "deadline_s": 180,
+  "hooks": 8000,
+  "horizon": 62,
+  "horizon_value": -1,
+  "k": 25,
+  "margin": 1.5,
+  "name": "H8k-180+H"
+ }
+}
