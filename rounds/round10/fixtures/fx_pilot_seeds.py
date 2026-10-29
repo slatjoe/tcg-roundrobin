@@ -49,7 +49,10 @@ and ten further D2 blocks). Sources:
     builder-response-8d13b0f.md).
   Blocks used SINCE D2 (rounds 9-10 packages):
     21001-21040 round-9 Stage 0/1 capture (D2
-    proposal, run); 22001-22100 Stage 2 games;
+    proposal, run); 21041-21100 the registered
+    Stage 1 extension range (a contingency block,
+    registered in the probe's settings; never run,
+    kept out of reuse); 22001-22100 Stage 2 games;
     23001-23200 Stage 3 fleet; 24001-24090 round-10
     probe capture (step0-probe-package.md);
     25001-25050 THIS pilot's capture block
@@ -110,7 +113,7 @@ USED_GAME_BLOCKS = [
     (9001, 9200),          # RESERVED -- untouched
     (10001, 10400), (11001, 11010), (12001, 12010),
     # used since D2 (rounds 9-10)
-    (21001, 21040), (22001, 22100), (23001, 23200),
+    (21001, 21040), (21041, 21100), (22001, 22100), (23001, 23200),
     (24001, 24090),
     # this pilot's own capture block (the capture
     # check below skips its own entry; every other
