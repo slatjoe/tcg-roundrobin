@@ -29,7 +29,8 @@
 #     30055001 + shard x 10^8.
 #   jobs: build_probe_jobs.py (shard-cap abort is
 #     the label seed family's range bound).
-#   label: s2_label_main.php (byte-identical) in 4
+#   label: s2_label_main.php (round-9 driver + the
+#     r10 fix-pass-4 loud jobs loader) in 4
 #     shard trees carrying STOCK search_s2.php --
 #     the labels run the registered round-9 machinery
 #     byte for byte. MEAS_SEED = label base 70055001
@@ -73,8 +74,8 @@ expect_hash "$CODE_DIR/s1_eval_main.php" \
   73ed24822baaaa9cc8ceebe4f9e082320932cc6e64b5e5f8e3f74b81764cae5a \
   "probe s1_eval_main.php (round-9 byte-identical)" || exit 1
 expect_hash "$CODE_DIR/s2_label_main.php" \
-  c7a76af4fb59e8e6e0b69a6d06157efc44597b04238cdb3b2efe48350cdda888 \
-  "probe s2_label_main.php (round-9 byte-identical)" || exit 1
+  1c1dfd9f9349e8db815f23e31637dee558a9ec36e09179142f71748a6bce72aa \
+  "probe s2_label_main.php (round-9 + r10 fix-pass-4 loud loader)" || exit 1
 expect_hash "$CODE_DIR/paired_driver_gravy.py" \
   3389b1b936180909b1f0c70f743ef2e6c414de933194405de344fc5abceaf359 \
   "probe paired_driver_gravy.py (round-9 byte-identical)" || exit 1
@@ -96,7 +97,7 @@ expect_hash "$CODE_DIR/probe_eval_analyze.py" \
   7c4d9f691af7681777c62bcb9b8c3bbf1b103f1de7b74912f14afc65ef017f90 \
   "probe probe_eval_analyze.py" || exit 1
 expect_hash "$CODE_DIR/build_probe_jobs.py" \
-  c08d8c8238918e3e65340be85b743d4ce68d0493b3e4c98d206c2e229fe868ae \
+  f3882a9deebe43934f6b147a7dcd3c07ad8aa0f5ef62b09ed799d8d5abefc4e4 \
   "probe build_probe_jobs.py" || exit 1
 expect_hash "$CODE_DIR/probe_label_analyze.py" \
   60935aec0b75873584a73950d5b9921ea3ef93bdac80cc97f857177fdc687bfc \

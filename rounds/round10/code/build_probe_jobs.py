@@ -49,6 +49,26 @@ under all three margin definitions (1.5, 1.25, 1.0)
 a ruling (F2 as ruled; the superset jobs are already
 in the job set as the diagnostic class).
 
+STRICT-JSON DISCIPLINE (fix pass 4, 2026-10-29):
+a state whose paired diffs are constant has se = 0
+and z = +inf (probe_eval_analyze emits it; its own
+fixture case A). Python's json writes that as the
+bare token Infinity -- INVALID JSON -- and the PHP
+labeler's loader used to drop such lines silently
+(attempt 3: 10 jobs lost, every later seed base in
+the invocation shifted). This writer therefore
+NEVER emits a non-finite float: a job whose z is
+non-finite is written with the finite sentinel
+z = 999.0 and a "z_nonfinite": true field (finite
+jobs omit the field). 999.0 bands exactly where
++inf banded -- above every margin and above the
+analyzer's tail_z = 3.5, so the job lands in the
+uncontested TAIL subset, as +inf did. As a second
+line of defense every job line is serialized with
+allow_nan=False: any other non-finite float
+sneaking into any field aborts the build (exit 2)
+instead of reaching the file.
+
 Usage: build_probe_jobs.py --states eval_states.jsonl
   --eval-jobs eval_jobs.jsonl --settings
   settings_probe.json --out jobs_all.jsonl
@@ -57,8 +77,11 @@ Usage: build_probe_jobs.py --states eval_states.jsonl
 import argparse
 import hashlib
 import json
+import math
 import sys
 from collections import Counter
+
+Z_NONFINITE_SENTINEL = 999.0
 
 
 def main():
@@ -120,7 +143,11 @@ def main():
             print("ABORT: state %s in class %s has search "
                   "pick == prior pick" % (snap, cls))
             return 2
-        jobs.append({
+        # fix pass 4: never emit a non-finite float
+        # (see the header). The sentinel bands where
+        # +inf banded: above the tail cut.
+        z_raw = r["z"]
+        job = {
             "snap_dir": ej["snap_dir"], "snap": snap,
             "game": str(r["game"]), "player": int(r["player"]),
             "branch": str(r["branch"]),
@@ -131,9 +158,30 @@ def main():
             "setting": label_tuple,
             "probe_band": cls,
             "prior_band": r["prior_band"],
-            "z": r["z"], "top_prior": r["top_prior"],
-        })
+            "z": (Z_NONFINITE_SENTINEL
+                  if not math.isfinite(z_raw) else z_raw),
+            "top_prior": r["top_prior"],
+        }
+        if not math.isfinite(z_raw):
+            job["z_nonfinite"] = True
+        jobs.append(job)
 
+    # fix pass 4: serialize every job ONCE, strictly
+    # (allow_nan=False), BEFORE any file is written --
+    # a non-finite float in any field aborts here
+    # instead of reaching a file the PHP loader
+    # would choke on.
+    lines = {}
+    for j in jobs:
+        try:
+            lines[j["snap"]] = json.dumps(
+                j, allow_nan=False) + "\n"
+        except ValueError:
+            print("ABORT: job %s carries a non-finite "
+                  "float outside the z sentinel path; "
+                  "refusing to emit invalid JSON"
+                  % j["snap"])
+            return 2
     shards = {s: [] for s in range(nshard)}
     for j in jobs:
         s = int(hashlib.sha256(
@@ -151,13 +199,15 @@ def main():
             return 2
         with open("%s%d.jsonl" % (a.shard_prefix, s), "w") as f:
             for j in rows:
-                f.write(json.dumps(j) + "\n")
+                f.write(lines[j["snap"]])
         counts[str(s)] = len(rows)
     with open(a.out, "w") as f:
         for j in jobs:
-            f.write(json.dumps(j) + "\n")
+            f.write(lines[j["snap"]])
     by_class = Counter(j["probe_band"] for j in jobs)
     report = {"jobs": len(jobs),
+              "z_nonfinite_jobs": sum(
+                  1 for j in jobs if j.get("z_nonfinite")),
               "by_class": dict(by_class),
               "uncontested_margin": unc_margin,
               "uncontested_diag_margin": diag_margin,

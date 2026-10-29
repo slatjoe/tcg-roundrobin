@@ -1,4 +1,22 @@
 <?php
+// Round-10 FIX PASS 4 (2026-10-29) -- the ONE change
+// to this file after round 9: the jobs loader below
+// (the $jobs load block) no longer drops undecodable
+// lines silently. The probe's job writer emitted
+// z = Infinity (the bare token, invalid JSON) on 10
+// jobs in attempt 3; json_decode returned null and
+// the old is_array filter skipped those lines
+// without a trace, so their worlds never ran and
+// every later job in the invocation labeled under a
+// shifted seed base. The loader now counts non-empty
+// lines read vs jobs decoded and ABORTS (exit 2) on
+// any line that fails to decode, naming the line.
+// The writer's half of the fix is in
+// build_probe_jobs.py (finite sentinel z = 999.0 +
+// "z_nonfinite" flag, strict allow_nan=False
+// serialization). Everything else in this file is
+// the round-9 driver, unchanged.
+//
 // Round-9 Stage 2 L3 label driver: derived from
 // s1_eval_main.php (the Stage 1 evaluator driver) with ONLY
 // the changes in fixtures/s2_label_main_diff.txt: the header,
@@ -114,9 +132,25 @@ $SETTING = ["name" => $ST_NAME, "hooks" => $HOOKS,
             "horizon_value" => $HVAL, "k" => $K];
 
 $jobs = [];
+$linesRead = 0; $lineNo = 0;
 foreach (file($jobsFile) as $ln) {
+  $lineNo++;
   $ln = trim($ln); if ($ln === "") continue;
-  $j = json_decode($ln, true); if (is_array($j)) $jobs[] = $j;
+  $linesRead++;
+  $j = json_decode($ln, true);
+  if (!is_array($j)) {
+    s1_abort("jobs line $lineNo of $jobsFile is not " .
+             "valid JSON (" . json_last_error_msg() .
+             "); a silently dropped job shifts every " .
+             "later job's seed base -- the label run " .
+             "refuses to proceed");
+  }
+  $jobs[] = $j;
+}
+if (count($jobs) !== $linesRead) {
+  s1_abort("jobs load mismatch in $jobsFile: " .
+           "$linesRead non-empty lines read, " .
+           count($jobs) . " jobs decoded");
 }
 foreach ($jobs as $j) {
   $snap = strval($j["snap"] ?? "?");

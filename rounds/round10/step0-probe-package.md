@@ -223,7 +223,8 @@ field by field. Stage 1 measured it at the exact
 tuple the probe needs.
 
 **The label machinery already exists.**
-`s2_label_main.php` (c7a76af4…, reused byte-identical)
+`s2_label_main.php` (1c1dfd9f… — the round-9
+driver, reused; its jobs loader changed in §12)
 labels a snapshot's two candidates at W = 50 with
 CRN; Stage 3's attribution read is the construction
 the probe's label analyzer mirrors.
@@ -332,8 +333,9 @@ with the Φ-correction printed beside it.
 ### 3.3 Labeling — three classes (F2 ruled; amended in place by the fix pass)
 
 L3 at the registered configuration (W = 50, CRN,
-pair `va`, horizon 62, draw = 0 read) via the
-byte-identical `s2_label_main.php`, on:
+pair `va`, horizon 62, draw = 0 read) via
+`s2_label_main.php` (the round-9 driver; §12
+changes its jobs loader), on:
 
 - **(a) uncontested would-fires** — states whose
   eval statistic fires the CURRENT rule (z > 1.5),
@@ -534,10 +536,11 @@ box time is spent, so this decision is cheap.
 
 ## 6. Fixtures
 
-`fixtures/run_fx_r10.sh` — **ALL PASS (99 checks;
+`fixtures/run_fx_r10.sh` — **ALL PASS (109 checks;
 45 at the original package, +12 in the fix pass
 (§9), +29 in the second fix pass (§10), +13 in
-the third fix pass (§11))**,
+the third fix pass (§11), +10 in the fourth fix
+pass (§12))**,
 transcript staged at
 `fixtures/fx_r10_outputs.txt`:
 
@@ -602,6 +605,21 @@ transcript staged at
   TEACHER_CAPTURE_UNCONTESTED assignment removed
   and asserts the guard fails on exactly the two
   uncontested checks.
+- `fx_label_loader.py` — the non-finite-z chain
+  (fourth fix pass, §12): an inf-z state
+  (mean_diff 2.0, se_diff 0.0) through the real
+  job writer — strict JSON on every line of
+  jobs_all and the shard files, the sentinel
+  z = 999.0 + `z_nonfinite` on that job only, the
+  report's count; the PHP loader's load block,
+  lifted verbatim from `s2_label_main.php` and
+  run under php8.3, loading the writer's file
+  whole; the analyzer banding the sentinel job in
+  class (a)'s z > 3.5 tail; and the negative
+  case — attempt 3's real line 282 (the bare-
+  Infinity t64 job, read from `data/step0/
+  jobs_all.jsonl` at runtime) makes the loader
+  abort at exit 2, naming the line.
 - `fx_repro` — the Deliverable A script re-run; its
   summary line compared against the staged output.
 
@@ -624,12 +642,15 @@ generated — see below), `settings_probe.json`,
 `build_probe_eval_jobs.py`, `probe_eval_analyze.py`,
 `build_probe_jobs.py`, `probe_label_analyze.py`,
 `probe_report.py`, `run_probe.sh`,
+`run_probe_recovery.sh` (§12),
 `reproduce_r9_tables.py`.
 
 **Byte-identical reuse from round 9** (`code/`,
 hash-verified copies of the round-9 files):
 `s1_eval_main.php` (73ed2482), `s2_label_main.php`
-(c7a76af4), `paired_driver_gravy.py` (3389b1b9),
+(1c1dfd9f — the round-9 driver; its jobs loader
+changed in §12, so this one is no longer
+byte-identical), `paired_driver_gravy.py` (3389b1b9),
 `merge_registry.py` (13a655e3), `search_s2.php`
 (85490e8e — the label trees' build and the hook's
 base), `stage0_report.py` (5c7e5393), `analyze_l3.py`
@@ -650,6 +671,7 @@ forked in construction from `build_s3_jobs.py`
 **Fixtures** (`fixtures/`): `run_fx_r10.sh`,
 `fx_pin_guards.py`, `fx_probe_blocks.sh`,
 `fx_probe_python.py`, `fx_seed_clearance.py`,
+`fx_runner_env.py`, `fx_label_loader.py`,
 `gen_search_s3.py`, `search_s3_diff.txt`,
 `fx_repro_output.txt`, `fx_r10_outputs.txt`.
 
@@ -1057,3 +1079,251 @@ folded into this one-variable fix.
   untouched — in particular `search_s3.php`,
   the driver, and the nine reuse files are
   byte-identical.
+
+---
+
+## 12. FOURTH FIX PASS (2026-10-29) — the silent loader drop (found in attempt 3's analyze phase) and the supplementary recovery
+
+**The defect.** Attempt 3 ran to the analyze
+phase, which aborted on its world-count guard:
+
+```
+ABORT: world-count guard: job 540261752_t64 candidate 0 has 0 rows, expected exactly 50
+```
+
+(preserved in `data/step0/label_read.txt`). The
+chain, each link verified in the published rows:
+
+1. The offline eval emits `z = +inf` for a state
+   whose paired candidate diffs are constant
+   (se = 0) — a legitimate statistic (the
+   analyzer's own fixture case A plants it).
+2. `build_probe_jobs.py` serialized jobs with
+   Python's `json.dumps`, which writes a
+   non-finite float as the bare token `Infinity`
+   — **invalid JSON**. Ten jobs carried it:
+   `jobs_all.jsonl` lines 282–291, snaps
+   `540261752_t64..t73`, all game 540261752, all
+   class `uncontested` (evidence:
+   `data/step0/jobs_all.jsonl`).
+3. `s2_label_main.php`'s loader (the round-9
+   block) json_decoded each line and kept only
+   array results (`if (is_array($j)) $jobs[] =
+   $j;`). PHP rejects the bare token, the decode
+   returned null, and the line was **dropped
+   without a trace** — no count, no warning. All
+   ten sat in one invocation (shard 0, player 2:
+   105 of its 115 lines loaded).
+4. Their worlds never ran. The other 636 jobs
+   labeled normally (`labels_all.jsonl` holds
+   exactly 63,600 rows = 636 × 2 candidates × 50
+   worlds), and the loss surfaced only here, two
+   phases later, as the analyzer's guard abort.
+   No report was produced.
+
+**What the shift did and did not do.** The
+labeler derives each job's seed base from its
+index in the LOADED array, so the 105 loaded
+jobs of that invocation labeled under bases
+compressed by the missing indices. That does
+not touch their labels' validity: a base only
+has to be unique within the family and paired
+across the job's two candidates (CRN), and both
+hold — the used values are a subset of the
+family's enumerated lattice positions, taken in
+order. The 636 jobs' labels stand as labeled.
+Only the 10 dropped jobs are missing, and they
+never had seed bases at all.
+
+**The fix — writer.** `build_probe_jobs.py`
+never emits a non-finite float. A job whose z
+is non-finite is written with the finite
+sentinel **z = 999.0** and a `"z_nonfinite":
+true` field (finite jobs omit the field). The
+sentinel bands exactly where +inf banded: above
+every class margin and above the analyzer's
+`tail_z = 3.5`, so such a job lands in the
+uncontested TAIL subset, as +inf did (fixture
+N8 proves the banding through the real
+analyzer). Second line of defense: every job
+line is serialized once, up front, with
+`allow_nan=False` — any other non-finite float
+in any field aborts the build (exit 2) before
+any file is written. The jobs report gains a
+`z_nonfinite_jobs` count.
+
+**The fix — loader.** The jobs-load block in
+`s2_label_main.php` now counts non-empty lines
+read vs jobs decoded and **aborts (exit 2) on
+the first line that fails to decode, naming its
+line number and file**, with a final count
+assertion behind it. No silent drops, ever; the
+change is confined to the load block plus a
+header note — every other behavior of the
+round-9 driver is unchanged. This makes
+`s2_label_main.php` the first reuse file the
+probe has had to change: it is no longer
+byte-identical to round 9 (noted in place in
+§2, §3.3 and §7). `settings_probe.json`'s
+comment still calls the label machinery
+byte-identical; that file is the run's pinned
+parameter record and is NOT modified by this
+pass — this section supersedes its comment on
+the point.
+
+**Pins.** Both changed code files are pinned
+in `run_probe.sh`; both literals were updated
+from `sha256sum` of the new staged files in
+the same pass (machine-copied, the standing
+rule): `s2_label_main.php` c7a76af4… →
+**1c1dfd9f…** (its pin description updated to
+name the change), `build_probe_jobs.py`
+c08d8c82… → **f3882a9d…**. The pin-guard
+fixture asserts both equalities on every suite
+run — the suite failed on the stale writer pin
+mid-pass, before the update, which is the
+guard working.
+
+**Fixtures: 99 → 109 checks, ALL PASS**
+(transcript re-staged at
+`fixtures/fx_r10_outputs.txt`, byte-identical
+across two consecutive runs): +10 in the new
+`fixtures/fx_label_loader.py` —
+
+- N1–N4 (writer): an inf-z state (mean_diff
+  2.0, se_diff 0.0 — the t64 shape) through the
+  real writer: strict JSON on every line of
+  `jobs_all` and the shard files (a
+  `parse_constant`-raising parse), the sentinel
+  + flag on that job only, the report's count.
+- N5–N7 (loader): the load block lifted
+  **verbatim** from `s2_label_main.php` (from
+  `$jobs = [];` to the setting-audit loop, with
+  the file's own `s1_abort`) and run under
+  php8.3 — named as an extraction: the full
+  driver needs the Talishar tree and a policy
+  server. It loads the writer's file whole, the
+  sentinel job present and flagged.
+- N8 (analyzer): the sentinel job bands in
+  class (a)'s TAIL (z > 3.5); a finite z = 2.0
+  job bands in class only.
+- N9–N10 (negative): a jobs file carrying
+  attempt 3's **real line 282** (read from
+  `data/step0/jobs_all.jsonl` at runtime) makes
+  the loader ABORT at exit 2, naming line 2,
+  and load nothing.
+
+**The recovery (design, for review — nothing
+has run).** `code/run_probe_recovery.sh` (new):
+a single-shot addendum executed on the box from
+attempt 3's preserved outputs, under this
+section as its registration. It refuses to run
+if any of its outputs already exists or any
+input is missing. Steps:
+
+1. **Extract** the 10 jobs from
+   `jobs_all.jsonl` by snap (the registered set
+   `540261752_t64..t73`). Python's json is the
+   one reader in the chain that accepts the
+   bare token, so the rows are recovered whole;
+   the extraction asserts the set (exactly 10,
+   game 540261752, class uncontested, z
+   non-finite on each) and rewrites them in the
+   fixed writer's shape (z = 999.0 +
+   `z_nonfinite`) as `jobs_supp.jsonl`,
+   serialized with `allow_nan=False`.
+2. **Label only them** — one label tree, the
+   fixed loader, the registered tuple
+   (L3-W50+H), the player-2 policy socket (all
+   10 are player 2) — under a **fresh seed
+   family, MEAS_SEED = 970055001**. The script
+   asserts the loader's own `s2 label jobs=10`
+   line in the run log: the whole set loaded,
+   proven by the loader that used to drop them.
+3. **Seed disjointness.** The family is the
+   label lattice at shard index 9
+   (70,055,001 + 9×10⁸; no such shard exists).
+   Its values are 970,055,001 + ji×100,003 +
+   w×31,337 for ji ∈ [0, 9], w ∈ [0, 49] — 500
+   values in the interval [970,055,001,
+   972,490,541]. Every other family's span,
+   bounded at PLANNED counts on its worst
+   shard, tops out below it:
+
+   | family | span top |
+   |---|---|
+   | probe eval (s3, 3300 states) | 661,500,411 |
+   | probe labels (s3, cap 256) | 397,091,279 |
+   | Stage 3 labels (s3, 176 jobs) | 369,091,039 |
+   | round-8 (s3, 547 jobs, W ≤ 100) | 358,481,002 |
+   | Stage 2 labels (s3, ≤353 jobs) | 337,691,570 |
+   | Stage 0 (s3, span < 27,036,278) | < 327,891,279 |
+
+   The supplementary interval clears the
+   largest (the eval family's) by **308,554,590**
+   — interval-disjoint from every family, hence
+   value-disjoint, a stronger statement than
+   the lattice-interleave argument the sibling
+   families rely on. (The probe-label family's
+   REALIZED span is smaller still: shard totals
+   195/159/190/102 bound its tops at
+   90,991,096 + s×10⁸.) The base is registered
+   here and as a literal in the recovery script;
+   `settings_probe.json` is unchanged — the
+   recovery is an addendum to the run, not a
+   re-registration of it.
+4. **Pre-check, then merge.** Exactly 50 rows
+   per (snap, candidate) for all 10 jobs is
+   asserted before anything merges; then
+   `labels_all.jsonl` + `labels_supp.jsonl` →
+   `labels_merged.jsonl` (63,600 + 1,000 =
+   64,600 rows, 646 jobs).
+5. **Analyze + report** over the merged set —
+   the registered analyze phase verbatim
+   (`probe_label_analyze.py` →
+   `label_read.json/.txt`,
+   `probe_report.py` → `probe_report.json/.txt`,
+   superseding the aborted attempt in OUT; the
+   abort line stays in the published
+   `data/step0/label_read.txt`), then
+   `recovery_manifest.json` (input/output
+   hashes, the seed base, the 10 snaps, the
+   disclosure text).
+
+**The disclosure the probe report and its data
+MANIFEST will carry** (verbatim, also embedded
+in `recovery_manifest.json`):
+
+> 10 of the 646 label jobs (snaps
+> 540261752_t64..t73) were labeled in a
+> supplementary run after the pre-fix loader
+> silently dropped their invalid-JSON lines
+> (z = Infinity); their worlds ran under fresh
+> seed family MEAS_SEED = 970055001. All other
+> jobs labeled in the original run. See the
+> package doc sec.12.
+
+**In-place corrections by this pass** (the
+§10/§11 practice): §2's loader hash and reuse
+wording, §3.3's "byte-identical" wording, §6's
+check count and fixture list, §7's file lists
+(the §12 files added; the loader's hash
+corrected) are corrected above; §§9–11 stand
+as their passes' records, superseded on the
+loader's hash where they quote it.
+
+- **Files changed by this pass:**
+  `code/build_probe_jobs.py` (the sentinel,
+  strict serialization, the report count),
+  `code/s2_label_main.php` (the loud loader +
+  header note), `code/run_probe.sh` (the two
+  pin literals, machine-copied; the loader
+  pin's description and the header comment),
+  `code/run_probe_recovery.sh` (new),
+  `fixtures/fx_label_loader.py` (new),
+  `fixtures/run_fx_r10.sh` (registers it),
+  `fixtures/fx_r10_outputs.txt` (re-staged
+  transcript), and this doc. Nothing else —
+  in particular `settings_probe.json`,
+  `search_s3.php`, `search_s2.php` and the
+  remaining reuse files are byte-identical.

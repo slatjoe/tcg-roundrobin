@@ -42,6 +42,17 @@
 #                            carry both env vars the
 #                            search_s3.php uncontested
 #                            hook gates on.
+#   fx_label_loader.py    -- the non-finite-z chain
+#                            (fourth fix pass): the
+#                            job writer's strict-JSON
+#                            sentinel output, the PHP
+#                            label loader's load block
+#                            (verbatim extraction)
+#                            loading it whole, the
+#                            analyzer's tail banding,
+#                            and the loader's loud
+#                            abort on attempt 3's real
+#                            bare-Infinity line.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 FAILED=0
@@ -57,6 +68,7 @@ run fx_probe_blocks.sh bash "$HERE/fx_probe_blocks.sh"
 run fx_probe_python.py python3 "$HERE/fx_probe_python.py"
 run fx_seed_clearance.py python3 "$HERE/fx_seed_clearance.py"
 run fx_runner_env.py python3 "$HERE/fx_runner_env.py"
+run fx_label_loader.py python3 "$HERE/fx_label_loader.py"
 echo "===== fx_repro (summary compared with staged output) ====="
 SUM_NOW=$(python3 "$HERE/../code/reproduce_r9_tables.py" 2>/dev/null \
           | grep '^==== SUMMARY' || true)
