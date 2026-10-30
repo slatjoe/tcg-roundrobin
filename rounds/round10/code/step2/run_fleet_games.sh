@@ -25,15 +25,37 @@
 # this run's pinned build sha + the tuple built from
 # settings_fleet.json.
 #
+# REBUILD (2026-10-30, package sec.19;
+# claude-reply-5ea3a72 sec.2): the TS-SRV /
+# TS-DRIVERS / RS-SRV / RS-DRIVERS blocks (with
+# their tree, sweeper, wait and rerun companions)
+# are VERBATIM FORKS of run_stage3_games.sh's
+# blocks (themselves the pilot's form), after the
+# as-approved authored blocks proved to carry
+# seven contract defects (sec.19.1). The allowed
+# differences are enumerated in sec.19.2 and
+# machine-checked by fixtures/fx_fleet_contract.py.
+# A SMOKE=1 switch (sec.19.4) runs one registered
+# seed (27001) through the same blocks into a
+# separate outdir and exits before GRES.
+#
 # Single-shot: refuses if the fleet outputs exist.
 # Box paths mirror the pilot/stage3 runners.
 set -u
 SIM=/home/joe/tcg/tcg-sim
 CODE_DIR="${STEP2_CODE_DIR:-/home/joe/tcg/round10_code/step2}"
 OUT="${FLEET_OUT:-/home/joe/tcg/r10fleet_out}"
+# SMOKE=1 (sec.19.4): the smoke run writes to its
+# own outdir; the single-shot guards below then
+# apply to the smoke outdir, not the fleet's.
+if [ "${SMOKE:-0}" = 1 ]; then
+  OUT="${FLEET_SMOKE_OUT:-/home/joe/tcg/r10fleet_smoke_out}"
+fi
 GTREE="${GTREE:-/tmp/gravytree}"
 CKPT="$SIM/rl_out/gravy_ppo_gravybc3/ckpt_v10.pt"
 PY=/home/joe/tcg/rl-env/bin/python
+SRV_WAIT_TRIES=${SRV_WAIT_TRIES:-60}
+DECK_REL=decks/nats2026_eriksen_gravy_60.txt
 export TCG_CLEAN_CHILDREN=1
 
 expect_hash() { # expect_hash <path> <sha256>
@@ -86,6 +108,8 @@ expect_hash "$GTREE/decks/nats2026_eriksen_gravy_60.txt" \
   b8b41390c5420ab83cb80c7e20457cab948f62d113efb4900db52cf490bf11ed
 expect_hash "$GTREE/search.php" \
   8f6b35da23f4e5fc7f5fda2ede2d65ba330f9f3eb463e3377978ded1f5d7fa61
+expect_hash "$GTREE/rl/search_server.py" \
+  ab85fa1bcf19b41c7d48db642a2fd93d211e826b9f684594cefa5a1100f3c52c
 expect_hash "$CKPT" \
   44f1e5d7320e32e7d95186a79155f5f97164e54592ce763d4652778d43495ca3
 
@@ -142,6 +166,26 @@ echo "settings: timeout=$GAME_TIMEOUT tag=$REGISTRY_TAG"
   echo "ABORT: TEACHER_TUPLE_JSON empty" >&2; exit 1; }
 echo "teacher tuple: $TEACHER_TUPLE_JSON"
 
+##### ===== SMOKE :: SMOKE=1 seed switch (sec.19.4) =====
+# SMOKE=1 changes ONLY the seed lists (here) and the
+# output directory (at the OUT assignment above):
+# the registered smoke seed 27001 goes to the four
+# a-blocks; the b-block lists are emptied and the
+# driver loops' smoke-scoped skip makes them
+# no-ops. In production (SMOKE unset) an emptied
+# list would still reach the driver and fail loud.
+if [ "${SMOKE:-0}" = 1 ]; then
+  BLOCK_T1A_SEEDS=27001
+  BLOCK_T2A_SEEDS=27001
+  BLOCK_R1A_SEEDS=27001
+  BLOCK_R2A_SEEDS=27001
+  BLOCK_T1B_SEEDS=
+  BLOCK_T2B_SEEDS=
+  BLOCK_R1B_SEEDS=
+  BLOCK_R2B_SEEDS=
+  echo "SMOKE=1: seed 27001 (a-blocks only), out $OUT"
+fi
+
 ##### ===== PREGATE-GATE :: attempt-2 IDENTICAL =====
 $PY - "$PG_MANIFEST" "$PG_THR_SHA" <<'PYEOF' || {
 import json, os, sys
@@ -195,124 +239,161 @@ $PY "$CODE_DIR/shm_sweep.py" --once \
   > "$OUT/shm_prespawn_games.log" 2>&1 \
   || echo "note: shm sweep nonzero (see log)"
 
-##### ===== TS-SRV :: teacher servers (patched) =====
-for port in 18241 18242; do
-  ( cd "$SIM" && TCG_POLICY_SEARCH=1 \
-    TCG_POLICY_SEARCH_CKPT="$CKPT" \
-    TCG_POLICY_SEARCH_DEVICE=cuda \
-    TCG_SEARCH_SERVER=patched \
-    SEARCH_MODEL="$CKPT" \
-    $PY rl/search_server.py --socket /tmp/pol_$port.sock \
-      --port $port > "$OUT/srv_$port.log" 2>&1 ) &
-done
-sleep 20
-for port in 18241 18242; do
-  grep -q '"ready": true' "$OUT/srv_$port.log" || {
-    echo "ABORT: teacher server $port not ready" >&2
-    tail -5 "$OUT/srv_$port.log" >&2; exit 1; }
-done
-echo "teacher servers ready"
+SRV_PIDS=""
+SWEEP_PIDS=""
+cleanup() {
+  for pid in $SRV_PIDS; do kill "$pid" 2>/dev/null; done
+  for pid in $SWEEP_PIDS; do kill "$pid" 2>/dev/null; done
+}
+trap cleanup EXIT
 
-##### ===== TS-SWEEP :: SHM sweeper alongside =====
-( while :; do
-    $PY "$CODE_DIR/shm_sweep.py" --once \
-      >> "$OUT/shm_sweep_games.log" 2>&1
-    sleep 120
-  done ) &
-SWEEP_PID=$!
-echo "shm sweeper pid $SWEEP_PID"
+##### ===== TS-SRV :: teacher servers (patched) =====
+for seat in 1 2; do
+  TCG_POLICY_SOCK="$OUT/srv_s${seat}.sock" TCG_LEARNER_SEAT=$seat \
+    SEARCH_MODEL="$CKPT" TCG_OPP_MIX="heuristic:1.0" \
+    setsid nohup $PY "$GTREE/rl/search_server.py" \
+    > "$OUT/srv_s${seat}.log" 2>&1 < /dev/null &
+  SRV_PIDS="$SRV_PIDS $!"
+done
+for seat in 1 2; do
+  for i in $(seq 1 $SRV_WAIT_TRIES); do
+    grep -q 'search model loaded' "$OUT/srv_s${seat}.log" 2>/dev/null && break
+    sleep 1
+  done
+  grep -q 'search model loaded' "$OUT/srv_s${seat}.log" || {
+    echo "ABORT: patched server seat $seat did not load" >&2; exit 1; }
+  grep -q 'ckpt_v10' "$OUT/srv_s${seat}.log" || {
+    echo "ABORT: patched server seat $seat loaded the wrong model" >&2; exit 1; }
+done
+
+##### ===== TS-TREES :: teacher trees (build installed) =====
+for blk in t1a t1b t2a t2b; do
+  tree="/tmp/r10fleet_gm_${blk}"
+  rm -rf "$tree"; cp -r "$GTREE" "$tree"
+  find "$tree" -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null
+  cp "$CODE_DIR/search_s3_thr.php" "$tree/search.php"
+  expect_hash "$tree/search.php" \
+      4a1936fe8e8794af1bbbc94cd982e5b897210d6e100599b9cced1a22448ccb49
+done
+
+##### ===== TS-SWEEP :: per-tree SHM sweepers (teacher) =====
+for blk in t1a t1b t2a t2b; do
+  tree="/tmp/r10fleet_gm_${blk}"
+  ipcs -m > "$OUT/ipcs_gm_${blk}.txt"
+  awk '$1 ~ /^0x/ {print $2}' "$OUT/ipcs_gm_${blk}.txt" \
+    > "$OUT/shm_start_gm_${blk}.txt"
+  rm -f "$OUT/shm_sweep_gm_${blk}.stop"
+  $PY "$CODE_DIR/shm_sweep.py" --log "$OUT/shm_sweep_gm_${blk}.log" \
+    --start-file "$OUT/shm_start_gm_${blk}.txt" \
+    --games-dir "$tree/vendor/talishar/Games" \
+    --interval 60 --stop-file "$OUT/shm_sweep_gm_${blk}.stop" &
+  SWEEP_PIDS="$SWEEP_PIDS $!"
+done
 
 ##### ===== TS-DRIVERS :: teacher blocks x4 =====
-PIDS_T=()
-for spec in "t1a 1 $BLOCK_T1A_SEEDS 18241" \
-            "t1b 1 $BLOCK_T1B_SEEDS 18241" \
-            "t2a 2 $BLOCK_T2A_SEEDS 18242" \
-            "t2b 2 $BLOCK_T2B_SEEDS 18242"; do
-  set -- $spec; blk=$1; seat=$2; seeds=$3; port=$4
-  tree=/tmp/r10fleet_gm_$blk
-  rm -rf "$tree"; cp -r "$GTREE" "$tree"
-  cp "$CODE_DIR/search_s3_thr.php" "$tree/search.php"
-  [ "$(sha256sum < "$tree/search.php" | cut -d' ' -f1)" \
-    = "4a1936fe8e8794af1bbbc94cd982e5b897210d6e100599b9cced1a22448ccb49" ] || {
-    echo "ABORT: teacher tree $blk search.php hash" >&2
-    exit 1; }
-  mkdir -p "$OUT/games_${blk}_log" "$OUT/games_${blk}_log/snaps"
-  GATE_GAME_IDS_FILE="$OUT/games_${blk}_ids.txt" \
-  TEACHER_TUPLE_JSON="$TEACHER_TUPLE_JSON" \
-  TEACHER_SNAP_DIR="$OUT/games_${blk}_log/snaps" \
-  $PY "$CODE_DIR/paired_driver_gravy.py" \
-    --arm teacher --seat "$seat" --seeds "$seeds" \
-    --tree "$tree" --sock "/tmp/pol_$port.sock" \
-    --out "$OUT/games_${blk}.jsonl" \
-    --logdir "$OUT/games_${blk}_log" \
-    --max-turns "$MAX_TURNS" \
-    --cap-trigger "$DRAW_TRIGGER" \
-    --timeout "$GAME_TIMEOUT" \
-    > "$OUT/driver_${blk}.log" 2>&1 &
-  PIDS_T+=($!)
+PIDS="" FAIL=0
+for spec in "t1a 1 $BLOCK_T1A_SEEDS" "t1b 1 $BLOCK_T1B_SEEDS" \
+            "t2a 2 $BLOCK_T2A_SEEDS" "t2b 2 $BLOCK_T2B_SEEDS"; do
+  set -- $spec; blk=$1; seat=$2; seeds=$3
+  [ "${SMOKE:-0}" = 1 ] && [ -z "$seeds" ] && continue
+  (
+    tree="/tmp/r10fleet_gm_${blk}"
+    logdir="$OUT/games_${blk}_log"
+    mkdir -p "$logdir/snaps"
+    GATE_GAME_IDS_FILE="$OUT/games_${blk}_ids.txt" \
+      TCG_CLEAN_CHILDREN=1 \
+      TEACHER_SNAP_DIR="$OUT/games_${blk}_log/snaps" \
+      $PY "$CODE_DIR/paired_driver_gravy.py" \
+        --tree "$tree" --sock "$OUT/srv_s${seat}.sock" \
+        --seat "$seat" --arm teacher --seeds "$seeds" \
+        --deck "$tree/$DECK_REL" --timeout "$GAME_TIMEOUT" \
+        --out "$OUT/games_${blk}.jsonl" \
+        --logdir "$logdir" \
+        > "$OUT/games_${blk}.stdout" 2>&1
+  ) &
+  PIDS="$PIDS $!"
 done
-echo "teacher drivers: ${PIDS_T[*]}"
 
 ##### ===== WAIT-T :: teacher phase completes =====
-TFAIL=0
-for p in "${PIDS_T[@]}"; do wait "$p" || TFAIL=1; done
-[ "$TFAIL" = 0 ] || echo "note: a teacher driver exited nonzero"
-kill "$SWEEP_PID" 2>/dev/null
-pkill -f 'rl/search_server.py --socket /tmp/pol_1824' \
-  2>/dev/null
-sleep 2
-echo "teacher phase done"
+for pid in $PIDS; do wait "$pid" || FAIL=1; done
+[ "$FAIL" = 0 ] || { echo "ABORT: a teacher games block failed" >&2; exit 1; }
+for blk in t1a t1b t2a t2b; do touch "$OUT/shm_sweep_gm_${blk}.stop"; done
+SWEEP_PIDS=""
 
 ##### ===== RS-SRV :: raw servers (raw form) =====
-for port in 18251 18252; do
-  ( cd "$SIM" && TCG_POLICY_SEARCH_DEVICE=cuda \
-    SEARCH_MODEL="$CKPT" \
-    $PY rl/search_server.py --socket /tmp/pol_$port.sock \
-      --port $port > "$OUT/srv_$port.log" 2>&1 ) &
+# Raw phase servers: stop the teacher-phase servers first,
+# then start raw-phase servers on the SAME sockets (the
+# tree's 2 patched servers serve both phases, sequentially).
+for pid in $SRV_PIDS; do kill "$pid" 2>/dev/null || true; done
+SRV_PIDS=""
+for seat in 1 2; do
+  TCG_POLICY_SOCK="$OUT/srv_s${seat}.sock" TCG_LEARNER_SEAT=$seat \
+    SEARCH_MODEL="$CKPT" TCG_OPP_MIX="heuristic:1.0" \
+    setsid nohup $PY "$GTREE/rl/search_server.py" \
+    > "$OUT/srv_raw_s${seat}.log" 2>&1 < /dev/null &
+  SRV_PIDS="$SRV_PIDS $!"
 done
-sleep 20
-for port in 18251 18252; do
-  grep -q '"ready": true' "$OUT/srv_$port.log" || {
-    echo "ABORT: raw server $port not ready" >&2
-    tail -5 "$OUT/srv_$port.log" >&2; exit 1; }
+for seat in 1 2; do
+  for i in $(seq 1 $SRV_WAIT_TRIES); do
+    grep -q 'search model loaded' "$OUT/srv_raw_s${seat}.log" 2>/dev/null && break
+    sleep 1
+  done
+  grep -q 'search model loaded' "$OUT/srv_raw_s${seat}.log" || {
+    echo "ABORT: raw-phase server seat $seat did not load" >&2; exit 1; }
+  grep -q 'ckpt_v10' "$OUT/srv_raw_s${seat}.log" || {
+    echo "ABORT: raw-phase server seat $seat loaded the wrong model" >&2; exit 1; }
 done
-echo "raw servers ready"
-sleep 60   # TS-SWEEP tail (Stage 3 form)
+
+##### ===== RS-TREES :: raw trees (fleet search.php kept) =====
+for blk in r1a r1b r2a r2b; do
+  tree="/tmp/r10fleet_gm_${blk}"
+  rm -rf "$tree"; cp -r "$GTREE" "$tree"
+  find "$tree" -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null
+  expect_hash "$tree/search.php" \
+      8f6b35da23f4e5fc7f5fda2ede2d65ba330f9f3eb463e3377978ded1f5d7fa61
+done
+
+##### ===== RS-SWEEP :: per-tree SHM sweepers (raw) =====
+for blk in r1a r1b r2a r2b; do
+  tree="/tmp/r10fleet_gm_${blk}"
+  ipcs -m > "$OUT/ipcs_gm_${blk}.txt"
+  awk '$1 ~ /^0x/ {print $2}' "$OUT/ipcs_gm_${blk}.txt" \
+    > "$OUT/shm_start_gm_${blk}.txt"
+  rm -f "$OUT/shm_sweep_gm_${blk}.stop"
+  $PY "$CODE_DIR/shm_sweep.py" --log "$OUT/shm_sweep_gm_${blk}.log" \
+    --start-file "$OUT/shm_start_gm_${blk}.txt" \
+    --games-dir "$tree/vendor/talishar/Games" \
+    --interval 60 --stop-file "$OUT/shm_sweep_gm_${blk}.stop" &
+  SWEEP_PIDS="$SWEEP_PIDS $!"
+done
 
 ##### ===== RS-DRIVERS :: raw blocks x4 =====
-PIDS_R=()
-for spec in "r1a 1 $BLOCK_R1A_SEEDS 18251" \
-            "r1b 1 $BLOCK_R1B_SEEDS 18251" \
-            "r2a 2 $BLOCK_R2A_SEEDS 18252" \
-            "r2b 2 $BLOCK_R2B_SEEDS 18252"; do
-  set -- $spec; blk=$1; seat=$2; seeds=$3; port=$4
-  tree=/tmp/r10fleet_gm_$blk
-  rm -rf "$tree"; cp -r "$GTREE" "$tree"
-  [ "$(sha256sum < "$tree/search.php" | cut -d' ' -f1)" \
-    = "8f6b35da23f4e5fc7f5fda2ede2d65ba330f9f3eb463e3377978ded1f5d7fa61" ] || {
-    echo "ABORT: raw tree $blk search.php is not the " \
-      "fleet tree's own" >&2; exit 1; }
-  mkdir -p "$OUT/games_${blk}_log"
-  GATE_GAME_IDS_FILE="$OUT/games_${blk}_ids.txt" \
-  TEACHER_TUPLE_JSON="$TEACHER_TUPLE_JSON" \
-  $PY "$CODE_DIR/paired_driver_gravy.py" \
-    --arm raw --seat "$seat" --seeds "$seeds" \
-    --tree "$tree" --sock "/tmp/pol_$port.sock" \
-    --out "$OUT/games_${blk}.jsonl" \
-    --logdir "$OUT/games_${blk}_log" \
-    --max-turns "$MAX_TURNS" \
-    --cap-trigger "$DRAW_TRIGGER" \
-    --timeout "$GAME_TIMEOUT" \
-    > "$OUT/driver_${blk}.log" 2>&1 &
-  PIDS_R+=($!)
+PIDS="" FAIL=0
+for spec in "r1a 1 $BLOCK_R1A_SEEDS" "r1b 1 $BLOCK_R1B_SEEDS" \
+            "r2a 2 $BLOCK_R2A_SEEDS" "r2b 2 $BLOCK_R2B_SEEDS"; do
+  set -- $spec; blk=$1; seat=$2; seeds=$3
+  [ "${SMOKE:-0}" = 1 ] && [ -z "$seeds" ] && continue
+  (
+    tree="/tmp/r10fleet_gm_${blk}"
+    logdir="$OUT/games_${blk}_log"
+    mkdir -p "$logdir"
+    GATE_GAME_IDS_FILE="$OUT/games_${blk}_ids.txt" \
+      TCG_CLEAN_CHILDREN=1 \
+      $PY "$CODE_DIR/paired_driver_gravy.py" \
+        --tree "$tree" --sock "$OUT/srv_s${seat}.sock" \
+        --seat "$seat" --arm raw --seeds "$seeds" \
+        --deck "$tree/$DECK_REL" --timeout "$GAME_TIMEOUT" \
+        --out "$OUT/games_${blk}.jsonl" \
+        --logdir "$logdir" \
+        > "$OUT/games_${blk}.stdout" 2>&1
+  ) &
+  PIDS="$PIDS $!"
 done
-echo "raw drivers: ${PIDS_R[*]}"
 
 ##### ===== WAIT-R :: raw phase completes =====
-RFAIL=0
-for p in "${PIDS_R[@]}"; do wait "$p" || RFAIL=1; done
-[ "$RFAIL" = 0 ] || echo "note: a raw driver exited nonzero"
-echo "raw phase done (servers stay up for the rerun pass)"
+for pid in $PIDS; do wait "$pid" || FAIL=1; done
+[ "$FAIL" = 0 ] || { echo "ABORT: a raw games block failed" >&2; exit 1; }
+for blk in r1a r1b r2a r2b; do touch "$OUT/shm_sweep_gm_${blk}.stop"; done
 
 ##### ===== RAW-RERUN :: one rerun per raw timeout =====
 # Stage 3 form: the selector reads the DRAFT pairing's
@@ -343,16 +424,14 @@ while read -r seed seat rblk; do
     logdir="$OUT/games_${rblk}_rerun_log"
     mkdir -p "$logdir"
     GATE_GAME_IDS_FILE="$OUT/games_${rblk}_rerun_ids.txt" \
-    TEACHER_TUPLE_JSON="$TEACHER_TUPLE_JSON" \
-    $PY "$CODE_DIR/paired_driver_gravy.py" \
-      --arm raw --seat "$seat" --seeds "$seed" \
-      --tree "$tree" --sock "/tmp/pol_$((18250 + seat)).sock" \
-      --out "$OUT/games_${rblk}_rerun.jsonl" \
-      --logdir "$logdir" \
-      --max-turns "$MAX_TURNS" \
-      --cap-trigger "$DRAW_TRIGGER" \
-      --timeout "$GAME_TIMEOUT" \
-      > "$OUT/games_${rblk}_rerun.stdout" 2>&1
+      TCG_CLEAN_CHILDREN=1 \
+      $PY "$CODE_DIR/paired_driver_gravy.py" \
+        --tree "$tree" --sock "$OUT/srv_s${seat}.sock" \
+        --seat "$seat" --arm raw --seeds "$seed" \
+        --deck "$tree/$DECK_REL" --timeout "$GAME_TIMEOUT" \
+        --out "$OUT/games_${rblk}_rerun.jsonl" \
+        --logdir "$logdir" \
+        > "$OUT/games_${rblk}_rerun.stdout" 2>&1
   ) &
   PIDS="$PIDS $!"
 done <<EOF_RERUN
@@ -365,9 +444,15 @@ if [ -n "$RERUN_LIST" ]; then
 else
   echo "no raw timeouts; no reruns"
 fi
-pkill -f 'rl/search_server.py --socket /tmp/pol_1825' \
-  2>/dev/null
-sleep 2
+
+# SMOKE=1 (§19): the smoke run stops here -- its games
+# merge into the registry under their own tag and are
+# never analyzed, so GRES / READ.G / MANIFEST do not
+# run. The EXIT trap stops the raw servers + sweepers.
+if [ "${SMOKE:-0}" = 1 ]; then
+  echo "SMOKE: games phases complete; exiting before GRES"
+  exit 0
+fi
 
 ##### ===== GRES :: report + registry merge =====
 $PY "$CODE_DIR/fleet_games_report.py" --out-dir "$OUT" \

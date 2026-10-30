@@ -10,7 +10,7 @@ FAIL=0
 for suite in fx_fleet_seeds fx_fleet_sizing \
              fx_fleet_pins fx_fleet_parity \
              fx_fleet_read fx_fleet_anchor \
-             fx_fleet_server_env; do
+             fx_fleet_server_env fx_fleet_contract; do
   echo "===== $suite ====="
   $PY "$HERE/$suite.py" || FAIL=1
 done

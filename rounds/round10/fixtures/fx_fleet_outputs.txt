@@ -5,6 +5,10 @@ PASS: no completed block above the fleet block
 PASS: fleet block follows the record's x0001 block convention
 PASS: settings register the fleet block
 PASS: settings blocks are the 8 registered blocks
+PASS: smoke block 27001 disjoint from every completed block and the fleet block
+PASS: smoke block continues the x0001 convention one step above the fleet block
+PASS: smoke block is a single seed
+PASS: the games runner's SMOKE section carries the registered smoke seed 27001
 PASS: the brief's candidate 800055001 IS the pilot family's shard-1 base (refuted as a fleet base)
 PASS: fleet label base differs from every prior base
 PASS: fleet label RANGES disjoint from every prior family (pilot at cap)
@@ -83,12 +87,61 @@ PASS: ANCHOR R14 root-canary refusal records counted by name: 8
 PASS: ANCHOR temp dir removed on exit
 ===== fx_fleet_server_env =====
 PASS: exactly 2 search_server.py spawn sites extracted verbatim from run_fleet_games.sh
-PASS: teacher (ports 18241 18242) spawn block is the for port in 18241 18242; do loop
-PASS: teacher (ports 18241 18242) spawn block contains the literal line SEARCH_MODEL="$CKPT"
-PASS: raw (ports 18251 18252) spawn block is the for port in 18251 18252; do loop
-PASS: raw (ports 18251 18252) spawn block contains the literal line SEARCH_MODEL="$CKPT"
+PASS: teacher (seats 1 2, srv_s logs) spawn block is the seat loop writing "$OUT/srv_s${seat}.log"
+PASS: teacher (seats 1 2, srv_s logs) spawn block contains the assignment SEARCH_MODEL="$CKPT"
+PASS: raw (seats 1 2, srv_raw_s logs) spawn block is the seat loop writing "$OUT/srv_raw_s${seat}.log"
+PASS: raw (seats 1 2, srv_raw_s logs) spawn block contains the assignment SEARCH_MODEL="$CKPT"
 PASS: negative: with SEARCH_MODEL stripped, both blocks fail the literal check (detected)
 PASS: negative: with only the raw block's SEARCH_MODEL stripped, exactly the raw block fails
+===== fx_fleet_contract =====
+PASS: the published patched-server reference is byte-identical to the pinned server (ab85fa1b...)
+PASS: env names parsed from the pinned server
+PASS: TS-SRV spawn sets SEARCH_MODEL="$CKPT"
+PASS: TS-SRV spawn sets TCG_POLICY_SOCK="$OUT/srv_s${seat}.sock"
+PASS: TS-SRV spawn sets TCG_LEARNER_SEAT=$seat
+PASS: TS-SRV spawn sets TCG_OPP_MIX="heuristic:1.0"
+PASS: TS-SRV spawns the tree's patched server
+PASS: TS-SRV spawn passes no argv to the server
+PASS: RS-SRV spawn sets SEARCH_MODEL="$CKPT"
+PASS: RS-SRV spawn sets TCG_POLICY_SOCK="$OUT/srv_s${seat}.sock"
+PASS: RS-SRV spawn sets TCG_LEARNER_SEAT=$seat
+PASS: RS-SRV spawn sets TCG_OPP_MIX="heuristic:1.0"
+PASS: RS-SRV spawns the tree's patched server
+PASS: RS-SRV spawn passes no argv to the server
+PASS: the runner pins the tree's patched server (PINFN, ab85fa1b...)
+PASS: defect token 'TCG_POLICY_SEARCH' occurs nowhere in the rebuilt runner
+PASS: defect token '"ready": true' occurs nowhere in the rebuilt runner
+PASS: defect token '--max-turns' occurs nowhere in the rebuilt runner
+PASS: defect token '--cap-trigger' occurs nowhere in the rebuilt runner
+PASS: defect token '/tmp/pol_' occurs nowhere in the rebuilt runner
+PASS: TS-DRIVERS: every driver's --sock == the spawn blocks' TCG_POLICY_SOCK ($OUT/srv_s${seat}.sock)
+PASS: RS-DRIVERS: every driver's --sock == the spawn blocks' TCG_POLICY_SOCK ($OUT/srv_s${seat}.sock)
+PASS: RAW-RERUN: every driver's --sock == the spawn blocks' TCG_POLICY_SOCK ($OUT/srv_s${seat}.sock)
+PASS: readiness string 'search model loaded' occurs literally in the pinned server source
+PASS: the runner greps server logs for 'search model loaded'
+PASS: the runner greps server logs for the model identity 'ckpt_v10' and its CKPT path's basename is ckpt_v10.pt (the string the server prints from SEARCH_MODEL)
+PASS: '"ready": true' occurs nowhere in the pinned server source (the as-approved readiness defect)
+PASS: the staged driver is the runner's pinned copy (3389b1b9...)
+PASS: TS-DRIVERS: a driver invocation is extractable
+PASS: TS-DRIVERS: substitution leaves no $ in argv
+PASS: TS-DRIVERS: the extracted argv parses under the REAL driver's argparse
+PASS: RS-DRIVERS: a driver invocation is extractable
+PASS: RS-DRIVERS: substitution leaves no $ in argv
+PASS: RS-DRIVERS: the extracted argv parses under the REAL driver's argparse
+PASS: RAW-RERUN: a driver invocation is extractable
+PASS: RAW-RERUN: substitution leaves no $ in argv
+PASS: RAW-RERUN: the extracted argv parses under the REAL driver's argparse
+PASS: TS-DRIVERS argv: --deck resolves to the tree deck (not the driver's hard-coded default)
+PASS: negative: argv + --max-turns FAILS the real argparse (exit 2)
+PASS: negative: argv + --cap-trigger FAILS the real argparse (exit 2)
+PASS: parity: fleet TS sections == Stage 3 TS blocks (+ tree segment + stop lines)
+PASS: parity: fleet RS sections == Stage 3 RS blocks (+ tree segment + stop line)
+PASS: parity: fleet TS-SRV == the pilot's PILOT-SRV block
+PASS: parity: fleet RS-SRV == the pilot-form server block (Stage 3 RS-SRV)
+PASS: parity: fleet TS-DRIVERS+WAIT-T == the pilot's PILOT-GAMES block (modulo the sweeper-stop lines, which the pilot runs post-block)
+PASS: RAW-RERUN subshell env assignments match Stage 3's (GATE_GAME_IDS_FILE, TCG_CLEAN_CHILDREN)
+PASS: parity: RAW-RERUN driver argv == Stage 3's
+fx_fleet_contract: 47 checks, 0 failed
 ===== fx_fleet_blocks =====
 PASS: games runner has section PINFN
 PASS: games runner has section SETREAD

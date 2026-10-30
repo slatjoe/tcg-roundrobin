@@ -95,6 +95,36 @@ check("settings blocks are the 8 registered blocks",
           ("r2b", "raw", 2, "26032-26061")},
       "blocks: %s" % (sorted(blocks),))
 
+# ---- the SMOKE block (package sec.19.4) ----
+# One seed, played at both seats in both arms
+# through the rebuilt runner's own blocks behind
+# SMOKE=1 (claude-reply-5ea3a72 sec.2.3). Registered
+# here and in fx_pilot_seeds.py's USED_GAME_BLOCKS
+# so nothing reuses it. It continues the record's
+# x0001 block convention one step above the fleet
+# block; the runner's SMOKE section carries the
+# literal seed.
+SMOKE = (27001, 27001)
+smoke_clash = [(lo, hi) for lo, hi in
+               USED_GAME_BLOCKS + [FLEET]
+               if not (SMOKE[1] < lo or SMOKE[0] > hi)]
+check("smoke block 27001 disjoint from every "
+      "completed block and the fleet block",
+      not smoke_clash, "clashes: %s" % (smoke_clash,))
+check("smoke block continues the x0001 convention "
+      "one step above the fleet block",
+      SMOKE[0] == FLEET[0] + 1000
+      and SMOKE[0] % 1000 == 1,
+      "smoke starts %d" % SMOKE[0])
+check("smoke block is a single seed",
+      SMOKE[0] == SMOKE[1])
+games_sh = open(os.path.join(
+    R10, "code", "step2", "run_fleet_games.sh")).read()
+check("the games runner's SMOKE section carries "
+      "the registered smoke seed 27001",
+      "BLOCK_T1A_SEEDS=27001" in games_sh
+      and "BLOCK_R2A_SEEDS=27001" in games_sh)
+
 # ---- label-seed families ----
 STRIDE_J, STRIDE_W = 100003, 31337
 SHARD_STRIDE = 100000000

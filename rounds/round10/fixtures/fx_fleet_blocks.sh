@@ -239,6 +239,7 @@ PATH="$TMP/stubbin:$PATH" OUT="$ROUT" CODE_DIR="$STEP2" \
   GTREE="$TMP/gtree2" \
   PY="$TMP/pystub.sh" SIM="$SIMD" STUB_REC_DIR="$TMP/rec" \
   GAME_TIMEOUT=8031 MAX_TURNS=87 DRAW_TRIGGER=62 \
+  DECK_REL=decks/nats2026_eriksen_gravy_60.txt \
   TEACHER_TUPLE_JSON="$TUPLE_JSON" \
   bash "$TMP/rerun.sh" > "$TMP/rerun.out" 2>&1
 rc=$?
@@ -261,6 +262,7 @@ PATH="$TMP/stubbin:$PATH" OUT="$ROUT" CODE_DIR="$STEP2" \
   GTREE="$TMP/gtree2" \
   PY="$TMP/pystub.sh" SIM="$SIMD" STUB_REC_DIR="$TMP/rec" \
   GAME_TIMEOUT=8031 MAX_TURNS=87 DRAW_TRIGGER=62 \
+  DECK_REL=decks/nats2026_eriksen_gravy_60.txt \
   TEACHER_TUPLE_JSON="$TUPLE_JSON" \
   bash "$TMP/rerun.sh" > "$TMP/rerun2.out" 2>&1
 { [ ! -f "$TMP/rec/drivers" ] \
@@ -296,6 +298,7 @@ run_drivers_x() {
   OUT="$TMP/out2" CODE_DIR="$STEP2" GTREE="$TMP/gtree2" \
   PY="$TMP/envstub.sh" STUB_REC_DIR="$TMP/rec2" \
   GAME_TIMEOUT=8031 MAX_TURNS=87 DRAW_TRIGGER=62 \
+  DECK_REL=decks/nats2026_eriksen_gravy_60.txt \
   BLOCK_T1A_SEEDS=26001-26031 BLOCK_T1B_SEEDS=26032-26061 \
   BLOCK_T2A_SEEDS=26001-26031 BLOCK_T2B_SEEDS=26032-26061 \
   BLOCK_R1A_SEEDS=26001-26031 BLOCK_R1B_SEEDS=26032-26061 \

@@ -33,6 +33,19 @@ runner. It does NOT start a server, load a model,
 or exercise the composed runtime environment; the
 first runtime proof is the relaunch's own
 server-ready gate.
+
+REBUILD AMENDMENT (2026-10-30, package sec.19;
+claude-reply-5ea3a72 sec.2): the fork replaced the
+port loops with the pilot/Stage 3 per-seat loops
+(`for seat in 1 2; do`, sockets via
+TCG_POLICY_SOCK, the tree's patched server). The
+extractor now targets the seat-loop form and
+identifies the blocks by their server-log names
+(srv_s = teacher, srv_raw_s = raw); the assertions
+are unchanged in substance. The deep contracts
+(server env reads, socket wiring, readiness
+strings, driver argparse, fork parity) live in
+fx_fleet_contract.py.
 """
 import os
 import re
@@ -51,15 +64,17 @@ def check(name, cond, detail=""):
 
 
 def spawn_blocks(text):
-    """Verbatim spawn blocks: from each `for port in`
-    header through the first following `done`,
-    keeping blocks whose body invokes
-    search_server.py."""
+    """Verbatim spawn blocks: from each
+    `for seat in 1 2; do` header through the first
+    following `done`, keeping blocks whose body
+    invokes search_server.py (the readiness loops
+    share the header but are filtered out by the
+    body test)."""
     lines = text.splitlines()
     blocks = []
     i = 0
     while i < len(lines):
-        if re.match(r"for port in \S+ \S+; do$",
+        if re.match(r"for seat in 1 2; do$",
                     lines[i]):
             j = i
             while j < len(lines) and lines[j] != "done":
@@ -74,8 +89,12 @@ def spawn_blocks(text):
 
 
 def has_literal(block):
-    return any(l.strip().rstrip("\\").strip() == LITERAL
-               for l in block.splitlines())
+    # In the forked (pilot/Stage 3) spawn lines,
+    # SEARCH_MODEL="$CKPT" is one assignment token
+    # among several on the env line (the as-approved
+    # draft carried it as a line of its own); the
+    # check is on the assignment token.
+    return LITERAL in block.split()
 
 
 def main():
@@ -85,17 +104,21 @@ def main():
           "extracted verbatim from run_fleet_games.sh",
           len(blocks) == 2,
           "found %d" % len(blocks))
-    names = {0: "teacher (ports 18241 18242)",
-             1: "raw (ports 18251 18252)"}
-    ports = {0: "18241 18242", 1: "18251 18252"}
+    names = {0: "teacher (seats 1 2, srv_s logs)",
+             1: "raw (seats 1 2, srv_raw_s logs)"}
+    logmarks = {0: '"$OUT/srv_s${seat}.log"',
+                1: '"$OUT/srv_raw_s${seat}.log"'}
     for idx in (0, 1):
         if idx < len(blocks):
             header, block = blocks[idx]
-            check("%s spawn block is the %s loop"
-                  % (names[idx], header.strip()),
-                  ports[idx] in header)
-            check("%s spawn block contains the literal "
-                  "line SEARCH_MODEL=\"$CKPT\""
+            check("%s spawn block is the seat loop "
+                  "writing %s" % (names[idx],
+                                  logmarks[idx]),
+                  header.strip() == "for seat in 1 2; do"
+                  and logmarks[idx] in block
+                  and (idx == 1 or "srv_raw" not in block))
+            check("%s spawn block contains the "
+                  "assignment SEARCH_MODEL=\"$CKPT\""
                   % names[idx], has_literal(block))
     # Negative: strip every SEARCH_MODEL line.
     stripped = "\n".join(

@@ -464,7 +464,7 @@ code/step2/ (new):
 - build_fleet_jobs.py — c7601341302fdf43f2e6708ff2d8bd5ef5417d1c2edee9dbe45dac1ca6e3695f (fork of build_pilot_jobs.py: docstring + branding only)
 - fleet_games_report.py — 62ca60b5bc289944d1a6d7e66f0567e4ffac895f0f6e9b9a876207615f4fe578 (fork of stage3_games_report.py: docstring only)
 - fleet_read.py — 7370b989c36d1bac70673d4a3e16da35c6f39eb1daa425af3bb80df9d811cfdc (new)
-- run_fleet_games.sh — 24b2fd02b3e2ac32980ff5f6fb841865b96ae0f3c1163f8885b1b12fbd93d709 (new; §18 repair — the as-approved build was 8e3c3fbd9195cf0cdfb2dd255e93584cffb805318245d7307378e8113fd79191)
+- run_fleet_games.sh — 95abaa4f0fdc359f25c7c70cb5b199f6425aaec95bee390dadb23b349d36fd43 (new; §19 fork rebuild — supersedes the §18 repair 24b2fd02b3e2ac32980ff5f6fb841865b96ae0f3c1163f8885b1b12fbd93d709; the as-approved build was 8e3c3fbd9195cf0cdfb2dd255e93584cffb805318245d7307378e8113fd79191)
 - run_fleet_l3.sh — 2f28e0cc176ba07aa5bc1c98c32e1187c42f73d5ac081c713d10d26d35e0dabb (new)
 - merge_registry.py — 13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe (copy)
 - shm_sweep.py — 98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33 (copy)
@@ -658,3 +658,358 @@ given the go, and the launched sha is the repaired
 commit (launched sha == approved sha, or differs
 only under `rounds/`, per the standing launch
 gate). §14's launch shape is otherwise unchanged.
+
+## 19. The fork rebuild (reply 5ea3a72 §2) — and a failed smoke
+
+§18's repair is NOT CONFIRMED (claude-reply-5ea3a72).
+The `SEARCH_MODEL` insertion was necessary and is
+retained, but the as-approved games runner's
+server/driver blocks carried seven contract
+defects, and the §18 suite's 135 checks passed
+because every fixture stubbed the counterparty:
+none composed a spawn against the real server's
+environment reads, or a driver call against the
+real argparse. This section records the rebuild
+the reply ordered — verbatim forks, real-contract
+fixtures, a runtime smoke — and the smoke's
+result: **the smoke FAILED, on a defect in the
+smoke switch itself (§19.4). The fleet does not
+launch on this package; the rebuild returns for
+review first (§19.7).**
+
+### 19.1 The seven defects (reply §1)
+
+1. `SEARCH_MODEL` missing at both spawns (the
+   §18 defect; fixed there, kept in the fork).
+2. Servers spawned with `--socket`/`--port` argv
+   the server never reads — the socket is the
+   `TCG_POLICY_SOCK` environment variable (default
+   `/tmp/tcg_policy.sock`), so both servers would
+   have bound the same default socket and the
+   drivers' `--sock` paths would never have
+   existed.
+3. `TCG_LEARNER_SEAT` unset (default 1): the
+   seat-2 blocks would silently have played the
+   teacher's decisions with the heuristic — silent
+   corruption of half the fleet.
+4. `TCG_OPP_MIX` unset (its default happens to
+   match; the fork sets it explicitly).
+5. Readiness grep `'"ready": true'` occurs
+   nowhere in the server, which prints
+   `search model loaded (…)` — the §18 relaunch
+   would have aborted at "teacher server not
+   ready" even with defect 1 fixed.
+6. Driver argv carried `--max-turns`/
+   `--cap-trigger`, which the pinned driver's
+   argparse does not define (every driver would
+   exit 2), and omitted `--deck`, silently
+   substituting the driver's hard-coded default
+   path for the pinned tree deck.
+7. The runner spawned the PRODUCTION server from
+   `$SIM`; the pilot's and Stage 3's games ran
+   the tree's PATCHED server
+   (`$GTREE/rl/search_server.py`, pinned
+   ab85fa1b…), which is the build the pre-gate
+   certified.
+Plus: `TCG_CLEAN_CHILDREN=1` absent per driver
+invocation, and one shared sweeper loop instead
+of one sweeper per tree.
+
+### 19.2 The fork rebuild
+
+`run_fleet_games.sh` is rebuilt so the four
+server/driver sections are verbatim forks of the
+blocks that have actually run — Stage 3's games
+runner (`rounds/round9/code/run_stage3_games.sh`,
+the pilot runner's own descendant; the server and
+driver blocks are token-identical to
+`run_pilot.sh`'s PILOT-SRV/PILOT-GAMES modulo the
+items below):
+
+- **TS-SRV / RS-SRV**: per-seat spawn loops of the
+  tree's patched server, `TCG_POLICY_SOCK=
+  "$OUT/srv_s${seat}.sock"`, `TCG_LEARNER_SEAT=
+  $seat`, `SEARCH_MODEL="$CKPT"`,
+  `TCG_OPP_MIX="heuristic:1.0"`, readiness greps
+  for `search model loaded` and `ckpt_v10`; the
+  raw phase kills the teacher servers by pid and
+  restarts on the same sockets.
+- **TS-TREES / RS-TREES** (tree preparation,
+  previously interleaved in the driver sections):
+  Stage 3's tree loops; teacher trees install the
+  fleet build `search_s3_thr.php` (4a1936fe…),
+  raw trees keep the fleet `search.php`
+  (8f6b35da…).
+- **TS-SWEEP / RS-SWEEP**: one sweeper per tree,
+  Stage 3's form.
+- **TS-DRIVERS / RS-DRIVERS**: the pilot/Stage 3
+  spawn loops, `--deck "$tree/$DECK_REL"`,
+  `TCG_CLEAN_CHILDREN=1` per invocation,
+  `TEACHER_TUPLE_JSON` / `TEACHER_SNAP_DIR` on
+  the teacher arm only, `--arm raw` on the raw
+  arm.
+- **WAIT-T / WAIT-R**: the source blocks' wait +
+  abort-on-failure + sweeper stop touches.
+  Driver failure now ABORTS the run (the source
+  form), replacing the as-approved runner's
+  non-fatal "note:" lines.
+- **RAW-RERUN**: the fleet's approved draft
+  report + timeout selector kept byte-identical
+  (the selector text is also Stage 3's); the
+  rerun driver subshell is forked to Stage 3's
+  form.
+- Head changes: `DECK_REL` defined with the
+  fleet's deck; a PINFN pin for the tree's
+  patched server (`expect_hash
+  "$GTREE/rl/search_server.py"` ab85fa1b…); the
+  source blocks' server/sweeper cleanup trap.
+  The inert `TCG_POLICY_SEARCH*` lines and the
+  port-numbered spawns are gone. Everything else
+  — pin checks, the pregate gate, the freespace
+  pre-flight, phase order, the single-shot
+  guards, `GAME_TIMEOUT=8031`, the registry
+  merge, the read and the manifest — is as
+  approved, byte-untouched.
+
+Allowed differences from the sources, exhaustive:
+seeds (the fleet's settings-sourced `$BLOCK_*`
+variables where Stage 3 carries literals), block
+tags, paths (the `r10fleet` tree prefix), the
+installed teacher build and its hash,
+`--timeout "$GAME_TIMEOUT"` in the fleet's quoted
+settings-sourced form (Stage 3's is unquoted;
+§16's parity check (c) requires the fleet form),
+`TEACHER_SNAP_DIR` in the expanded
+`"$OUT/games_${blk}_log/snaps"` form (Stage 3
+writes `"$logdir/snaps"`; the value is identical,
+`logdir` being assigned that path two lines
+above; §16's pin-site check requires the fleet
+form), the tree sections' `expect_hash` in the
+fleet's two-argument form (Stage 3 appends a
+label and `|| exit 1`; the fleet's `expect_hash`
+exits internally), `--arm raw`, and the SMOKE
+skip-guard lines (§19.4, inert unless SMOKE=1).
+
+### 19.3 The real-contract fixtures
+
+New fixture `fixtures/fx_fleet_contract.py`
+(47 checks), wired into `run_fx_fleet.sh`:
+
+- (a) Server env: parses every `os.environ.get`
+  name from the PINNED PATCHED server source —
+  published in this package at
+  `fixtures/ref_patched_search_server.py`,
+  sha256
+  ab85fa1bcf19b41c7d48db642a2fd93d211e826b9f684594cefa5a1100f3c52c,
+  a byte-identical copy of the box's
+  `$GTREE/rl/search_server.py` as pinned by
+  `run_pilot.sh` / `run_stage3_games.sh` (also
+  byte-identical to the already-published
+  `rounds/round3/code/search_server.py`); the
+  fixture asserts the hash before parsing. Both
+  spawn blocks must set `SEARCH_MODEL`,
+  `TCG_POLICY_SOCK`, `TCG_LEARNER_SEAT`,
+  `TCG_OPP_MIX`; the socket embeds `${seat}`;
+  `TCG_LEARNER_SEAT` is that same `$seat`; the
+  runner pins the spawned server path; the
+  defect tokens of §19.1 occur nowhere in the
+  runner.
+- (b) Socket wiring: every driver invocation's
+  `--sock` equals the spawn blocks'
+  `TCG_POLICY_SOCK` template.
+- (c) Readiness: `search model loaded` occurs
+  literally in the pinned server source;
+  `'"ready": true'` occurs nowhere in it; the
+  `ckpt_v10` log grep is anchored to the
+  runner's `CKPT` basename, the string the
+  server prints from `SEARCH_MODEL`.
+- (d) Driver argv: each invocation (TS-DRIVERS,
+  RS-DRIVERS, RAW-RERUN) is extracted verbatim,
+  substituted, and parsed under the REAL
+  `paired_driver_gravy.py` argparse (built by
+  executing the pinned driver's own
+  `add_argument` statements; its sha256 is
+  asserted first). All parse; `--deck` resolves
+  to the tree deck. Negative cases: argv +
+  `--max-turns` and argv + `--cap-trigger` must
+  fail parsing (exit 2). Both do.
+- (e) Parity: the forked segments equal their
+  Stage 3 sources (and the server/driver blocks
+  the pilot's) as token streams after ONLY the
+  §19.2 enumerated normalizations.
+
+`fx_fleet_server_env.py` is updated to the
+seat-loop form (its `SEARCH_MODEL` assertions are
+unchanged in substance; in the forked spawn lines
+the assignment is one env token among several, so
+the check is on the token). Suite totals:
+**fleet 186 PASS / 0 FAIL**, transcript
+deterministic across two runs
+(`fixtures/fx_fleet_outputs.txt` regenerated);
+pilot 144 and r10 197 unchanged, transcripts
+byte-identical.
+
+### 19.4 The smoke — FAILED (one root cause)
+
+Registration: seed **27001**, block (27001,
+27001), played at both seats in both arms (4
+games) under registry tag
+`r10_step2_fleet_smoke`, never analyzed.
+Freshness: disjoint from every block in the
+fixtures' game-block record (the D2 list,
+21001–21100 incl. the reserved Stage 1
+extension, 22001–22100, 23001–23200,
+24001–24090, 25001–25050, 26001–26061,
+13001–13010, 8601–8610, 9001–9200, the
+3000-series); it continues the record's x0001
+convention one step (+1000) above the fleet
+block. The block is added to the record in
+`fx_pilot_seeds.py` and checked in
+`fx_fleet_seeds.py`. The runner's SMOKE=1 switch
+changes only the output directory
+(`/home/joe/tcg/r10fleet_smoke_out`) and the
+seed lists (a-blocks = 27001; b-block lists
+emptied, to be skipped by a guard line in each
+driver loop).
+
+Run record (box, 2026-10-30): deployed runner
+read back at sha256 95abaa4f… (== staging);
+pre-flight clean (no stale processes, SHM
+baseline 0, /tmp available 5,844,172,800 B);
+launched detached at **14:34:33 EDT**
+(`SMOKE=1 bash run_fleet_games.sh`). Pins OK;
+PREGATE-GATE ok; FREESPACE passed (required
+3,749,692,064 B); both teacher servers loaded
+`ckpt_v10.pt` and logged `listening on
+…/srv_s{1,2}.sock (learner seat 1|2, opp
+heuristic)` — the forked spawn side demonstrably
+worked. The runner then **aborted in TS-DRIVERS
+at line 297, `$3: unbound variable`**: an
+emptied b-block spec (`"t1b 1 "`) word-splits to
+two fields, so `seeds=$3` references an unset
+positional under the runner's `set -u` — BEFORE
+the skip-guard line, which sat after the
+assignment. The guard's placement is the defect;
+it is in the smoke switch, not in the forked
+blocks, and the production path cannot reach it
+(every production spec carries three fields).
+The EXIT trap killed both teacher servers and
+the sweepers. The already-spawned t1a driver
+finished against the dead socket: its row is
+`invalid: "connect_failed"` (`server_seat`
+null; the game's output carried 637 "connect
+failed" lines; all 116 of its stat rows are
+`fallback:"eval"` / `abort_reason:
+"root_eval_failed"` with the correct tuple stamp
+`H8k-180+H`). The seat-2 teacher block, both
+raw blocks, and RAW-RERUN never ran. SHM after
+the abort: 1 leaked segment (the dead game's
+cache; the containment class the sweepers
+handle). All outputs are preserved under
+`/home/joe/tcg/r10fleet_smoke_out/` and the
+launch log at
+`/home/joe/tcg/r10fleet_smoke_out.launch.log`.
+
+Assertion read (reply §2.3): servers loaded on
+the right model and seat — PASS as far as the
+server logs go (both arms' spawns; the raw phase
+never started). Every driver row valid with seat
+and arm as specified — **FAIL** (the one row
+produced is invalid; three of four games never
+ran). Teacher tuple stamp `H8k-180+H` — present
+on the stat rows of the invalid game; not a
+passing smoke read. Raw rows carry no teacher
+stat rows — not reached. **The smoke does not
+pass, and the fleet does not start.**
+
+Consumption and registry: seed 27001 is
+partially consumed — one invalid game (id
+776023215, seat 1, teacher arm) with its ids
+file present in the smoke outdir. The registry
+was NOT merged (still 7,641 games, sha256
+6995d9ba653b325240b23794026b1f7117614ad7c434a16d5114ab72ab20f72e);
+whether that single invalid id is merged, or
+the seed retired outright, is for the reviewer
+and Joe — a re-smoke cannot reuse 27001 as a
+"fresh" seed without that ruling. No outcome of
+any smoke game is read or reported anywhere in
+this package.
+
+Proposed minimal repair (for review, NOT
+applied): in each driver loop, read the seeds as
+`seeds=${3:-}` (set -u-safe) so the existing
+skip-guard can fire — a one-token change per
+loop, inside the SMOKE switch's own machinery,
+touching no forked line's semantics. A second
+smoke attempt needs the failure understood and
+this repair (or its equivalent) reviewed first,
+per the reply's terms.
+
+### 19.5 An eighth defect, found in recon — the GRES merge
+
+Outside the fork's scope and NOT fixed here:
+the games runner's registry-merge invocation —
+`merge_registry.py --tag "$REGISTRY_TAG"
+"$OUT"/games_*_ids.txt` — exits 2 under the
+pinned `merge_registry.py` (13a655e3…, identical
+in step1/step2), whose argparse requires
+`--registry` and `--ids` (verified against the
+pinned file during this rebuild). The pilot's
+working form is `merge_registry.py --registry
+/home/joe/tcg/registry-vault/do_not_train_registry.json
+--tag <tag> --ids <file>… --vault
+/home/joe/tcg/registry-vault`. As approved, a
+fleet launch would complete its games and the
+draft report, then abort at the merge, before
+the primary read and the manifest (the outputs
+would be recoverable manually). The one-line
+argv correction to the pilot form needs a
+ruling before any fleet launch; the GRES
+section is byte-untouched in this rebuild.
+
+### 19.6 New pins
+
+- `code/step2/run_fleet_games.sh` —
+  95abaa4f0fdc359f25c7c70cb5b199f6425aaec95bee390dadb23b349d36fd43
+  (§16's pin line is updated in place per the
+  §18 convention; the deployed box copy reads
+  back identical.)
+- `fixtures/ref_patched_search_server.py` —
+  ab85fa1bcf19b41c7d48db642a2fd93d211e826b9f684594cefa5a1100f3c52c
+  (new; provenance in §19.3(a))
+- `fixtures/fx_fleet_contract.py` —
+  80baff11e2a88aa6eefb122657445af09638838a3cab445be4215f2519281b3f
+  (new)
+- `fixtures/fx_fleet_server_env.py` —
+  e91380e03b13cebb5eb12c41a81a577d00a34cb02bc67c2b2ddfeccd215e6c7b
+  (seat-form update)
+- `fixtures/fx_fleet_seeds.py` —
+  e625b6415f22f6874a768052ed9eeba5cd863b0aa05bfb084cd1c012335cb27a
+  (smoke registration checks)
+- `fixtures/fx_pilot_seeds.py` —
+  4b61431923a413eb4ad2e7c91d30df89f0ec4f90f761b29e4445fc26dc745118
+  (fleet + smoke blocks added to the record)
+- `fixtures/fx_fleet_blocks.sh` —
+  5a437b8e324f8e16645d8e29b816e284c24c0c9f965f07ee376f2d003e9cfddc
+  (DECK_REL in the extraction environments)
+- `fixtures/run_fx_fleet.sh` —
+  4bd8cb5bb3888de24893e44a8f1a1e278be23c5bf5e672e0562c91c912acb07a
+  (fx_fleet_contract wired in)
+- `fixtures/fx_fleet_outputs.txt` —
+  2e6009abb010cf0a852486e65e1799065747888d90b66d77df9437f63e425683
+  (regenerated transcript)
+Every pin literal above is 64-hex, machine-copied.
+
+### 19.7 The launch gate, restated
+
+The fleet launches only after (a) Claude has
+confirmed THIS rebuild package — including the
+failed-smoke record in §19.4, the proposed
+repair, and the GRES ruling in §19.5 — and
+(b) Joe has given the go, with launched sha ==
+this package's commit (or differing only under
+`rounds/`, per the standing launch gate). The
+§18 condition ("relaunch the §16-pinned build")
+is superseded: the §16 pin now names the
+rebuilt runner, and no launch of any build in
+this line proceeds on the §18 package.

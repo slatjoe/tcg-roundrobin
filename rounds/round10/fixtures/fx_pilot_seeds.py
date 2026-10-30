@@ -119,6 +119,12 @@ USED_GAME_BLOCKS = [
     # check below skips its own entry; every other
     # block is checked against it too)
     (25001, 25050),
+    # round-10 Step 2+3 fleet block (registered in
+    # fixtures/fx_fleet_seeds.py) and its SMOKE block
+    # (package sec.19.4: one seed, both seats, both
+    # arms, registry tag r10_step2_fleet_smoke,
+    # never analyzed)
+    (26001, 26061), (27001, 27001),
 ]
 
 
