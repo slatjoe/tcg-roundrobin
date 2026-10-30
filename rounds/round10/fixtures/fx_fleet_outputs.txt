@@ -1,0 +1,131 @@
+===== fx_fleet_seeds =====
+PASS: fleet game block 26001-26061 disjoint from every completed block
+PASS: highest completed block below the fleet block is the pilot's 25050
+PASS: no completed block above the fleet block
+PASS: fleet block follows the record's x0001 block convention
+PASS: settings register the fleet block
+PASS: settings blocks are the 8 registered blocks
+PASS: the brief's candidate 800055001 IS the pilot family's shard-1 base (refuted as a fleet base)
+PASS: fleet label base differs from every prior base
+PASS: fleet label RANGES disjoint from every prior family (pilot at cap)
+PASS: fleet label shards mutually disjoint
+PASS: fleet per-shard span < the 10^8 shard stride
+PASS: fleet base sits 47,362,954 above the nearest prior span below (pilot shard-3 top at cap)
+PASS: fleet label VALUES disjoint from every prior family (pilot at cap)
+PASS: settings register the fleet label family
+===== fx_fleet_sizing =====
+PASS: pilot zero-fire share from published artifacts is 1/100 = 0.01
+PASS: Delta_plan derivation 0.195 x 0.73 = 0.14235, registered as 0.14
+PASS: variance per pair = 0.99 x 0.324 - 0.0196 = 0.30116
+PASS: two-sided n = 120.61 -> ceil 121
+PASS: one-sided n = 95.0 -> ~95 pairs (96 even)
+PASS: registered n = 122 pairs = 61 seeds x both seats (the conservative, two-sided figure)
+PASS: achieved power at 122 pairs (two-sided) >= 0.80
+PASS: Delta = 0.10 cross-check: n = 243.9 -> 244 pairs (the reply's 'about 246'; rounding in the z-sum)
+PASS: teacher arm 122 games >= the registered Step 2 minimum of 72
+PASS: pilot max wall from the published read is 2676.8 s
+PASS: GAME_TIMEOUT = ceil(3 x 2676.8) = 8031 in settings (both arms)
+===== fx_fleet_pins =====
+PASS: run_fleet_games.sh: every deployed non-shell file is pinned with its staged sha256
+PASS: run_fleet_games.sh: every CODE_DIR pin literal equals the staged file
+PASS: run_fleet_games.sh: settings read via SETREAD (timeout, tag, blocks from settings_fleet.json)
+PASS: run_fleet_l3.sh: every deployed non-shell file is pinned with its staged sha256
+PASS: run_fleet_l3.sh: every CODE_DIR pin literal equals the staged file
+PASS: run_fleet_l3.sh: label parameters read via SETREAD
+PASS: settings games.timeout_s is 8031 and the games runner's SETREAD sources GAME_TIMEOUT from it
+PASS: run_fleet_l3.sh LABEL_BASE == settings label.seed_base (1100055001)
+PASS: run_fleet_l3.sh MEAS_SEED stride literal == settings stride (10^8)
+PASS: run_fleet_l3.sh label env carries the registered EVAL_* names from SETREAD vars
+PASS: run_fleet_games.sh snap layout is the pilot's (games_<blk>_log/snaps + teacher_snap_index consumed by the L3 runner)
+PASS: registry tag comes from settings in the games runner
+PASS: negative: a pin-stripped runner copy fails coverage, naming fleet_read.py
+===== fx_fleet_parity =====
+PASS: PREGATE-GATE reads only keys the real attempt-2 manifest carries
+PASS: the real manifest satisfies the gate's value conditions under the fleet pins
+PASS: fleet TEACHER_TUPLE_JSON (SETREAD construction) == attempt-2 manifest's recorded tuple
+PASS: fleet teacher tuple == the pilot's (dict equality)
+PASS: the games runner's SETREAD, executed, builds TEACHER_TUPLE_JSON == the manifest's string
+PASS: fleet LABEL_TUPLE_JSON == the pilot's label canonical (settings_pilot label.tuple)
+PASS: settings label.tuple deep-equals label_tuple (the jobs builder reads label.tuple)
+PASS: teacher and raw driver invocations carry the same flag-name set
+PASS: the raw-rerun invocation carries the same set
+PASS: both driver invocations pass --timeout from the settings-sourced GAME_TIMEOUT
+PASS: games read is --primary-only; L3 read is full mode; the delta is exactly {primary-only} vs {jobs, labels, games-rows}
+PASS: both reads share pairing/games-report/settings/json-out
+===== fx_fleet_read =====
+PASS: SMALL pairing forms by (seed, seat) across arm-local gamenames
+PASS: SMALL primary mean over scored pairs = (0 + 1 + 0 - 1)/4 = 0.0 (timeout scored as a teacher loss)
+PASS: SMALL delta05 mean = 0.0 (the draw pair prices 0.5 both arms)
+PASS: SMALL life differential = +0.25 (the capped draw decided on life)
+PASS: SMALL drop-timeout sensitivity = (0 + 1 + 0)/3
+PASS: SMALL reconciliation: canary counted by name (1), stat rows recounted (6)
+PASS: SMALL verdict INCONCLUSIVE (timeout rate 1/6 and out rate 2/6 both > 0.02 at this N -- the registered rule, scale-free)
+PASS: VERDICT v_converts -> CONVERTS
+PASS: VERDICT v_null -> DOES NOT CONVERT
+PASS: VERDICT v_inc_timeouts3 -> INCONCLUSIVE
+PASS: VERDICT v_timeouts2_stand -> CONVERTS
+PASS: VERDICT v_inc_excluded3 -> INCONCLUSIVE
+PASS: VERDICT v_excluded2_stand -> CONVERTS
+PASS: CO-READ plant label key set == published row key set
+PASS: CO-READ gain over per-game totals [1.0, 0.5, 0.5, 0.0] = 0.5
+PASS: CO-READ SE = sd/sqrt(4) = 0.20412
+PASS: STEP 2 GATE hand-computed: z = (0.5 - 0.0649)/sqrt(0.20412^2 + 0.0090^2) = 2.1295 -> PASS
+PASS: ATTRIBUTION at fleet Delta = 1.0 (CI excludes 0): ratio = 0.5 numeric
+PASS: CO-READ FAIL plant ([0.1, 0, 0, 0] -> gain 0.025, z < 0): gate does NOT pass
+PASS: ATTRIBUTION guard: Delta 0.05 CI [-0.01, 0.11] -> 'unstable (Δ CI includes 0)', ratio null
+PASS: ATTRIBUTION guard: Delta -0.02 CI [-0.05, 0.01] -> 'n/a (Δ ≤ 0)', ratio null
+===== fx_fleet_blocks =====
+PASS: games runner has section PINFN
+PASS: games runner has section SETREAD
+PASS: games runner has section TUPLE-BUILD
+PASS: games runner has section PREGATE-GATE
+PASS: games runner has section FREESPACE
+PASS: games runner has section TS-SRV
+PASS: games runner has section TS-DRIVERS
+PASS: games runner has section WAIT-T
+PASS: games runner has section RS-SRV
+PASS: games runner has section RS-DRIVERS
+PASS: games runner has section WAIT-R
+PASS: games runner has section RAW-RERUN
+PASS: games runner has section GRES
+PASS: games runner has section READ.G
+PASS: games runner has section MANIFEST
+PASS: l3 runner has section PINFN
+PASS: l3 runner has section SETREAD
+PASS: l3 runner has section FREESPACE
+PASS: l3 runner has section JOBS
+PASS: l3 runner has section LS-SPLIT
+PASS: l3 runner has section LS-SRV
+PASS: l3 runner has section LS-TREES
+PASS: l3 runner has section LS-DRIVERS
+PASS: l3 runner has section WAIT-L
+PASS: l3 runner has section READ.F
+PASS: l3 runner has section MANIFEST
+PASS: games runner installs the threshold build in teacher trees
+PASS: games runner asserts the raw trees keep the fleet search.php
+PASS: l3 runner derives MEAS_SEED from LABEL_BASE + shard x 10^8
+PASS: PREGATE-GATE block extracted
+PASS: PREGATE-GATE passes on the real attempt-2 manifest
+PASS: PREGATE-GATE refuses a non-IDENTICAL verdict
+PASS: PREGATE-GATE refuses a build-sha mismatch
+PASS: PREGATE-GATE refuses a tuple mismatch
+PASS: PREGATE-GATE refuses a missing manifest
+PASS: FREESPACE run_fleet_games.sh: ample space proceeds (sizes printed)
+PASS: FREESPACE run_fleet_games.sh: short space aborts
+PASS: FREESPACE run_fleet_games.sh: straddle (x1.0 ok, x1.25 short) aborts
+PASS: FREESPACE run_fleet_l3.sh: ample space proceeds (sizes printed)
+PASS: FREESPACE run_fleet_l3.sh: short space aborts
+PASS: FREESPACE run_fleet_l3.sh: straddle (x1.0 ok, x1.25 short) aborts
+PASS: RAW-RERUN spawns exactly one rerun for the planted raw timeout
+PASS: RAW-RERUN spawns zero reruns when no raw game times out
+PASS: TS-DRIVERS composed env: tuple, snap dirs, ids file, clean-children, timeout in all 4 teacher blocks
+PASS: RS-DRIVERS composed env: tuple present, TEACHER_SNAP_DIR absent, timeout in all 4 raw blocks
+PASS: negative: without the runner's tuple export the recorded tuple is empty (detected)
+fx_fleet_blocks: 0 failure(s)
+===== bash -n (all fleet shell files) =====
+PASS: bash -n /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/../code/step2/run_fleet_games.sh
+PASS: bash -n /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/../code/step2/run_fleet_l3.sh
+PASS: bash -n /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/../code/step2/g8_sweep2.sh
+PASS: bash -n /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/fx_fleet_blocks.sh
+PASS: bash -n /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/run_fx_fleet.sh
+ALL FLEET FIXTURES PASS
