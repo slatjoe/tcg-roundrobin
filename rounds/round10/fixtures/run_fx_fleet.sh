@@ -9,7 +9,7 @@ PY=python3
 FAIL=0
 for suite in fx_fleet_seeds fx_fleet_sizing \
              fx_fleet_pins fx_fleet_parity \
-             fx_fleet_read; do
+             fx_fleet_read fx_fleet_anchor; do
   echo "===== $suite ====="
   $PY "$HERE/$suite.py" || FAIL=1
 done
@@ -21,8 +21,13 @@ for f in "$HERE/../code/step2/run_fleet_games.sh" \
          "$HERE/../code/step2/g8_sweep2.sh" \
          "$HERE/fx_fleet_blocks.sh" \
          "$HERE/run_fx_fleet.sh"; do
-  if bash -n "$f"; then echo "PASS: bash -n $f"; else
-    echo "FAIL: bash -n $f"; FAIL=1; fi
+  case "$f" in
+    "$HERE/../"*) disp=${f#"$HERE/../"} ;;
+    "$HERE/"*)    disp=fixtures/${f#"$HERE/"} ;;
+    *)            disp=$f ;;
+  esac
+  if bash -n "$f"; then echo "PASS: bash -n $disp"; else
+    echo "FAIL: bash -n $disp"; FAIL=1; fi
 done
 [ "$FAIL" = 0 ] && echo "ALL FLEET FIXTURES PASS" \
   || echo "FLEET FIXTURES FAILED"

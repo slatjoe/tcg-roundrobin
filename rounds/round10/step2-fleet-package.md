@@ -481,3 +481,38 @@ fixtures/ (new):
 - fx_fleet_blocks.sh — ce698e8f479da68ffa71b95afce80a1273a8a1e44c65f21fb6dd885ab4b922d7
 - run_fx_fleet.sh — d44c2ef1c53f9da3cf65a8beeb0fcb5a055d4baafb35b7028122a8599643e37b
 - fx_fleet_outputs.txt — 1f149c6cb128f1e9df481d1e1e63424573499e3c8fad6d6a26de27458995252d
+
+## 17. Amendment (2026-10-30) — the review's non-blocking items, done
+
+Post-approval fix pass on `claude-reply-5b5ada4.md`'s
+two non-blocking items. Nothing under `code/step2/`
+is touched; §§12/16 stand as the as-approved record
+(this amendment supersedes their suite totals).
+
+1. **The anchor is now IN the suite.** New fixture
+   `fixtures/fx_fleet_anchor.py` (sha256 dbb14e20…):
+   it maps round 9's published Stage 3 flat
+   `search_stats_<blk>.jsonl` files into the
+   `games_<blk>_log/` layout inside a temp dir
+   (removed on exit), runs `fleet_read.py
+   --primary-only` on the published pairing +
+   games report, and asserts the primary line
+   (+0.0475, CI [0.0000, 0.0950]), the verdict
+   DOES NOT CONVERT, the reconciled 37092 teacher
+   stat rows, and the 8 R14 root-canary records —
+   **6 checks**, all PASS. It reads only published
+   data.
+2. **The transcript is host-independent.**
+   `run_fx_fleet.sh`'s five `bash -n` PASS lines now
+   print repo-relative paths (`code/step2/…`,
+   `fixtures/…`) instead of absolute ones, so
+   `fx_fleet_outputs.txt` reproduces byte-identically
+   on any host.
+
+New fleet suite total: **128 PASS, 0 FAIL** (122 +
+the anchor's 6), two consecutive runs byte-identical.
+Regression: pilot suite 144 PASS and round-10 suite
+197 PASS, both transcripts byte-identical to their
+committed ones. Changed/new files: fx_fleet_anchor.py
+(new, dbb14e20…), run_fx_fleet.sh (c4a94b88…),
+fx_fleet_outputs.txt (8f4cda2e…), and this doc.

@@ -74,6 +74,13 @@ PASS: ATTRIBUTION at fleet Delta = 1.0 (CI excludes 0): ratio = 0.5 numeric
 PASS: CO-READ FAIL plant ([0.1, 0, 0, 0] -> gain 0.025, z < 0): gate does NOT pass
 PASS: ATTRIBUTION guard: Delta 0.05 CI [-0.01, 0.11] -> 'unstable (Δ CI includes 0)', ratio null
 PASS: ATTRIBUTION guard: Delta -0.02 CI [-0.05, 0.01] -> 'n/a (Δ ≤ 0)', ratio null
+===== fx_fleet_anchor =====
+PASS: ANCHOR fleet_read --primary-only exits 0 on the published Stage 3 inputs
+PASS: ANCHOR primary reproduces Stage 3: mean paired diff +0.0475, CI [0.0000, 0.0950]
+PASS: ANCHOR verdict reproduces Stage 3: DOES NOT CONVERT
+PASS: ANCHOR reconciliation recounted 37092 teacher stat rows == games report
+PASS: ANCHOR R14 root-canary refusal records counted by name: 8
+PASS: ANCHOR temp dir removed on exit
 ===== fx_fleet_blocks =====
 PASS: games runner has section PINFN
 PASS: games runner has section SETREAD
@@ -123,9 +130,9 @@ PASS: RS-DRIVERS composed env: tuple present, TEACHER_SNAP_DIR absent, timeout i
 PASS: negative: without the runner's tuple export the recorded tuple is empty (detected)
 fx_fleet_blocks: 0 failure(s)
 ===== bash -n (all fleet shell files) =====
-PASS: bash -n /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/../code/step2/run_fleet_games.sh
-PASS: bash -n /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/../code/step2/run_fleet_l3.sh
-PASS: bash -n /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/../code/step2/g8_sweep2.sh
-PASS: bash -n /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/fx_fleet_blocks.sh
-PASS: bash -n /home/hatch/workspace/tcg-sim/roundrobin-repo/rounds/round10/fixtures/run_fx_fleet.sh
+PASS: bash -n code/step2/run_fleet_games.sh
+PASS: bash -n code/step2/run_fleet_l3.sh
+PASS: bash -n code/step2/g8_sweep2.sh
+PASS: bash -n fixtures/fx_fleet_blocks.sh
+PASS: bash -n fixtures/run_fx_fleet.sh
 ALL FLEET FIXTURES PASS
