@@ -36,8 +36,11 @@
 # differences are enumerated in sec.19.2 and
 # machine-checked by fixtures/fx_fleet_contract.py.
 # A SMOKE=1 switch (sec.19.4) runs one registered
-# seed (27001) through the same blocks into a
-# separate outdir and exits before GRES.
+# seed (27002) through the same blocks into a
+# separate outdir; as of sec.20 it continues
+# through the games report (pairing-only) and the
+# registry merge under the smoke tag, and stops
+# before READ.G.
 #
 # Single-shot: refuses if the fleet outputs exist.
 # Box paths mirror the pilot/stage3 runners.
@@ -169,21 +172,21 @@ echo "teacher tuple: $TEACHER_TUPLE_JSON"
 ##### ===== SMOKE :: SMOKE=1 seed switch (sec.19.4) =====
 # SMOKE=1 changes ONLY the seed lists (here) and the
 # output directory (at the OUT assignment above):
-# the registered smoke seed 27001 goes to the four
+# the registered re-smoke seed 27002 goes to the four
 # a-blocks; the b-block lists are emptied and the
 # driver loops' smoke-scoped skip makes them
 # no-ops. In production (SMOKE unset) an emptied
 # list would still reach the driver and fail loud.
 if [ "${SMOKE:-0}" = 1 ]; then
-  BLOCK_T1A_SEEDS=27001
-  BLOCK_T2A_SEEDS=27001
-  BLOCK_R1A_SEEDS=27001
-  BLOCK_R2A_SEEDS=27001
+  BLOCK_T1A_SEEDS=27002
+  BLOCK_T2A_SEEDS=27002
+  BLOCK_R1A_SEEDS=27002
+  BLOCK_R2A_SEEDS=27002
   BLOCK_T1B_SEEDS=
   BLOCK_T2B_SEEDS=
   BLOCK_R1B_SEEDS=
   BLOCK_R2B_SEEDS=
-  echo "SMOKE=1: seed 27001 (a-blocks only), out $OUT"
+  echo "SMOKE=1: seed 27002 (a-blocks only), out $OUT"
 fi
 
 ##### ===== PREGATE-GATE :: attempt-2 IDENTICAL =====
@@ -235,9 +238,6 @@ G8LOG="$OUT/g8_prespawn_games.log"
 bash "$CODE_DIR/g8_sweep2.sh" "$G8LOG" || {
   echo "ABORT: G8 containment tripped before spawn" >&2
   cat "$G8LOG" >&2; exit 1; }
-$PY "$CODE_DIR/shm_sweep.py" --once \
-  > "$OUT/shm_prespawn_games.log" 2>&1 \
-  || echo "note: shm sweep nonzero (see log)"
 
 SRV_PIDS=""
 SWEEP_PIDS=""
@@ -294,7 +294,7 @@ done
 PIDS="" FAIL=0
 for spec in "t1a 1 $BLOCK_T1A_SEEDS" "t1b 1 $BLOCK_T1B_SEEDS" \
             "t2a 2 $BLOCK_T2A_SEEDS" "t2b 2 $BLOCK_T2B_SEEDS"; do
-  set -- $spec; blk=$1; seat=$2; seeds=$3
+  set -- $spec; blk=$1; seat=$2; seeds=${3:-}
   [ "${SMOKE:-0}" = 1 ] && [ -z "$seeds" ] && continue
   (
     tree="/tmp/r10fleet_gm_${blk}"
@@ -371,7 +371,7 @@ done
 PIDS="" FAIL=0
 for spec in "r1a 1 $BLOCK_R1A_SEEDS" "r1b 1 $BLOCK_R1B_SEEDS" \
             "r2a 2 $BLOCK_R2A_SEEDS" "r2b 2 $BLOCK_R2B_SEEDS"; do
-  set -- $spec; blk=$1; seat=$2; seeds=$3
+  set -- $spec; blk=$1; seat=$2; seeds=${3:-}
   [ "${SMOKE:-0}" = 1 ] && [ -z "$seeds" ] && continue
   (
     tree="/tmp/r10fleet_gm_${blk}"
@@ -445,12 +445,35 @@ else
   echo "no raw timeouts; no reruns"
 fi
 
-# SMOKE=1 (§19): the smoke run stops here -- its games
-# merge into the registry under their own tag and are
-# never analyzed, so GRES / READ.G / MANIFEST do not
-# run. The EXIT trap stops the raw servers + sweepers.
+# SMOKE=1 (§20; reply baf16e7 §4.2): the smoke run
+# continues through the games report (pairing-only
+# form -- the tool's full mode validates against
+# the fleet's 122 registered pairs and offers no
+# expected-pairs override) and the registry merge
+# under the smoke tag, then stops BEFORE READ.G /
+# MANIFEST. The merge argv is the §20 pilot form;
+# only the tag differs from GRES below. The EXIT
+# trap stops the raw servers + sweepers.
 if [ "${SMOKE:-0}" = 1 ]; then
-  echo "SMOKE: games phases complete; exiting before GRES"
+  $PY "$CODE_DIR/fleet_games_report.py" --out-dir "$OUT" \
+    --settings "$CODE_DIR/settings_fleet.json" \
+    --json-out "$OUT/games_report.json" --pairing-only \
+    > "$OUT/games_report_smoke.log" 2>&1 || {
+    echo "ABORT: smoke games report failed" >&2; exit 1; }
+  SMOKE_IDS=()
+  for f in "$OUT"/games_*_ids.txt; do
+    SMOKE_IDS+=(--ids "$f")
+  done
+  $PY "$CODE_DIR/merge_registry.py" \
+    --registry /home/joe/tcg/registry-vault/do_not_train_registry.json \
+    --tag r10_step2_fleet_smoke \
+    "${SMOKE_IDS[@]}" \
+    --vault /home/joe/tcg/registry-vault \
+    > "$OUT/registry_merge_smoke.log" 2>&1 || {
+    echo "ABORT: smoke registry merge failed" >&2; exit 1; }
+  tail -2 "$OUT/registry_merge_smoke.log"
+  echo "SMOKE: games + report (pairing-only) + registry" \
+    "merge complete; exiting before READ.G"
   exit 0
 fi
 
@@ -462,9 +485,15 @@ $PY "$CODE_DIR/fleet_games_report.py" --out-dir "$OUT" \
   echo "ABORT: games report failed" >&2
   tail -20 "$OUT/games_report.txt" >&2; exit 1; }
 cat "$OUT/games_report.txt"
+GRES_IDS=()
+for f in "$OUT"/games_*_ids.txt; do
+  GRES_IDS+=(--ids "$f")
+done
 $PY "$CODE_DIR/merge_registry.py" \
+  --registry /home/joe/tcg/registry-vault/do_not_train_registry.json \
   --tag "$REGISTRY_TAG" \
-  "$OUT"/games_*_ids.txt \
+  "${GRES_IDS[@]}" \
+  --vault /home/joe/tcg/registry-vault \
   > "$OUT/registry_merge_games.log" 2>&1 || {
   echo "ABORT: registry merge failed" >&2; exit 1; }
 tail -2 "$OUT/registry_merge_games.log"

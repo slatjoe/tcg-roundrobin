@@ -125,6 +125,13 @@ USED_GAME_BLOCKS = [
     # arms, registry tag r10_step2_fleet_smoke,
     # never analyzed)
     (26001, 26061), (27001, 27001),
+    # the fleet RE-SMOKE seed (package sec.20;
+    # claude-reply-baf16e7 sec.2.1): 27001 is RETIRED
+    # (its one invalid game merged under the smoke
+    # tag); 27002 is the fresh seed the re-smoke
+    # will play, registered here so nothing reuses
+    # it either
+    (27002, 27002),
 ]
 
 

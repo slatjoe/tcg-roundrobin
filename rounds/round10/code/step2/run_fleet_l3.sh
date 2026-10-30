@@ -159,9 +159,6 @@ G8LOG="$OUT/g8_prespawn_l3.log"
 bash "$CODE_DIR/g8_sweep2.sh" "$G8LOG" || {
   echo "ABORT: G8 containment tripped before spawn" >&2
   cat "$G8LOG" >&2; exit 1; }
-$PY "$CODE_DIR/shm_sweep.py" --once \
-  > "$OUT/shm_prespawn_l3.log" 2>&1 \
-  || echo "note: shm sweep nonzero (see log)"
 
 ##### ===== JOBS :: fleet jobs build (strict) =====
 STREAM_ARGS=""

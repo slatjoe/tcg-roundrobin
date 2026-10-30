@@ -464,8 +464,8 @@ code/step2/ (new):
 - build_fleet_jobs.py — c7601341302fdf43f2e6708ff2d8bd5ef5417d1c2edee9dbe45dac1ca6e3695f (fork of build_pilot_jobs.py: docstring + branding only)
 - fleet_games_report.py — 62ca60b5bc289944d1a6d7e66f0567e4ffac895f0f6e9b9a876207615f4fe578 (fork of stage3_games_report.py: docstring only)
 - fleet_read.py — 7370b989c36d1bac70673d4a3e16da35c6f39eb1daa425af3bb80df9d811cfdc (new)
-- run_fleet_games.sh — 95abaa4f0fdc359f25c7c70cb5b199f6425aaec95bee390dadb23b349d36fd43 (new; §19 fork rebuild — supersedes the §18 repair 24b2fd02b3e2ac32980ff5f6fb841865b96ae0f3c1163f8885b1b12fbd93d709; the as-approved build was 8e3c3fbd9195cf0cdfb2dd255e93584cffb805318245d7307378e8113fd79191)
-- run_fleet_l3.sh — 2f28e0cc176ba07aa5bc1c98c32e1187c42f73d5ac081c713d10d26d35e0dabb (new)
+- run_fleet_games.sh — 2a2ab08268d1c675f06cfeb635b61320712b268617f18934e47393ed9c0c2012 (new; §20 fix pass — supersedes the §19 fork rebuild 95abaa4f0fdc359f25c7c70cb5b199f6425aaec95bee390dadb23b349d36fd43; before it the §18 repair 24b2fd02b3e2ac32980ff5f6fb841865b96ae0f3c1163f8885b1b12fbd93d709; the as-approved build was 8e3c3fbd9195cf0cdfb2dd255e93584cffb805318245d7307378e8113fd79191)
+- run_fleet_l3.sh — 56a0688bb6d57be977992f2e40a979286f1f79472bc06629c4eb377b31cbafd0 (new; §20 defect-9 line removal — supersedes 2f28e0cc176ba07aa5bc1c98c32e1187c42f73d5ac081c713d10d26d35e0dabb)
 - merge_registry.py — 13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe (copy)
 - shm_sweep.py — 98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33 (copy)
 - g8_sweep2.sh — d49981cab7c6c3538434551ac1e837d81b781b4319abdf3b49c05ed3b524bc17 (copy)
@@ -1013,3 +1013,349 @@ this package's commit (or differing only under
 is superseded: the §16 pin now names the
 rebuilt runner, and no launch of any build in
 this line proceeds on the §18 package.
+
+## 20. The fix pass (reply baf16e7) — defects 8 and 9, and the class closed
+
+The rebuild at baf16e7f was reviewed in
+claude-reply-baf16e7: the fork is ACCEPTED, and
+CHANGES REQUESTED before the re-smoke — the two
+rulings asked in §19 (the smoke repair; the GRES
+merge correction) are both approved, a ninth
+defect is added, and the pass must close the
+class, not the instance: every Python invocation
+in both runners checked against its real
+argparse, and the smoke running through the
+merge. This section is that pass. It returns for
+a CONFIRMATION CHECK (§20.11); no smoke or fleet
+run is made by it. One box write was authorized
+and made: the seed-27001 retirement merge
+(§20.7).
+
+### 20.1 Defects 8 and 9, beside 1–7
+
+8. **GRES merge argv.** The games runner merged
+   with `merge_registry.py --tag "$REGISTRY_TAG"
+   "$OUT"/games_*_ids.txt` — bare positional
+   files the pinned tool's argparse rejects
+   (it requires `--registry` and `--ids`; exit
+   2). A fleet run would have finished its
+   games and draft report, then aborted at the
+   merge, before the primary read and the
+   manifest. Fixed in §20.3.
+9. **The prespawn sweeper call that never ran.**
+   Both runners called
+   `$PY "$CODE_DIR/shm_sweep.py" --once`
+   (games ex-line 238, L3 ex-line 162). The
+   pinned shm_sweep.py has no `--once` (it
+   requires `--log --start-file --games-dir
+   --stop-file`), so each call exited 2 — and
+   each site ended in
+   `|| echo "note: shm sweep nonzero"`, so the
+   failure was swallowed on every launch. The
+   pre-spawn sweep never ran; the G8 process
+   guard did the cleanup the launch records
+   credit. Removed in §20.4.
+
+### 20.2 The smoke-switch repair (reply §2.1)
+
+In each driver loop the SMOKE switch can empty
+— TS-DRIVERS and RS-DRIVERS — the seeds field
+is now read set -u-safely: `seeds=${3:-}` (one
+token per loop; nothing else in either loop
+changes). The existing skip-guard
+(`[ "${SMOKE:-0}" = 1 ] && [ -z "$seeds" ] &&
+continue`) now fires on emptied specs instead
+of being crashed past.
+
+RAW-RERUN determination: it does NOT share the
+pattern. Its loop is `while read -r seed seat
+rblk` over the computed rerun list — there is
+no positional seeds read, and the SMOKE switch
+does not empty rerun specs (the list is built
+from the draft pairing's timeout rows). No
+change; the determination is itself
+fixture-checked in fx_fleet_smoke_loops.py.
+
+Fixture (the ruling's condition): new
+`fixtures/fx_fleet_smoke_loops.py` (13 checks).
+It extracts each loop VERBATIM from the staged
+runner and RUNS it under `set -u` with SMOKE's
+emptied lists (a-blocks = the populated seed,
+b-blocks empty) and a stub driver: the emptied
+specs are skipped, the populated ones run
+(exactly two stub invocations per arm, seats 1
+and 2, no empty `--seeds`). Negative cases: the
+same extracted loops with the repair reverted
+(`seeds=$3`) abort with the unbound-variable
+error — the §19.4 crash, reproduced. Parity
+note: fx_fleet_contract.py's normalize() maps
+the repaired form back to the source form, so
+(e) parity continues to measure the fork; the
+repair is recorded there as an enumerated
+allowed difference.
+
+### 20.3 The GRES merge correction (defect 8)
+
+The GRES merge invocation is now the pilot's
+working form (run_pilot.sh lines 304–309):
+
+```
+$PY "$CODE_DIR/merge_registry.py" \
+  --registry /home/joe/tcg/registry-vault/do_not_train_registry.json \
+  --tag "$REGISTRY_TAG" \
+  --ids <file> (repeated per ids file) \
+  --vault /home/joe/tcg/registry-vault
+```
+
+The pilot enumerates its four fixed ids files;
+the fleet's ids set is the glob
+`"$OUT"/games_*_ids.txt` (the eight block files
+plus any rerun ids files) — the same set the
+old form passed positionally, now emitted as
+one `--ids` per file by a short loop ahead of
+the call. The rest of GRES (the games report
+call, the merge log handling, the abort shape)
+is byte-untouched. The smoke tail (§20.5) uses
+the identical form under the smoke tag.
+
+### 20.4 Defect 9 removed; the tolerance sweep
+
+Both `shm_sweep.py --once` invocation lines are
+deleted outright, tolerance and all — one in
+run_fleet_games.sh (G8 section), one in
+run_fleet_l3.sh (G8 section). G8
+(g8_sweep2.sh, invoked immediately above each
+deletion site and aborting loud on a trip) is
+the pre-spawn cleanup, as it in fact always
+was.
+
+Sweep: every `||` construct and every
+`2>/dev/null` in both runners was enumerated
+and dispositioned.
+
+- Every remaining `||` is one of: `|| exit 1`;
+  `|| { ABORT ...; exit 1; }`; a boolean guard
+  whose failure aborts (`[ -f ... ] || {...}`,
+  the LABEL_BASE/NSHARD equality checks); or
+  `wait ... || FAIL=1` immediately followed by
+  an abort on the flag. `[ -n "$seed" ] ||
+  continue` in RAW-RERUN is a data skip inside
+  a loop, not a step tolerance. No `|| echo`
+  remains anywhere in either runner.
+- Kept tolerances, each genuinely cosmetic:
+  (a) `kill "$pid" 2>/dev/null` / `|| true` on
+  server and sweeper stops (EXIT trap, the
+  RS-SRV phase transition, WAIT-L) — the
+  process may already have exited; a kill that
+  mattered is backstopped by the next phase's
+  readiness gate, which aborts loud if a stale
+  server holds the socket. (b) The readiness
+  poll greps (`grep -q ... 2>/dev/null &&
+  break`): the log file may not exist yet —
+  "not ready yet" is the poll's normal state,
+  and the unconditional grep after the loop
+  aborts loud. (c) `find ... -name __pycache__
+  -exec rm -rf {} + 2>/dev/null` on freshly
+  copied trees: best-effort cleanup; the
+  copy's integrity is enforced immediately
+  after by expect_hash pins on the installed
+  files. (d) expect_hash's own
+  `sha256sum "$1" 2>/dev/null`: a missing file
+  yields an empty hash, which mismatches and
+  aborts — the suppression cannot hide a
+  failure.
+
+### 20.5 The smoke runs through the merge (reply §4.2)
+
+The SMOKE=1 branch (after RAW-RERUN, where the
+§19 runner exited) now continues:
+
+1. `fleet_games_report.py` in **pairing-only**
+   form (`--pairing-only`, its own log), then
+2. the registry merge under the smoke tag
+   `r10_step2_fleet_smoke`, in the §20.3 pilot
+   form (per-file `--ids` over the smoke
+   outdir's `games_*_ids.txt`),
+
+and exits BEFORE READ.G / MANIFEST, as before.
+The merge argv's first runtime proof is now
+the smoke, not the fleet.
+
+Wiring choice, stated: pairing-only, because
+the tool's full mode validates the pairing
+against the settings' 122 registered pairs and
+its argparse offers no expected-pairs override
+(an `--expect-pairs` flag exists only on
+fleet_read.py, which the smoke must not
+reach). Pairing-only writes pairing_draft.json
+in the smoke outdir, the same product the
+RAW-RERUN draft call produces. The production
+(non-SMOKE) flow is unchanged in phase order,
+guards and read; its only change in this pass
+is the §20.3 merge form inside GRES.
+
+### 20.6 The argparse contract (reply §4.1)
+
+New `fixtures/fx_fleet_argparse.py` (37
+checks). It enumerates BY GREP every
+`$PY "$CODE_DIR/<file>.py"` invocation in both
+runners (continuation lines joined) and
+compares the result — site identities AND full
+argv templates — against its contract table:
+a call site added or changed without a
+contract entry fails. For each site, the argv
+is parsed under that file's REAL argparse (the
+parser rebuilt by AST replay of the pinned
+file's own add_argument statements; each
+file's sha256 asserted against its pin first;
+shell variables substituted by type-valid
+placeholders; the composite expansions
+`${SMOKE_IDS[@]}` / `${GRES_IDS[@]}` /
+`$STREAM_ARGS` / `$STAT_ARGS` each stand for
+one representative option+value pair).
+Negative cases: the sweeper's valid argv +
+`--once` fails (defect 9's form); the merge's
+old bare-files form fails (defect 8's form).
+
+The final census (14 sites):
+
+- run_fleet_games.sh (11): paired_driver ×3
+  (TS-DRIVERS, RS-DRIVERS, RAW-RERUN);
+  shm_sweep ×2 (TS-SWEEP, RS-SWEEP);
+  fleet_games_report ×3 (RAW-RERUN draft,
+  SMOKE report, GRES); merge_registry ×2
+  (SMOKE, GRES); fleet_read ×1 (READ.G).
+- run_fleet_l3.sh (3): build_fleet_jobs ×1
+  (JOBS); shm_sweep ×1 (start_sweeper);
+  fleet_read ×1 (READ.F).
+
+Reconciliation with the reply's census (games:
+driver ×3, shm ×3, report ×2, merge ×1, read
+×1; L3: shm ×2, jobs ×1, read ×1): the reply
+counted the prespawn `--once` sweep in both
+runners (removed by §20.4: −1 shm each) and
+predates the smoke-through-merge wiring
+(§20.5: +1 report, +1 merge in games). Outside
+the pattern by construction: `$PY -` heredocs
+(inline code; no file invoked), the server
+spawns (`$PY "$GTREE/rl/search_server.py"`,
+`$PY "$PROD"` — env contract under
+fx_fleet_contract (a)), and the L3 runner's
+php label mains (hash-pinned at their
+tree-install sites).
+
+### 20.7 The seed-27001 retirement merge (the pass's one box write)
+
+Executed on the box 2026-10-30 **15:28:42
+EDT**, with the pinned merge tool
+(/home/joe/tcg/round10_code/step2/merge_registry.py,
+13a655e3…) in the §20.3 pilot form:
+
+- argv: `--registry
+  /home/joe/tcg/registry-vault/do_not_train_registry.json
+  --tag r10_step2_fleet_smoke --ids
+  /home/joe/tcg/r10fleet_smoke_out/games_t1a_ids.txt
+  --vault /home/joe/tcg/registry-vault`
+  (the ids file holds exactly the one id,
+  776023215).
+- Tool output: "merged: +1 new (tag
+  r10_step2_fleet_smoke), 0 already under this
+  tag; n_games=7642"; the tool wrote its own
+  backup (do_not_train_registry.json.bak-20261030T152842)
+  and vault copy
+  (do_not_train_registry_20261030T152842.json).
+- Registry: **7,641 → 7,642 games**; sha256
+  6995d9ba653b325240b23794026b1f7117614ad7c434a16d5114ab72ab20f72e
+  → **fd9172d2d50536cb974b12cdcba215d9e0b175ed2ea56bb7ec8a59c3964065dd**.
+  The merged record reads
+  games["776023215"] = "r10_step2_fleet_smoke".
+
+Seed 27001 is RETIRED: consumed by the failed
+smoke, its one game in the registry under the
+smoke tag, never to be played again.
+
+### 20.8 The re-smoke seed (record only)
+
+Seed **27002** is registered for the re-smoke:
+added to fx_pilot_seeds.py's USED_GAME_BLOCKS
+beside 27001's entry, and in fx_fleet_seeds.py
+as RESMOKE with freshness checks — disjoint
+from every completed block in the record, the
+fleet block (26001–26061) and the retired
+smoke block (27001, 27001); it is the next
+single seed above 27001 in the record's
+single-seed smoke sequence. Registration only:
+nothing in this pass runs it.
+
+APPLIED at the builder's audit, before this
+package was committed (the coordinator flagged
+it rather than exceed its brief): the runner's
+SMOKE section now names 27002 in all four seed
+assignments, its comments and its echo line,
+and the fx_fleet_seeds runner-text check
+asserts 27002 — plus a guard that the retired
+27001 appears in no SMOKE assignment. The
+switch is inside this package, so the launched
+sha can equal the confirmed commit with no
+post-confirmation edit.
+
+### 20.9 Suites
+
+- Fleet suite: **239 PASS / 0 FAIL** (186 at
+  §19 + 52: fx_fleet_smoke_loops 13,
+  fx_fleet_argparse 37, fx_fleet_seeds +2 for
+  the RESMOKE checks). Two consecutive runs
+  byte-identical; transcript regenerated at
+  fixtures/fx_fleet_outputs.txt.
+- Pilot suite 144 PASS and round-10 suite 197
+  PASS, both unchanged.
+- `bash -n` clean on both runners (also
+  covered by the fleet suite's tail checks).
+
+### 20.10 New pins
+
+- `code/step2/run_fleet_games.sh` —
+  2a2ab08268d1c675f06cfeb635b61320712b268617f18934e47393ed9c0c2012
+  (§16's pin line updated in place; chain
+  retained there)
+- `code/step2/run_fleet_l3.sh` —
+  56a0688bb6d57be977992f2e40a979286f1f79472bc06629c4eb377b31cbafd0
+  (§16's pin line updated in place)
+- `fixtures/fx_fleet_contract.py` —
+  661f73d00738c45c7accfbd34741c1a5a5649d02a1a90fa8562473366d28e7b3
+  (normalize() gains the §20.2 mapping)
+- `fixtures/fx_fleet_smoke_loops.py` —
+  36ae5257b1f49ce99a45fcd09bafe48069a4bbe0abf37a363983e25424febc66
+  (new)
+- `fixtures/fx_fleet_argparse.py` —
+  331845dbe45b21a18177043fa2a4329f44a9dae667cd6dee340635309ca806cc
+  (new)
+- `fixtures/fx_fleet_seeds.py` —
+  e5fda4b9e59cce685caba2dfe2377113175572d2fca92f41574edeb468f62ed8
+  (RESMOKE registration)
+- `fixtures/fx_pilot_seeds.py` —
+  f98bad529aaf26b577d67fd1eb1fdb060db910e559b6857235e835f95fde4443
+  (record += (27002, 27002))
+- `fixtures/run_fx_fleet.sh` —
+  d50daab09c3ffaf099b9de10fcf6279767629a2cbcecd52e50a08d5656892615
+  (both new fixtures wired in)
+- `fixtures/fx_fleet_outputs.txt` —
+  936ec8c04cd1e99fa0e816717129e3edb07e5a81b28fb6f1fa6d905ac0026af3
+  (regenerated transcript, 239 PASS)
+Every pin literal above is 64-hex, machine-copied.
+
+### 20.11 The gate, restated
+
+This pass returns to Claude for a CONFIRMATION
+CHECK. After that confirmation, and subject to
+the §20.8 open item being carried into the
+confirmed state: the re-smoke (seed 27002,
+both seats, both arms, through the games
+report and the registry merge) runs on Joe's
+go; **if it passes, the fleet launches under
+that same go**, from a clean output directory,
+with the single-shot guards untouched and
+launched sha == the confirmed commit. If the
+re-smoke fails, it stops and returns to
+review. No other launch proceeds on this
+pass.

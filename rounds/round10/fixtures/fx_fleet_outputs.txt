@@ -8,7 +8,10 @@ PASS: settings blocks are the 8 registered blocks
 PASS: smoke block 27001 disjoint from every completed block and the fleet block
 PASS: smoke block continues the x0001 convention one step above the fleet block
 PASS: smoke block is a single seed
-PASS: the games runner's SMOKE section carries the registered smoke seed 27001
+PASS: the games runner's SMOKE section carries the re-smoke seed 27002 (switched at the fix pass's audit; sec.20.8)
+PASS: the retired smoke seed 27001 is named in no SMOKE assignment
+PASS: re-smoke block 27002 disjoint from every completed block, the fleet block and the retired smoke block 27001
+PASS: re-smoke block is the next single seed above the retired smoke block
 PASS: the brief's candidate 800055001 IS the pilot family's shard-1 base (refuted as a fleet base)
 PASS: fleet label base differs from every prior base
 PASS: fleet label RANGES disjoint from every prior family (pilot at cap)
@@ -142,6 +145,60 @@ PASS: parity: fleet TS-DRIVERS+WAIT-T == the pilot's PILOT-GAMES block (modulo t
 PASS: RAW-RERUN subshell env assignments match Stage 3's (GATE_GAME_IDS_FILE, TCG_CLEAN_CHILDREN)
 PASS: parity: RAW-RERUN driver argv == Stage 3's
 fx_fleet_contract: 47 checks, 0 failed
+===== fx_fleet_smoke_loops =====
+PASS: TS-DRIVERS: the extracted loop reads the seeds field set -u-safely (seeds=${3:-})
+PASS: TS-DRIVERS: the loop runs to completion under set -u with SMOKE's emptied b-block lists
+PASS: TS-DRIVERS: exactly the two populated specs ran (stub driver invoked twice)
+PASS: TS-DRIVERS: both stub invocations carry the populated seed, the teacher arm, seats 1+2, and no empty --seeds
+PASS: TS-DRIVERS: reverting the repair in the extracted loop is a one-token change
+PASS: TS-DRIVERS: negative -- with seeds=$3 the loop ABORTS on the unbound variable (the sec.19.4 crash)
+PASS: RS-DRIVERS: the extracted loop reads the seeds field set -u-safely (seeds=${3:-})
+PASS: RS-DRIVERS: the loop runs to completion under set -u with SMOKE's emptied b-block lists
+PASS: RS-DRIVERS: exactly the two populated specs ran (stub driver invoked twice)
+PASS: RS-DRIVERS: both stub invocations carry the populated seed, the raw arm, seats 1+2, and no empty --seeds
+PASS: RS-DRIVERS: reverting the repair in the extracted loop is a one-token change
+PASS: RS-DRIVERS: negative -- with seeds=$3 the loop ABORTS on the unbound variable (the sec.19.4 crash)
+PASS: RAW-RERUN does not share the pattern: its loop is `while read -r seed seat rblk` over the computed rerun list (no positional seeds read for the SMOKE switch to empty)
+fx_fleet_smoke_loops: 13 checks, 0 failed
+===== fx_fleet_argparse =====
+PASS: the staged build_fleet_jobs.py is its pinned copy (c7601341...)
+PASS: the staged fleet_games_report.py is its pinned copy (62ca60b5...)
+PASS: the staged fleet_read.py is its pinned copy (7370b989...)
+PASS: the staged merge_registry.py is its pinned copy (13a655e3...)
+PASS: the staged paired_driver_gravy.py is its pinned copy (3389b1b9...)
+PASS: the staged shm_sweep.py is its pinned copy (98027a8b...)
+PASS: census: the grep enumeration of both runners reproduces the contract table exactly (14 sites)
+PASS: site 1 (games shm_sweep.py): argv == the contract template
+PASS: site 2 (games paired_driver_gravy.py): argv == the contract template
+PASS: site 3 (games shm_sweep.py): argv == the contract template
+PASS: site 4 (games paired_driver_gravy.py): argv == the contract template
+PASS: site 5 (games fleet_games_report.py): argv == the contract template
+PASS: site 6 (games paired_driver_gravy.py): argv == the contract template
+PASS: site 7 (games fleet_games_report.py): argv == the contract template
+PASS: site 8 (games merge_registry.py): argv == the contract template
+PASS: site 9 (games fleet_games_report.py): argv == the contract template
+PASS: site 10 (games merge_registry.py): argv == the contract template
+PASS: site 11 (games fleet_read.py): argv == the contract template
+PASS: site 12 (l3 build_fleet_jobs.py): argv == the contract template
+PASS: site 13 (l3 shm_sweep.py): argv == the contract template
+PASS: site 14 (l3 fleet_read.py): argv == the contract template
+PASS: site 1 (games shm_sweep.py): the substituted argv parses under the real argparse
+PASS: site 2 (games paired_driver_gravy.py): the substituted argv parses under the real argparse
+PASS: site 3 (games shm_sweep.py): the substituted argv parses under the real argparse
+PASS: site 4 (games paired_driver_gravy.py): the substituted argv parses under the real argparse
+PASS: site 5 (games fleet_games_report.py): the substituted argv parses under the real argparse
+PASS: site 6 (games paired_driver_gravy.py): the substituted argv parses under the real argparse
+PASS: site 7 (games fleet_games_report.py): the substituted argv parses under the real argparse
+PASS: site 8 (games merge_registry.py): the substituted argv parses under the real argparse
+PASS: site 9 (games fleet_games_report.py): the substituted argv parses under the real argparse
+PASS: site 10 (games merge_registry.py): the substituted argv parses under the real argparse
+PASS: site 11 (games fleet_read.py): the substituted argv parses under the real argparse
+PASS: site 12 (l3 build_fleet_jobs.py): the substituted argv parses under the real argparse
+PASS: site 13 (l3 shm_sweep.py): the substituted argv parses under the real argparse
+PASS: site 14 (l3 fleet_read.py): the substituted argv parses under the real argparse
+PASS: negative: the sweeper's argv + --once FAILS its real argparse (defect 9's form)
+PASS: negative: the merge's old bare-files form (--tag X <ids files>, no --registry/--ids) FAILS its real argparse (defect 8's form)
+fx_fleet_argparse: 37 checks, 0 failed
 ===== fx_fleet_blocks =====
 PASS: games runner has section PINFN
 PASS: games runner has section SETREAD

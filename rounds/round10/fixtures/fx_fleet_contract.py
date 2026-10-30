@@ -57,9 +57,11 @@ Checks:
       seeds, block tags, paths (tree prefix, the
       installed build + its hash, the snap-dir path
       form), the --timeout form, --arm raw, the
-      SMOKE skip-guard lines, and the tree sections'
-      expect_hash label/|| form. Any other
-      difference fails with its position.
+      SMOKE skip-guard lines, the tree sections'
+      expect_hash label/|| form, and (sec.20) the
+      approved smoke repair's set -u-safe seeds read
+      (seeds=${3:-} for the source's seeds=$3).
+      Any other difference fails with its position.
 """
 import argparse
 import hashlib
@@ -323,6 +325,12 @@ SMOKE_GUARD = ('[ "${SMOKE:-0}" = 1 ] && '
 
 def normalize(seg, drop_sweep_clear=False):
     seg = seg.replace(SMOKE_GUARD, "")
+    # sec.20 (reply baf16e7 sec.2.1): the approved
+    # smoke repair reads the seeds field set -u-safely
+    # in the fleet's driver loops; the sources read
+    # seeds=$3. Map the repaired form to the source
+    # form so parity measures the fork, not the fix.
+    seg = seg.replace("seeds=${3:-}", "seeds=$3")
     lines = []
     for l in seg.splitlines():
         if l.startswith("##### ====="):

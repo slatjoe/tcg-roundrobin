@@ -121,9 +121,41 @@ check("smoke block is a single seed",
 games_sh = open(os.path.join(
     R10, "code", "step2", "run_fleet_games.sh")).read()
 check("the games runner's SMOKE section carries "
-      "the registered smoke seed 27001",
-      "BLOCK_T1A_SEEDS=27001" in games_sh
-      and "BLOCK_R2A_SEEDS=27001" in games_sh)
+      "the re-smoke seed 27002 (switched at the "
+      "fix pass's audit; sec.20.8)",
+      "BLOCK_T1A_SEEDS=27002" in games_sh
+      and "BLOCK_R2A_SEEDS=27002" in games_sh)
+check("the retired smoke seed 27001 is named in "
+      "no SMOKE assignment",
+      "BLOCK_T1A_SEEDS=27001" not in games_sh
+      and "BLOCK_R2A_SEEDS=27001" not in games_sh)
+
+# ---- the RE-SMOKE block (package sec.20) ----
+# claude-reply-baf16e7 sec.2.1: seed 27001 is
+# RETIRED -- its one invalid game (id 776023215)
+# is merged into the registry under the smoke tag
+# -- and the re-smoke plays a FRESH seed proven
+# against the completed record. 27002 is that
+# seed: the next value in the record's x0001
+# sequence of single-seed smoke blocks, disjoint
+# from every completed block, the fleet block and
+# the retired smoke block. Registered here and in
+# fx_pilot_seeds.py's USED_GAME_BLOCKS.
+RESMOKE = (27002, 27002)
+resmoke_clash = [(lo, hi) for lo, hi in
+                 USED_GAME_BLOCKS + [FLEET, SMOKE]
+                 if not (RESMOKE[1] < lo
+                         or RESMOKE[0] > hi)]
+check("re-smoke block 27002 disjoint from every "
+      "completed block, the fleet block and the "
+      "retired smoke block 27001",
+      not resmoke_clash,
+      "clashes: %s" % (resmoke_clash,))
+check("re-smoke block is the next single seed "
+      "above the retired smoke block",
+      RESMOKE[0] == SMOKE[0] + 1
+      and RESMOKE[0] == RESMOKE[1],
+      "re-smoke %s" % (RESMOKE,))
 
 # ---- label-seed families ----
 STRIDE_J, STRIDE_W = 100003, 31337
