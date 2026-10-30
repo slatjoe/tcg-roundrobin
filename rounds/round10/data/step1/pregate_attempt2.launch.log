@@ -1,0 +1,7 @@
+pre-gate attempt 2 -> /home/joe/tcg/r10pilot_out/pregate/attempt2
+free-space pre-flight: required_bytes=2343557540 (per-tree 468711508 x 5 trees) available_bytes=3200778240 headroom_factor=1.25
+segments before: 1 (nattch=0: 1, attached: 0)
+kernel.shmmni: 4096
+segments after: 0
+pregate manifest written
+PILOT PRE-GATE COMPLETE - /home/joe/tcg/r10pilot_out/pregate/attempt2/pregate_manifest.json

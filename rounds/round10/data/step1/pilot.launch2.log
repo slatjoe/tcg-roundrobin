@@ -1,0 +1,27 @@
+pre-gate gate: manifest IDENTICAL under this run's search_s3_thr.php pin and tuple - proceeding
+free-space pre-flight: required_bytes=3749692064 (per-tree 468711508 x 8 trees) available_bytes=5844172800 headroom_factor=1.25
+segments before: 1 (nattch=0: 1, attached: 0)
+kernel.shmmni: 4096
+segments after: 0
+pilot jobs: 791 overturns over 99 games (index rows 791; classes {'newly_contested': 619, 'contested': 172}; shards {'0': 208, '1': 130, '2': 232, '3': 221})
+shard 0 player 1: 117 jobs
+shard 0 player 2: 91 jobs
+shard 1 player 1: 75 jobs
+shard 1 player 2: 55 jobs
+shard 2 player 1: 148 jobs
+shard 2 player 2: 84 jobs
+shard 3 player 1: 107 jobs
+shard 3 player 2: 114 jobs
+=== ROUND-10 STEP 1 PILOT -- READ ===
+games 100; jobs 791 (scored 791); label rows finished 79093 / unfinished 7 / refusals 0; fallbacks 116; jobs_no_shared_worlds 0
+class contested: fires/game 1.7200 (172 jobs); edge 0.0371; per-game gain 0.0638, two-sided 95% CI [0.0220, 0.1132], one-sided 95% lb 0.0280 / ub 0.1042; LOGO range [0.0517, 0.0669], largest share 0.1975 (game 152925466)
+class newly_contested: fires/game 6.1900 (619 jobs); edge 0.0324; per-game gain 0.2008, two-sided 95% CI [0.1368, 0.2698], one-sided 95% lb 0.1470 / ub 0.2584; LOGO range [0.1879, 0.2061], largest share 0.0737 (game 686801642)
+z-band (1.5, 2.0]: 435 jobs, edge 0.0170
+z-band (2.0, 2.5]: 228 jobs, edge 0.0212
+z-band (2.5, 3.5]: 106 jobs, edge 0.0519
+z-band >3.5: 22 jobs, edge 0.3964
+TOTAL: per-game gain 0.2646, two-sided 95% CI [0.1816, 0.3538], one-sided 95% lb 0.1948 / ub 0.3384; LOGO range [0.2473, 0.2713], largest share 0.0748 (game 375620641); wall mean 1773.3570000000002 p95 2440.8 max 2676.8; timeouts 0
+STOP rule: STOP iff total one-sided 95% upper bound < 0.0849; total ub (95th percentile) 0.3384 -> DO NOT STOP
+Step 2 sizing: Delta_plan 0.1299 (pilot one-sided lb 0.1948 - 0.0649); SE_pilot 0.0435; n = 72 games at 80% power
+pilot manifest written
+STEP 1 PILOT COMPLETE - /home/joe/tcg/r10pilot_out/pilot_manifest.json

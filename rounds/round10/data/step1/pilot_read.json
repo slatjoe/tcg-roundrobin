@@ -1,0 +1,140 @@
+{
+ "games_population": 100,
+ "jobs": 791,
+ "jobs_scored": 791,
+ "label_counts": {
+  "finished": 79093,
+  "unfinished": 7,
+  "refusals": 0,
+  "fallbacks": 116,
+  "jobs_no_shared_worlds": 0
+ },
+ "classes": {
+  "contested": {
+   "jobs": 172,
+   "fires_per_game": 1.72,
+   "edge": 0.037093023255813956,
+   "gain": {
+    "gain": 0.0638,
+    "ci": [
+     0.022000000000000002,
+     0.11319999999999997
+    ],
+    "lb": 0.027999999999999997,
+    "ub": 0.10419999999999999,
+    "lb_one_sided": 0.027999999999999997,
+    "ub_one_sided": 0.10419999999999999,
+    "se_clustered": 0.023328475684831568,
+    "games": 100
+   },
+   "logo": {
+    "range": [
+     0.05171717171717172,
+     0.06686868686868687
+    ],
+    "weakest_exclusion_game": "152925466",
+    "weakest_exclusion_gain": 0.05171717171717172,
+    "largest_share_game": "152925466",
+    "largest_share": 0.1974921630094044
+   }
+  },
+  "newly_contested": {
+   "jobs": 619,
+   "fires_per_game": 6.19,
+   "edge": 0.032442055982328306,
+   "gain": {
+    "gain": 0.20081632653061224,
+    "ci": [
+     0.13682448979591838,
+     0.2698122448979593
+    ],
+    "lb": 0.14701224489795922,
+    "ub": 0.2584489795918368,
+    "lb_one_sided": 0.14701224489795922,
+    "ub_one_sided": 0.2584489795918368,
+    "se_clustered": 0.03369021478528129,
+    "games": 100
+   },
+   "logo": {
+    "range": [
+     0.18789527932385075,
+     0.20607709750566894
+    ],
+    "weakest_exclusion_game": "686801642",
+    "weakest_exclusion_gain": 0.18789527932385075,
+    "largest_share_game": "686801642",
+    "largest_share": 0.07369918699186992
+   }
+  }
+ },
+ "bands": {
+  "(1.5, 2.0]": {
+   "jobs": 435,
+   "edge": 0.017009617640159513
+  },
+  "(2.0, 2.5]": {
+   "jobs": 228,
+   "edge": 0.021238811313999285
+  },
+  "(2.5, 3.5]": {
+   "jobs": 106,
+   "edge": 0.05188679245283019
+  },
+  ">3.5": {
+   "jobs": 22,
+   "edge": 0.3963636363636364
+  }
+ },
+ "total": {
+  "jobs": 791,
+  "fires_per_game": 7.91,
+  "edge": 0.033453391470368174,
+  "gain": {
+   "gain": 0.2646163265306123,
+   "ci": [
+    0.18159183673469378,
+    0.3538
+   ],
+   "lb": 0.19481632653061226,
+   "ub": 0.3384204081632653,
+   "lb_one_sided": 0.19481632653061226,
+   "ub_one_sided": 0.3384204081632653,
+   "se_clustered": 0.04352278112713261,
+   "games": 100
+  },
+  "logo": {
+   "range": [
+    0.24728921871779017,
+    0.27132962275819417
+   ],
+   "weakest_exclusion_game": "375620641",
+   "weakest_exclusion_gain": 0.24728921871779017,
+   "largest_share_game": "375620641",
+   "largest_share": 0.07482531504989896
+  }
+ },
+ "stop": {
+  "threshold": 0.0849,
+  "total_ub": 0.3384204081632653,
+  "total_ub_basis": "one-sided 95% (bootstrap 95th percentile)",
+  "total_ub_two_sided": 0.3538,
+  "STOP": false
+ },
+ "sizing": {
+  "delta_plan": 0.12991632653061225,
+  "se_pilot": 0.04352278112713261,
+  "z_sum": 2.4866,
+  "stage3_gain": 0.0649,
+  "stage3_gain_se": 0.009,
+  "R": 0.0026487043107718943,
+  "n": 72,
+  "flag_above_400": false
+ },
+ "wall_s": {
+  "n": 100,
+  "mean": 1773.3570000000002,
+  "p95": 2440.8,
+  "max": 2676.8
+ },
+ "teacher_timeouts": 0
+}

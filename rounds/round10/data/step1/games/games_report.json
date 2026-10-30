@@ -1,0 +1,67 @@
+{
+ "games_rows": 100,
+ "games_completed": 100,
+ "games_invalid": {},
+ "teacher_timeouts": 0,
+ "teacher_outcomes_draw0": {
+  "W": 70,
+  "D": 7,
+  "L": 23,
+  "points": 70.0,
+  "points_per_game": 0.7
+ },
+ "wall_s": {
+  "n": 100,
+  "mean": 1773.3570000000002,
+  "p95": 2440.8,
+  "max": 2676.8
+ },
+ "teacher_stat_rows": 9886,
+ "searched_rows": 9886,
+ "classes_completed_games": {
+  "contested": {
+   "decisions": 2501,
+   "fires": 172,
+   "fires_per_game": 1.72,
+   "thin_prior": 0
+  },
+  "newly_contested": {
+   "decisions": 7385,
+   "fires": 619,
+   "fires_per_game": 6.19,
+   "thin_prior": 0
+  }
+ },
+ "classes_all": {
+  "contested": {
+   "decisions": 2501,
+   "fires": 172,
+   "fires_per_game": 1.72,
+   "thin_prior": 0
+  },
+  "newly_contested": {
+   "decisions": 7385,
+   "fires": 619,
+   "fires_per_game": 6.19,
+   "thin_prior": 0
+  }
+ },
+ "child_fallbacks": 0,
+ "eval_fail_rows": 0,
+ "tuple_audit": {
+  "pin": {
+   "deadline_s": 180,
+   "hooks": 8000,
+   "horizon": 62,
+   "horizon_value": -1,
+   "k": 25,
+   "margin": 1.5,
+   "name": "H8k-180+H",
+   "pinned": 1
+  },
+  "rows_checked": 9886,
+  "bad_rows": 0,
+  "malformed_pin_aborts": 0,
+  "ok": true
+ }
+}

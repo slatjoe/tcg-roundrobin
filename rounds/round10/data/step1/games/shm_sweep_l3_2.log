@@ -1,0 +1,235 @@
+# shm_sweep start 2026-10-30T08:53:42.291718 mode=LIVE start_shmids=1 games_dir=/tmp/r10pilot_l3_tree_2/vendor/talishar/Games
+PASS 1 2026-10-30T08:53:42.294782 total=1 selected=0 unattributed=0
+DELETED pass=1 count=0 failed=0
+PASS 2 2026-10-30T08:54:42.304741 total=129 selected=0 unattributed=0
+DELETED pass=2 count=0 failed=0
+PASS 3 2026-10-30T08:55:42.316049 total=128 selected=0 unattributed=0
+DELETED pass=3 count=0 failed=0
+PASS 4 2026-10-30T08:56:42.323640 total=169 selected=0 unattributed=0
+DELETED pass=4 count=0 failed=0
+PASS 5 2026-10-30T08:57:42.328784 total=59 selected=0 unattributed=0
+DELETED pass=5 count=0 failed=0
+PASS 6 2026-10-30T08:58:42.335133 total=90 selected=0 unattributed=0
+DELETED pass=6 count=0 failed=0
+PASS 7 2026-10-30T08:59:42.347777 total=108 selected=0 unattributed=0
+DELETED pass=7 count=0 failed=0
+PASS 8 2026-10-30T09:00:42.354474 total=153 selected=0 unattributed=0
+DELETED pass=8 count=0 failed=0
+PASS 9 2026-10-30T09:01:42.365559 total=102 selected=0 unattributed=0
+DELETED pass=9 count=0 failed=0
+PASS 10 2026-10-30T09:02:42.375875 total=108 selected=0 unattributed=0
+DELETED pass=10 count=0 failed=0
+PASS 11 2026-10-30T09:03:42.381992 total=122 selected=0 unattributed=0
+DELETED pass=11 count=0 failed=0
+PASS 12 2026-10-30T09:04:42.395546 total=192 selected=0 unattributed=0
+DELETED pass=12 count=0 failed=0
+PASS 13 2026-10-30T09:05:42.401640 total=113 selected=0 unattributed=0
+DELETED pass=13 count=0 failed=0
+PASS 14 2026-10-30T09:06:42.407194 total=107 selected=0 unattributed=0
+DELETED pass=14 count=0 failed=0
+PASS 15 2026-10-30T09:07:42.413579 total=139 selected=0 unattributed=0
+DELETED pass=15 count=0 failed=0
+PASS 16 2026-10-30T09:08:42.420529 total=82 selected=0 unattributed=0
+DELETED pass=16 count=0 failed=0
+PASS 17 2026-10-30T09:09:42.427748 total=135 selected=0 unattributed=0
+DELETED pass=17 count=0 failed=0
+PASS 18 2026-10-30T09:10:42.436762 total=133 selected=0 unattributed=0
+DELETED pass=18 count=0 failed=0
+PASS 19 2026-10-30T09:11:42.464304 total=115 selected=0 unattributed=0
+DELETED pass=19 count=0 failed=0
+PASS 20 2026-10-30T09:12:42.474402 total=181 selected=0 unattributed=0
+DELETED pass=20 count=0 failed=0
+PASS 21 2026-10-30T09:13:42.481298 total=90 selected=0 unattributed=0
+DELETED pass=21 count=0 failed=0
+PASS 22 2026-10-30T09:14:42.495951 total=185 selected=0 unattributed=0
+DELETED pass=22 count=0 failed=0
+PASS 23 2026-10-30T09:15:42.506756 total=126 selected=0 unattributed=0
+DELETED pass=23 count=0 failed=0
+PASS 24 2026-10-30T09:16:42.515939 total=163 selected=0 unattributed=0
+DELETED pass=24 count=0 failed=0
+PASS 25 2026-10-30T09:17:42.526389 total=131 selected=0 unattributed=0
+DELETED pass=25 count=0 failed=0
+PASS 26 2026-10-30T09:18:42.533411 total=92 selected=0 unattributed=0
+DELETED pass=26 count=0 failed=0
+PASS 27 2026-10-30T09:19:42.539629 total=139 selected=0 unattributed=0
+DELETED pass=27 count=0 failed=0
+PASS 28 2026-10-30T09:20:42.545948 total=118 selected=0 unattributed=0
+DELETED pass=28 count=0 failed=0
+PASS 29 2026-10-30T09:21:42.556502 total=147 selected=0 unattributed=0
+DELETED pass=29 count=0 failed=0
+PASS 30 2026-10-30T09:22:42.568693 total=195 selected=0 unattributed=0
+DELETED pass=30 count=0 failed=0
+PASS 31 2026-10-30T09:23:42.576014 total=136 selected=0 unattributed=0
+DELETED pass=31 count=0 failed=0
+PASS 32 2026-10-30T09:24:42.588339 total=111 selected=0 unattributed=0
+DELETED pass=32 count=0 failed=0
+PASS 33 2026-10-30T09:25:42.599365 total=147 selected=0 unattributed=0
+DELETED pass=33 count=0 failed=0
+PASS 34 2026-10-30T09:26:42.612237 total=186 selected=0 unattributed=0
+DELETED pass=34 count=0 failed=0
+PASS 35 2026-10-30T09:27:42.620042 total=180 selected=0 unattributed=0
+DELETED pass=35 count=0 failed=0
+PASS 36 2026-10-30T09:28:42.628739 total=178 selected=0 unattributed=1
+DELETED pass=36 count=0 failed=0
+PASS 37 2026-10-30T09:29:42.635297 total=101 selected=0 unattributed=0
+DELETED pass=37 count=0 failed=0
+PASS 38 2026-10-30T09:30:42.644218 total=111 selected=0 unattributed=0
+DELETED pass=38 count=0 failed=0
+PASS 39 2026-10-30T09:31:42.656627 total=189 selected=0 unattributed=0
+DELETED pass=39 count=0 failed=0
+PASS 40 2026-10-30T09:32:42.665574 total=165 selected=0 unattributed=0
+DELETED pass=40 count=0 failed=0
+PASS 41 2026-10-30T09:33:42.674177 total=108 selected=0 unattributed=0
+DELETED pass=41 count=0 failed=0
+PASS 42 2026-10-30T09:34:42.682620 total=189 selected=0 unattributed=0
+DELETED pass=42 count=0 failed=0
+PASS 43 2026-10-30T09:35:42.688855 total=128 selected=0 unattributed=0
+DELETED pass=43 count=0 failed=0
+PASS 44 2026-10-30T09:36:42.701538 total=229 selected=0 unattributed=0
+DELETED pass=44 count=0 failed=0
+PASS 45 2026-10-30T09:37:42.709066 total=108 selected=0 unattributed=0
+DELETED pass=45 count=0 failed=0
+PASS 46 2026-10-30T09:38:42.716665 total=152 selected=0 unattributed=0
+DELETED pass=46 count=0 failed=0
+PASS 47 2026-10-30T09:39:42.728296 total=166 selected=0 unattributed=0
+DELETED pass=47 count=0 failed=0
+PASS 48 2026-10-30T09:40:42.736051 total=126 selected=0 unattributed=0
+DELETED pass=48 count=0 failed=0
+PASS 49 2026-10-30T09:41:42.745008 total=87 selected=0 unattributed=0
+DELETED pass=49 count=0 failed=0
+PASS 50 2026-10-30T09:42:42.756028 total=163 selected=0 unattributed=0
+DELETED pass=50 count=0 failed=0
+PASS 51 2026-10-30T09:43:42.765472 total=179 selected=0 unattributed=0
+DELETED pass=51 count=0 failed=0
+PASS 52 2026-10-30T09:44:42.786347 total=175 selected=0 unattributed=0
+DELETED pass=52 count=0 failed=0
+PASS 53 2026-10-30T09:45:42.798851 total=124 selected=0 unattributed=0
+DELETED pass=53 count=0 failed=0
+PASS 54 2026-10-30T09:46:42.808029 total=182 selected=0 unattributed=0
+DELETED pass=54 count=0 failed=0
+PASS 55 2026-10-30T09:47:42.819620 total=208 selected=0 unattributed=0
+DELETED pass=55 count=0 failed=0
+PASS 56 2026-10-30T09:48:42.828082 total=160 selected=0 unattributed=0
+DELETED pass=56 count=0 failed=0
+PASS 57 2026-10-30T09:49:42.835680 total=115 selected=0 unattributed=0
+DELETED pass=57 count=0 failed=0
+PASS 58 2026-10-30T09:50:42.842459 total=123 selected=0 unattributed=0
+DELETED pass=58 count=0 failed=0
+PASS 59 2026-10-30T09:51:42.850225 total=190 selected=0 unattributed=0
+DELETED pass=59 count=0 failed=0
+PASS 60 2026-10-30T09:52:42.862721 total=192 selected=0 unattributed=0
+DELETED pass=60 count=0 failed=0
+PASS 61 2026-10-30T09:53:42.873769 total=237 selected=0 unattributed=0
+DELETED pass=61 count=0 failed=0
+PASS 62 2026-10-30T09:54:42.885426 total=190 selected=0 unattributed=0
+DELETED pass=62 count=0 failed=0
+PASS 63 2026-10-30T09:55:42.893241 total=186 selected=0 unattributed=0
+DELETED pass=63 count=0 failed=0
+PASS 64 2026-10-30T09:56:42.902902 total=181 selected=0 unattributed=0
+DELETED pass=64 count=0 failed=0
+PASS 65 2026-10-30T09:57:42.911078 total=168 selected=0 unattributed=0
+DELETED pass=65 count=0 failed=0
+PASS 66 2026-10-30T09:58:42.918755 total=127 selected=0 unattributed=0
+DELETED pass=66 count=0 failed=0
+PASS 67 2026-10-30T09:59:42.930724 total=166 selected=0 unattributed=0
+DELETED pass=67 count=0 failed=0
+PASS 68 2026-10-30T10:00:42.938521 total=109 selected=0 unattributed=0
+DELETED pass=68 count=0 failed=0
+PASS 69 2026-10-30T10:01:42.946619 total=97 selected=0 unattributed=0
+DELETED pass=69 count=0 failed=0
+PASS 70 2026-10-30T10:02:42.955703 total=166 selected=0 unattributed=0
+DELETED pass=70 count=0 failed=0
+PASS 71 2026-10-30T10:03:42.966821 total=153 selected=0 unattributed=0
+DELETED pass=71 count=0 failed=0
+PASS 72 2026-10-30T10:04:42.974189 total=91 selected=0 unattributed=0
+DELETED pass=72 count=0 failed=0
+PASS 73 2026-10-30T10:05:42.983427 total=108 selected=0 unattributed=0
+DELETED pass=73 count=0 failed=0
+PASS 74 2026-10-30T10:06:42.989468 total=84 selected=0 unattributed=0
+DELETED pass=74 count=0 failed=0
+PASS 75 2026-10-30T10:07:43.011561 total=115 selected=0 unattributed=1
+DELETED pass=75 count=0 failed=0
+PASS 76 2026-10-30T10:08:43.017513 total=117 selected=0 unattributed=0
+DELETED pass=76 count=0 failed=0
+PASS 77 2026-10-30T10:09:43.025131 total=127 selected=0 unattributed=0
+DELETED pass=77 count=0 failed=0
+PASS 78 2026-10-30T10:10:43.036726 total=133 selected=0 unattributed=0
+DELETED pass=78 count=0 failed=0
+PASS 79 2026-10-30T10:11:43.042372 total=104 selected=0 unattributed=0
+DELETED pass=79 count=0 failed=0
+PASS 80 2026-10-30T10:12:43.053930 total=143 selected=0 unattributed=0
+DELETED pass=80 count=0 failed=0
+PASS 81 2026-10-30T10:13:43.065252 total=139 selected=0 unattributed=0
+DELETED pass=81 count=0 failed=0
+PASS 82 2026-10-30T10:14:43.071993 total=86 selected=0 unattributed=0
+DELETED pass=82 count=0 failed=0
+PASS 83 2026-10-30T10:15:43.079493 total=95 selected=0 unattributed=0
+DELETED pass=83 count=0 failed=0
+PASS 84 2026-10-30T10:16:43.089709 total=149 selected=0 unattributed=0
+DELETED pass=84 count=0 failed=0
+PASS 85 2026-10-30T10:17:43.098486 total=116 selected=0 unattributed=0
+DELETED pass=85 count=0 failed=0
+PASS 86 2026-10-30T10:18:43.103759 total=65 selected=0 unattributed=0
+DELETED pass=86 count=0 failed=0
+PASS 87 2026-10-30T10:19:43.109667 total=113 selected=0 unattributed=0
+DELETED pass=87 count=0 failed=0
+PASS 88 2026-10-30T10:20:43.115490 total=122 selected=0 unattributed=0
+DELETED pass=88 count=0 failed=0
+PASS 89 2026-10-30T10:21:43.124300 total=107 selected=0 unattributed=0
+DELETED pass=89 count=0 failed=0
+PASS 90 2026-10-30T10:22:43.130885 total=96 selected=0 unattributed=0
+DELETED pass=90 count=0 failed=0
+PASS 91 2026-10-30T10:23:43.140492 total=83 selected=0 unattributed=0
+DELETED pass=91 count=0 failed=0
+PASS 92 2026-10-30T10:24:43.148699 total=110 selected=0 unattributed=0
+DELETED pass=92 count=0 failed=0
+PASS 93 2026-10-30T10:25:43.157295 total=126 selected=0 unattributed=0
+DELETED pass=93 count=0 failed=0
+PASS 94 2026-10-30T10:26:43.164959 total=85 selected=0 unattributed=0
+DELETED pass=94 count=0 failed=0
+PASS 95 2026-10-30T10:27:43.171110 total=97 selected=0 unattributed=0
+DELETED pass=95 count=0 failed=0
+PASS 96 2026-10-30T10:28:43.177801 total=101 selected=0 unattributed=0
+DELETED pass=96 count=0 failed=0
+PASS 97 2026-10-30T10:29:43.185109 total=137 selected=0 unattributed=0
+DELETED pass=97 count=0 failed=0
+PASS 98 2026-10-30T10:30:43.191301 total=121 selected=0 unattributed=0
+DELETED pass=98 count=0 failed=0
+PASS 99 2026-10-30T10:31:43.197591 total=126 selected=0 unattributed=0
+DELETED pass=99 count=0 failed=0
+PASS 100 2026-10-30T10:32:43.204019 total=115 selected=0 unattributed=0
+DELETED pass=100 count=0 failed=0
+PASS 101 2026-10-30T10:33:43.209007 total=78 selected=0 unattributed=0
+DELETED pass=101 count=0 failed=0
+PASS 102 2026-10-30T10:34:43.215037 total=121 selected=0 unattributed=0
+DELETED pass=102 count=0 failed=0
+PASS 103 2026-10-30T10:35:43.225077 total=156 selected=0 unattributed=0
+DELETED pass=103 count=0 failed=0
+PASS 104 2026-10-30T10:36:43.232177 total=119 selected=0 unattributed=1
+DELETED pass=104 count=0 failed=0
+PASS 105 2026-10-30T10:37:43.238634 total=120 selected=0 unattributed=0
+DELETED pass=105 count=0 failed=0
+PASS 106 2026-10-30T10:38:43.246850 total=172 selected=0 unattributed=0
+DELETED pass=106 count=0 failed=0
+PASS 107 2026-10-30T10:39:43.253506 total=106 selected=0 unattributed=0
+DELETED pass=107 count=0 failed=0
+PASS 108 2026-10-30T10:40:43.259277 total=97 selected=0 unattributed=0
+DELETED pass=108 count=0 failed=0
+PASS 109 2026-10-30T10:41:43.272473 total=152 selected=0 unattributed=0
+DELETED pass=109 count=0 failed=0
+PASS 110 2026-10-30T10:42:43.278601 total=114 selected=0 unattributed=0
+DELETED pass=110 count=0 failed=0
+PASS 111 2026-10-30T10:43:43.287713 total=134 selected=0 unattributed=0
+DELETED pass=111 count=0 failed=0
+PASS 112 2026-10-30T10:44:43.294572 total=162 selected=0 unattributed=0
+DELETED pass=112 count=0 failed=0
+PASS 113 2026-10-30T10:45:43.301320 total=121 selected=0 unattributed=0
+DELETED pass=113 count=0 failed=0
+PASS 114 2026-10-30T10:46:43.305912 total=54 selected=0 unattributed=0
+DELETED pass=114 count=0 failed=0
+PASS 115 2026-10-30T10:47:43.309246 total=13 selected=0 unattributed=0
+DELETED pass=115 count=0 failed=0
+PASS 116 2026-10-30T10:48:43.315457 total=61 selected=0 unattributed=0
+DELETED pass=116 count=0 failed=0
+PASS 117 2026-10-30T10:49:43.325115 total=61 selected=0 unattributed=0
+DELETED pass=117 count=0 failed=0

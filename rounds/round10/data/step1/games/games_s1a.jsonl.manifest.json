@@ -1,0 +1,34 @@
+{
+ "arm": "teacher",
+ "tree": "/tmp/r10pilot_gm_s1a",
+ "seat": 1,
+ "seeds": "25001-25025",
+ "search_stats_rows": 2608,
+ "trace_files": 25,
+ "server": {
+  "learner_seat": 1,
+  "model": "/home/joe/tcg/tcg-sim/rl_out/gravy_ppo_gravybc3/ckpt_v10.pt"
+ },
+ "assertions": {
+  "stat_rows": 2608,
+  "teacher_rows": 2607,
+  "contested_rows": 2607,
+  "rollout_rows": 2607,
+  "trace_rules": {
+   "teacher": 2607,
+   "bridge_pick": 2524,
+   "dq_pick": 8491,
+   "pass_gate": 6669
+  },
+  "teacher_trace_rows": 2607,
+  "teacher_trace_rows_with_priors": 2607,
+  "teacher_trace_pick_argmax_agree": 2386
+ },
+ "checks": {
+  "stat_teacher_rows_present": true,
+  "det_persisted_all_contested": true,
+  "trace_teacher_rows_present": true
+ },
+ "assert_ok": true,
+ "assert_no_search_rows": null
+}

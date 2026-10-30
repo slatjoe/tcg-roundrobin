@@ -1,0 +1,5 @@
+games: 100 rows, 100 completed, invalid {}; teacher W/D/L 70/7/23 (draw=0 points 0.7000/game)
+wall per game (completed): n=100 mean 1773.4 p95 2440.8 max 2676.8; teacher timeouts 0
+class contested (completed games): 2501 decisions, 172 fires (1.7200/game), thin-prior 0
+class newly_contested (completed games): 7385 decisions, 619 fires (6.1900/game), thin-prior 0
+tuple audit: 9886 rows checked, 0 bad, 0 malformed-pin aborts -> OK

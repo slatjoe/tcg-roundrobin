@@ -1,0 +1,4 @@
+merged: +70 new (tag r10_step1_pilot_pregate), 0 already under this tag; n_games=7541
+backup: /home/joe/tcg/registry-vault/do_not_train_registry.json.bak-20261029T195259
+registry sha256: 0f8b458ea741075c8ce66caf7efd6f7f3c21ee93e8c4f9c380a58209528231ef
+vault copy: /home/joe/tcg/registry-vault/do_not_train_registry_20261029T195259.json

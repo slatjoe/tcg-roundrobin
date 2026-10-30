@@ -1,0 +1,3 @@
+pre-gate gate: manifest IDENTICAL under this run's search_s3_thr.php pin and tuple - proceeding
+free-space pre-flight: required_bytes=3749692064 (per-tree 468711508 x 8 trees) available_bytes=3200053248 headroom_factor=1.25
+ABORT: free-space pre-flight: available_bytes=3200053248 < required_bytes=3749692064 x 1.25

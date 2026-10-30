@@ -1,0 +1,34 @@
+{
+ "stage": "round10-step1-pilot-pregate",
+ "attempt": 2,
+ "verdict": "IDENTICAL",
+ "search_s3_thr_sha256": "4a1936fe8e8794af1bbbc94cd982e5b897210d6e100599b9cced1a22448ccb49",
+ "teacher_tuple_json": "{\"deadline_s\": 180, \"hooks\": 8000, \"horizon\": 62, \"horizon_value\": -1, \"k\": 25, \"margin\": 1.5, \"name\": \"H8k-180+H\"}",
+ "check": "PASS determinism: raw seat-1 rerun identical 10/10 seeds agree\nPASS R16: seat-crossed raw control differs 10/10 seeds differ\nPASS seat 1 played-action identity (ghost sec.14 vs ghost thr, completed games) 10/10 completed seeds identical; timeouts: 0 seed(s): none\nPASS seat 1 contested-class identity (selected + prior_pick exact, priors tol 1e-05, seed-paired sequence order) 215 contested pairs, 0 bad, 0 named divergences {}, max |dprior| 6.258e-07 (tol 1e-05)\nINFO seat 1 max |dprior| 6.258e-07 at seed 13006 decision 41 (tolerance 1e-05)\nINFO seat 1 newly-contested divergences (expected shape): 734; both-uncontested pairs skipped: 0; unpaired tail rows by arm: sec14 0, thr 0\nPASS ghost14_s1 manifest checks (other than the K6-read one) {\"pick_eq_prior_all_teacher\": true, \"rollouts_present\": true, \"trace_rules_all_ghost_prior\": true, \"trace_teacher_pick_is_prior_argmax\": true}\nPASS ghost14_s1 K6 line 215 0 0 0 (rollout, unstamped, not-thin, pick-off)\nPASS ghostthr_s1 manifest checks (other than the K6-read one) {\"pick_eq_prior_all_teacher\": true, \"rollouts_present\": true, \"trace_rules_all_ghost_prior\": true, \"trace_teacher_pick_is_prior_argmax\": true}\nPASS ghostthr_s1 K6 line 949 0 0 0 (rollout, unstamped, not-thin, pick-off)\nPASS seat 2 played-action identity (ghost sec.14 vs ghost thr, completed games) 10/10 completed seeds identical; timeouts: 0 seed(s): none\nPASS seat 2 contested-class identity (selected + prior_pick exact, priors tol 1e-05, seed-paired sequence order) 172 contested pairs, 0 bad, 0 named divergences {}, max |dprior| 8.941e-07 (tol 1e-05)\nINFO seat 2 max |dprior| 8.941e-07 at seed 13005 decision 19 (tolerance 1e-05)\nINFO seat 2 newly-contested divergences (expected shape): 705; both-uncontested pairs skipped: 0; unpaired tail rows by arm: sec14 0, thr 0\nPASS ghost14_s2 manifest checks (other than the K6-read one) {\"pick_eq_prior_all_teacher\": true, \"rollouts_present\": true, \"trace_rules_all_ghost_prior\": true, \"trace_teacher_pick_is_prior_argmax\": true}\nPASS ghost14_s2 K6 line 172 0 0 0 (rollout, unstamped, not-thin, pick-off)\nPASS ghostthr_s2 manifest checks (other than the K6-read one) {\"pick_eq_prior_all_teacher\": true, \"rollouts_present\": true, \"trace_rules_all_ghost_prior\": true, \"trace_teacher_pick_is_prior_argmax\": true}\nPASS ghostthr_s2 K6 line 877 0 0 0 (rollout, unstamped, not-thin, pick-off)\nPREGATE: IDENTICAL\n",
+ "rows": {
+  "pg_ghost14_s1.jsonl": 10,
+  "pg_ghost14_s2.jsonl": 10,
+  "pg_ghostthr_s1.jsonl": 10,
+  "pg_ghostthr_s2.jsonl": 10,
+  "pg_raw2_s1.jsonl": 10,
+  "pg_raw_s1.jsonl": 10,
+  "pg_raw_s2.jsonl": 10
+ },
+ "sha256": {
+  "pg_ghost14_s1.jsonl": "17fbf552d996abcbbbe5af0ef727d0085f439ad658973a70d71770351c5ff220",
+  "pg_ghost14_s1.jsonl.manifest.json": "e0dd9f09a354031d775dfcb6eca67682ac988cc8d91655ffaafe3ce1fb1aa29a",
+  "pg_ghost14_s2.jsonl": "38090f0e6d57c50945576677173aa66152733bb87fb47891b26158b3ca9429d5",
+  "pg_ghost14_s2.jsonl.manifest.json": "fa7f156906e24524a5c79e6443b155e84db6e5672a10ddabc0b1b01a94003a4a",
+  "pg_ghostthr_s1.jsonl": "ce2d8ba0edc0a988fd20245d448494da1c940e345be01b8f0aec3354175dd7f9",
+  "pg_ghostthr_s1.jsonl.manifest.json": "987d5687cd98e3b6b3379b9ff28515d661382d7c42401b861445d26e202d4b57",
+  "pg_ghostthr_s2.jsonl": "90a61852564451aa59ecc5ee1dc6ecd4973d9132c82589934b9129b8222be5e1",
+  "pg_ghostthr_s2.jsonl.manifest.json": "6147d11004d9dbe6a30a1122662a2886d814dca10a4245488ef2d806b2a76816",
+  "pg_raw2_s1.jsonl": "13d8e261d600652f0e1376317f5775df6e47f11d053311d9107e24083a77a371",
+  "pg_raw2_s1.jsonl.manifest.json": "c0cbe3596bac66e0a8956a7e093c40188e29c4be82bafbd56a29d0dbf0c65fe8",
+  "pg_raw_s1.jsonl": "8a7d14dbb500f24e41d7315151aadf1c84f4bbac0b80ba8570d995b91bb7f203",
+  "pg_raw_s1.jsonl.manifest.json": "c0cbe3596bac66e0a8956a7e093c40188e29c4be82bafbd56a29d0dbf0c65fe8",
+  "pg_raw_s2.jsonl": "d9b8d0d2888d3371468ca3c829151a58913deaa366ffe7e2a25f5799674d71a6",
+  "pg_raw_s2.jsonl.manifest.json": "4aa26cc4ed7b53514e988e3c81ca613c6a418da9f7eb166eb7ccfe94e00527b0",
+  "pregate_check.txt": "a6e33f105857bc735fa7db308b8b0a7311c6e8c8e75cd126a5e0bfb7891091de"
+ }
+}

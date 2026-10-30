@@ -1,0 +1,12 @@
+server identity: {'learner_seat': 1, 'model': '/home/joe/tcg/tcg-sim/rl_out/gravy_ppo_gravybc3/ckpt_v10.pt'} (arm seat 1)
+seed 13001 ghost winner=0 cf=0 332s
+seed 13002 ghost winner=1 cf=0 500s
+seed 13003 ghost winner=1 cf=0 380s
+seed 13004 ghost winner=1 cf=0 167s
+seed 13005 ghost winner=1 cf=0 596s
+seed 13006 ghost winner=2 cf=0 315s
+seed 13007 ghost winner=2 cf=0 452s
+seed 13008 ghost winner=1 cf=0 435s
+seed 13009 ghost winner=1 cf=0 126s
+seed 13010 ghost winner=1 cf=0 457s
+PAIRED-DRIVER-DONE arm=ghost

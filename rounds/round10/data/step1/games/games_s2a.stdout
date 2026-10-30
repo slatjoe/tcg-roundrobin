@@ -1,0 +1,27 @@
+server identity: {'learner_seat': 2, 'model': '/home/joe/tcg/tcg-sim/rl_out/gravy_ppo_gravybc3/ckpt_v10.pt'} (arm seat 2)
+seed 25001 teacher winner=1 cf=0 1264s
+seed 25002 teacher winner=2 cf=0 1809s
+seed 25003 teacher winner=2 cf=0 1465s
+seed 25004 teacher winner=2 cf=0 1738s
+seed 25005 teacher winner=2 cf=0 1381s
+seed 25006 teacher winner=2 cf=0 1956s
+seed 25007 teacher winner=0 cf=0 1652s
+seed 25008 teacher winner=1 cf=0 1818s
+seed 25009 teacher winner=1 cf=0 1733s
+seed 25010 teacher winner=2 cf=0 1382s
+seed 25011 teacher winner=2 cf=0 1678s
+seed 25012 teacher winner=0 cf=0 2165s
+seed 25013 teacher winner=2 cf=0 1503s
+seed 25014 teacher winner=1 cf=0 2006s
+seed 25015 teacher winner=0 cf=0 2037s
+seed 25016 teacher winner=2 cf=0 1462s
+seed 25017 teacher winner=2 cf=0 1941s
+seed 25018 teacher winner=2 cf=0 2090s
+seed 25019 teacher winner=2 cf=0 1804s
+seed 25020 teacher winner=2 cf=0 1755s
+seed 25021 teacher winner=1 cf=0 1532s
+seed 25022 teacher winner=2 cf=0 1881s
+seed 25023 teacher winner=2 cf=0 1007s
+seed 25024 teacher winner=2 cf=0 1622s
+seed 25025 teacher winner=2 cf=0 1760s
+PAIRED-DRIVER-DONE arm=teacher

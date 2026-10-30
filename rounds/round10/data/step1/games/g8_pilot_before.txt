@@ -1,0 +1,5 @@
+
+------ Shared Memory Segments --------
+key        shmid      owner      perms      bytes      nattch     status      
+0x1f7bca95 9764921    joe        666        32768      0                       
+

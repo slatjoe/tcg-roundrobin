@@ -1,0 +1,1774 @@
+# shm_sweep start 2026-10-29T20:06:45.058076 mode=LIVE start_shmids=0 games_dir=/tmp/r10pilot_gm_s1a/vendor/talishar/Games
+PASS 1 2026-10-29T20:06:45.060954 total=0 selected=0 unattributed=0
+DELETED pass=1 count=0 failed=0
+PASS 2 2026-10-29T20:07:45.067280 total=83 selected=1 unattributed=0
+SELECT shmid=19857488 key=917361817 cpid=1157343 lpid=1157343 nattch=0 ctime="Oct 29 20:06:57" atime="Oct 29 20:06:58" dtime="Oct 29 20:06:58"
+DELETE shmid=19857488 key=917361817 -> OK
+DELETED pass=2 count=1 failed=0
+PASS 3 2026-10-29T20:08:45.073459 total=72 selected=0 unattributed=0
+DELETED pass=3 count=0 failed=0
+PASS 4 2026-10-29T20:09:45.082521 total=76 selected=0 unattributed=0
+DELETED pass=4 count=0 failed=0
+PASS 5 2026-10-29T20:10:45.093909 total=92 selected=0 unattributed=0
+DELETED pass=5 count=0 failed=0
+PASS 6 2026-10-29T20:11:45.100020 total=55 selected=0 unattributed=0
+DELETED pass=6 count=0 failed=0
+PASS 7 2026-10-29T20:12:45.106816 total=104 selected=0 unattributed=0
+DELETED pass=7 count=0 failed=0
+PASS 8 2026-10-29T20:13:45.113295 total=58 selected=2 unattributed=0
+SELECT shmid=21332055 key=996990223 cpid=1166246 lpid=1166246 nattch=0 ctime="Oct 29 20:13:22" atime="Oct 29 20:13:23" dtime="Oct 29 20:13:23"
+DELETE shmid=21332055 key=996990223 -> OK
+SELECT shmid=21364822 key=826522921 cpid=1166516 lpid=1166516 nattch=0 ctime="Oct 29 20:13:31" atime="Oct 29 20:13:32" dtime="Oct 29 20:13:32"
+DELETE shmid=21364822 key=826522921 -> OK
+DELETED pass=8 count=2 failed=0
+PASS 9 2026-10-29T20:14:45.123499 total=79 selected=0 unattributed=0
+DELETED pass=9 count=0 failed=0
+PASS 10 2026-10-29T20:15:45.129385 total=79 selected=0 unattributed=0
+DELETED pass=10 count=0 failed=0
+PASS 11 2026-10-29T20:16:45.136519 total=65 selected=0 unattributed=0
+DELETED pass=11 count=0 failed=0
+PASS 12 2026-10-29T20:17:45.142008 total=60 selected=2 unattributed=0
+SELECT shmid=22413312 key=887662137 cpid=1171744 lpid=1171744 nattch=0 ctime="Oct 29 20:16:41" atime="Oct 29 20:16:47" dtime="Oct 29 20:16:47"
+DELETE shmid=22413312 key=887662137 -> OK
+SELECT shmid=22446113 key=704070786 cpid=1172020 lpid=1172020 nattch=0 ctime="Oct 29 20:16:49" atime="Oct 29 20:16:55" dtime="Oct 29 20:16:55"
+DELETE shmid=22446113 key=704070786 -> OK
+DELETED pass=12 count=2 failed=0
+PASS 13 2026-10-29T20:18:45.150374 total=70 selected=0 unattributed=0
+DELETED pass=13 count=0 failed=0
+PASS 14 2026-10-29T20:19:45.159904 total=70 selected=0 unattributed=0
+DELETED pass=14 count=0 failed=0
+PASS 15 2026-10-29T20:20:45.164535 total=41 selected=0 unattributed=0
+DELETED pass=15 count=0 failed=0
+PASS 16 2026-10-29T20:21:45.169177 total=16 selected=0 unattributed=0
+DELETED pass=16 count=0 failed=0
+PASS 17 2026-10-29T20:22:45.174637 total=73 selected=0 unattributed=0
+DELETED pass=17 count=0 failed=0
+PASS 18 2026-10-29T20:23:45.181280 total=89 selected=0 unattributed=0
+DELETED pass=18 count=0 failed=0
+PASS 19 2026-10-29T20:24:45.187806 total=81 selected=0 unattributed=0
+DELETED pass=19 count=0 failed=0
+PASS 20 2026-10-29T20:25:45.196481 total=82 selected=0 unattributed=0
+DELETED pass=20 count=0 failed=0
+PASS 21 2026-10-29T20:26:45.202170 total=83 selected=0 unattributed=0
+DELETED pass=21 count=0 failed=0
+PASS 22 2026-10-29T20:27:45.211150 total=84 selected=0 unattributed=0
+DELETED pass=22 count=0 failed=0
+PASS 23 2026-10-29T20:28:45.217175 total=54 selected=1 unattributed=0
+SELECT shmid=19824657 key=677196321 cpid=1156989 lpid=1156989 nattch=0 ctime="Oct 29 20:06:46" atime="Oct 29 20:27:50" dtime="Oct 29 20:27:50"
+DELETE shmid=19824657 key=677196321 -> OK
+DELETED pass=23 count=1 failed=0
+PASS 24 2026-10-29T20:29:45.225844 total=95 selected=0 unattributed=0
+DELETED pass=24 count=0 failed=0
+PASS 25 2026-10-29T20:30:45.234060 total=64 selected=0 unattributed=0
+DELETED pass=25 count=0 failed=0
+PASS 26 2026-10-29T20:31:45.243597 total=81 selected=0 unattributed=0
+DELETED pass=26 count=0 failed=0
+PASS 27 2026-10-29T20:32:45.249902 total=70 selected=0 unattributed=0
+DELETED pass=27 count=0 failed=0
+PASS 28 2026-10-29T20:33:45.256559 total=57 selected=0 unattributed=0
+DELETED pass=28 count=0 failed=0
+PASS 29 2026-10-29T20:34:45.262595 total=55 selected=1 unattributed=0
+SELECT shmid=19824658 key=773993182 cpid=1156991 lpid=1156991 nattch=0 ctime="Oct 29 20:06:46" atime="Oct 29 20:34:36" dtime="Oct 29 20:34:36"
+DELETE shmid=19824658 key=773993182 -> OK
+DELETED pass=29 count=1 failed=0
+PASS 30 2026-10-29T20:35:45.268447 total=62 selected=0 unattributed=0
+DELETED pass=30 count=0 failed=0
+PASS 31 2026-10-29T20:36:45.275929 total=79 selected=0 unattributed=0
+DELETED pass=31 count=0 failed=0
+PASS 32 2026-10-29T20:37:45.285709 total=60 selected=0 unattributed=0
+DELETED pass=32 count=0 failed=0
+PASS 33 2026-10-29T20:38:45.295574 total=98 selected=0 unattributed=0
+DELETED pass=33 count=0 failed=0
+PASS 34 2026-10-29T20:39:45.301070 total=67 selected=0 unattributed=0
+DELETED pass=34 count=0 failed=0
+PASS 35 2026-10-29T20:40:45.307172 total=90 selected=0 unattributed=0
+DELETED pass=35 count=0 failed=0
+PASS 36 2026-10-29T20:41:45.316062 total=86 selected=0 unattributed=0
+DELETED pass=36 count=0 failed=0
+PASS 37 2026-10-29T20:42:45.325691 total=66 selected=0 unattributed=1
+DELETED pass=37 count=0 failed=0
+PASS 38 2026-10-29T20:43:45.337091 total=86 selected=0 unattributed=0
+DELETED pass=38 count=0 failed=0
+PASS 39 2026-10-29T20:44:45.345546 total=59 selected=0 unattributed=0
+DELETED pass=39 count=0 failed=0
+PASS 40 2026-10-29T20:45:45.351198 total=83 selected=0 unattributed=0
+DELETED pass=40 count=0 failed=0
+PASS 41 2026-10-29T20:46:45.363343 total=65 selected=1 unattributed=0
+SELECT shmid=19824655 key=687801642 cpid=1156990 lpid=1156990 nattch=0 ctime="Oct 29 20:06:46" atime="Oct 29 20:46:39" dtime="Oct 29 20:46:39"
+DELETE shmid=19824655 key=687801642 -> OK
+DELETED pass=41 count=1 failed=0
+PASS 42 2026-10-29T20:47:45.374039 total=83 selected=0 unattributed=0
+DELETED pass=42 count=0 failed=0
+PASS 43 2026-10-29T20:48:45.380672 total=81 selected=1 unattributed=0
+SELECT shmid=38109259 key=975309600 cpid=1240378 lpid=1240378 nattch=0 ctime="Oct 29 20:48:07" atime="Oct 29 20:48:08" dtime="Oct 29 20:48:08"
+DELETE shmid=38109259 key=975309600 -> OK
+DELETED pass=43 count=1 failed=0
+PASS 44 2026-10-29T20:49:45.391864 total=66 selected=2 unattributed=0
+SELECT shmid=38567956 key=905384567 cpid=1242563 lpid=1242563 nattch=0 ctime="Oct 29 20:49:23" atime="Oct 29 20:49:25" dtime="Oct 29 20:49:25"
+DELETE shmid=38567956 key=905384567 -> OK
+SELECT shmid=38633544 key=984412440 cpid=1243013 lpid=1243013 nattch=0 ctime="Oct 29 20:49:33" atime="Oct 29 20:49:36" dtime="Oct 29 20:49:36"
+DELETE shmid=38633544 key=984412440 -> OK
+DELETED pass=44 count=2 failed=0
+PASS 45 2026-10-29T20:50:45.401472 total=70 selected=0 unattributed=0
+DELETED pass=45 count=0 failed=0
+PASS 46 2026-10-29T20:51:45.406853 total=83 selected=0 unattributed=0
+DELETED pass=46 count=0 failed=0
+PASS 47 2026-10-29T20:52:45.415865 total=78 selected=0 unattributed=0
+DELETED pass=47 count=0 failed=0
+PASS 48 2026-10-29T20:53:45.422322 total=82 selected=0 unattributed=0
+DELETED pass=48 count=0 failed=0
+PASS 49 2026-10-29T20:54:45.427598 total=60 selected=0 unattributed=0
+DELETED pass=49 count=0 failed=0
+PASS 50 2026-10-29T20:55:45.439737 total=80 selected=0 unattributed=0
+DELETED pass=50 count=0 failed=0
+PASS 51 2026-10-29T20:56:45.445303 total=58 selected=0 unattributed=0
+DELETED pass=51 count=0 failed=0
+PASS 52 2026-10-29T20:57:45.450569 total=62 selected=0 unattributed=0
+DELETED pass=52 count=0 failed=0
+PASS 53 2026-10-29T20:58:45.457951 total=58 selected=1 unattributed=0
+SELECT shmid=27885568 key=616992506 cpid=1197326 lpid=1197326 nattch=0 ctime="Oct 29 20:27:50" atime="Oct 29 20:57:59" dtime="Oct 29 20:57:59"
+DELETE shmid=27885568 key=616992506 -> OK
+DELETED pass=53 count=1 failed=0
+PASS 54 2026-10-29T20:59:45.465521 total=60 selected=0 unattributed=0
+DELETED pass=54 count=0 failed=0
+PASS 55 2026-10-29T21:00:45.471730 total=57 selected=0 unattributed=0
+DELETED pass=55 count=0 failed=0
+PASS 56 2026-10-29T21:01:45.478874 total=81 selected=1 unattributed=0
+SELECT shmid=44892176 key=671568690 cpid=1268989 lpid=1268989 nattch=0 ctime="Oct 29 21:01:41" atime="Oct 29 21:01:42" dtime="Oct 29 21:01:42"
+DELETE shmid=44892176 key=671568690 -> OK
+DELETED pass=56 count=1 failed=0
+PASS 57 2026-10-29T21:02:45.486855 total=60 selected=0 unattributed=0
+DELETED pass=57 count=0 failed=0
+PASS 58 2026-10-29T21:03:45.494992 total=79 selected=0 unattributed=0
+DELETED pass=58 count=0 failed=0
+PASS 59 2026-10-29T21:04:45.501715 total=50 selected=1 unattributed=0
+SELECT shmid=32342018 key=539655084 cpid=1215754 lpid=1215754 nattch=0 ctime="Oct 29 20:34:37" atime="Oct 29 21:04:35" dtime="Oct 29 21:04:35"
+DELETE shmid=32342018 key=539655084 -> OK
+DELETED pass=59 count=1 failed=0
+PASS 60 2026-10-29T21:05:45.508802 total=80 selected=0 unattributed=0
+DELETED pass=60 count=0 failed=0
+PASS 61 2026-10-29T21:06:45.513191 total=48 selected=0 unattributed=0
+DELETED pass=61 count=0 failed=0
+PASS 62 2026-10-29T21:07:45.520994 total=56 selected=0 unattributed=0
+DELETED pass=62 count=0 failed=0
+PASS 63 2026-10-29T21:08:45.527933 total=50 selected=0 unattributed=0
+DELETED pass=63 count=0 failed=0
+PASS 64 2026-10-29T21:09:45.534050 total=66 selected=0 unattributed=0
+DELETED pass=64 count=0 failed=0
+PASS 65 2026-10-29T21:10:45.541162 total=86 selected=0 unattributed=0
+DELETED pass=65 count=0 failed=0
+PASS 66 2026-10-29T21:11:45.549010 total=85 selected=1 unattributed=0
+SELECT shmid=37519370 key=815612709 cpid=1237909 lpid=1237909 nattch=0 ctime="Oct 29 20:46:39" atime="Oct 29 21:11:41" dtime="Oct 29 21:11:41"
+DELETE shmid=37519370 key=815612709 -> OK
+DELETED pass=66 count=1 failed=0
+PASS 67 2026-10-29T21:12:45.554220 total=47 selected=0 unattributed=0
+DELETED pass=67 count=0 failed=0
+PASS 68 2026-10-29T21:13:45.566262 total=83 selected=0 unattributed=0
+DELETED pass=68 count=0 failed=0
+PASS 69 2026-10-29T21:14:45.576566 total=82 selected=0 unattributed=0
+DELETED pass=69 count=0 failed=0
+PASS 70 2026-10-29T21:15:45.584561 total=74 selected=0 unattributed=0
+DELETED pass=70 count=0 failed=0
+PASS 71 2026-10-29T21:16:45.592354 total=102 selected=0 unattributed=0
+DELETED pass=71 count=0 failed=0
+PASS 72 2026-10-29T21:17:45.600584 total=41 selected=0 unattributed=0
+DELETED pass=72 count=0 failed=0
+PASS 73 2026-10-29T21:18:45.605942 total=69 selected=0 unattributed=0
+DELETED pass=73 count=0 failed=0
+PASS 74 2026-10-29T21:19:45.616683 total=79 selected=0 unattributed=0
+DELETED pass=74 count=0 failed=0
+PASS 75 2026-10-29T21:20:45.621707 total=36 selected=0 unattributed=0
+DELETED pass=75 count=0 failed=0
+PASS 76 2026-10-29T21:21:45.627301 total=58 selected=0 unattributed=0
+DELETED pass=76 count=0 failed=0
+PASS 77 2026-10-29T21:22:45.633455 total=91 selected=1 unattributed=0
+SELECT shmid=43614245 key=812796919 cpid=1263377 lpid=1263377 nattch=0 ctime="Oct 29 20:57:59" atime="Oct 29 21:22:24" dtime="Oct 29 21:22:24"
+DELETE shmid=43614245 key=812796919 -> OK
+DELETED pass=77 count=1 failed=0
+PASS 78 2026-10-29T21:23:45.640087 total=100 selected=0 unattributed=0
+DELETED pass=78 count=0 failed=0
+PASS 79 2026-10-29T21:24:45.645606 total=53 selected=0 unattributed=0
+DELETED pass=79 count=0 failed=0
+PASS 80 2026-10-29T21:25:45.651837 total=66 selected=0 unattributed=0
+DELETED pass=80 count=0 failed=0
+PASS 81 2026-10-29T21:26:45.658141 total=76 selected=0 unattributed=0
+DELETED pass=81 count=0 failed=0
+PASS 82 2026-10-29T21:27:45.676680 total=84 selected=0 unattributed=1
+DELETED pass=82 count=0 failed=0
+PASS 83 2026-10-29T21:28:45.682386 total=76 selected=0 unattributed=0
+DELETED pass=83 count=0 failed=0
+PASS 84 2026-10-29T21:29:45.687930 total=61 selected=0 unattributed=0
+DELETED pass=84 count=0 failed=0
+PASS 85 2026-10-29T21:30:45.698181 total=99 selected=0 unattributed=0
+DELETED pass=85 count=0 failed=0
+PASS 86 2026-10-29T21:31:45.706736 total=92 selected=0 unattributed=0
+DELETED pass=86 count=0 failed=0
+PASS 87 2026-10-29T21:32:45.714851 total=80 selected=0 unattributed=0
+DELETED pass=87 count=0 failed=0
+PASS 88 2026-10-29T21:33:45.721600 total=78 selected=0 unattributed=0
+DELETED pass=88 count=0 failed=0
+PASS 89 2026-10-29T21:34:45.732045 total=84 selected=0 unattributed=0
+DELETED pass=89 count=0 failed=0
+PASS 90 2026-10-29T21:35:45.738312 total=59 selected=0 unattributed=0
+DELETED pass=90 count=0 failed=0
+PASS 91 2026-10-29T21:36:45.747151 total=79 selected=0 unattributed=0
+DELETED pass=91 count=0 failed=0
+PASS 92 2026-10-29T21:37:45.757340 total=96 selected=0 unattributed=0
+DELETED pass=92 count=0 failed=0
+PASS 93 2026-10-29T21:38:45.765063 total=77 selected=0 unattributed=0
+DELETED pass=93 count=0 failed=0
+PASS 94 2026-10-29T21:39:45.772137 total=56 selected=0 unattributed=0
+DELETED pass=94 count=0 failed=0
+PASS 95 2026-10-29T21:40:45.778755 total=70 selected=1 unattributed=2
+SELECT shmid=61603927 key=958583909 cpid=1344696 lpid=1344696 nattch=0 ctime="Oct 29 21:39:57" atime="Oct 29 21:40:07" dtime="Oct 29 21:40:07"
+DELETE shmid=61603927 key=958583909 -> OK
+DELETED pass=95 count=1 failed=0
+PASS 96 2026-10-29T21:41:45.793906 total=93 selected=1 unattributed=0
+SELECT shmid=50495596 key=922003687 cpid=1291396 lpid=1291396 nattch=0 ctime="Oct 29 21:11:41" atime="Oct 29 21:40:51" dtime="Oct 29 21:40:51"
+DELETE shmid=50495596 key=922003687 -> OK
+DELETED pass=96 count=1 failed=0
+PASS 97 2026-10-29T21:42:45.804522 total=74 selected=0 unattributed=0
+DELETED pass=97 count=0 failed=0
+PASS 98 2026-10-29T21:43:45.814320 total=89 selected=1 unattributed=1
+SELECT shmid=46301238 key=153925466 cpid=1275297 lpid=1275297 nattch=0 ctime="Oct 29 21:04:35" atime="Oct 29 21:43:23" dtime="Oct 29 21:43:23"
+DELETE shmid=46301238 key=153925466 -> OK
+DELETED pass=98 count=1 failed=0
+PASS 99 2026-10-29T21:44:45.824243 total=49 selected=0 unattributed=0
+DELETED pass=99 count=0 failed=0
+PASS 100 2026-10-29T21:45:45.830645 total=102 selected=0 unattributed=0
+DELETED pass=100 count=0 failed=0
+PASS 101 2026-10-29T21:46:45.838795 total=77 selected=0 unattributed=0
+DELETED pass=101 count=0 failed=0
+PASS 102 2026-10-29T21:47:45.844538 total=63 selected=0 unattributed=0
+DELETED pass=102 count=0 failed=0
+PASS 103 2026-10-29T21:48:45.854733 total=79 selected=2 unattributed=0
+SELECT shmid=65339432 key=843178828 cpid=1361820 lpid=1361820 nattch=0 ctime="Oct 29 21:48:06" atime="Oct 29 21:48:08" dtime="Oct 29 21:48:08"
+DELETE shmid=65339432 key=843178828 -> OK
+SELECT shmid=65372235 key=784314646 cpid=1362036 lpid=1362036 nattch=0 ctime="Oct 29 21:48:12" atime="Oct 29 21:48:15" dtime="Oct 29 21:48:15"
+DELETE shmid=65372235 key=784314646 -> OK
+DELETED pass=103 count=2 failed=0
+PASS 104 2026-10-29T21:49:45.866002 total=93 selected=0 unattributed=0
+DELETED pass=104 count=0 failed=0
+PASS 105 2026-10-29T21:50:45.875582 total=79 selected=0 unattributed=0
+DELETED pass=105 count=0 failed=0
+PASS 106 2026-10-29T21:51:45.888427 total=79 selected=1 unattributed=0
+SELECT shmid=54263834 key=932860333 cpid=1310428 lpid=1310428 nattch=0 ctime="Oct 29 21:22:24" atime="Oct 29 21:51:22" dtime="Oct 29 21:51:22"
+DELETE shmid=54263834 key=932860333 -> OK
+DELETED pass=106 count=1 failed=0
+PASS 107 2026-10-29T21:52:45.899442 total=79 selected=0 unattributed=0
+DELETED pass=107 count=0 failed=0
+PASS 108 2026-10-29T21:53:45.906130 total=55 selected=0 unattributed=0
+DELETED pass=108 count=0 failed=0
+PASS 109 2026-10-29T21:54:45.911514 total=65 selected=0 unattributed=0
+DELETED pass=109 count=0 failed=0
+PASS 110 2026-10-29T21:55:45.916500 total=64 selected=0 unattributed=0
+DELETED pass=110 count=0 failed=0
+PASS 111 2026-10-29T21:56:45.924682 total=79 selected=0 unattributed=0
+DELETED pass=111 count=0 failed=0
+PASS 112 2026-10-29T21:57:45.931270 total=81 selected=1 unattributed=0
+SELECT shmid=62685186 key=678859581 cpid=1348692 lpid=1348692 nattch=0 ctime="Oct 29 21:40:51" atime="Oct 29 21:57:35" dtime="Oct 29 21:57:35"
+DELETE shmid=62685186 key=678859581 -> OK
+DELETED pass=112 count=1 failed=0
+PASS 113 2026-10-29T21:58:45.937527 total=39 selected=0 unattributed=0
+DELETED pass=113 count=0 failed=0
+PASS 114 2026-10-29T21:59:45.943994 total=83 selected=1 unattributed=0
+SELECT shmid=71139414 key=728701083 cpid=1386411 lpid=1386411 nattch=0 ctime="Oct 29 21:58:47" atime="Oct 29 21:58:50" dtime="Oct 29 21:58:50"
+DELETE shmid=71139414 key=728701083 -> OK
+DELETED pass=114 count=1 failed=0
+PASS 115 2026-10-29T22:00:45.952197 total=75 selected=0 unattributed=0
+DELETED pass=115 count=0 failed=0
+PASS 116 2026-10-29T22:01:45.958326 total=78 selected=0 unattributed=0
+DELETED pass=116 count=0 failed=0
+PASS 117 2026-10-29T22:02:45.970522 total=78 selected=0 unattributed=0
+DELETED pass=117 count=0 failed=0
+PASS 118 2026-10-29T22:03:45.983820 total=104 selected=0 unattributed=0
+DELETED pass=118 count=0 failed=0
+PASS 119 2026-10-29T22:04:45.994371 total=77 selected=0 unattributed=0
+DELETED pass=119 count=0 failed=0
+PASS 120 2026-10-29T22:05:46.005250 total=103 selected=0 unattributed=0
+DELETED pass=120 count=0 failed=0
+PASS 121 2026-10-29T22:06:46.013495 total=84 selected=0 unattributed=0
+DELETED pass=121 count=0 failed=0
+PASS 122 2026-10-29T22:07:46.019214 total=55 selected=0 unattributed=0
+DELETED pass=122 count=0 failed=0
+PASS 123 2026-10-29T22:08:46.024765 total=71 selected=1 unattributed=0
+SELECT shmid=77201473 key=992386497 cpid=1412485 lpid=1412485 nattch=0 ctime="Oct 29 22:08:24" atime="Oct 29 22:08:29" dtime="Oct 29 22:08:29"
+DELETE shmid=77201473 key=992386497 -> OK
+DELETED pass=123 count=1 failed=0
+PASS 124 2026-10-29T22:09:46.030923 total=73 selected=1 unattributed=0
+SELECT shmid=77398075 key=725729046 cpid=1413369 lpid=1413369 nattch=0 ctime="Oct 29 22:08:59" atime="Oct 29 22:09:05" dtime="Oct 29 22:09:05"
+DELETE shmid=77398075 key=725729046 -> OK
+DELETED pass=124 count=1 failed=0
+PASS 125 2026-10-29T22:10:46.040335 total=91 selected=2 unattributed=0
+SELECT shmid=77692960 key=299757092 cpid=1414744 lpid=1414744 nattch=0 ctime="Oct 29 22:09:50" atime="Oct 29 22:09:54" dtime="Oct 29 22:09:54"
+DELETE shmid=77692960 key=299757092 -> OK
+SELECT shmid=77758497 key=859375691 cpid=1414949 lpid=1414949 nattch=0 ctime="Oct 29 22:09:55" atime="Oct 29 22:10:00" dtime="Oct 29 22:10:00"
+DELETE shmid=77758497 key=859375691 -> OK
+DELETED pass=125 count=2 failed=0
+PASS 126 2026-10-29T22:11:46.048532 total=64 selected=0 unattributed=0
+DELETED pass=126 count=0 failed=0
+PASS 127 2026-10-29T22:12:46.054698 total=40 selected=0 unattributed=0
+DELETED pass=127 count=0 failed=0
+PASS 128 2026-10-29T22:13:46.064376 total=55 selected=1 unattributed=0
+SELECT shmid=70647865 key=124384518 cpid=1384175 lpid=1384175 nattch=0 ctime="Oct 29 21:57:35" atime="Oct 29 22:13:12" dtime="Oct 29 22:13:12"
+DELETE shmid=70647865 key=124384518 -> OK
+DELETED pass=128 count=1 failed=0
+PASS 129 2026-10-29T22:14:46.072520 total=44 selected=1 unattributed=0
+SELECT shmid=66912256 key=442837386 cpid=1368675 lpid=1368675 nattch=0 ctime="Oct 29 21:51:22" atime="Oct 29 22:14:22" dtime="Oct 29 22:14:22"
+DELETE shmid=66912256 key=442837386 -> OK
+DELETED pass=129 count=1 failed=0
+PASS 130 2026-10-29T22:15:46.078407 total=71 selected=0 unattributed=0
+DELETED pass=130 count=0 failed=0
+PASS 131 2026-10-29T22:16:46.090413 total=72 selected=0 unattributed=0
+DELETED pass=131 count=0 failed=0
+PASS 132 2026-10-29T22:17:46.098977 total=81 selected=0 unattributed=0
+DELETED pass=132 count=0 failed=0
+PASS 133 2026-10-29T22:18:46.105232 total=105 selected=1 unattributed=0
+SELECT shmid=80805920 key=249594488 cpid=1428930 lpid=1428930 nattch=0 ctime="Oct 29 22:18:02" atime="Oct 29 22:18:09" dtime="Oct 29 22:18:09"
+DELETE shmid=80805920 key=249594488 -> OK
+DELETED pass=133 count=1 failed=0
+PASS 134 2026-10-29T22:19:46.114625 total=55 selected=0 unattributed=0
+DELETED pass=134 count=0 failed=0
+PASS 135 2026-10-29T22:20:46.126051 total=63 selected=0 unattributed=0
+DELETED pass=135 count=0 failed=0
+PASS 136 2026-10-29T22:21:46.131477 total=77 selected=0 unattributed=0
+DELETED pass=136 count=0 failed=0
+PASS 137 2026-10-29T22:22:46.136652 total=52 selected=0 unattributed=0
+DELETED pass=137 count=0 failed=0
+PASS 138 2026-10-29T22:23:46.141467 total=54 selected=0 unattributed=0
+DELETED pass=138 count=0 failed=0
+PASS 139 2026-10-29T22:24:46.146604 total=63 selected=1 unattributed=0
+SELECT shmid=82903046 key=437161442 cpid=1439391 lpid=1439391 nattch=0 ctime="Oct 29 22:24:03" atime="Oct 29 22:24:05" dtime="Oct 29 22:24:05"
+DELETE shmid=82903046 key=437161442 -> OK
+DELETED pass=139 count=1 failed=0
+PASS 140 2026-10-29T22:25:46.157054 total=75 selected=0 unattributed=0
+DELETED pass=140 count=0 failed=0
+PASS 141 2026-10-29T22:26:46.163859 total=65 selected=0 unattributed=0
+DELETED pass=141 count=0 failed=0
+PASS 142 2026-10-29T22:27:46.168746 total=70 selected=0 unattributed=0
+DELETED pass=142 count=0 failed=0
+PASS 143 2026-10-29T22:28:46.174686 total=54 selected=0 unattributed=0
+DELETED pass=143 count=0 failed=0
+PASS 144 2026-10-29T22:29:46.187618 total=100 selected=1 unattributed=0
+SELECT shmid=79364122 key=456246030 cpid=1421598 lpid=1421598 nattch=0 ctime="Oct 29 22:13:13" atime="Oct 29 22:29:28" dtime="Oct 29 22:29:28"
+DELETE shmid=79364122 key=456246030 -> OK
+DELETED pass=144 count=1 failed=0
+PASS 145 2026-10-29T22:30:46.198965 total=63 selected=0 unattributed=0
+DELETED pass=145 count=0 failed=0
+PASS 146 2026-10-29T22:31:46.205355 total=63 selected=0 unattributed=0
+DELETED pass=146 count=0 failed=0
+PASS 147 2026-10-29T22:32:46.211849 total=73 selected=0 unattributed=0
+DELETED pass=147 count=0 failed=0
+PASS 148 2026-10-29T22:33:46.219244 total=60 selected=0 unattributed=0
+DELETED pass=148 count=0 failed=0
+PASS 149 2026-10-29T22:34:46.223891 total=40 selected=0 unattributed=0
+DELETED pass=149 count=0 failed=0
+PASS 150 2026-10-29T22:35:46.233966 total=49 selected=0 unattributed=0
+DELETED pass=150 count=0 failed=0
+PASS 151 2026-10-29T22:36:46.240526 total=48 selected=1 unattributed=0
+SELECT shmid=77037648 key=454477727 cpid=1411485 lpid=1411485 nattch=0 ctime="Oct 29 22:07:46" atime="Oct 29 22:36:46" dtime="Oct 29 22:36:46"
+DELETE shmid=77037648 key=454477727 -> OK
+DELETED pass=151 count=1 failed=0
+PASS 152 2026-10-29T22:37:46.247256 total=84 selected=0 unattributed=0
+DELETED pass=152 count=0 failed=0
+PASS 153 2026-10-29T22:38:46.254916 total=102 selected=0 unattributed=0
+DELETED pass=153 count=0 failed=0
+PASS 154 2026-10-29T22:39:46.260944 total=82 selected=0 unattributed=0
+DELETED pass=154 count=0 failed=0
+PASS 155 2026-10-29T22:40:46.266115 total=53 selected=0 unattributed=0
+DELETED pass=155 count=0 failed=0
+PASS 156 2026-10-29T22:41:46.276062 total=81 selected=0 unattributed=0
+DELETED pass=156 count=0 failed=0
+PASS 157 2026-10-29T22:42:46.288217 total=96 selected=0 unattributed=0
+DELETED pass=157 count=0 failed=0
+PASS 158 2026-10-29T22:43:46.297586 total=69 selected=0 unattributed=0
+DELETED pass=158 count=0 failed=0
+PASS 159 2026-10-29T22:44:46.303471 total=88 selected=0 unattributed=0
+DELETED pass=159 count=0 failed=0
+PASS 160 2026-10-29T22:45:46.310568 total=100 selected=0 unattributed=0
+DELETED pass=160 count=0 failed=0
+PASS 161 2026-10-29T22:46:46.325598 total=83 selected=0 unattributed=0
+DELETED pass=161 count=0 failed=0
+PASS 162 2026-10-29T22:47:46.330421 total=63 selected=1 unattributed=0
+SELECT shmid=79921233 key=842541954 cpid=1423725 lpid=1423725 nattch=0 ctime="Oct 29 22:14:22" atime="Oct 29 22:46:58" dtime="Oct 29 22:46:58"
+DELETE shmid=79921233 key=842541954 -> OK
+DELETED pass=162 count=1 failed=0
+PASS 163 2026-10-29T22:48:46.338558 total=76 selected=0 unattributed=0
+DELETED pass=163 count=0 failed=0
+PASS 164 2026-10-29T22:49:46.345490 total=99 selected=0 unattributed=0
+DELETED pass=164 count=0 failed=0
+PASS 165 2026-10-29T22:50:46.354533 total=80 selected=0 unattributed=0
+DELETED pass=165 count=0 failed=0
+PASS 166 2026-10-29T22:51:46.361254 total=55 selected=0 unattributed=0
+DELETED pass=166 count=0 failed=0
+PASS 167 2026-10-29T22:52:46.368102 total=69 selected=0 unattributed=0
+DELETED pass=167 count=0 failed=0
+PASS 168 2026-10-29T22:53:46.375231 total=47 selected=0 unattributed=0
+DELETED pass=168 count=0 failed=0
+PASS 169 2026-10-29T22:54:46.383007 total=66 selected=0 unattributed=0
+DELETED pass=169 count=0 failed=0
+PASS 170 2026-10-29T22:55:46.392619 total=82 selected=0 unattributed=0
+DELETED pass=170 count=0 failed=0
+PASS 171 2026-10-29T22:56:46.399048 total=47 selected=0 unattributed=1
+DELETED pass=171 count=0 failed=0
+PASS 172 2026-10-29T22:57:46.404003 total=63 selected=0 unattributed=0
+DELETED pass=172 count=0 failed=0
+PASS 173 2026-10-29T22:58:46.414948 total=97 selected=0 unattributed=0
+DELETED pass=173 count=0 failed=0
+PASS 174 2026-10-29T22:59:46.424010 total=85 selected=0 unattributed=0
+DELETED pass=174 count=0 failed=0
+PASS 175 2026-10-29T23:00:46.429708 total=43 selected=1 unattributed=0
+SELECT shmid=86212636 key=605360620 cpid=1452747 lpid=1452747 nattch=0 ctime="Oct 29 22:29:28" atime="Oct 29 22:59:59" dtime="Oct 29 22:59:59"
+DELETE shmid=86212636 key=605360620 -> OK
+DELETED pass=175 count=1 failed=0
+PASS 176 2026-10-29T23:01:46.436699 total=67 selected=3 unattributed=0
+SELECT shmid=100859932 key=226998024 cpid=1519598 lpid=1519598 nattch=0 ctime="Oct 29 23:01:18" atime="Oct 29 23:01:21" dtime="Oct 29 23:01:21"
+DELETE shmid=100859932 key=226998024 -> OK
+SELECT shmid=100892699 key=131245063 cpid=1519705 lpid=1519705 nattch=0 ctime="Oct 29 23:01:21" atime="Oct 29 23:01:23" dtime="Oct 29 23:01:23"
+DELETE shmid=100892699 key=131245063 -> OK
+SELECT shmid=100925460 key=924939607 cpid=1519807 lpid=1519807 nattch=0 ctime="Oct 29 23:01:23" atime="Oct 29 23:01:25" dtime="Oct 29 23:01:25"
+DELETE shmid=100925460 key=924939607 -> OK
+DELETED pass=176 count=3 failed=0
+PASS 177 2026-10-29T23:02:46.447207 total=85 selected=0 unattributed=0
+DELETED pass=177 count=0 failed=0
+PASS 178 2026-10-29T23:03:46.454524 total=46 selected=1 unattributed=0
+SELECT shmid=90046489 key=934986194 cpid=1470508 lpid=1470508 nattch=0 ctime="Oct 29 22:36:46" atime="Oct 29 23:03:43" dtime="Oct 29 23:03:43"
+DELETE shmid=90046489 key=934986194 -> OK
+DELETED pass=178 count=1 failed=0
+PASS 179 2026-10-29T23:04:46.462097 total=55 selected=0 unattributed=0
+DELETED pass=179 count=0 failed=0
+PASS 180 2026-10-29T23:05:46.468349 total=75 selected=0 unattributed=0
+DELETED pass=180 count=0 failed=0
+PASS 181 2026-10-29T23:06:46.479086 total=83 selected=0 unattributed=1
+DELETED pass=181 count=0 failed=0
+PASS 182 2026-10-29T23:07:46.486760 total=38 selected=0 unattributed=1
+DELETED pass=182 count=0 failed=0
+PASS 183 2026-10-29T23:08:46.496774 total=66 selected=0 unattributed=1
+DELETED pass=183 count=0 failed=0
+PASS 184 2026-10-29T23:09:46.507671 total=58 selected=0 unattributed=0
+DELETED pass=184 count=0 failed=0
+PASS 185 2026-10-29T23:10:46.513820 total=64 selected=0 unattributed=0
+DELETED pass=185 count=0 failed=0
+PASS 186 2026-10-29T23:11:46.521171 total=72 selected=0 unattributed=0
+DELETED pass=186 count=0 failed=0
+PASS 187 2026-10-29T23:12:46.527143 total=74 selected=0 unattributed=0
+DELETED pass=187 count=0 failed=0
+PASS 188 2026-10-29T23:13:46.534222 total=68 selected=0 unattributed=0
+DELETED pass=188 count=0 failed=0
+PASS 189 2026-10-29T23:14:46.540416 total=62 selected=1 unattributed=0
+SELECT shmid=93880363 key=139955193 cpid=1488763 lpid=1488763 nattch=0 ctime="Oct 29 22:46:58" atime="Oct 29 23:14:30" dtime="Oct 29 23:14:30"
+DELETE shmid=93880363 key=139955193 -> OK
+DELETED pass=189 count=1 failed=0
+PASS 190 2026-10-29T23:15:46.547313 total=61 selected=0 unattributed=0
+DELETED pass=190 count=0 failed=0
+PASS 191 2026-10-29T23:16:46.553966 total=72 selected=0 unattributed=0
+DELETED pass=191 count=0 failed=0
+PASS 192 2026-10-29T23:17:46.560836 total=87 selected=0 unattributed=0
+DELETED pass=192 count=0 failed=0
+PASS 193 2026-10-29T23:18:46.567643 total=49 selected=0 unattributed=0
+DELETED pass=193 count=0 failed=0
+PASS 194 2026-10-29T23:19:46.572873 total=58 selected=0 unattributed=0
+DELETED pass=194 count=0 failed=0
+PASS 195 2026-10-29T23:20:46.580160 total=94 selected=0 unattributed=0
+DELETED pass=195 count=0 failed=0
+PASS 196 2026-10-29T23:21:46.590414 total=95 selected=0 unattributed=0
+DELETED pass=196 count=0 failed=0
+PASS 197 2026-10-29T23:22:46.595366 total=42 selected=0 unattributed=0
+DELETED pass=197 count=0 failed=0
+PASS 198 2026-10-29T23:23:46.600217 total=36 selected=0 unattributed=0
+DELETED pass=198 count=0 failed=0
+PASS 199 2026-10-29T23:24:46.606250 total=100 selected=0 unattributed=0
+DELETED pass=199 count=0 failed=0
+PASS 200 2026-10-29T23:25:46.613893 total=59 selected=0 unattributed=0
+DELETED pass=200 count=0 failed=0
+PASS 201 2026-10-29T23:26:46.619993 total=73 selected=0 unattributed=0
+DELETED pass=201 count=0 failed=0
+PASS 202 2026-10-29T23:27:46.625438 total=95 selected=0 unattributed=0
+DELETED pass=202 count=0 failed=0
+PASS 203 2026-10-29T23:28:46.632923 total=71 selected=0 unattributed=0
+DELETED pass=203 count=0 failed=0
+PASS 204 2026-10-29T23:29:46.638184 total=34 selected=0 unattributed=0
+DELETED pass=204 count=0 failed=0
+PASS 205 2026-10-29T23:30:46.643832 total=103 selected=0 unattributed=0
+DELETED pass=205 count=0 failed=0
+PASS 206 2026-10-29T23:31:46.650362 total=81 selected=0 unattributed=0
+DELETED pass=206 count=0 failed=0
+PASS 207 2026-10-29T23:32:46.658006 total=77 selected=0 unattributed=0
+DELETED pass=207 count=0 failed=0
+PASS 208 2026-10-29T23:33:46.663600 total=81 selected=2 unattributed=0
+SELECT shmid=99909666 key=200111070 cpid=1516154 lpid=1516154 nattch=0 ctime="Oct 29 23:00:00" atime="Oct 29 23:33:07" dtime="Oct 29 23:33:07"
+DELETE shmid=99909666 key=200111070 -> OK
+SELECT shmid=103153748 key=361695623 cpid=1527786 lpid=1527786 nattch=0 ctime="Oct 29 23:03:43" atime="Oct 29 23:33:09" dtime="Oct 29 23:33:09"
+DELETE shmid=103153748 key=361695623 -> OK
+DELETED pass=208 count=2 failed=0
+PASS 209 2026-10-29T23:34:46.671294 total=49 selected=0 unattributed=0
+DELETED pass=209 count=0 failed=0
+PASS 210 2026-10-29T23:35:46.677632 total=62 selected=0 unattributed=0
+DELETED pass=210 count=0 failed=0
+PASS 211 2026-10-29T23:36:46.684001 total=84 selected=0 unattributed=0
+DELETED pass=211 count=0 failed=0
+PASS 212 2026-10-29T23:37:46.690563 total=37 selected=0 unattributed=0
+DELETED pass=212 count=0 failed=0
+PASS 213 2026-10-29T23:38:46.700667 total=90 selected=0 unattributed=0
+DELETED pass=213 count=0 failed=0
+PASS 214 2026-10-29T23:39:46.708345 total=57 selected=0 unattributed=0
+DELETED pass=214 count=0 failed=0
+PASS 215 2026-10-29T23:40:46.714642 total=80 selected=0 unattributed=0
+DELETED pass=215 count=0 failed=0
+PASS 216 2026-10-29T23:41:46.720554 total=35 selected=0 unattributed=0
+DELETED pass=216 count=0 failed=0
+PASS 217 2026-10-29T23:42:46.726287 total=82 selected=0 unattributed=0
+DELETED pass=217 count=0 failed=0
+PASS 218 2026-10-29T23:43:46.731457 total=56 selected=0 unattributed=0
+DELETED pass=218 count=0 failed=0
+PASS 219 2026-10-29T23:44:46.737635 total=70 selected=0 unattributed=0
+DELETED pass=219 count=0 failed=0
+PASS 220 2026-10-29T23:45:46.746325 total=79 selected=1 unattributed=0
+SELECT shmid=107544629 key=952682359 cpid=1547214 lpid=1547214 nattch=0 ctime="Oct 29 23:14:30" atime="Oct 29 23:44:48" dtime="Oct 29 23:44:48"
+DELETE shmid=107544629 key=952682359 -> OK
+DELETED pass=220 count=1 failed=0
+PASS 221 2026-10-29T23:46:46.753113 total=73 selected=0 unattributed=0
+DELETED pass=221 count=0 failed=0
+PASS 222 2026-10-29T23:47:46.757970 total=53 selected=0 unattributed=0
+DELETED pass=222 count=0 failed=0
+PASS 223 2026-10-29T23:48:46.762820 total=55 selected=0 unattributed=0
+DELETED pass=223 count=0 failed=0
+PASS 224 2026-10-29T23:49:46.770468 total=72 selected=0 unattributed=0
+DELETED pass=224 count=0 failed=0
+PASS 225 2026-10-29T23:50:46.776113 total=80 selected=0 unattributed=0
+DELETED pass=225 count=0 failed=0
+PASS 226 2026-10-29T23:51:46.785867 total=72 selected=0 unattributed=0
+DELETED pass=226 count=0 failed=0
+PASS 227 2026-10-29T23:52:46.792378 total=68 selected=0 unattributed=0
+DELETED pass=227 count=0 failed=0
+PASS 228 2026-10-29T23:53:46.802349 total=50 selected=0 unattributed=0
+DELETED pass=228 count=0 failed=0
+PASS 229 2026-10-29T23:54:46.808381 total=91 selected=1 unattributed=0
+SELECT shmid=115540041 key=378737699 cpid=1587347 lpid=1587347 nattch=0 ctime="Oct 29 23:33:09" atime="Oct 29 23:54:37" dtime="Oct 29 23:54:37"
+DELETE shmid=115540041 key=378737699 -> OK
+DELETED pass=229 count=1 failed=0
+PASS 230 2026-10-29T23:55:46.813614 total=54 selected=0 unattributed=0
+DELETED pass=230 count=0 failed=0
+PASS 231 2026-10-29T23:56:46.821973 total=69 selected=0 unattributed=0
+DELETED pass=231 count=0 failed=0
+PASS 232 2026-10-29T23:57:46.831015 total=91 selected=0 unattributed=0
+DELETED pass=232 count=0 failed=0
+PASS 233 2026-10-29T23:58:46.836698 total=80 selected=0 unattributed=0
+DELETED pass=233 count=0 failed=0
+PASS 234 2026-10-29T23:59:46.842290 total=88 selected=0 unattributed=0
+DELETED pass=234 count=0 failed=0
+PASS 235 2026-10-30T00:00:46.846632 total=44 selected=0 unattributed=0
+DELETED pass=235 count=0 failed=0
+PASS 236 2026-10-30T00:01:46.854245 total=50 selected=0 unattributed=0
+DELETED pass=236 count=0 failed=0
+PASS 237 2026-10-30T00:02:46.863547 total=88 selected=0 unattributed=0
+DELETED pass=237 count=0 failed=0
+PASS 238 2026-10-30T00:03:46.874563 total=76 selected=0 unattributed=0
+DELETED pass=238 count=0 failed=0
+PASS 239 2026-10-30T00:04:46.884185 total=51 selected=0 unattributed=0
+DELETED pass=239 count=0 failed=0
+PASS 240 2026-10-30T00:05:46.896692 total=74 selected=0 unattributed=0
+DELETED pass=240 count=0 failed=0
+PASS 241 2026-10-30T00:06:46.904408 total=72 selected=0 unattributed=0
+DELETED pass=241 count=0 failed=0
+PASS 242 2026-10-30T00:07:46.919633 total=100 selected=0 unattributed=0
+DELETED pass=242 count=0 failed=0
+PASS 243 2026-10-30T00:08:46.926094 total=88 selected=0 unattributed=0
+DELETED pass=243 count=0 failed=0
+PASS 244 2026-10-30T00:09:46.930797 total=26 selected=0 unattributed=0
+DELETED pass=244 count=0 failed=0
+PASS 245 2026-10-30T00:10:46.936189 total=82 selected=0 unattributed=0
+DELETED pass=245 count=0 failed=0
+PASS 246 2026-10-30T00:11:46.944311 total=83 selected=0 unattributed=0
+DELETED pass=246 count=0 failed=0
+PASS 247 2026-10-30T00:12:46.953445 total=97 selected=0 unattributed=0
+DELETED pass=247 count=0 failed=0
+PASS 248 2026-10-30T00:13:46.961514 total=88 selected=1 unattributed=0
+SELECT shmid=121602131 key=354662867 cpid=1612873 lpid=1612873 nattch=0 ctime="Oct 29 23:44:48" atime="Oct 30 00:13:41" dtime="Oct 30 00:13:41"
+DELETE shmid=121602131 key=354662867 -> OK
+DELETED pass=248 count=1 failed=0
+PASS 249 2026-10-30T00:14:46.967672 total=65 selected=0 unattributed=0
+DELETED pass=249 count=0 failed=0
+PASS 250 2026-10-30T00:15:46.974896 total=88 selected=0 unattributed=0
+DELETED pass=250 count=0 failed=0
+PASS 251 2026-10-30T00:16:46.983813 total=81 selected=1 unattributed=0
+SELECT shmid=115507207 key=660280270 cpid=1587157 lpid=1587157 nattch=0 ctime="Oct 29 23:33:07" atime="Oct 30 00:16:41" dtime="Oct 30 00:16:41"
+DELETE shmid=115507207 key=660280270 -> OK
+DELETED pass=251 count=1 failed=0
+PASS 252 2026-10-30T00:17:46.994069 total=73 selected=0 unattributed=0
+DELETED pass=252 count=0 failed=0
+PASS 253 2026-10-30T00:18:46.999599 total=78 selected=0 unattributed=0
+DELETED pass=253 count=0 failed=0
+PASS 254 2026-10-30T00:19:47.007973 total=77 selected=0 unattributed=0
+DELETED pass=254 count=0 failed=0
+PASS 255 2026-10-30T00:20:47.012929 total=45 selected=0 unattributed=0
+DELETED pass=255 count=0 failed=0
+PASS 256 2026-10-30T00:21:47.020436 total=94 selected=0 unattributed=0
+DELETED pass=256 count=0 failed=0
+PASS 257 2026-10-30T00:22:47.025946 total=86 selected=1 unattributed=0
+SELECT shmid=136511555 key=482731489 cpid=1681656 lpid=1681656 nattch=0 ctime="Oct 30 00:21:43" atime="Oct 30 00:21:51" dtime="Oct 30 00:21:51"
+DELETE shmid=136511555 key=482731489 -> OK
+DELETED pass=257 count=1 failed=0
+PASS 258 2026-10-30T00:23:47.031964 total=58 selected=0 unattributed=1
+DELETED pass=258 count=0 failed=0
+PASS 259 2026-10-30T00:24:47.044443 total=90 selected=0 unattributed=0
+DELETED pass=259 count=0 failed=0
+PASS 260 2026-10-30T00:25:47.050108 total=94 selected=0 unattributed=0
+DELETED pass=260 count=0 failed=0
+PASS 261 2026-10-30T00:26:47.058738 total=45 selected=0 unattributed=0
+DELETED pass=261 count=0 failed=0
+PASS 262 2026-10-30T00:27:47.065571 total=81 selected=0 unattributed=0
+DELETED pass=262 count=0 failed=0
+PASS 263 2026-10-30T00:28:47.070557 total=59 selected=0 unattributed=0
+DELETED pass=263 count=0 failed=0
+PASS 264 2026-10-30T00:29:47.076135 total=75 selected=0 unattributed=0
+DELETED pass=264 count=0 failed=0
+PASS 265 2026-10-30T00:30:47.082785 total=36 selected=1 unattributed=0
+SELECT shmid=125075492 key=725018991 cpid=1629518 lpid=1629518 nattch=0 ctime="Oct 29 23:54:37" atime="Oct 30 00:30:26" dtime="Oct 30 00:30:26"
+DELETE shmid=125075492 key=725018991 -> OK
+DELETED pass=265 count=1 failed=0
+PASS 266 2026-10-30T00:31:47.092772 total=84 selected=0 unattributed=0
+DELETED pass=266 count=0 failed=0
+PASS 267 2026-10-30T00:32:47.100615 total=48 selected=0 unattributed=0
+DELETED pass=267 count=0 failed=0
+PASS 268 2026-10-30T00:33:47.106392 total=82 selected=0 unattributed=0
+DELETED pass=268 count=0 failed=0
+PASS 269 2026-10-30T00:34:47.113227 total=45 selected=0 unattributed=0
+DELETED pass=269 count=0 failed=0
+PASS 270 2026-10-30T00:35:47.120578 total=77 selected=0 unattributed=0
+DELETED pass=270 count=0 failed=0
+PASS 271 2026-10-30T00:36:47.128327 total=77 selected=1 unattributed=0
+SELECT shmid=132808782 key=732363457 cpid=1665071 lpid=1665071 nattch=0 ctime="Oct 30 00:13:41" atime="Oct 30 00:36:43" dtime="Oct 30 00:36:43"
+DELETE shmid=132808782 key=732363457 -> OK
+DELETED pass=271 count=1 failed=0
+PASS 272 2026-10-30T00:37:47.142275 total=54 selected=0 unattributed=0
+DELETED pass=272 count=0 failed=0
+PASS 273 2026-10-30T00:38:47.147231 total=71 selected=0 unattributed=0
+DELETED pass=273 count=0 failed=0
+PASS 274 2026-10-30T00:39:47.155634 total=86 selected=0 unattributed=0
+DELETED pass=274 count=0 failed=0
+PASS 275 2026-10-30T00:40:47.160680 total=70 selected=0 unattributed=0
+DELETED pass=275 count=0 failed=0
+PASS 276 2026-10-30T00:41:47.172393 total=79 selected=0 unattributed=0
+DELETED pass=276 count=0 failed=0
+PASS 277 2026-10-30T00:42:47.178498 total=83 selected=0 unattributed=0
+DELETED pass=277 count=0 failed=0
+PASS 278 2026-10-30T00:43:47.187721 total=82 selected=0 unattributed=0
+DELETED pass=278 count=0 failed=0
+PASS 279 2026-10-30T00:44:47.193451 total=78 selected=0 unattributed=0
+DELETED pass=279 count=0 failed=0
+PASS 280 2026-10-30T00:45:47.199371 total=62 selected=1 unattributed=0
+SELECT shmid=134152193 key=157729547 cpid=1671407 lpid=1671407 nattch=0 ctime="Oct 30 00:16:41" atime="Oct 30 00:45:06" dtime="Oct 30 00:45:06"
+DELETE shmid=134152193 key=157729547 -> OK
+DELETED pass=280 count=1 failed=0
+PASS 281 2026-10-30T00:46:47.210315 total=73 selected=0 unattributed=0
+DELETED pass=281 count=0 failed=0
+PASS 282 2026-10-30T00:47:47.223066 total=90 selected=0 unattributed=0
+DELETED pass=282 count=0 failed=0
+PASS 283 2026-10-30T00:48:47.232136 total=88 selected=0 unattributed=0
+DELETED pass=283 count=0 failed=0
+PASS 284 2026-10-30T00:49:47.241908 total=55 selected=0 unattributed=0
+DELETED pass=284 count=0 failed=0
+PASS 285 2026-10-30T00:50:47.252297 total=97 selected=0 unattributed=0
+DELETED pass=285 count=0 failed=0
+PASS 286 2026-10-30T00:51:47.260497 total=81 selected=0 unattributed=0
+DELETED pass=286 count=0 failed=0
+PASS 287 2026-10-30T00:52:47.265955 total=54 selected=0 unattributed=0
+DELETED pass=287 count=0 failed=0
+PASS 288 2026-10-30T00:53:47.271415 total=39 selected=0 unattributed=0
+DELETED pass=288 count=0 failed=0
+PASS 289 2026-10-30T00:54:47.279264 total=64 selected=0 unattributed=0
+DELETED pass=289 count=0 failed=0
+PASS 290 2026-10-30T00:55:47.285832 total=61 selected=0 unattributed=0
+DELETED pass=290 count=0 failed=0
+PASS 291 2026-10-30T00:56:47.294640 total=55 selected=0 unattributed=1
+DELETED pass=291 count=0 failed=0
+PASS 292 2026-10-30T00:57:47.299489 total=51 selected=0 unattributed=0
+DELETED pass=292 count=0 failed=0
+PASS 293 2026-10-30T00:58:47.305997 total=54 selected=0 unattributed=0
+DELETED pass=293 count=0 failed=0
+PASS 294 2026-10-30T00:59:47.311176 total=72 selected=1 unattributed=0
+SELECT shmid=140312660 key=490765968 cpid=1698867 lpid=1698867 nattch=0 ctime="Oct 30 00:30:26" atime="Oct 30 00:59:19" dtime="Oct 30 00:59:19"
+DELETE shmid=140312660 key=490765968 -> OK
+DELETED pass=294 count=1 failed=0
+PASS 295 2026-10-30T01:00:47.318044 total=54 selected=0 unattributed=0
+DELETED pass=295 count=0 failed=0
+PASS 296 2026-10-30T01:01:47.322496 total=49 selected=0 unattributed=0
+DELETED pass=296 count=0 failed=0
+PASS 297 2026-10-30T01:02:47.328466 total=76 selected=0 unattributed=0
+DELETED pass=297 count=0 failed=0
+PASS 298 2026-10-30T01:03:47.337034 total=64 selected=0 unattributed=0
+DELETED pass=298 count=0 failed=0
+PASS 299 2026-10-30T01:04:47.342995 total=58 selected=1 unattributed=0
+SELECT shmid=142802970 key=913765423 cpid=1710680 lpid=1710680 nattch=0 ctime="Oct 30 00:36:43" atime="Oct 30 01:04:41" dtime="Oct 30 01:04:41"
+DELETE shmid=142802970 key=913765423 -> OK
+DELETED pass=299 count=1 failed=0
+PASS 300 2026-10-30T01:05:47.350625 total=79 selected=0 unattributed=0
+DELETED pass=300 count=0 failed=0
+PASS 301 2026-10-30T01:06:47.356847 total=68 selected=0 unattributed=0
+DELETED pass=301 count=0 failed=0
+PASS 302 2026-10-30T01:07:47.363503 total=102 selected=0 unattributed=0
+DELETED pass=302 count=0 failed=0
+PASS 303 2026-10-30T01:08:47.370821 total=74 selected=0 unattributed=0
+DELETED pass=303 count=0 failed=0
+PASS 304 2026-10-30T01:09:47.376322 total=77 selected=0 unattributed=0
+DELETED pass=304 count=0 failed=0
+PASS 305 2026-10-30T01:10:47.384509 total=100 selected=0 unattributed=0
+DELETED pass=305 count=0 failed=0
+PASS 306 2026-10-30T01:11:47.389644 total=76 selected=0 unattributed=0
+DELETED pass=306 count=0 failed=0
+PASS 307 2026-10-30T01:12:47.394948 total=66 selected=0 unattributed=0
+DELETED pass=307 count=0 failed=0
+PASS 308 2026-10-30T01:13:47.401144 total=94 selected=0 unattributed=0
+DELETED pass=308 count=0 failed=0
+PASS 309 2026-10-30T01:14:47.411438 total=80 selected=0 unattributed=0
+DELETED pass=309 count=0 failed=0
+PASS 310 2026-10-30T01:15:47.421467 total=61 selected=0 unattributed=2
+DELETED pass=310 count=0 failed=0
+PASS 311 2026-10-30T01:16:47.436844 total=81 selected=0 unattributed=0
+DELETED pass=311 count=0 failed=0
+PASS 312 2026-10-30T01:17:47.443088 total=59 selected=0 unattributed=0
+DELETED pass=312 count=0 failed=0
+PASS 313 2026-10-30T01:18:47.450493 total=92 selected=0 unattributed=0
+DELETED pass=313 count=0 failed=0
+PASS 314 2026-10-30T01:19:47.461040 total=48 selected=0 unattributed=0
+DELETED pass=314 count=0 failed=0
+PASS 315 2026-10-30T01:20:47.468768 total=92 selected=0 unattributed=0
+DELETED pass=315 count=0 failed=0
+PASS 316 2026-10-30T01:21:47.476130 total=87 selected=0 unattributed=0
+DELETED pass=316 count=0 failed=0
+PASS 317 2026-10-30T01:22:47.484382 total=92 selected=0 unattributed=0
+DELETED pass=317 count=0 failed=0
+PASS 318 2026-10-30T01:23:47.489339 total=74 selected=0 unattributed=0
+DELETED pass=318 count=0 failed=0
+PASS 319 2026-10-30T01:24:47.496008 total=99 selected=1 unattributed=0
+SELECT shmid=146538600 key=900829708 cpid=1728350 lpid=1728350 nattch=0 ctime="Oct 30 00:45:06" atime="Oct 30 01:24:04" dtime="Oct 30 01:24:04"
+DELETE shmid=146538600 key=900829708 -> OK
+DELETED pass=319 count=1 failed=0
+PASS 320 2026-10-30T01:25:47.504753 total=44 selected=0 unattributed=0
+DELETED pass=320 count=0 failed=0
+PASS 321 2026-10-30T01:26:47.508974 total=35 selected=0 unattributed=0
+DELETED pass=321 count=0 failed=0
+PASS 322 2026-10-30T01:27:47.518140 total=94 selected=0 unattributed=0
+DELETED pass=322 count=0 failed=0
+PASS 323 2026-10-30T01:28:47.525584 total=61 selected=0 unattributed=0
+DELETED pass=323 count=0 failed=0
+PASS 324 2026-10-30T01:29:47.530471 total=77 selected=0 unattributed=0
+DELETED pass=324 count=0 failed=0
+PASS 325 2026-10-30T01:30:47.536500 total=94 selected=0 unattributed=0
+DELETED pass=325 count=0 failed=0
+PASS 326 2026-10-30T01:31:47.542648 total=77 selected=0 unattributed=0
+DELETED pass=326 count=0 failed=0
+PASS 327 2026-10-30T01:32:47.553293 total=75 selected=0 unattributed=0
+DELETED pass=327 count=0 failed=0
+PASS 328 2026-10-30T01:33:47.563248 total=96 selected=0 unattributed=0
+DELETED pass=328 count=0 failed=0
+PASS 329 2026-10-30T01:34:47.568027 total=46 selected=0 unattributed=0
+DELETED pass=329 count=0 failed=0
+PASS 330 2026-10-30T01:35:47.574230 total=64 selected=0 unattributed=0
+DELETED pass=330 count=0 failed=0
+PASS 331 2026-10-30T01:36:47.583777 total=76 selected=0 unattributed=0
+DELETED pass=331 count=0 failed=0
+PASS 332 2026-10-30T01:37:47.596551 total=91 selected=0 unattributed=0
+DELETED pass=332 count=0 failed=0
+PASS 333 2026-10-30T01:38:47.603276 total=59 selected=0 unattributed=0
+DELETED pass=333 count=0 failed=0
+PASS 334 2026-10-30T01:39:47.610087 total=82 selected=0 unattributed=0
+DELETED pass=334 count=0 failed=0
+PASS 335 2026-10-30T01:40:47.615745 total=65 selected=1 unattributed=0
+SELECT shmid=155484162 key=872971605 cpid=1767516 lpid=1767516 nattch=0 ctime="Oct 30 01:04:41" atime="Oct 30 01:40:46" dtime="Oct 30 01:40:46"
+DELETE shmid=155484162 key=872971605 -> OK
+DELETED pass=335 count=1 failed=0
+PASS 336 2026-10-30T01:41:47.624913 total=103 selected=0 unattributed=0
+DELETED pass=336 count=0 failed=0
+PASS 337 2026-10-30T01:42:47.632129 total=98 selected=0 unattributed=0
+DELETED pass=337 count=0 failed=0
+PASS 338 2026-10-30T01:43:47.639731 total=76 selected=0 unattributed=0
+DELETED pass=338 count=0 failed=0
+PASS 339 2026-10-30T01:44:47.647943 total=98 selected=1 unattributed=0
+SELECT shmid=153452545 key=607683474 cpid=1757906 lpid=1757906 nattch=0 ctime="Oct 30 00:59:19" atime="Oct 30 01:43:56" dtime="Oct 30 01:43:56"
+DELETE shmid=153452545 key=607683474 -> OK
+DELETED pass=339 count=1 failed=0
+PASS 340 2026-10-30T01:45:47.657865 total=72 selected=0 unattributed=0
+DELETED pass=340 count=0 failed=0
+PASS 341 2026-10-30T01:46:47.666211 total=64 selected=0 unattributed=0
+DELETED pass=341 count=0 failed=0
+PASS 342 2026-10-30T01:47:47.676205 total=72 selected=0 unattributed=0
+DELETED pass=342 count=0 failed=0
+PASS 343 2026-10-30T01:48:47.680747 total=42 selected=0 unattributed=0
+DELETED pass=343 count=0 failed=0
+PASS 344 2026-10-30T01:49:47.686074 total=45 selected=0 unattributed=0
+DELETED pass=344 count=0 failed=0
+PASS 345 2026-10-30T01:50:47.694860 total=51 selected=0 unattributed=0
+DELETED pass=345 count=0 failed=0
+PASS 346 2026-10-30T01:51:47.706413 total=97 selected=0 unattributed=0
+DELETED pass=346 count=0 failed=0
+PASS 347 2026-10-30T01:52:47.712624 total=80 selected=0 unattributed=0
+DELETED pass=347 count=0 failed=0
+PASS 348 2026-10-30T01:53:47.718627 total=78 selected=0 unattributed=0
+DELETED pass=348 count=0 failed=0
+PASS 349 2026-10-30T01:54:47.724772 total=72 selected=0 unattributed=0
+DELETED pass=349 count=0 failed=0
+PASS 350 2026-10-30T01:55:47.733048 total=92 selected=0 unattributed=0
+DELETED pass=350 count=0 failed=0
+PASS 351 2026-10-30T01:56:47.738577 total=82 selected=0 unattributed=0
+DELETED pass=351 count=0 failed=0
+PASS 352 2026-10-30T01:57:47.743598 total=56 selected=0 unattributed=0
+DELETED pass=352 count=0 failed=0
+PASS 353 2026-10-30T01:58:47.749611 total=73 selected=0 unattributed=0
+DELETED pass=353 count=0 failed=0
+PASS 354 2026-10-30T01:59:47.758050 total=102 selected=0 unattributed=0
+DELETED pass=354 count=0 failed=0
+PASS 355 2026-10-30T02:00:47.763129 total=66 selected=1 unattributed=0
+SELECT shmid=163512341 key=415136413 cpid=1804928 lpid=1804928 nattch=0 ctime="Oct 30 01:24:04" atime="Oct 30 02:00:14" dtime="Oct 30 02:00:14"
+DELETE shmid=163512341 key=415136413 -> OK
+DELETED pass=355 count=1 failed=0
+PASS 356 2026-10-30T02:01:47.768607 total=61 selected=0 unattributed=0
+DELETED pass=356 count=0 failed=0
+PASS 357 2026-10-30T02:02:47.776013 total=104 selected=0 unattributed=0
+DELETED pass=357 count=0 failed=0
+PASS 358 2026-10-30T02:03:47.781424 total=79 selected=0 unattributed=0
+DELETED pass=358 count=0 failed=0
+PASS 359 2026-10-30T02:04:47.788830 total=101 selected=0 unattributed=0
+DELETED pass=359 count=0 failed=0
+PASS 360 2026-10-30T02:05:47.796313 total=77 selected=0 unattributed=0
+DELETED pass=360 count=0 failed=0
+PASS 361 2026-10-30T02:06:47.802737 total=100 selected=1 unattributed=0
+SELECT shmid=168263734 key=395653018 cpid=1829875 lpid=1829875 nattch=0 ctime="Oct 30 01:40:46" atime="Oct 30 02:05:49" dtime="Oct 30 02:05:49"
+DELETE shmid=168263734 key=395653018 -> OK
+DELETED pass=361 count=1 failed=0
+PASS 362 2026-10-30T02:07:47.816778 total=63 selected=0 unattributed=0
+DELETED pass=362 count=0 failed=0
+PASS 363 2026-10-30T02:08:47.827315 total=53 selected=0 unattributed=0
+DELETED pass=363 count=0 failed=0
+PASS 364 2026-10-30T02:09:47.835318 total=103 selected=0 unattributed=0
+DELETED pass=364 count=0 failed=0
+PASS 365 2026-10-30T02:10:47.847510 total=102 selected=0 unattributed=0
+DELETED pass=365 count=0 failed=0
+PASS 366 2026-10-30T02:11:47.857121 total=87 selected=0 unattributed=0
+DELETED pass=366 count=0 failed=0
+PASS 367 2026-10-30T02:12:47.863883 total=87 selected=0 unattributed=0
+DELETED pass=367 count=0 failed=0
+PASS 368 2026-10-30T02:13:47.884986 total=85 selected=0 unattributed=0
+DELETED pass=368 count=0 failed=0
+PASS 369 2026-10-30T02:14:47.891894 total=83 selected=0 unattributed=0
+DELETED pass=369 count=0 failed=0
+PASS 370 2026-10-30T02:15:47.898638 total=87 selected=0 unattributed=0
+DELETED pass=370 count=0 failed=0
+PASS 371 2026-10-30T02:16:47.905610 total=78 selected=0 unattributed=0
+DELETED pass=371 count=0 failed=0
+PASS 372 2026-10-30T02:17:47.911399 total=71 selected=0 unattributed=0
+DELETED pass=372 count=0 failed=0
+PASS 373 2026-10-30T02:18:47.927617 total=95 selected=0 unattributed=0
+DELETED pass=373 count=0 failed=0
+PASS 374 2026-10-30T02:19:47.933684 total=51 selected=0 unattributed=0
+DELETED pass=374 count=0 failed=0
+PASS 375 2026-10-30T02:20:47.940366 total=84 selected=0 unattributed=0
+DELETED pass=375 count=0 failed=0
+PASS 376 2026-10-30T02:21:47.946161 total=81 selected=0 unattributed=0
+DELETED pass=376 count=0 failed=0
+PASS 377 2026-10-30T02:22:47.953652 total=71 selected=0 unattributed=0
+DELETED pass=377 count=0 failed=0
+PASS 378 2026-10-30T02:23:47.961912 total=92 selected=0 unattributed=0
+DELETED pass=378 count=0 failed=0
+PASS 379 2026-10-30T02:24:47.966971 total=63 selected=1 unattributed=0
+SELECT shmid=178323544 key=446352002 cpid=1873171 lpid=1873171 nattch=0 ctime="Oct 30 02:00:14" atime="Oct 30 02:24:39" dtime="Oct 30 02:24:39"
+DELETE shmid=178323544 key=446352002 -> OK
+DELETED pass=379 count=1 failed=0
+PASS 380 2026-10-30T02:25:47.975956 total=95 selected=1 unattributed=0
+SELECT shmid=170229760 key=407488557 cpid=1838357 lpid=1838357 nattch=0 ctime="Oct 30 01:43:56" atime="Oct 30 02:25:13" dtime="Oct 30 02:25:13"
+DELETE shmid=170229760 key=407488557 -> OK
+DELETED pass=380 count=1 failed=0
+PASS 381 2026-10-30T02:26:47.983324 total=52 selected=0 unattributed=0
+DELETED pass=381 count=0 failed=0
+PASS 382 2026-10-30T02:27:47.991927 total=62 selected=0 unattributed=0
+DELETED pass=382 count=0 failed=0
+PASS 383 2026-10-30T02:28:47.998702 total=88 selected=0 unattributed=0
+DELETED pass=383 count=0 failed=0
+PASS 384 2026-10-30T02:29:48.005600 total=48 selected=0 unattributed=0
+DELETED pass=384 count=0 failed=0
+PASS 385 2026-10-30T02:30:48.011629 total=100 selected=0 unattributed=0
+DELETED pass=385 count=0 failed=0
+PASS 386 2026-10-30T02:31:48.021542 total=69 selected=0 unattributed=0
+DELETED pass=386 count=0 failed=0
+PASS 387 2026-10-30T02:32:48.028033 total=79 selected=1 unattributed=0
+SELECT shmid=191037459 key=633084154 cpid=1934038 lpid=1934038 nattch=0 ctime="Oct 30 02:32:31" atime="Oct 30 02:32:37" dtime="Oct 30 02:32:37"
+DELETE shmid=191037459 key=633084154 -> OK
+DELETED pass=387 count=1 failed=0
+PASS 388 2026-10-30T02:33:48.035259 total=64 selected=0 unattributed=0
+DELETED pass=388 count=0 failed=0
+PASS 389 2026-10-30T02:34:48.041890 total=77 selected=0 unattributed=0
+DELETED pass=389 count=0 failed=0
+PASS 390 2026-10-30T02:35:48.051707 total=80 selected=0 unattributed=0
+DELETED pass=390 count=0 failed=0
+PASS 391 2026-10-30T02:36:48.057322 total=73 selected=0 unattributed=0
+DELETED pass=391 count=0 failed=0
+PASS 392 2026-10-30T02:37:48.069788 total=80 selected=0 unattributed=0
+DELETED pass=392 count=0 failed=0
+PASS 393 2026-10-30T02:38:48.075527 total=66 selected=0 unattributed=0
+DELETED pass=393 count=0 failed=0
+PASS 394 2026-10-30T02:39:48.082352 total=78 selected=2 unattributed=0
+SELECT shmid=180944923 key=502566886 cpid=1884351 lpid=1884351 nattch=0 ctime="Oct 30 02:05:49" atime="Oct 30 02:39:14" dtime="Oct 30 02:39:14"
+DELETE shmid=180944923 key=502566886 -> OK
+SELECT shmid=194019381 key=334441367 cpid=1947506 lpid=1947506 nattch=0 ctime="Oct 30 02:38:59" atime="Oct 30 02:39:05" dtime="Oct 30 02:39:05"
+DELETE shmid=194019381 key=334441367 -> OK
+DELETED pass=394 count=2 failed=0
+PASS 395 2026-10-30T02:40:48.090167 total=68 selected=0 unattributed=0
+DELETED pass=395 count=0 failed=0
+PASS 396 2026-10-30T02:41:48.100223 total=61 selected=0 unattributed=0
+DELETED pass=396 count=0 failed=0
+PASS 397 2026-10-30T02:42:48.106763 total=70 selected=0 unattributed=0
+DELETED pass=397 count=0 failed=0
+PASS 398 2026-10-30T02:43:48.111731 total=50 selected=0 unattributed=0
+DELETED pass=398 count=0 failed=0
+PASS 399 2026-10-30T02:44:48.116614 total=51 selected=0 unattributed=0
+DELETED pass=399 count=0 failed=0
+PASS 400 2026-10-30T02:45:48.125868 total=86 selected=0 unattributed=0
+DELETED pass=400 count=0 failed=0
+PASS 401 2026-10-30T02:46:48.137096 total=97 selected=0 unattributed=0
+DELETED pass=401 count=0 failed=0
+PASS 402 2026-10-30T02:47:48.143574 total=47 selected=0 unattributed=0
+DELETED pass=402 count=0 failed=0
+PASS 403 2026-10-30T02:48:48.148620 total=43 selected=1 unattributed=0
+SELECT shmid=198115342 key=758195148 cpid=1965846 lpid=1965846 nattch=0 ctime="Oct 30 02:48:09" atime="Oct 30 02:48:15" dtime="Oct 30 02:48:15"
+DELETE shmid=198115342 key=758195148 -> OK
+DELETED pass=403 count=1 failed=0
+PASS 404 2026-10-30T02:49:48.154367 total=47 selected=0 unattributed=0
+DELETED pass=404 count=0 failed=0
+PASS 405 2026-10-30T02:50:48.161033 total=71 selected=0 unattributed=0
+DELETED pass=405 count=0 failed=0
+PASS 406 2026-10-30T02:51:48.177053 total=92 selected=0 unattributed=0
+DELETED pass=406 count=0 failed=0
+PASS 407 2026-10-30T02:52:48.186811 total=84 selected=0 unattributed=0
+DELETED pass=407 count=0 failed=0
+PASS 408 2026-10-30T02:53:48.195755 total=89 selected=0 unattributed=0
+DELETED pass=408 count=0 failed=0
+PASS 409 2026-10-30T02:54:48.206117 total=50 selected=0 unattributed=0
+DELETED pass=409 count=0 failed=0
+PASS 410 2026-10-30T02:55:48.212915 total=80 selected=0 unattributed=0
+DELETED pass=410 count=0 failed=0
+PASS 411 2026-10-30T02:56:48.219115 total=62 selected=0 unattributed=0
+DELETED pass=411 count=0 failed=0
+PASS 412 2026-10-30T02:57:48.225862 total=75 selected=0 unattributed=0
+DELETED pass=412 count=0 failed=0
+PASS 413 2026-10-30T02:58:48.234029 total=61 selected=1 unattributed=0
+SELECT shmid=203456559 key=987846591 cpid=1989832 lpid=1989832 nattch=0 ctime="Oct 30 02:58:25" atime="Oct 30 02:58:30" dtime="Oct 30 02:58:30"
+DELETE shmid=203456559 key=987846591 -> OK
+DELETED pass=413 count=1 failed=0
+PASS 414 2026-10-30T02:59:48.241314 total=93 selected=1 unattributed=0
+SELECT shmid=188448794 key=499619904 cpid=1921227 lpid=1921227 nattch=0 ctime="Oct 30 02:24:39" atime="Oct 30 02:58:58" dtime="Oct 30 02:58:58"
+DELETE shmid=188448794 key=499619904 -> OK
+DELETED pass=414 count=1 failed=0
+PASS 415 2026-10-30T03:00:48.247525 total=33 selected=0 unattributed=0
+DELETED pass=415 count=0 failed=0
+PASS 416 2026-10-30T03:01:48.252319 total=35 selected=0 unattributed=0
+DELETED pass=416 count=0 failed=0
+PASS 417 2026-10-30T03:02:48.258228 total=72 selected=0 unattributed=0
+DELETED pass=417 count=0 failed=0
+PASS 418 2026-10-30T03:03:48.269548 total=98 selected=0 unattributed=0
+DELETED pass=418 count=0 failed=0
+PASS 419 2026-10-30T03:04:48.275524 total=101 selected=0 unattributed=0
+DELETED pass=419 count=0 failed=0
+PASS 420 2026-10-30T03:05:48.281499 total=102 selected=0 unattributed=0
+DELETED pass=420 count=0 failed=0
+PASS 421 2026-10-30T03:06:48.286866 total=65 selected=1 unattributed=0
+SELECT shmid=189104218 key=670906912 cpid=1923926 lpid=1923926 nattch=0 ctime="Oct 30 02:25:13" atime="Oct 30 03:05:54" dtime="Oct 30 03:05:54"
+DELETE shmid=189104218 key=670906912 -> OK
+DELETED pass=421 count=1 failed=0
+PASS 422 2026-10-30T03:07:48.293252 total=69 selected=0 unattributed=0
+DELETED pass=422 count=0 failed=0
+PASS 423 2026-10-30T03:08:48.299138 total=97 selected=0 unattributed=0
+DELETED pass=423 count=0 failed=0
+PASS 424 2026-10-30T03:09:48.304487 total=74 selected=0 unattributed=0
+DELETED pass=424 count=0 failed=0
+PASS 425 2026-10-30T03:10:48.314244 total=102 selected=0 unattributed=0
+DELETED pass=425 count=0 failed=0
+PASS 426 2026-10-30T03:11:48.329474 total=86 selected=0 unattributed=0
+DELETED pass=426 count=0 failed=0
+PASS 427 2026-10-30T03:12:48.336894 total=57 selected=0 unattributed=0
+DELETED pass=427 count=0 failed=0
+PASS 428 2026-10-30T03:13:48.343226 total=72 selected=2 unattributed=0
+SELECT shmid=194445337 key=405566874 cpid=1949347 lpid=1949347 nattch=0 ctime="Oct 30 02:39:14" atime="Oct 30 03:13:12" dtime="Oct 30 03:13:12"
+DELETE shmid=194445337 key=405566874 -> OK
+SELECT shmid=211583011 key=598176095 cpid=2025291 lpid=2025291 nattch=0 ctime="Oct 30 03:13:42" atime="Oct 30 03:13:46" dtime="Oct 30 03:13:46"
+DELETE shmid=211583011 key=598176095 -> OK
+DELETED pass=428 count=2 failed=0
+PASS 429 2026-10-30T03:14:48.350529 total=52 selected=0 unattributed=0
+DELETED pass=429 count=0 failed=0
+PASS 430 2026-10-30T03:15:48.355836 total=35 selected=0 unattributed=0
+DELETED pass=430 count=0 failed=0
+PASS 431 2026-10-30T03:16:48.362158 total=73 selected=0 unattributed=0
+DELETED pass=431 count=0 failed=0
+PASS 432 2026-10-30T03:17:48.371768 total=80 selected=0 unattributed=0
+DELETED pass=432 count=0 failed=0
+PASS 433 2026-10-30T03:18:48.378815 total=57 selected=0 unattributed=0
+DELETED pass=433 count=0 failed=0
+PASS 434 2026-10-30T03:19:48.388379 total=69 selected=0 unattributed=0
+DELETED pass=434 count=0 failed=0
+PASS 435 2026-10-30T03:20:48.396893 total=90 selected=0 unattributed=0
+DELETED pass=435 count=0 failed=0
+PASS 436 2026-10-30T03:21:48.402389 total=66 selected=0 unattributed=0
+DELETED pass=436 count=0 failed=0
+PASS 437 2026-10-30T03:22:48.407882 total=53 selected=0 unattributed=0
+DELETED pass=437 count=0 failed=0
+PASS 438 2026-10-30T03:23:48.413542 total=80 selected=0 unattributed=0
+DELETED pass=438 count=0 failed=0
+PASS 439 2026-10-30T03:24:48.425115 total=68 selected=0 unattributed=0
+DELETED pass=439 count=0 failed=0
+PASS 440 2026-10-30T03:25:48.432424 total=49 selected=0 unattributed=0
+DELETED pass=440 count=0 failed=0
+PASS 441 2026-10-30T03:26:48.438408 total=55 selected=0 unattributed=0
+DELETED pass=441 count=0 failed=0
+PASS 442 2026-10-30T03:27:48.446665 total=73 selected=0 unattributed=0
+DELETED pass=442 count=0 failed=0
+PASS 443 2026-10-30T03:28:48.454846 total=56 selected=0 unattributed=1
+DELETED pass=443 count=0 failed=0
+PASS 444 2026-10-30T03:29:48.460385 total=32 selected=0 unattributed=0
+DELETED pass=444 count=0 failed=0
+PASS 445 2026-10-30T03:30:48.469295 total=81 selected=1 unattributed=0
+SELECT shmid=207650817 key=899590652 cpid=2008640 lpid=2008640 nattch=0 ctime="Oct 30 03:05:54" atime="Oct 30 03:30:10" dtime="Oct 30 03:30:10"
+DELETE shmid=207650817 key=899590652 -> OK
+DELETED pass=445 count=1 failed=0
+PASS 446 2026-10-30T03:31:48.476876 total=56 selected=0 unattributed=0
+DELETED pass=446 count=0 failed=0
+PASS 447 2026-10-30T03:32:48.485810 total=55 selected=0 unattributed=0
+DELETED pass=447 count=0 failed=0
+PASS 448 2026-10-30T03:33:48.494902 total=74 selected=0 unattributed=0
+DELETED pass=448 count=0 failed=0
+PASS 449 2026-10-30T03:34:48.509709 total=60 selected=1 unattributed=0
+SELECT shmid=204046385 key=649200424 cpid=1992148 lpid=1992148 nattch=0 ctime="Oct 30 02:58:58" atime="Oct 30 03:34:17" dtime="Oct 30 03:34:17"
+DELETE shmid=204046385 key=649200424 -> OK
+DELETED pass=449 count=1 failed=0
+PASS 450 2026-10-30T03:35:48.519833 total=73 selected=0 unattributed=1
+DELETED pass=450 count=0 failed=0
+PASS 451 2026-10-30T03:36:48.525695 total=96 selected=0 unattributed=0
+DELETED pass=451 count=0 failed=0
+PASS 452 2026-10-30T03:37:48.539421 total=86 selected=1 unattributed=0
+SELECT shmid=211451906 key=832880494 cpid=2024639 lpid=2024639 nattch=0 ctime="Oct 30 03:13:12" atime="Oct 30 03:37:33" dtime="Oct 30 03:37:33"
+DELETE shmid=211451906 key=832880494 -> OK
+DELETED pass=452 count=1 failed=0
+PASS 453 2026-10-30T03:38:48.548581 total=90 selected=0 unattributed=0
+DELETED pass=453 count=0 failed=0
+PASS 454 2026-10-30T03:39:48.565661 total=96 selected=0 unattributed=0
+DELETED pass=454 count=0 failed=0
+PASS 455 2026-10-30T03:40:48.577956 total=84 selected=0 unattributed=0
+DELETED pass=455 count=0 failed=0
+PASS 456 2026-10-30T03:41:48.584375 total=102 selected=0 unattributed=0
+DELETED pass=456 count=0 failed=0
+PASS 457 2026-10-30T03:42:48.591218 total=58 selected=1 unattributed=0
+SELECT shmid=223805456 key=520919814 cpid=2082967 lpid=2082967 nattch=0 ctime="Oct 30 03:42:18" atime="Oct 30 03:42:20" dtime="Oct 30 03:42:20"
+DELETE shmid=223805456 key=520919814 -> OK
+DELETED pass=457 count=1 failed=0
+PASS 458 2026-10-30T03:43:48.605551 total=99 selected=0 unattributed=1
+DELETED pass=458 count=0 failed=0
+PASS 459 2026-10-30T03:44:48.616264 total=87 selected=0 unattributed=0
+DELETED pass=459 count=0 failed=0
+PASS 460 2026-10-30T03:45:48.623917 total=66 selected=0 unattributed=0
+DELETED pass=460 count=0 failed=0
+PASS 461 2026-10-30T03:46:48.631547 total=80 selected=0 unattributed=0
+DELETED pass=461 count=0 failed=0
+PASS 462 2026-10-30T03:47:48.647767 total=68 selected=0 unattributed=0
+DELETED pass=462 count=0 failed=0
+PASS 463 2026-10-30T03:48:48.659125 total=58 selected=0 unattributed=0
+DELETED pass=463 count=0 failed=0
+PASS 464 2026-10-30T03:49:48.664740 total=91 selected=0 unattributed=0
+DELETED pass=464 count=0 failed=0
+PASS 465 2026-10-30T03:50:48.678733 total=69 selected=1 unattributed=0
+SELECT shmid=225771547 key=714267216 cpid=2094185 lpid=2094185 nattch=0 ctime="Oct 30 03:50:00" atime="Oct 30 03:50:04" dtime="Oct 30 03:50:04"
+DELETE shmid=225771547 key=714267216 -> OK
+DELETED pass=465 count=1 failed=0
+PASS 466 2026-10-30T03:51:48.685833 total=68 selected=0 unattributed=0
+DELETED pass=466 count=0 failed=0
+PASS 467 2026-10-30T03:52:48.692932 total=80 selected=0 unattributed=0
+DELETED pass=467 count=0 failed=0
+PASS 468 2026-10-30T03:53:48.698979 total=70 selected=0 unattributed=0
+DELETED pass=468 count=0 failed=0
+PASS 469 2026-10-30T03:54:48.704270 total=56 selected=0 unattributed=0
+DELETED pass=469 count=0 failed=0
+PASS 470 2026-10-30T03:55:48.709962 total=93 selected=0 unattributed=0
+DELETED pass=470 count=0 failed=0
+PASS 471 2026-10-30T03:56:48.717776 total=80 selected=0 unattributed=0
+DELETED pass=471 count=0 failed=0
+PASS 472 2026-10-30T03:57:48.723332 total=59 selected=0 unattributed=0
+DELETED pass=472 count=0 failed=0
+PASS 473 2026-10-30T03:58:48.730600 total=75 selected=0 unattributed=0
+DELETED pass=473 count=0 failed=0
+PASS 474 2026-10-30T03:59:48.735676 total=58 selected=0 unattributed=0
+DELETED pass=474 count=0 failed=0
+PASS 475 2026-10-30T04:00:48.741108 total=91 selected=0 unattributed=0
+DELETED pass=475 count=0 failed=0
+PASS 476 2026-10-30T04:01:48.747001 total=81 selected=0 unattributed=0
+DELETED pass=476 count=0 failed=0
+PASS 477 2026-10-30T04:02:48.755667 total=82 selected=0 unattributed=0
+DELETED pass=477 count=0 failed=0
+PASS 478 2026-10-30T04:03:48.765402 total=92 selected=2 unattributed=0
+SELECT shmid=217808899 key=927091953 cpid=2055606 lpid=2055606 nattch=0 ctime="Oct 30 03:30:10" atime="Oct 30 04:03:44" dtime="Oct 30 04:03:44"
+DELETE shmid=217808899 key=927091953 -> OK
+SELECT shmid=220758016 key=377656653 cpid=2068158 lpid=2068158 nattch=0 ctime="Oct 30 03:34:17" atime="Oct 30 04:02:51" dtime="Oct 30 04:02:51"
+DELETE shmid=220758016 key=377656653 -> OK
+DELETED pass=478 count=2 failed=0
+PASS 479 2026-10-30T04:04:48.777038 total=73 selected=0 unattributed=0
+DELETED pass=479 count=0 failed=0
+PASS 480 2026-10-30T04:05:48.784199 total=67 selected=0 unattributed=0
+DELETED pass=480 count=0 failed=0
+PASS 481 2026-10-30T04:06:48.795878 total=95 selected=0 unattributed=0
+DELETED pass=481 count=0 failed=0
+PASS 482 2026-10-30T04:07:48.802598 total=82 selected=0 unattributed=0
+DELETED pass=482 count=0 failed=0
+PASS 483 2026-10-30T04:08:48.810493 total=83 selected=0 unattributed=0
+DELETED pass=483 count=0 failed=0
+PASS 484 2026-10-30T04:09:48.815782 total=84 selected=0 unattributed=0
+DELETED pass=484 count=0 failed=0
+PASS 485 2026-10-30T04:10:48.825128 total=69 selected=1 unattributed=0
+SELECT shmid=222625840 key=486883823 cpid=2076482 lpid=2076482 nattch=0 ctime="Oct 30 03:37:34" atime="Oct 30 04:09:55" dtime="Oct 30 04:09:55"
+DELETE shmid=222625840 key=486883823 -> OK
+DELETED pass=485 count=1 failed=0
+PASS 486 2026-10-30T04:11:48.831935 total=56 selected=0 unattributed=0
+DELETED pass=486 count=0 failed=0
+PASS 487 2026-10-30T04:12:48.843127 total=71 selected=0 unattributed=0
+DELETED pass=487 count=0 failed=0
+PASS 488 2026-10-30T04:13:48.851279 total=66 selected=0 unattributed=0
+DELETED pass=488 count=0 failed=0
+PASS 489 2026-10-30T04:14:48.856438 total=76 selected=0 unattributed=0
+DELETED pass=489 count=0 failed=0
+PASS 490 2026-10-30T04:15:48.863442 total=66 selected=1 unattributed=0
+SELECT shmid=239960112 key=373062432 cpid=2153529 lpid=2153529 nattch=0 ctime="Oct 30 04:15:22" atime="Oct 30 04:15:30" dtime="Oct 30 04:15:30"
+DELETE shmid=239960112 key=373062432 -> OK
+DELETED pass=490 count=1 failed=0
+PASS 491 2026-10-30T04:16:48.868572 total=31 selected=0 unattributed=0
+DELETED pass=491 count=0 failed=0
+PASS 492 2026-10-30T04:17:48.879236 total=75 selected=0 unattributed=0
+DELETED pass=492 count=0 failed=0
+PASS 493 2026-10-30T04:18:48.886725 total=71 selected=0 unattributed=0
+DELETED pass=493 count=0 failed=0
+PASS 494 2026-10-30T04:19:48.895451 total=76 selected=0 unattributed=0
+DELETED pass=494 count=0 failed=0
+PASS 495 2026-10-30T04:20:48.905079 total=72 selected=0 unattributed=0
+DELETED pass=495 count=0 failed=0
+PASS 496 2026-10-30T04:21:48.909848 total=59 selected=0 unattributed=0
+DELETED pass=496 count=0 failed=0
+PASS 497 2026-10-30T04:22:48.914995 total=64 selected=0 unattributed=0
+DELETED pass=497 count=0 failed=0
+PASS 498 2026-10-30T04:23:48.921029 total=87 selected=0 unattributed=0
+DELETED pass=498 count=0 failed=0
+PASS 499 2026-10-30T04:24:48.926414 total=79 selected=1 unattributed=0
+SELECT shmid=242679885 key=327428477 cpid=2166706 lpid=2166706 nattch=0 ctime="Oct 30 04:24:46" atime="Oct 30 04:24:48" dtime="Oct 30 04:24:48"
+DELETE shmid=242679885 key=327428477 -> OK
+DELETED pass=499 count=1 failed=0
+PASS 500 2026-10-30T04:25:48.935403 total=67 selected=0 unattributed=0
+DELETED pass=500 count=0 failed=0
+PASS 501 2026-10-30T04:26:48.941769 total=96 selected=0 unattributed=0
+DELETED pass=501 count=0 failed=0
+PASS 502 2026-10-30T04:27:48.950073 total=87 selected=0 unattributed=0
+DELETED pass=502 count=0 failed=0
+PASS 503 2026-10-30T04:28:48.956750 total=74 selected=0 unattributed=0
+DELETED pass=503 count=0 failed=0
+PASS 504 2026-10-30T04:29:48.970044 total=87 selected=0 unattributed=0
+DELETED pass=504 count=0 failed=0
+PASS 505 2026-10-30T04:30:48.976465 total=80 selected=0 unattributed=0
+DELETED pass=505 count=0 failed=0
+PASS 506 2026-10-30T04:31:48.982335 total=71 selected=2 unattributed=0
+SELECT shmid=244776979 key=811585719 cpid=2177137 lpid=2177137 nattch=0 ctime="Oct 30 04:30:59" atime="Oct 30 04:31:01" dtime="Oct 30 04:31:01"
+DELETE shmid=244776979 key=811585719 -> OK
+SELECT shmid=244809749 key=782315766 cpid=2177235 lpid=2177235 nattch=0 ctime="Oct 30 04:31:03" atime="Oct 30 04:31:04" dtime="Oct 30 04:31:04"
+DELETE shmid=244809749 key=782315766 -> OK
+DELETED pass=506 count=2 failed=0
+PASS 507 2026-10-30T04:32:48.988812 total=69 selected=0 unattributed=1
+DELETED pass=507 count=0 failed=0
+PASS 508 2026-10-30T04:33:48.995582 total=96 selected=1 unattributed=0
+SELECT shmid=232685569 key=429987329 cpid=2125474 lpid=2125474 nattch=0 ctime="Oct 30 04:02:51" atime="Oct 30 04:32:56" dtime="Oct 30 04:32:56"
+DELETE shmid=232685569 key=429987329 -> OK
+DELETED pass=508 count=1 failed=0
+PASS 509 2026-10-30T04:34:49.001312 total=56 selected=0 unattributed=0
+DELETED pass=509 count=0 failed=0
+PASS 510 2026-10-30T04:35:49.007032 total=76 selected=0 unattributed=0
+DELETED pass=510 count=0 failed=0
+PASS 511 2026-10-30T04:36:49.019543 total=65 selected=1 unattributed=0
+SELECT shmid=247005202 key=566713046 cpid=2186828 lpid=2186828 nattch=0 ctime="Oct 30 04:35:55" atime="Oct 30 04:36:01" dtime="Oct 30 04:36:01"
+DELETE shmid=247005202 key=566713046 -> OK
+DELETED pass=511 count=1 failed=0
+PASS 512 2026-10-30T04:37:49.029130 total=100 selected=0 unattributed=0
+DELETED pass=512 count=0 failed=0
+PASS 513 2026-10-30T04:38:49.038000 total=63 selected=0 unattributed=0
+DELETED pass=513 count=0 failed=0
+PASS 514 2026-10-30T04:39:49.045294 total=88 selected=0 unattributed=0
+DELETED pass=514 count=0 failed=0
+PASS 515 2026-10-30T04:40:49.051851 total=74 selected=1 unattributed=0
+SELECT shmid=233537579 key=528292122 cpid=2128619 lpid=2128619 nattch=0 ctime="Oct 30 04:03:44" atime="Oct 30 04:40:03" dtime="Oct 30 04:40:03"
+DELETE shmid=233537579 key=528292122 -> OK
+DELETED pass=515 count=1 failed=0
+PASS 516 2026-10-30T04:41:49.060212 total=100 selected=0 unattributed=0
+DELETED pass=516 count=0 failed=0
+PASS 517 2026-10-30T04:42:49.070310 total=55 selected=0 unattributed=1
+DELETED pass=517 count=0 failed=0
+PASS 518 2026-10-30T04:43:49.079329 total=79 selected=1 unattributed=0
+SELECT shmid=245858331 key=291293386 cpid=2181703 lpid=2181703 nattch=0 ctime="Oct 30 04:32:56" atime="Oct 30 04:43:24" dtime="Oct 30 04:43:24"
+DELETE shmid=245858331 key=291293386 -> OK
+DELETED pass=518 count=1 failed=0
+PASS 519 2026-10-30T04:44:49.088714 total=62 selected=1 unattributed=0
+SELECT shmid=237043774 key=648550223 cpid=2141702 lpid=2141702 nattch=0 ctime="Oct 30 04:09:55" atime="Oct 30 04:44:45" dtime="Oct 30 04:44:45"
+DELETE shmid=237043774 key=648550223 -> OK
+DELETED pass=519 count=1 failed=0
+PASS 520 2026-10-30T04:45:49.096420 total=76 selected=0 unattributed=0
+DELETED pass=520 count=0 failed=0
+PASS 521 2026-10-30T04:46:49.105942 total=102 selected=0 unattributed=0
+DELETED pass=521 count=0 failed=0
+PASS 522 2026-10-30T04:47:49.111460 total=77 selected=0 unattributed=0
+DELETED pass=522 count=0 failed=0
+PASS 523 2026-10-30T04:48:49.118701 total=76 selected=0 unattributed=0
+DELETED pass=523 count=0 failed=0
+PASS 524 2026-10-30T04:49:49.124158 total=80 selected=0 unattributed=0
+DELETED pass=524 count=0 failed=0
+PASS 525 2026-10-30T04:50:49.130226 total=81 selected=0 unattributed=0
+DELETED pass=525 count=0 failed=0
+PASS 526 2026-10-30T04:51:49.139467 total=86 selected=0 unattributed=0
+DELETED pass=526 count=0 failed=0
+PASS 527 2026-10-30T04:52:49.149667 total=47 selected=1 unattributed=0
+SELECT shmid=255852607 key=279082083 cpid=2226007 lpid=2226007 nattch=0 ctime="Oct 30 04:52:10" atime="Oct 30 04:52:16" dtime="Oct 30 04:52:16"
+DELETE shmid=255852607 key=279082083 -> OK
+DELETED pass=527 count=1 failed=0
+PASS 528 2026-10-30T04:53:49.160988 total=65 selected=0 unattributed=0
+DELETED pass=528 count=0 failed=0
+PASS 529 2026-10-30T04:54:49.167485 total=62 selected=0 unattributed=0
+DELETED pass=529 count=0 failed=0
+PASS 530 2026-10-30T04:55:49.173848 total=59 selected=0 unattributed=0
+DELETED pass=530 count=0 failed=0
+PASS 531 2026-10-30T04:56:49.178926 total=69 selected=0 unattributed=0
+DELETED pass=531 count=0 failed=0
+PASS 532 2026-10-30T04:57:49.184237 total=25 selected=0 unattributed=0
+DELETED pass=532 count=0 failed=0
+PASS 533 2026-10-30T04:58:49.189337 total=66 selected=0 unattributed=0
+DELETED pass=533 count=0 failed=0
+PASS 534 2026-10-30T04:59:49.195050 total=87 selected=0 unattributed=0
+DELETED pass=534 count=0 failed=0
+PASS 535 2026-10-30T05:00:49.200547 total=44 selected=0 unattributed=0
+DELETED pass=535 count=0 failed=0
+PASS 536 2026-10-30T05:01:49.207622 total=35 selected=0 unattributed=0
+DELETED pass=536 count=0 failed=0
+PASS 537 2026-10-30T05:02:49.212746 total=65 selected=0 unattributed=0
+DELETED pass=537 count=0 failed=0
+PASS 538 2026-10-30T05:03:49.217481 total=38 selected=0 unattributed=0
+DELETED pass=538 count=0 failed=0
+PASS 539 2026-10-30T05:04:49.223349 total=64 selected=0 unattributed=0
+DELETED pass=539 count=0 failed=0
+PASS 540 2026-10-30T05:05:49.230068 total=54 selected=0 unattributed=0
+DELETED pass=540 count=0 failed=0
+PASS 541 2026-10-30T05:06:49.238724 total=100 selected=0 unattributed=0
+DELETED pass=541 count=0 failed=0
+PASS 542 2026-10-30T05:07:49.245341 total=58 selected=0 unattributed=1
+DELETED pass=542 count=0 failed=0
+PASS 543 2026-10-30T05:08:49.251797 total=80 selected=0 unattributed=0
+DELETED pass=543 count=0 failed=0
+PASS 544 2026-10-30T05:09:49.258223 total=69 selected=0 unattributed=0
+DELETED pass=544 count=0 failed=0
+PASS 545 2026-10-30T05:10:49.264415 total=80 selected=0 unattributed=0
+DELETED pass=545 count=0 failed=0
+PASS 546 2026-10-30T05:11:49.273688 total=79 selected=0 unattributed=0
+DELETED pass=546 count=0 failed=0
+PASS 547 2026-10-30T05:12:49.279358 total=67 selected=0 unattributed=0
+DELETED pass=547 count=0 failed=0
+PASS 548 2026-10-30T05:13:49.284609 total=87 selected=1 unattributed=0
+SELECT shmid=263651412 key=257801840 cpid=2265268 lpid=2265268 nattch=0 ctime="Oct 30 05:13:44" atime="Oct 30 05:13:46" dtime="Oct 30 05:13:46"
+DELETE shmid=263651412 key=257801840 -> OK
+DELETED pass=548 count=1 failed=0
+PASS 549 2026-10-30T05:14:49.295103 total=98 selected=1 unattributed=0
+SELECT shmid=253263872 key=156450065 cpid=2212952 lpid=2212952 nattch=0 ctime="Oct 30 04:44:45" atime="Oct 30 05:14:48" dtime="Oct 30 05:14:48"
+DELETE shmid=253263872 key=156450065 -> OK
+DELETED pass=549 count=1 failed=0
+PASS 550 2026-10-30T05:15:49.302860 total=73 selected=1 unattributed=0
+SELECT shmid=249495578 key=962361441 cpid=2197959 lpid=2197959 nattch=0 ctime="Oct 30 04:40:03" atime="Oct 30 05:15:27" dtime="Oct 30 05:15:27"
+DELETE shmid=249495578 key=962361441 -> OK
+DELETED pass=550 count=1 failed=0
+PASS 551 2026-10-30T05:16:49.317784 total=59 selected=0 unattributed=0
+DELETED pass=551 count=0 failed=0
+PASS 552 2026-10-30T05:17:49.326470 total=69 selected=0 unattributed=0
+DELETED pass=552 count=0 failed=0
+PASS 553 2026-10-30T05:18:49.334858 total=62 selected=1 unattributed=0
+SELECT shmid=251985922 key=273529245 cpid=2208139 lpid=2208139 nattch=0 ctime="Oct 30 04:43:24" atime="Oct 30 05:17:56" dtime="Oct 30 05:17:56"
+DELETE shmid=251985922 key=273529245 -> OK
+DELETED pass=553 count=1 failed=0
+PASS 554 2026-10-30T05:19:49.343044 total=58 selected=0 unattributed=0
+DELETED pass=554 count=0 failed=0
+PASS 555 2026-10-30T05:20:49.348385 total=76 selected=0 unattributed=0
+DELETED pass=555 count=0 failed=0
+PASS 556 2026-10-30T05:21:49.356891 total=82 selected=0 unattributed=0
+DELETED pass=556 count=0 failed=0
+PASS 557 2026-10-30T05:22:49.366536 total=88 selected=0 unattributed=0
+DELETED pass=557 count=0 failed=0
+PASS 558 2026-10-30T05:23:49.372906 total=68 selected=0 unattributed=0
+DELETED pass=558 count=0 failed=0
+PASS 559 2026-10-30T05:24:49.381618 total=76 selected=0 unattributed=0
+DELETED pass=559 count=0 failed=0
+PASS 560 2026-10-30T05:25:49.387853 total=101 selected=0 unattributed=0
+DELETED pass=560 count=0 failed=0
+PASS 561 2026-10-30T05:26:49.397365 total=74 selected=0 unattributed=0
+DELETED pass=561 count=0 failed=0
+PASS 562 2026-10-30T05:27:49.407614 total=71 selected=0 unattributed=0
+DELETED pass=562 count=0 failed=0
+PASS 563 2026-10-30T05:28:49.414419 total=80 selected=0 unattributed=0
+DELETED pass=563 count=0 failed=0
+PASS 564 2026-10-30T05:29:49.424407 total=102 selected=0 unattributed=0
+DELETED pass=564 count=0 failed=0
+PASS 565 2026-10-30T05:30:49.431012 total=61 selected=0 unattributed=0
+DELETED pass=565 count=0 failed=0
+PASS 566 2026-10-30T05:31:49.436910 total=54 selected=0 unattributed=0
+DELETED pass=566 count=0 failed=0
+PASS 567 2026-10-30T05:32:49.444353 total=72 selected=0 unattributed=0
+DELETED pass=567 count=0 failed=0
+PASS 568 2026-10-30T05:33:49.450834 total=27 selected=0 unattributed=0
+DELETED pass=568 count=0 failed=0
+PASS 569 2026-10-30T05:34:49.457048 total=39 selected=0 unattributed=0
+DELETED pass=569 count=0 failed=0
+PASS 570 2026-10-30T05:35:49.467584 total=104 selected=0 unattributed=0
+DELETED pass=570 count=0 failed=0
+PASS 571 2026-10-30T05:36:49.474205 total=77 selected=0 unattributed=0
+DELETED pass=571 count=0 failed=0
+PASS 572 2026-10-30T05:37:49.480884 total=74 selected=0 unattributed=0
+DELETED pass=572 count=0 failed=0
+PASS 573 2026-10-30T05:38:49.485467 total=49 selected=0 unattributed=0
+DELETED pass=573 count=0 failed=0
+PASS 574 2026-10-30T05:39:49.490033 total=51 selected=0 unattributed=0
+DELETED pass=574 count=0 failed=0
+PASS 575 2026-10-30T05:40:49.498402 total=57 selected=0 unattributed=0
+DELETED pass=575 count=0 failed=0
+PASS 576 2026-10-30T05:41:49.504934 total=100 selected=0 unattributed=0
+DELETED pass=576 count=0 failed=0
+PASS 577 2026-10-30T05:42:49.512892 total=88 selected=0 unattributed=0
+DELETED pass=577 count=0 failed=0
+PASS 578 2026-10-30T05:43:49.521098 total=96 selected=0 unattributed=0
+DELETED pass=578 count=0 failed=0
+PASS 579 2026-10-30T05:44:49.527816 total=80 selected=1 unattributed=0
+SELECT shmid=264765470 key=451812471 cpid=2270096 lpid=2270096 nattch=0 ctime="Oct 30 05:14:48" atime="Oct 30 05:44:03" dtime="Oct 30 05:44:03"
+DELETE shmid=264765470 key=451812471 -> OK
+DELETED pass=579 count=1 failed=0
+PASS 580 2026-10-30T05:45:49.537084 total=82 selected=0 unattributed=0
+DELETED pass=580 count=0 failed=0
+PASS 581 2026-10-30T05:46:49.544090 total=45 selected=0 unattributed=0
+DELETED pass=581 count=0 failed=0
+PASS 582 2026-10-30T05:47:49.551752 total=48 selected=0 unattributed=0
+DELETED pass=582 count=0 failed=0
+PASS 583 2026-10-30T05:48:49.557690 total=54 selected=0 unattributed=0
+DELETED pass=583 count=0 failed=0
+PASS 584 2026-10-30T05:49:49.565402 total=68 selected=1 unattributed=0
+SELECT shmid=268009500 key=383787710 cpid=2282888 lpid=2282888 nattch=0 ctime="Oct 30 05:17:56" atime="Oct 30 05:49:48" dtime="Oct 30 05:49:48"
+DELETE shmid=268009500 key=383787710 -> OK
+DELETED pass=584 count=1 failed=0
+PASS 585 2026-10-30T05:50:49.575904 total=69 selected=0 unattributed=0
+DELETED pass=585 count=0 failed=0
+PASS 586 2026-10-30T05:51:49.583317 total=38 selected=0 unattributed=0
+DELETED pass=586 count=0 failed=0
+PASS 587 2026-10-30T05:52:49.589696 total=89 selected=0 unattributed=0
+DELETED pass=587 count=0 failed=0
+PASS 588 2026-10-30T05:53:49.598830 total=61 selected=0 unattributed=0
+DELETED pass=588 count=0 failed=0
+PASS 589 2026-10-30T05:54:49.603218 total=27 selected=0 unattributed=0
+DELETED pass=589 count=0 failed=0
+PASS 590 2026-10-30T05:55:49.611573 total=55 selected=0 unattributed=0
+DELETED pass=590 count=0 failed=0
+PASS 591 2026-10-30T05:56:49.620417 total=70 selected=0 unattributed=0
+DELETED pass=591 count=0 failed=0
+PASS 592 2026-10-30T05:57:49.627399 total=71 selected=1 unattributed=0
+SELECT shmid=265486340 key=148081930 cpid=2272976 lpid=2272976 nattch=0 ctime="Oct 30 05:15:27" atime="Oct 30 05:57:19" dtime="Oct 30 05:57:19"
+DELETE shmid=265486340 key=148081930 -> OK
+DELETED pass=592 count=1 failed=0
+PASS 593 2026-10-30T05:58:49.634522 total=37 selected=0 unattributed=0
+DELETED pass=593 count=0 failed=0
+PASS 594 2026-10-30T05:59:49.643538 total=61 selected=0 unattributed=1
+DELETED pass=594 count=0 failed=0
+PASS 595 2026-10-30T06:00:49.649236 total=79 selected=0 unattributed=0
+DELETED pass=595 count=0 failed=0
+PASS 596 2026-10-30T06:01:49.658970 total=85 selected=0 unattributed=0
+DELETED pass=596 count=0 failed=0
+PASS 597 2026-10-30T06:02:49.666711 total=54 selected=0 unattributed=0
+DELETED pass=597 count=0 failed=0
+PASS 598 2026-10-30T06:03:49.672780 total=81 selected=0 unattributed=0
+DELETED pass=598 count=0 failed=0
+PASS 599 2026-10-30T06:04:49.684064 total=60 selected=1 unattributed=0
+SELECT shmid=286621761 key=525098600 cpid=2372777 lpid=2372777 nattch=0 ctime="Oct 30 06:03:57" atime="Oct 30 06:04:03" dtime="Oct 30 06:04:03"
+DELETE shmid=286621761 key=525098600 -> OK
+DELETED pass=599 count=1 failed=0
+PASS 600 2026-10-30T06:05:49.692226 total=73 selected=0 unattributed=0
+DELETED pass=600 count=0 failed=0
+PASS 601 2026-10-30T06:06:49.699003 total=49 selected=0 unattributed=0
+DELETED pass=601 count=0 failed=0
+PASS 602 2026-10-30T06:07:49.704355 total=48 selected=0 unattributed=0
+DELETED pass=602 count=0 failed=0
+PASS 603 2026-10-30T06:08:49.715449 total=70 selected=0 unattributed=0
+DELETED pass=603 count=0 failed=0
+PASS 604 2026-10-30T06:09:49.722331 total=60 selected=1 unattributed=0
+SELECT shmid=276856832 key=767610756 cpid=2330028 lpid=2330028 nattch=0 ctime="Oct 30 05:44:04" atime="Oct 30 06:09:36" dtime="Oct 30 06:09:36"
+DELETE shmid=276856832 key=767610756 -> OK
+DELETED pass=604 count=1 failed=0
+PASS 605 2026-10-30T06:10:49.728657 total=37 selected=0 unattributed=0
+DELETED pass=605 count=0 failed=0
+PASS 606 2026-10-30T06:11:49.733790 total=40 selected=1 unattributed=0
+SELECT shmid=280723457 key=499909836 cpid=2346157 lpid=2346157 nattch=0 ctime="Oct 30 05:49:48" atime="Oct 30 06:11:38" dtime="Oct 30 06:11:38"
+DELETE shmid=280723457 key=499909836 -> OK
+DELETED pass=606 count=1 failed=0
+PASS 607 2026-10-30T06:12:49.743459 total=78 selected=0 unattributed=0
+DELETED pass=607 count=0 failed=0
+PASS 608 2026-10-30T06:13:49.749986 total=84 selected=0 unattributed=0
+DELETED pass=608 count=0 failed=0
+PASS 609 2026-10-30T06:14:49.761406 total=86 selected=0 unattributed=0
+DELETED pass=609 count=0 failed=0
+PASS 610 2026-10-30T06:15:49.767176 total=85 selected=0 unattributed=0
+DELETED pass=610 count=0 failed=0
+PASS 611 2026-10-30T06:16:49.772817 total=82 selected=0 unattributed=0
+DELETED pass=611 count=0 failed=0
+PASS 612 2026-10-30T06:17:49.779614 total=79 selected=0 unattributed=0
+DELETED pass=612 count=0 failed=0
+PASS 613 2026-10-30T06:18:49.786893 total=82 selected=0 unattributed=0
+DELETED pass=613 count=0 failed=0
+PASS 614 2026-10-30T06:19:49.794073 total=53 selected=0 unattributed=0
+DELETED pass=614 count=0 failed=0
+PASS 615 2026-10-30T06:20:49.803505 total=77 selected=0 unattributed=0
+DELETED pass=615 count=0 failed=0
+PASS 616 2026-10-30T06:21:49.812390 total=58 selected=0 unattributed=0
+DELETED pass=616 count=0 failed=0
+PASS 617 2026-10-30T06:22:49.819173 total=60 selected=0 unattributed=0
+DELETED pass=617 count=0 failed=0
+PASS 618 2026-10-30T06:23:49.827768 total=38 selected=0 unattributed=0
+DELETED pass=618 count=0 failed=0
+PASS 619 2026-10-30T06:24:49.832336 total=34 selected=0 unattributed=0
+DELETED pass=619 count=0 failed=0
+PASS 620 2026-10-30T06:25:49.844939 total=66 selected=1 unattributed=0
+SELECT shmid=296976414 key=408947314 cpid=2415957 lpid=2415957 nattch=0 ctime="Oct 30 06:24:57" atime="Oct 30 06:25:01" dtime="Oct 30 06:25:01"
+DELETE shmid=296976414 key=408947314 -> OK
+DELETED pass=620 count=1 failed=0
+PASS 621 2026-10-30T06:26:49.851785 total=99 selected=1 unattributed=0
+SELECT shmid=284459032 key=854913584 cpid=2362183 lpid=2362183 nattch=0 ctime="Oct 30 05:57:19" atime="Oct 30 06:26:13" dtime="Oct 30 06:26:13"
+DELETE shmid=284459032 key=854913584 -> OK
+DELETED pass=621 count=1 failed=0
+PASS 622 2026-10-30T06:27:49.863782 total=92 selected=0 unattributed=0
+DELETED pass=622 count=0 failed=0
+PASS 623 2026-10-30T06:28:49.877894 total=77 selected=0 unattributed=0
+DELETED pass=623 count=0 failed=0
+PASS 624 2026-10-30T06:29:49.883971 total=41 selected=0 unattributed=0
+DELETED pass=624 count=0 failed=0
+PASS 625 2026-10-30T06:30:49.890398 total=61 selected=0 unattributed=0
+DELETED pass=625 count=0 failed=0
+PASS 626 2026-10-30T06:31:49.909284 total=81 selected=0 unattributed=0
+DELETED pass=626 count=0 failed=0
+PASS 627 2026-10-30T06:32:49.914739 total=72 selected=0 unattributed=0
+DELETED pass=627 count=0 failed=0
+PASS 628 2026-10-30T06:33:49.921669 total=85 selected=0 unattributed=0
+DELETED pass=628 count=0 failed=0
+PASS 629 2026-10-30T06:34:49.928582 total=61 selected=0 unattributed=0
+DELETED pass=629 count=0 failed=0
+PASS 630 2026-10-30T06:35:49.935533 total=75 selected=0 unattributed=0
+DELETED pass=630 count=0 failed=0
+PASS 631 2026-10-30T06:36:49.944044 total=95 selected=0 unattributed=0
+DELETED pass=631 count=0 failed=0
+PASS 632 2026-10-30T06:37:49.955752 total=85 selected=0 unattributed=0
+DELETED pass=632 count=0 failed=0
+PASS 633 2026-10-30T06:38:49.967415 total=93 selected=0 unattributed=0
+DELETED pass=633 count=0 failed=0
+PASS 634 2026-10-30T06:39:49.976319 total=56 selected=0 unattributed=0
+DELETED pass=634 count=0 failed=0
+PASS 635 2026-10-30T06:40:49.982890 total=73 selected=0 unattributed=0
+DELETED pass=635 count=0 failed=0
+PASS 636 2026-10-30T06:41:49.987691 total=59 selected=1 unattributed=0
+SELECT shmid=289832965 key=159889918 cpid=2386535 lpid=2386535 nattch=0 ctime="Oct 30 06:09:36" atime="Oct 30 06:40:57" dtime="Oct 30 06:40:57"
+DELETE shmid=289832965 key=159889918 -> OK
+DELETED pass=636 count=1 failed=0
+PASS 637 2026-10-30T06:42:49.993624 total=59 selected=0 unattributed=0
+DELETED pass=637 count=0 failed=0
+PASS 638 2026-10-30T06:43:50.001957 total=60 selected=1 unattributed=0
+SELECT shmid=291635200 key=573324691 cpid=2392020 lpid=2392020 nattch=0 ctime="Oct 30 06:11:39" atime="Oct 30 06:43:27" dtime="Oct 30 06:43:27"
+DELETE shmid=291635200 key=573324691 -> OK
+DELETED pass=638 count=1 failed=0
+PASS 639 2026-10-30T06:44:50.011575 total=51 selected=0 unattributed=0
+DELETED pass=639 count=0 failed=0
+PASS 640 2026-10-30T06:45:50.017828 total=70 selected=0 unattributed=0
+DELETED pass=640 count=0 failed=0
+PASS 641 2026-10-30T06:46:50.025457 total=69 selected=0 unattributed=0
+DELETED pass=641 count=0 failed=0
+PASS 642 2026-10-30T06:47:50.031851 total=77 selected=0 unattributed=0
+DELETED pass=642 count=0 failed=0
+PASS 643 2026-10-30T06:48:50.036798 total=67 selected=1 unattributed=0
+SELECT shmid=297828354 key=907659562 cpid=2419328 lpid=2419328 nattch=0 ctime="Oct 30 06:26:13" atime="Oct 30 06:47:56" dtime="Oct 30 06:47:56"
+DELETE shmid=297828354 key=907659562 -> OK
+DELETED pass=643 count=1 failed=0
+PASS 644 2026-10-30T06:49:50.042507 total=67 selected=0 unattributed=0
+DELETED pass=644 count=0 failed=0
+PASS 645 2026-10-30T06:50:50.049685 total=66 selected=0 unattributed=0
+DELETED pass=645 count=0 failed=0
+PASS 646 2026-10-30T06:51:50.055781 total=62 selected=0 unattributed=0
+DELETED pass=646 count=0 failed=0
+PASS 647 2026-10-30T06:52:50.065274 total=92 selected=0 unattributed=0
+DELETED pass=647 count=0 failed=0
+PASS 648 2026-10-30T06:53:50.071722 total=55 selected=0 unattributed=0
+DELETED pass=648 count=0 failed=0
+PASS 649 2026-10-30T06:54:50.077112 total=43 selected=0 unattributed=0
+DELETED pass=649 count=0 failed=0
+PASS 650 2026-10-30T06:55:50.086140 total=86 selected=0 unattributed=0
+DELETED pass=650 count=0 failed=0
+PASS 651 2026-10-30T06:56:50.091061 total=33 selected=0 unattributed=0
+DELETED pass=651 count=0 failed=0
+PASS 652 2026-10-30T06:57:50.096062 total=65 selected=1 unattributed=0
+SELECT shmid=303923221 key=517374353 cpid=2447212 lpid=2447212 nattch=0 ctime="Oct 30 06:40:57" atime="Oct 30 06:57:43" dtime="Oct 30 06:57:43"
+DELETE shmid=303923221 key=517374353 -> OK
+DELETED pass=652 count=1 failed=0
+PASS 653 2026-10-30T06:58:50.101886 total=79 selected=0 unattributed=0
+DELETED pass=653 count=0 failed=0
+PASS 654 2026-10-30T06:59:50.106893 total=44 selected=0 unattributed=0
+DELETED pass=654 count=0 failed=0
+PASS 655 2026-10-30T07:00:50.112340 total=60 selected=0 unattributed=0
+DELETED pass=655 count=0 failed=0
+PASS 656 2026-10-30T07:01:50.118839 total=55 selected=0 unattributed=0
+DELETED pass=656 count=0 failed=0
+PASS 657 2026-10-30T07:02:50.127330 total=48 selected=0 unattributed=0
+DELETED pass=657 count=0 failed=0
+PASS 658 2026-10-30T07:03:50.136089 total=80 selected=0 unattributed=0
+DELETED pass=658 count=0 failed=0
+PASS 659 2026-10-30T07:04:50.142756 total=78 selected=1 unattributed=0
+SELECT shmid=314507288 key=847224548 cpid=2492866 lpid=2492866 nattch=0 ctime="Oct 30 07:04:04" atime="Oct 30 07:04:07" dtime="Oct 30 07:04:07"
+DELETE shmid=314507288 key=847224548 -> OK
+DELETED pass=659 count=1 failed=0
+PASS 660 2026-10-30T07:05:50.157310 total=103 selected=0 unattributed=0
+DELETED pass=660 count=0 failed=0
+PASS 661 2026-10-30T07:06:50.172342 total=87 selected=0 unattributed=0
+DELETED pass=661 count=0 failed=0
+PASS 662 2026-10-30T07:07:50.183303 total=72 selected=0 unattributed=0
+DELETED pass=662 count=0 failed=0
+PASS 663 2026-10-30T07:08:50.189302 total=81 selected=0 unattributed=0
+DELETED pass=663 count=0 failed=0
+PASS 664 2026-10-30T07:09:50.195113 total=82 selected=0 unattributed=0
+DELETED pass=664 count=0 failed=0
+PASS 665 2026-10-30T07:10:50.200784 total=80 selected=0 unattributed=0
+DELETED pass=665 count=0 failed=0
+PASS 666 2026-10-30T07:11:50.208526 total=84 selected=0 unattributed=0
+DELETED pass=666 count=0 failed=0
+PASS 667 2026-10-30T07:12:50.215305 total=79 selected=0 unattributed=0
+DELETED pass=667 count=0 failed=0
+PASS 668 2026-10-30T07:13:50.220469 total=76 selected=0 unattributed=0
+DELETED pass=668 count=0 failed=0
+PASS 669 2026-10-30T07:14:50.229291 total=82 selected=1 unattributed=0
+SELECT shmid=307232814 key=700323328 cpid=2460956 lpid=2460956 nattch=0 ctime="Oct 30 06:47:56" atime="Oct 30 07:14:16" dtime="Oct 30 07:14:16"
+DELETE shmid=307232814 key=700323328 -> OK
+DELETED pass=669 count=1 failed=0
+PASS 670 2026-10-30T07:15:50.239667 total=55 selected=0 unattributed=0
+DELETED pass=670 count=0 failed=0
+PASS 671 2026-10-30T07:16:50.246172 total=44 selected=1 unattributed=0
+SELECT shmid=305266767 key=988258458 cpid=2452340 lpid=2452340 nattch=0 ctime="Oct 30 06:43:28" atime="Oct 30 07:16:08" dtime="Oct 30 07:16:08"
+DELETE shmid=305266767 key=988258458 -> OK
+DELETED pass=671 count=1 failed=0
+PASS 672 2026-10-30T07:17:50.253242 total=44 selected=0 unattributed=0
+DELETED pass=672 count=0 failed=0
+PASS 673 2026-10-30T07:18:50.257438 total=32 selected=0 unattributed=0
+DELETED pass=673 count=0 failed=0
+PASS 674 2026-10-30T07:19:50.265316 total=53 selected=0 unattributed=0
+DELETED pass=674 count=0 failed=0
+PASS 675 2026-10-30T07:20:50.273936 total=79 selected=0 unattributed=0
+DELETED pass=675 count=0 failed=0
+PASS 676 2026-10-30T07:21:50.282032 total=61 selected=1 unattributed=0
+SELECT shmid=324534327 key=888478615 cpid=2534403 lpid=2534403 nattch=0 ctime="Oct 30 07:21:33" atime="Oct 30 07:21:39" dtime="Oct 30 07:21:39"
+DELETE shmid=324534327 key=888478615 -> OK
+DELETED pass=676 count=1 failed=0
+PASS 677 2026-10-30T07:22:50.287634 total=17 selected=0 unattributed=0
+DELETED pass=677 count=0 failed=0
+PASS 678 2026-10-30T07:23:50.295000 total=88 selected=3 unattributed=0
+SELECT shmid=325320726 key=326420734 cpid=2537476 lpid=2537476 nattch=0 ctime="Oct 30 07:22:56" atime="Oct 30 07:22:57" dtime="Oct 30 07:22:57"
+DELETE shmid=325320726 key=326420734 -> OK
+SELECT shmid=325386310 key=869854692 cpid=2537797 lpid=2537797 nattch=0 ctime="Oct 30 07:23:03" atime="Oct 30 07:23:04" dtime="Oct 30 07:23:04"
+DELETE shmid=325386310 key=869854692 -> OK
+SELECT shmid=325517392 key=900040308 cpid=2538164 lpid=2538164 nattch=0 ctime="Oct 30 07:23:10" atime="Oct 30 07:23:11" dtime="Oct 30 07:23:11"
+DELETE shmid=325517392 key=900040308 -> OK
+DELETED pass=678 count=3 failed=0
+PASS 679 2026-10-30T07:24:50.303274 total=100 selected=1 unattributed=0
+SELECT shmid=312475648 key=618357191 cpid=2482757 lpid=2482757 nattch=0 ctime="Oct 30 06:57:44" atime="Oct 30 07:24:45" dtime="Oct 30 07:24:45"
+DELETE shmid=312475648 key=618357191 -> OK
+DELETED pass=679 count=1 failed=0
+PASS 680 2026-10-30T07:25:50.309296 total=63 selected=0 unattributed=0
+DELETED pass=680 count=0 failed=0
+PASS 681 2026-10-30T07:26:50.314103 total=58 selected=0 unattributed=0
+DELETED pass=681 count=0 failed=0
+PASS 682 2026-10-30T07:27:50.319251 total=61 selected=0 unattributed=0
+DELETED pass=682 count=0 failed=0
+PASS 683 2026-10-30T07:28:50.332933 total=75 selected=0 unattributed=0
+DELETED pass=683 count=0 failed=0
+PASS 684 2026-10-30T07:29:50.337848 total=41 selected=0 unattributed=0
+DELETED pass=684 count=0 failed=0
+PASS 685 2026-10-30T07:30:50.342849 total=69 selected=0 unattributed=0
+DELETED pass=685 count=0 failed=0
+PASS 686 2026-10-30T07:31:50.348189 total=56 selected=0 unattributed=0
+DELETED pass=686 count=0 failed=0
+PASS 687 2026-10-30T07:32:50.353513 total=81 selected=0 unattributed=0
+DELETED pass=687 count=0 failed=0
+PASS 688 2026-10-30T07:33:50.362374 total=58 selected=0 unattributed=0
+DELETED pass=688 count=0 failed=0
+PASS 689 2026-10-30T07:34:50.367831 total=64 selected=0 unattributed=0
+DELETED pass=689 count=0 failed=0
+PASS 690 2026-10-30T07:35:50.373915 total=91 selected=0 unattributed=0
+DELETED pass=690 count=0 failed=0
+PASS 691 2026-10-30T07:36:50.382226 total=78 selected=0 unattributed=1
+DELETED pass=691 count=0 failed=0
+PASS 692 2026-10-30T07:37:50.393948 total=75 selected=0 unattributed=0
+DELETED pass=692 count=0 failed=0
+PASS 693 2026-10-30T07:38:50.399068 total=73 selected=0 unattributed=0
+DELETED pass=693 count=0 failed=0
+PASS 694 2026-10-30T07:39:50.408266 total=104 selected=0 unattributed=0
+DELETED pass=694 count=0 failed=0
+PASS 695 2026-10-30T07:40:50.416865 total=104 selected=0 unattributed=0
+DELETED pass=695 count=0 failed=0
+PASS 696 2026-10-30T07:41:50.426778 total=104 selected=0 unattributed=0
+DELETED pass=696 count=0 failed=0
+PASS 697 2026-10-30T07:42:50.434431 total=66 selected=0 unattributed=2
+DELETED pass=697 count=0 failed=0
+PASS 698 2026-10-30T07:43:50.440591 total=63 selected=1 unattributed=0
+SELECT shmid=320471099 key=592441055 cpid=2518406 lpid=2518406 nattch=0 ctime="Oct 30 07:14:16" atime="Oct 30 07:43:42" dtime="Oct 30 07:43:42"
+DELETE shmid=320471099 key=592441055 -> OK
+DELETED pass=698 count=1 failed=0
+PASS 699 2026-10-30T07:44:50.457666 total=73 selected=0 unattributed=0
+DELETED pass=699 count=0 failed=0
+PASS 700 2026-10-30T07:45:50.465501 total=58 selected=1 unattributed=0
+SELECT shmid=322207745 key=303742486 cpid=2524511 lpid=2524511 nattch=0 ctime="Oct 30 07:16:08" atime="Oct 30 07:45:21" dtime="Oct 30 07:45:21"
+DELETE shmid=322207745 key=303742486 -> OK
+DELETED pass=700 count=1 failed=0
+PASS 701 2026-10-30T07:46:50.474591 total=63 selected=0 unattributed=0
+DELETED pass=701 count=0 failed=0
+PASS 702 2026-10-30T07:47:50.480131 total=40 selected=0 unattributed=0
+DELETED pass=702 count=0 failed=0
+PASS 703 2026-10-30T07:48:50.496326 total=91 selected=0 unattributed=0
+DELETED pass=703 count=0 failed=0
+PASS 704 2026-10-30T07:49:50.502749 total=46 selected=0 unattributed=0
+DELETED pass=704 count=0 failed=0
+PASS 705 2026-10-30T07:50:50.508369 total=61 selected=0 unattributed=0
+DELETED pass=705 count=0 failed=0
+PASS 706 2026-10-30T07:51:50.515203 total=78 selected=0 unattributed=0
+DELETED pass=706 count=0 failed=0
+PASS 707 2026-10-30T07:52:50.524440 total=42 selected=0 unattributed=0
+DELETED pass=707 count=0 failed=0
+PASS 708 2026-10-30T07:53:50.531415 total=55 selected=0 unattributed=1
+DELETED pass=708 count=0 failed=0
+PASS 709 2026-10-30T07:54:50.536462 total=12 selected=1 unattributed=0
+SELECT shmid=326795266 key=188599233 cpid=2543212 lpid=2543212 nattch=0 ctime="Oct 30 07:24:45" atime="Oct 30 07:54:05" dtime="Oct 30 07:54:05"
+DELETE shmid=326795266 key=188599233 -> OK
+DELETED pass=709 count=1 failed=0
+PASS 710 2026-10-30T07:55:50.544976 total=50 selected=0 unattributed=0
+DELETED pass=710 count=0 failed=0
+PASS 711 2026-10-30T07:56:50.551841 total=39 selected=0 unattributed=1
+DELETED pass=711 count=0 failed=0
+PASS 712 2026-10-30T07:57:50.555831 total=31 selected=0 unattributed=0
+DELETED pass=712 count=0 failed=0
+PASS 713 2026-10-30T07:58:50.561958 total=58 selected=0 unattributed=0
+DELETED pass=713 count=0 failed=0
+PASS 714 2026-10-30T07:59:50.566114 total=38 selected=0 unattributed=0
+DELETED pass=714 count=0 failed=0
+PASS 715 2026-10-30T08:00:50.571084 total=53 selected=0 unattributed=0
+DELETED pass=715 count=0 failed=0
+PASS 716 2026-10-30T08:01:50.577201 total=36 selected=0 unattributed=0
+DELETED pass=716 count=0 failed=0
+PASS 717 2026-10-30T08:02:50.585135 total=29 selected=0 unattributed=0
+DELETED pass=717 count=0 failed=0
+PASS 718 2026-10-30T08:03:50.590901 total=48 selected=0 unattributed=0
+DELETED pass=718 count=0 failed=0
+PASS 719 2026-10-30T08:04:50.597091 total=43 selected=1 unattributed=0
+SELECT shmid=337248284 key=180239330 cpid=2591249 lpid=2591249 nattch=0 ctime="Oct 30 07:45:21" atime="Oct 30 08:04:42" dtime="Oct 30 08:04:42"
+DELETE shmid=337248284 key=180239330 -> OK
+DELETED pass=719 count=1 failed=0
+PASS 720 2026-10-30T08:05:50.603178 total=28 selected=0 unattributed=0
+DELETED pass=720 count=0 failed=0
+PASS 721 2026-10-30T08:06:50.607139 total=26 selected=0 unattributed=0
+DELETED pass=721 count=0 failed=0
+PASS 722 2026-10-30T08:07:50.613900 total=52 selected=0 unattributed=0
+DELETED pass=722 count=0 failed=0
+PASS 723 2026-10-30T08:08:50.618585 total=52 selected=0 unattributed=0
+DELETED pass=723 count=0 failed=0
+PASS 724 2026-10-30T08:09:50.624545 total=28 selected=0 unattributed=0
+DELETED pass=724 count=0 failed=0
+PASS 725 2026-10-30T08:10:50.629677 total=41 selected=0 unattributed=0
+DELETED pass=725 count=0 failed=0
+PASS 726 2026-10-30T08:11:50.633793 total=34 selected=0 unattributed=0
+DELETED pass=726 count=0 failed=0
+PASS 727 2026-10-30T08:12:50.639042 total=23 selected=0 unattributed=0
+DELETED pass=727 count=0 failed=0
+PASS 728 2026-10-30T08:13:50.645176 total=39 selected=0 unattributed=0
+DELETED pass=728 count=0 failed=0
+PASS 729 2026-10-30T08:14:50.649680 total=51 selected=1 unattributed=0
+SELECT shmid=336166991 key=458136490 cpid=2585627 lpid=2585627 nattch=0 ctime="Oct 30 07:43:42" atime="Oct 30 08:14:00" dtime="Oct 30 08:14:00"
+DELETE shmid=336166991 key=458136490 -> OK
+DELETED pass=729 count=1 failed=0
+PASS 730 2026-10-30T08:15:50.654615 total=35 selected=0 unattributed=0
+DELETED pass=730 count=0 failed=0
+PASS 731 2026-10-30T08:16:50.658986 total=44 selected=0 unattributed=0
+DELETED pass=731 count=0 failed=0
+PASS 732 2026-10-30T08:17:50.664080 total=31 selected=0 unattributed=0
+DELETED pass=732 count=0 failed=0
+PASS 733 2026-10-30T08:18:50.670396 total=26 selected=0 unattributed=0
+DELETED pass=733 count=0 failed=0
+PASS 734 2026-10-30T08:19:50.675909 total=33 selected=0 unattributed=0
+DELETED pass=734 count=0 failed=0
+PASS 735 2026-10-30T08:20:50.680025 total=26 selected=0 unattributed=0
+DELETED pass=735 count=0 failed=0
+PASS 736 2026-10-30T08:21:50.684379 total=30 selected=0 unattributed=0
+DELETED pass=736 count=0 failed=0
+PASS 737 2026-10-30T08:22:50.688052 total=11 selected=0 unattributed=0
+DELETED pass=737 count=0 failed=0
+PASS 738 2026-10-30T08:23:50.691892 total=4 selected=0 unattributed=0
+DELETED pass=738 count=0 failed=0
+PASS 739 2026-10-30T08:24:50.695543 total=17 selected=0 unattributed=0
+DELETED pass=739 count=0 failed=0
+PASS 740 2026-10-30T08:25:50.701052 total=35 selected=0 unattributed=0
+DELETED pass=740 count=0 failed=0
+PASS 741 2026-10-30T08:26:50.704904 total=11 selected=0 unattributed=0
+DELETED pass=741 count=0 failed=0
+PASS 742 2026-10-30T08:27:50.708962 total=9 selected=0 unattributed=0
+DELETED pass=742 count=0 failed=0
+PASS 743 2026-10-30T08:28:50.712922 total=21 selected=0 unattributed=0
+DELETED pass=743 count=0 failed=0
+PASS 744 2026-10-30T08:29:50.717709 total=21 selected=0 unattributed=0
+DELETED pass=744 count=0 failed=0
+PASS 745 2026-10-30T08:30:50.722163 total=33 selected=1 unattributed=0
+SELECT shmid=353075239 key=779507280 cpid=2652916 lpid=2652916 nattch=0 ctime="Oct 30 08:14:01" atime="Oct 30 08:30:43" dtime="Oct 30 08:30:43"
+DELETE shmid=353075239 key=779507280 -> OK
+DELETED pass=745 count=1 failed=0
+PASS 746 2026-10-30T08:31:50.727735 total=31 selected=0 unattributed=0
+DELETED pass=746 count=0 failed=0
+PASS 747 2026-10-30T08:32:50.731636 total=10 selected=0 unattributed=0
+DELETED pass=747 count=0 failed=0
+PASS 748 2026-10-30T08:33:50.736729 total=43 selected=0 unattributed=0
+DELETED pass=748 count=0 failed=0
+PASS 749 2026-10-30T08:34:50.741986 total=43 selected=0 unattributed=0
+DELETED pass=749 count=0 failed=0
+PASS 750 2026-10-30T08:35:50.746196 total=7 selected=0 unattributed=0
+DELETED pass=750 count=0 failed=0
+PASS 751 2026-10-30T08:36:50.753167 total=36 selected=0 unattributed=0
+DELETED pass=751 count=0 failed=0
+PASS 752 2026-10-30T08:37:50.760781 total=41 selected=0 unattributed=0
+DELETED pass=752 count=0 failed=0
+PASS 753 2026-10-30T08:38:50.765483 total=50 selected=0 unattributed=0
+DELETED pass=753 count=0 failed=0
+PASS 754 2026-10-30T08:39:50.772206 total=35 selected=0 unattributed=0
+DELETED pass=754 count=0 failed=0
+PASS 755 2026-10-30T08:40:50.776012 total=25 selected=0 unattributed=0
+DELETED pass=755 count=0 failed=0
+PASS 756 2026-10-30T08:41:50.781822 total=41 selected=0 unattributed=0
+DELETED pass=756 count=0 failed=0
+PASS 757 2026-10-30T08:42:50.786456 total=52 selected=0 unattributed=0
+DELETED pass=757 count=0 failed=0
+PASS 758 2026-10-30T08:43:50.792027 total=52 selected=0 unattributed=0
+DELETED pass=758 count=0 failed=0
+PASS 759 2026-10-30T08:44:50.795947 total=3 selected=0 unattributed=0
+DELETED pass=759 count=0 failed=0
+PASS 760 2026-10-30T08:45:50.800605 total=50 selected=0 unattributed=0
+DELETED pass=760 count=0 failed=0
+PASS 761 2026-10-30T08:46:50.805529 total=21 selected=0 unattributed=0
+DELETED pass=761 count=0 failed=0
+PASS 762 2026-10-30T08:47:50.809501 total=30 selected=0 unattributed=0
+DELETED pass=762 count=0 failed=0
+PASS 763 2026-10-30T08:48:50.814210 total=52 selected=0 unattributed=0
+DELETED pass=763 count=0 failed=0
+PASS 764 2026-10-30T08:49:50.820684 total=52 selected=0 unattributed=0
+DELETED pass=764 count=0 failed=0
+PASS 765 2026-10-30T08:50:50.827198 total=27 selected=0 unattributed=0
+DELETED pass=765 count=0 failed=0
+PASS 766 2026-10-30T08:51:50.831301 total=26 selected=0 unattributed=0
+DELETED pass=766 count=0 failed=0
+PASS 767 2026-10-30T08:52:50.834609 total=1 selected=0 unattributed=0
+DELETED pass=767 count=0 failed=0
+PASS 768 2026-10-30T08:53:50.844600 total=198 selected=1 unattributed=0
+SELECT shmid=359333888 key=211500398 cpid=2676492 lpid=2676492 nattch=0 ctime="Oct 30 08:30:43" atime="Oct 30 08:53:39" dtime="Oct 30 08:53:39"
+DELETE shmid=359333888 key=211500398 -> OK
+DELETED pass=768 count=1 failed=0
+# shm_sweep stop after pass 768 2026-10-30T08:53:50.845510

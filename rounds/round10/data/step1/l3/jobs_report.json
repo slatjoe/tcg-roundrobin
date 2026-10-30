@@ -1,0 +1,26 @@
+{
+ "jobs": 791,
+ "games_with_jobs": 99,
+ "index_rows_total": 791,
+ "overturn_stat_rows": 791,
+ "classes": {
+  "newly_contested": 619,
+  "contested": 172
+ },
+ "shards": {
+  "0": 208,
+  "1": 130,
+  "2": 232,
+  "3": 221
+ },
+ "nshard": 4,
+ "shard_cap_jobs": 512,
+ "label_tuple": {
+  "deadline_s": 180,
+  "hooks": 8000,
+  "horizon": 62,
+  "horizon_value": -1,
+  "k": 50,
+  "name": "L3-W50+H"
+ }
+}
