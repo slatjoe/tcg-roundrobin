@@ -464,7 +464,7 @@ code/step2/ (new):
 - build_fleet_jobs.py — c7601341302fdf43f2e6708ff2d8bd5ef5417d1c2edee9dbe45dac1ca6e3695f (fork of build_pilot_jobs.py: docstring + branding only)
 - fleet_games_report.py — 62ca60b5bc289944d1a6d7e66f0567e4ffac895f0f6e9b9a876207615f4fe578 (fork of stage3_games_report.py: docstring only)
 - fleet_read.py — 7370b989c36d1bac70673d4a3e16da35c6f39eb1daa425af3bb80df9d811cfdc (new)
-- run_fleet_games.sh — 8e3c3fbd9195cf0cdfb2dd255e93584cffb805318245d7307378e8113fd79191 (new)
+- run_fleet_games.sh — 24b2fd02b3e2ac32980ff5f6fb841865b96ae0f3c1163f8885b1b12fbd93d709 (new; §18 repair — the as-approved build was 8e3c3fbd9195cf0cdfb2dd255e93584cffb805318245d7307378e8113fd79191)
 - run_fleet_l3.sh — 2f28e0cc176ba07aa5bc1c98c32e1187c42f73d5ac081c713d10d26d35e0dabb (new)
 - merge_registry.py — 13a655e37d2d1eb04c80c8b6c1e1c8009ed2757b146f20cc7ebbcf5b9faf6bbe (copy)
 - shm_sweep.py — 98027a8b6f58bb06651c5b1e5203872fa2939aea464da5f180907dde43d14f33 (copy)
@@ -516,3 +516,145 @@ Regression: pilot suite 144 PASS and round-10 suite
 committed ones. Changed/new files: fx_fleet_anchor.py
 (new, dbb14e20…), run_fx_fleet.sh (c4a94b88…),
 fx_fleet_outputs.txt (8f4cda2e…), and this doc.
+
+## 18. Repair (2026-10-30) — SEARCH_MODEL missing at both server spawn sites
+
+Post-launch repair. The fleet was launched twice on
+2026-10-30 and aborted both times before any game;
+the second abort exposed a defect in
+`run_fleet_games.sh` as approved (8e3c3fbd…). This
+section is the repair record; the launch gate is
+unchanged (relaunch only on Claude's confirmation
+of this repair plus Joe's go, from the repaired
+commit).
+
+### 18.1 The defect
+
+Both server spawn sites in `run_fleet_games.sh`
+start the pinned PRODUCTION server,
+`rl/search_server.py` (sha256 81ef2cdb…), whose
+lines 68–69 exit when `SEARCH_MODEL` is unset or
+empty. Neither spawn block set it:
+
+- **TS-SRV** (teacher, ports 18241/18242): set only
+  the PATCHED server's env names —
+  `TCG_POLICY_SEARCH=1`,
+  `TCG_POLICY_SEARCH_CKPT="$CKPT"`,
+  `TCG_POLICY_SEARCH_DEVICE=cuda`,
+  `TCG_SEARCH_SERVER=patched`. The production
+  server reads none of them; its environ reads are
+  `TCG_POLICY_SOCK`, `SEARCH_MODEL`, `TCG_OPP_MIX`,
+  `TCG_LEARNER_SEAT`, `EVAL_BATCH`, `EVAL_WAIT_MS`,
+  `TCG_TRAJ_LOG`.
+- **RS-SRV** (raw, ports 18251/18252): set only
+  `TCG_POLICY_SEARCH_DEVICE=cuda`.
+
+The pilot's proven spawn form
+(`code/step1/run_pilot.sh`, lines 246 and 357) sets
+`SEARCH_MODEL="$CKPT" TCG_OPP_MIX="heuristic:1.0"`.
+`run_fleet_l3.sh` was already correct (its line 207
+sets `SEARCH_MODEL="$CKPT"`) and is untouched by
+this repair.
+
+### 18.2 The two aborted launches — zero consumption
+
+- **Launch 1, 2026-10-30 13:10 EDT**: aborted at
+  the FREESPACE pre-flight (`/tmp` free space below
+  required × 1.25), before any spawn. Cleared by
+  deleting the pilot's eight scratch trees on
+  Joe's go.
+- **Launch 2, 2026-10-30 13:38 EDT** (the launch
+  command's own timestamp reads 13:38:14 EDT;
+  `step2-fleet-launch-facts.md`'s "13:44" is
+  superseded by it): passed the pin checks, the
+  PREGATE-GATE, and the FREESPACE pre-flight, then
+  aborted at teacher-server start —
+  `srv_18241.log` reads
+  `search_server: SEARCH_MODEL missing: ''`.
+
+Both launches aborted before any game spawn: zero
+games played, zero seeds consumed, zero registry
+consumption. The single-shot guards
+(`games_manifest.json`, `fleet_read.json`) remain
+absent, so a relaunch after this repair starts
+clean.
+
+### 18.3 The fix
+
+Two inserted lines in
+`code/step2/run_fleet_games.sh` — one per spawn
+block — and nothing else in the file:
+
+```
+ TS-SRV (teacher, ports 18241 18242):
+     TCG_SEARCH_SERVER=patched \
++    SEARCH_MODEL="$CKPT" \
+     $PY rl/search_server.py --socket /tmp/pol_$port.sock \
+
+ RS-SRV (raw, ports 18251 18252):
+   ( cd "$SIM" && TCG_POLICY_SEARCH_DEVICE=cuda \
++    SEARCH_MODEL="$CKPT" \
+     $PY rl/search_server.py --socket /tmp/pol_$port.sock \
+```
+
+The inert `TCG_POLICY_SEARCH*` lines are left in
+place: the pinned production server never reads
+them, and removing them is not part of this
+repair. No other file under `code/step2/` is
+touched.
+
+New pin: `run_fleet_games.sh` —
+**24b2fd02b3e2ac32980ff5f6fb841865b96ae0f3c1163f8885b1b12fbd93d709**.
+§16's pin line is updated in place to this hash,
+with the as-approved hash (8e3c3fbd…) recorded
+beside it. The truncated pin in
+`step2-fleet-launch-facts.md` (8e3c3fbd…) is the
+historical record of the build that was actually
+launched and is left unchanged. No fixture pinned
+the old hash (`fx_fleet_pins.py` asserts the
+runner's internal expect_hash literals against the
+staged files, never the runner's own hash).
+
+### 18.4 Fixture coverage
+
+New fixture `fixtures/fx_fleet_server_env.py`
+(sha256
+a255835c32ba1b059b8266fdc8b5d752662fb14124caa437ec26235c629a91a7),
+wired into `run_fx_fleet.sh`. It extracts both
+`search_server.py` spawn blocks VERBATIM from the
+staged runner (each `for port in` header through
+its spawn loop's closing `done`) and asserts
+exactly 2 spawn sites, each carrying the literal
+line `SEARCH_MODEL="$CKPT"`; two negative cases
+(both lines stripped; only the raw block's line
+stripped) must fail the affected blocks. That is
+all it proves: it is a text-level guard on the
+staged runner. It does NOT start a server, load a
+model, or exercise the composed runtime
+environment — the first runtime proof is the
+relaunch's own server-ready gate.
+
+### 18.5 Suites and changed files
+
+Fleet suite: **135 PASS, 0 FAIL** (128 + the new
+fixture's 7), two consecutive runs byte-identical.
+Pilot suite 144 PASS and round-10 suite 197 PASS,
+both transcripts byte-identical to their committed
+ones. Changed/new files: `run_fleet_games.sh`
+(24b2fd02…), `fx_fleet_server_env.py` (new,
+a255835c…), `run_fx_fleet.sh`
+(6899309d5514232c7ac6a92a56ea62d6ec312cef2ff15aa3493631c9a9700280),
+`fx_fleet_outputs.txt`
+(a5cc33768a07a550ad3b8b010bed18f74d40bf1152ba1e124a3b53268a51b549),
+and this doc. §16's entries for `run_fx_fleet.sh`
+and `fx_fleet_outputs.txt` are superseded by this
+section (the §17 convention).
+
+### 18.6 Relaunch condition
+
+The fleet relaunches only when (a) Claude has
+confirmed this repair package and (b) Joe has
+given the go, and the launched sha is the repaired
+commit (launched sha == approved sha, or differs
+only under `rounds/`, per the standing launch
+gate). §14's launch shape is otherwise unchanged.

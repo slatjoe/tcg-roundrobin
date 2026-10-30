@@ -81,6 +81,14 @@ PASS: ANCHOR verdict reproduces Stage 3: DOES NOT CONVERT
 PASS: ANCHOR reconciliation recounted 37092 teacher stat rows == games report
 PASS: ANCHOR R14 root-canary refusal records counted by name: 8
 PASS: ANCHOR temp dir removed on exit
+===== fx_fleet_server_env =====
+PASS: exactly 2 search_server.py spawn sites extracted verbatim from run_fleet_games.sh
+PASS: teacher (ports 18241 18242) spawn block is the for port in 18241 18242; do loop
+PASS: teacher (ports 18241 18242) spawn block contains the literal line SEARCH_MODEL="$CKPT"
+PASS: raw (ports 18251 18252) spawn block is the for port in 18251 18252; do loop
+PASS: raw (ports 18251 18252) spawn block contains the literal line SEARCH_MODEL="$CKPT"
+PASS: negative: with SEARCH_MODEL stripped, both blocks fail the literal check (detected)
+PASS: negative: with only the raw block's SEARCH_MODEL stripped, exactly the raw block fails
 ===== fx_fleet_blocks =====
 PASS: games runner has section PINFN
 PASS: games runner has section SETREAD

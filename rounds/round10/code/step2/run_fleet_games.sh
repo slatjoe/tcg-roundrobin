@@ -201,6 +201,7 @@ for port in 18241 18242; do
     TCG_POLICY_SEARCH_CKPT="$CKPT" \
     TCG_POLICY_SEARCH_DEVICE=cuda \
     TCG_SEARCH_SERVER=patched \
+    SEARCH_MODEL="$CKPT" \
     $PY rl/search_server.py --socket /tmp/pol_$port.sock \
       --port $port > "$OUT/srv_$port.log" 2>&1 ) &
 done
@@ -265,6 +266,7 @@ echo "teacher phase done"
 ##### ===== RS-SRV :: raw servers (raw form) =====
 for port in 18251 18252; do
   ( cd "$SIM" && TCG_POLICY_SEARCH_DEVICE=cuda \
+    SEARCH_MODEL="$CKPT" \
     $PY rl/search_server.py --socket /tmp/pol_$port.sock \
       --port $port > "$OUT/srv_$port.log" 2>&1 ) &
 done
